@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewData["Title"] = "Registrar Pagos";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Reporta aquí cada pago que realizes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <!-- Pago Emitido -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Pago Emitido</label>
+                                        <div class="position-relative">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   placeholder="Referencia"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Condominio -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Condominio</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Name"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Proveedor -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Proveedor</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Name"
+                                                   id="first-name-icon" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Fecha -->
+                                <div class="col-md-6 col-12">
+                              <div class="form-group has-icon-left">
+                                <label for="last-name-column">Fecha</label>
+                                <div class="position-relative">
+                                  <input
+                                    type="date"
+                                    class="form-control"
+                                    placeholder="Name"
+                                    id="first-name-icon"
+                                    required
+                                  />
+                                  <div class="form-control-icon">
+                                    <i class="bi bi-calendar-date"></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                                
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary me-1 mb-1">
+                                        Enviar
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Rellena todos los campos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <!-- Pago Emitido -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Número de Referencia</label>
+                                        <div class="position-relative">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   placeholder="Referencia"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tipo de Banco -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Banco</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Banesco</option>
+                                                    <option>Provincial</option>
+                                                    <option>Banco Central de Venezuela</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row -->
+</div>
+<!-- /.container-fluid -->

@@ -1,0 +1,212 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+
+@*<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" />
+                <label asp-for="Input.FirstName"></label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" />
+                <label asp-for="Input.LastName"></label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article
+                                about setting up this ASP.NET application to support logging in via external services
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>*@
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Crear Usuarios</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Rellene todos los campos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-body">
+                            <div class="row">
+
+                                <!--Primer Nombre -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label asp-for="Input.FirstName"></label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="First name"
+                                                   id="first-name-icon"
+                                                   asp-for="Input.FirstName"
+                                                   aria-required="true" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!--Segundo Nombre -->
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label asp-for="Input.LastName"></label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Last name"
+                                                   id="first-name-icon"
+                                                   asp-for="Input.LastName"
+                                                   aria-required="true" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!--Email -->
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label asp-for="Input.Email"></label>
+                                        <div class="position-relative">
+                                            <input type="email"
+                                                   class="form-control"
+                                                   placeholder="Email"
+                                                   id="first-name-icon"
+                                                   asp-for="Input.Email"
+                                                   aria-required="true" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                                <!--Password -->
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label asp-for="Input.Password"></label>
+                                        <div class="position-relative">
+                                            <input type="password"
+                                                   class="form-control"
+                                                   placeholder="Password"
+                                                   id="first-name-icon"
+                                                   asp-for="Input.Password"
+                                                   aria-required="true" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                                <!--Password Confirm -->
+
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label asp-for="Input.ConfirmPassword"></label>
+                                        <div class="position-relative">
+                                            <input type="password"
+                                                   class="form-control"
+                                                   placeholder="Password"
+                                                   id="first-name-icon"
+                                                   asp-for="Input.ConfirmPassword"
+                                                   aria-required="true" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    }

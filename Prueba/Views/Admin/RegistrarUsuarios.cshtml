@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "Gestionar Usuarios";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestionar Usuarios</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Crear Administrador.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <!-- Nombre -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Nombre</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Nombre"
+                                                   id="first-name-icon" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Apellido -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Apellido</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Apellido"
+                                                   id="first-name-icon" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- email -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Email</label>
+                                        <div class="position-relative">
+                                            <input type="email"
+                                                   class="form-control"
+                                                   placeholder="Email"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contraseña -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Contraseña</label>
+                                        <div class="position-relative">
+                                            <input type="password"
+                                                   class="form-control"
+                                                   placeholder="Contraseña"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cargar Usuarios.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12 col-12">
+                                    <!-- File uploader with validation -->
+                                    <p>Comprobante de Pago</p>
+                                    <input type="file"
+                                           class="filepond"
+                                           required
+                                           multiple
+                                           data-max-file-size="1MB"
+                                           data-max-files="3" />
+                                </div>
+
+                                <!-- Nombre -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Nombre</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Nombre"
+                                                   id="first-name-icon" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Inmueble -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Inmueble</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Inmueble</option>
+                                                    <option>Inmueble</option>
+                                                    <option>Inmueble</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rif -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Rif</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Rif"
+                                                   id="first-name-icon"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary me-1 mb-1"
+                                            asp-controller="Admin"
+                                            asp-action="RegistroCondominio">
+                                        Siguiente
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Begin Page Content -->
+<!-- /.container-fluid -->

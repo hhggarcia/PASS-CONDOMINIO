@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Prueba.Areas.Identity.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="rd-nav-item">
+            <a id="manage" class="rd-nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+        </li>
+        <li class="rd-nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="rd-nav-link btn btn-link text-dark">Logout</button>
+            </form>
+        </li>
+        @*<li>
+            <a id="manage" class="rd-nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+
+        </li>
+        <li>
+            <button id="logout" type="submit" class="rd-nav-link btn btn-link text-dark">Logout</button>
+        </li>*@
+
+        @*<a asp-controller="Admin" asp-action="Dashboard">aaaaaa</a>*@
+    }
+    else
+    {
+
+
+        @*<li class="rd-nav-item">
+    <a class="button" id="register" asp-controller="Admin" asp-action="CrearUsuarios">Register</a>
+    </li>*@
+        <li>
+            <a class="button" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>

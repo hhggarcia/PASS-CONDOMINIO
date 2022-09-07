@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewData["Title"] = "Libro Diario";
+}
+
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Libro Diario</h1>
+        <a href="#"
+           class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Informe
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Libro Diario.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" id="todo-tab" data-bs-toggle="tab" href="#todo" role="tab" aria-controls="todo" aria-selected="true">Todo</a>
+                                            </li>
+
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                                <!-- Efectivo -->
+                                                <div class="table-responsive text-center">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Código</th>
+                                                                <th>Fecha</th>
+                                                                <th>Concepto</th>
+                                                                <th class="text-danger">Debe</th>
+                                                                <th class="text-success">Haber</th>
+                                                                <th>Descripción</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-bold-500">1</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-bold-500">2</td>
+                                                                <td>$13/hr</td>
+                                                                <td class="text-bold-500">Graphic concepts</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                                <!-- Trasnaferencia -->
+                                                <div class="table-responsive text-center">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Código</th>
+                                                                <th>Fecha</th>
+                                                                <th>Concepto</th>
+                                                                <th class="text-danger">Debe</th>
+                                                                <th class="text-success">Haber</th>
+                                                                <th>Descripción</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-bold-500">1</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-bold-500">2</td>
+                                                                <td>$13/hr</td>
+                                                                <td class="text-bold-500">Graphic concepts</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="todo" role="tabpanel" aria-labelledby="todo-tab">
+                                                <!-- Todo -->
+                                                <div class="table-responsive text-center">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Código</th>
+                                                                <th>Fecha</th>
+                                                                <th>Concepto</th>
+                                                                <th class="text-danger">Debe</th>
+                                                                <th class="text-success">Haber</th>
+                                                                <th>Descripción</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-bold-500">1</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-bold-500">2</td>
+                                                                <td>$13/hr</td>
+                                                                <td class="text-bold-500">Graphic concepts</td>
+                                                                <td class="text-bold-500">Michael Right</td>
+                                                                <td>$15/hr</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                                <td class="text-bold-500">UI/UX</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = "Registro de Condominios";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Registrar Condominios</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Rellene todos los campos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <!-- Pais -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Pais</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Venezuela</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Estado -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Estado</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Distrito Capital</option>
+                                                    <option>Miranda</option>
+                                                    <option>La Guaira</option>
+                                                    <option>Merida</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Municipio -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Municipios</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Libertador</option>
+                                                    <option>Baruta</option>
+                                                    <option>El Hatillo</option>
+                                                    <option>Sucre</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Parroquia -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Parroquia</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Parroquia 1</option>
+                                                    <option>Parroquia 2</option>
+                                                    <option>Parroquia 3</option>
+                                                    <option>Parroquia 4</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Zona -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Zona</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="basicSelect">
+                                                    <option>Zona 1</option>
+                                                    <option>Zona 2</option>
+                                                    <option>Zona 3</option>
+                                                    <option>Zona 4</option>
+                                                </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary me-1 mb-1"
+                                            asp-action="RegistrarEstacionamiento">
+                                        Siguiente
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Content Row -->
+</div>
+
