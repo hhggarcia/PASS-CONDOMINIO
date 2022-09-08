@@ -122,12 +122,12 @@
                                             <a class="rd-nav-link">Users</a>
                                         </li>
                                     </ul>
-                                    @*<a class="button" href="auth-login.html">Entrar</a>*@
-
+                                    <div class="button"><partial name="_LoginPartial" /></div>
+                                    
                                 </div>
 
                             </div>
-                            <partial name="_LoginPartial" />
+                            <div class="button"><partial name="_LoginPartial" /></div>
 
                             @*<a class="button" asp-controller="Login" asp-action="Login">Entrar</a>*@
                         </div>
@@ -139,8 +139,8 @@
 
 
         <main role="main" class="pb-3">
-            <br></br>
-            <br></br>
+            @*<br></br>
+            <br></br>*@
             @RenderBody()
         </main>
 

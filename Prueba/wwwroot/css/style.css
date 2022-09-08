@@ -7014,3 +7014,8 @@ html.rd-navbar-fixed-linked .page {
         overflow: auto !important;
     }
 }
+
+
+a.t-color {
+    color: #fff !important;
+}
