@@ -1,4 +1,5 @@
-﻿
+﻿@model NuevoCondominio
+
 @{
     ViewData["Title"] = "Registro de Condominios";
 }
@@ -6,7 +7,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Registrar Condominios</h1>
+        <h1 class="h3 mb-0 text-gray-800">Registrar Inmuebles</h1>
     </div>
 
     <!-- Content Row -->
@@ -102,6 +103,23 @@
                                                     <option>Zona 4</option>
                                                 </select>
                                             </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nombre -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Nombre</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Nombre"
+                                                   id="first-name-icon"
+                                                   />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

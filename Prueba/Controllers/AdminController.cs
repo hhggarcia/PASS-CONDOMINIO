@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Prueba.Areas.Identity.Data;
 using Prueba.Core.Repositories;
 using Prueba.Core.ViewModels;
+using Prueba.Models;
 using Prueba.Services;
+using Prueba.Utils;
 
 namespace Prueba.Controllers
 {
@@ -18,21 +20,24 @@ namespace Prueba.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IEmailService _serviceEmail;
+        private readonly IManageExcel _manageExcel;
 
         public AdminController(IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
-            IEmailService serviceEmail)
+            IEmailService serviceEmail,
+            IManageExcel manageExcel)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
             _serviceEmail = serviceEmail;
+            _manageExcel = manageExcel;
         }
 
-        /*
+        /* ETIQUETA
          * Metodo para crear un usuario Administrador y
          * todos los propietarios de un condominio
          * enviar correo al finalizar los la creacion del condominio
@@ -121,10 +126,34 @@ namespace Prueba.Controllers
 
             return RedirectToAction("Edit", new { id = user.Id });
         }
+
+        [HttpGet]
         public IActionResult RegistrarUsuarios()
         {
             return View();
         }
+        /* POST LLENA MODELO
+         * PARA CREAR CONDOMINIO
+         * INFO DE ADMIN Y LISTA DE PROPIETARIOS
+         */
+        [HttpPost]
+        public IActionResult RegistrarUsuarios(NuevoCondominio modelo)
+        {
+            //Extraer del excel los usuario
+            var usuarios = _manageExcel.ExcelUsuarios(modelo.ExcelPropietarios);
+            //verificar si el admin esta existe o no 
+
+            //LLENAR INFORMACION DE LOS SELECTS EN INMUEBLES
+
+            return RedirectToAction("RegistroInmueble", modelo);
+        }
+
+        [HttpGet]
+        public IActionResult RegistroInmueble(NuevoCondominio modelo)
+        {
+            return View(modelo);
+        }
+
         public IActionResult Dashboard()
         {
             return View();
@@ -145,10 +174,7 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        public IActionResult RegistroCondominio()
-        {
-            return View();
-        }
+        
         public IActionResult Edificio()
         {
             return View();

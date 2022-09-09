@@ -5,6 +5,7 @@ using Prueba.Core;
 using Prueba.Core.Repositories;
 using Prueba.Repositories;
 using Prueba.Services;
+using Prueba.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDBContext>();
+
+builder.Services.AddTransient<IManageExcel, ManageExcel>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
