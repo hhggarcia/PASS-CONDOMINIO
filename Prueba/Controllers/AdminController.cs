@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
+using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Core.ViewModels;
 using Prueba.Models;
@@ -21,13 +23,15 @@ namespace Prueba.Controllers
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IEmailService _serviceEmail;
         private readonly IManageExcel _manageExcel;
+        private readonly PruebaContext _context;
 
         public AdminController(IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail,
-            IManageExcel manageExcel)
+            IManageExcel manageExcel,
+            PruebaContext dbContext)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -35,6 +39,7 @@ namespace Prueba.Controllers
             _userStore = userStore;
             _serviceEmail = serviceEmail;
             _manageExcel = manageExcel;
+            _context = dbContext;
         }
 
         /* ETIQUETA
@@ -144,8 +149,41 @@ namespace Prueba.Controllers
             //verificar si el admin esta existe o no 
 
             //LLENAR INFORMACION DE LOS SELECTS EN INMUEBLES
+            IQueryable<Zona> zonas = from z in _context.Zonas
+                                     select z;
 
-            return RedirectToAction("RegistroInmueble", modelo);
+            IQueryable<Parroquia> parroquias = from p in _context.Parroquias
+                                               select p;
+
+            IQueryable<Municipio> municipios = from m in _context.Municipios
+                                               select m;
+
+
+            IQueryable<Estado> estados = from e in _context.Estados
+                                         select e;
+
+            IQueryable<Pais> pais = from p in _context.Pais
+                                    select p;
+
+            var paisModel = pais.Select(z => new SelectListItem(z.Nombre, z.IdPais.ToString()));
+            var estadoModel = estados.Select(z => new SelectListItem(z.Nombre, z.IdEstado.ToString()));
+            var municipioModel = municipios.Select(z => new SelectListItem(z.Municipio1, z.IdMunicipio.ToString()));
+            var parroquiaModel = parroquias.Select(z => new SelectListItem(z.Parroquia1, z.IdParroquia.ToString()));
+            var zonaModel = zonas.Select(z => new SelectListItem(z.Zona1, z.IdZona.ToString()));
+
+
+            var ubicaciones = new Ubicacion
+            {
+                Paises = paisModel,
+                Estados = estadoModel,
+                Municipios = municipioModel,
+                Parroquias = parroquiaModel,
+                Zonas = zonaModel
+            };
+
+            modelo.Ubicacion = ubicaciones;
+
+            return View("RegistroInmueble", modelo);
         }
 
         [HttpGet]
@@ -153,6 +191,26 @@ namespace Prueba.Controllers
         {
             return View(modelo);
         }
+
+        public IActionResult RegistrarEstacionamiento(NuevoCondominio modelo)
+        {
+            return View(modelo);
+        }
+        public IActionResult RegistrarPuesto()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult RegistrarPropiedades()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult RegistrarPropiedades2()
+        {
+            return View();
+        }
+
 
         public IActionResult Dashboard()
         {
@@ -174,20 +232,7 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        
         public IActionResult Edificio()
-        {
-            return View();
-        }
-        public IActionResult RegistrarEstacionamiento()
-        {
-            return View();
-        }
-        public IActionResult RegistrarPuesto()
-        {
-            return View();
-        }
-        public IActionResult RegistrarPropiedades()
         {
             return View();
         }
