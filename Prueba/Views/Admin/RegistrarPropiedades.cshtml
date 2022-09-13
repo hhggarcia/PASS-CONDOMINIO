@@ -20,7 +20,8 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form class="form form-horizontal">
+                    <form class="form form-horizontal"
+                    asp-action="RegistrarPropiedadesPost">
                         <div class="form-body">
                             <div class="row">
 
@@ -107,9 +108,7 @@
 
                                 <div class="col-12 d-flex justify-content-end">
                                     <button type="submit"
-                                            class="btn btn-primary me-1 mb-1"
-                                            asp-controller="Admin"
-                                            asp-action="CrearCondominio">
+                                            class="btn btn-primary me-1 mb-1">
                                         Siguiente
                                     </button>
                                     <button type="submit"

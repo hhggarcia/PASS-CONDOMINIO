@@ -1,4 +1,5 @@
-﻿
+﻿@model NuevoCondominio
+
 @{
     ViewData["Title"] = "Registro de Estacionamiento";
 }
@@ -20,9 +21,14 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form class="form form-horizontal">
+                    <form class="form form-horizontal"
+                          asp-action="RegistrarEstacionamientoPost"
+                          enctype="multipart/form-data"
+                          method="post">
                         <div class="form-body">
                             <div class="row">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
                                 <!-- Nombre -->
                                 <div class="col-md-6 col-12">
@@ -32,44 +38,50 @@
                                             <input type="text"
                                                    class="form-control"
                                                    placeholder="Nombre"
-                                                   id="first-name-icon" />
+                                                   id="first-name-icon"
+                                                   asp-for="Estacionamiento.Nombre" />
                                             <div class="form-control-icon">
                                                 <i class="bi bi-person"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
 
                                 <!-- Cantidad de Puestos -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left">
-                                        <label for="last-name-column">Cantidad de Puestos</label>
-                                        <div class="position-relative">
-                                            <input type="number"
-                                                   class="form-control"
-                                                   placeholder="Referencia"
-                                                   id="first-name-icon"
-                                                   required />
-                                            <div class="form-control-icon">
-                                                <i class="bi bi-credit-card"></i>
-                                            </div>
-                                        </div>
-                                    </div>
+                                @*<div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Cantidad de Puestos</label>
+                                <div class="position-relative">
+                                <input type="number"
+                                class="form-control"
+                                placeholder="Referencia"
+                                id="first-name-icon"
+                                required />
+                                <div class="form-control-icon">
+                                <i class="bi bi-credit-card"></i>
                                 </div>
-                               
+                                </div>
+                                </div>
+                                </div>*@
+
+                                <div class="col-md-6 col-12">
+                                    <!-- File uploader with validation -->
+                                    <p>Cargar Puestos de Estacionamiento</p>
+                                    <input asp-for="ExcelPuestos_Est"
+                                           type="file"
+                                           class="filepond"
+                                           required />
+                                </div>
 
                                 <div class="col-12 d-flex justify-content-end">
                                     <button type="submit"
-                                            class="btn btn-primary me-1 mb-1"
-                                            asp-controller="Admin"
-                                            asp-action="RegistrarPuesto">
+                                            class="btn btn-primary me-1 mb-1">
                                         Siguiente
                                     </button>
-                                    <button type="submit"
-                                            class="btn btn-primary me-1 mb-1"
+                                    <button class="btn btn-primary me-1 mb-1"
                                             asp-controller="Admin"
-                                            asp-action="RegistroCondominio">
+                                            asp-action="Edificios">
                                         Volver
                                     </button>
                                 </div>

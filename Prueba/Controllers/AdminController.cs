@@ -14,7 +14,7 @@ using Prueba.Utils;
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
-
+     
     public class AdminController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -48,6 +48,13 @@ namespace Prueba.Controllers
          * enviar correo al finalizar los la creacion del condominio
          */
 
+        /*METODO PARA MOSTRAR LOS CONDOMINIOS
+         * 
+         */
+        public IActionResult Edificios()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             var users = _unitOfWork.User.GetUsers();
@@ -146,22 +153,18 @@ namespace Prueba.Controllers
         {
             //Extraer del excel los usuario
             var usuarios = _manageExcel.ExcelUsuarios(modelo.ExcelPropietarios);
+
             //verificar si el admin esta existe o no 
 
             //LLENAR INFORMACION DE LOS SELECTS EN INMUEBLES
             IQueryable<Zona> zonas = from z in _context.Zonas
                                      select z;
-
             IQueryable<Parroquia> parroquias = from p in _context.Parroquias
                                                select p;
-
             IQueryable<Municipio> municipios = from m in _context.Municipios
                                                select m;
-
-
             IQueryable<Estado> estados = from e in _context.Estados
                                          select e;
-
             IQueryable<Pais> pais = from p in _context.Pais
                                     select p;
 
@@ -192,23 +195,44 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
+        [HttpPost]
+        public IActionResult RegistroInmueblePost(NuevoCondominio modelo)
+        {
+
+            return View("RegistrarEstacionamiento", modelo);
+        }
+
+        [HttpGet]
         public IActionResult RegistrarEstacionamiento(NuevoCondominio modelo)
         {
             return View(modelo);
         }
-        public IActionResult RegistrarPuesto()
+        [HttpPost]
+        public IActionResult RegistrarEstacionamientoPost(NuevoCondominio modelo)
         {
-            return View();
+            var puestos = _manageExcel.ExcelPuestos_Est(modelo.ExcelPuestos_Est);
+
+            return View("RegistrarPropiedades", modelo);
         }
+
         [HttpGet]
-        public IActionResult RegistrarPropiedades()
+        public IActionResult RegistrarPropiedades(NuevoCondominio modelo)
+        {
+            return View(modelo);
+        }
+        [HttpPost]
+        public IActionResult RegistrarPropiedadesPost(NuevoCondominio modelo)
+        {
+            return View("CrearCondominio", modelo);
+        }
+        public IActionResult CrearCondominio()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult RegistrarPropiedades2()
+        public IActionResult CrearCondominioPost()
         {
-            return View();
+            return View("Edificios");
         }
 
 
@@ -232,14 +256,6 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        public IActionResult Edificio()
-        {
-            return View();
-        }
-        public IActionResult CrearCondominio()
-        {
-            return View();
-        }
         public IActionResult LibroDiario()
         {
             return View();
@@ -252,5 +268,23 @@ namespace Prueba.Controllers
         {
             return View();
         }
+
+        private ApplicationUser CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<ApplicationUser>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+            }
+        }
+
+
+
+
     }
 }
