@@ -13,7 +13,7 @@ namespace Prueba.Utils
 {
     public interface IManageExcel
     {
-        List<PuestoE> ExcelPuestos_Est(IFormFile archivoExcel);
+        //List<PuestoE> ExcelPuestos_Est(IFormFile archivoExcel);
         List<Usuario> ExcelUsuarios(IFormFile archivoExcel);
     }
     public class ManageExcel: IManageExcel
@@ -93,8 +93,7 @@ namespace Prueba.Utils
                 listaPuestos_Est.Add(new PuestoE
                 {
                     Codigo = fila.GetCell(0).ToString(),
-                    Alicuota = fila.GetCell(1).ToString()
-                    //generar claves alaetorias
+                    Alicuota = Convert.ToInt32(fila.GetCell(1))
                 });
             }
 

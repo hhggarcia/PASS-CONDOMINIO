@@ -1,28 +1,27 @@
 ﻿@model NuevoCondominio
 @{
-    ViewData["Title"] = "Registrar Propiedades";
-    var numProp = Convert.ToInt32(ViewBag.numPropInmueble);
-    List<Propiedad> listapropiedades = new List<Propiedad>(numProp);
-    for (int i = 0; i < numProp; i++)
+    ViewData["Title"] = "Registrar Puesto";
+    var numP = Convert.ToInt32(TempData.Peek("numPuestos"));
+    List<PuestoE> listapuestos = new List<PuestoE>(numP);
+    for (int i = 0; i < numP; i++)
     {
-        listapropiedades.Add(new Propiedad
+        listapuestos.Add(new PuestoE
                 {
+                    IdPuestoE = 0,
+                    IdEstacionamiento = 0,
                     IdPropiedad = 0,
-                    IdInmueble = 0,
-                    IdUsuario = "",
                     Codigo = "",
-                    Dimensiones = 0,
                     Alicuota = 0
                 });
     }
 
-    Model.Propiedades = listapropiedades;
+    Model.Puesto_Est = listapuestos;
 }
 
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Registrar Propiedades</h1>
+        <h1 class="h3 mb-0 text-gray-800">Registrar Puesto</h1>
     </div>
 
     <!-- Content Row -->
@@ -37,10 +36,9 @@
                 </div>
                 <div class="card-body">
                     <form class="form form-horizontal"
-                          asp-action="RegistrarPropiedadesPost"
-                          method="post">
-
-                        @for (int i = 0; i < numProp; i++)
+                    asp-action="RegistrarPuestosEPost"
+                    method="post">
+                        @for (int i = 0; i < numP; i++)
                         {
                             <div class="form-body">
                                 <div class="row">
@@ -53,28 +51,10 @@
                                                 <input type="text"
                                                    class="form-control"
                                                    placeholder="Código"
-                                                   id="first-name-icon"
-                                                   asp-for="Propiedades[i].Codigo" />
+                                                   id="first-name-icon" 
+                                                   asp-for="Puesto_Est[i].Codigo"/>
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Tamaño -->
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left">
-                                            <label for="last-name-column">Tamaño</label>
-                                            <div class="position-relative">
-                                                <input type="number"
-                                                   class="form-control"
-                                                   placeholder="Tamaño"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Propiedades[i].Dimensiones" />
-                                                <div class="form-control-icon">
-                                                    <i class="bi bi-credit-card"></i>
                                                 </div>
                                             </div>
                                         </div>
@@ -89,8 +69,8 @@
                                                    class="form-control"
                                                    placeholder="Alicuaota"
                                                    id="first-name-icon"
-                                                   required
-                                                   asp-for="Propiedades[i].Alicuota" />
+                                                   required 
+                                                   asp-for="Puesto_Est[i].Alicuota"/>
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-credit-card"></i>
                                                 </div>
@@ -98,37 +78,35 @@
                                         </div>
                                     </div>
 
-                                    <!-- Propietario -->
+                                    <!-- Propiedad -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Propietario</label>
+                                            <label for="last-name-column">Propiedad</label>
                                             <div class="position-relative">
                                                 <fieldset class="form-group">
                                                     <select class="form-select" id="basicSelect"
-                                                        asp-for="Propiedades[i].IdUsuario" asp-items="Model.Propietarios">
-                                                        <option value="">Asigne un Propietario</option>>
+                                                        asp-for="Puesto_Est[i].IdPropiedad" asp-items="Model.SelectPropiedades">
+                                                        <option value="">Asigne una Propiedad</option>>
                                                     </select>
                                                 </fieldset>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
                         }
-                        <div class="col-12 d-flex justify-content-end">
+
+                        <div class="col-12 d-flex justify-content-start">
                             <button type="submit"
                                     class="btn btn-primary me-1 mb-1">
-                                Siguiente
+                                Crear
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
-
     </div>
     <!-- Content Row -->
 </div>

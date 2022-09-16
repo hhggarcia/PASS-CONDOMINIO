@@ -22,7 +22,8 @@
                 </div>
                 <div class="card-body">
                     <form class="form form-horizontal"
-                          asp-action="RegistroInmueblePost">
+                          asp-action="RegistroInmueblePost"
+                          method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div class="form-body">
@@ -129,13 +130,31 @@
                                     </div>
                                 </div>
 
+                                <!-- Num de propiedades -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Tamaño</label>
+                                        <div class="position-relative">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   placeholder="Numero de propiedades"
+                                                   id="first-name-icon"
+                                                   asp-for="Inmueble.TotalPropiedad"
+                                                   required />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="col-12 d-flex justify-content-end">
                                     <button type="submit"
                                             class="btn btn-primary me-1 mb-1">
                                         Siguiente
                                     </button>
-
                                 </div>
+
                             </div>
                         </div>
                     </form>

@@ -18,7 +18,6 @@ namespace Prueba.Context
         }
 
         public virtual DbSet<Activo> Activos { get; set; } = null!;
-        public virtual DbSet<Administrador> Administradors { get; set; } = null!;
         public virtual DbSet<AreaComun> AreaComuns { get; set; } = null!;
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; } = null!;
         public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; } = null!;
@@ -39,7 +38,6 @@ namespace Prueba.Context
         public virtual DbSet<Gasto> Gastos { get; set; } = null!;
         public virtual DbSet<Ingreso> Ingresos { get; set; } = null!;
         public virtual DbSet<Inmueble> Inmuebles { get; set; } = null!;
-        public virtual DbSet<Junta> Junta { get; set; } = null!;
         public virtual DbSet<LdiarioGlobal> LdiarioGlobals { get; set; } = null!;
         public virtual DbSet<Municipio> Municipios { get; set; } = null!;
         public virtual DbSet<PagoEmitido> PagoEmitidos { get; set; } = null!;
@@ -48,9 +46,7 @@ namespace Prueba.Context
         public virtual DbSet<Parroquia> Parroquias { get; set; } = null!;
         public virtual DbSet<Pasivo> Pasivos { get; set; } = null!;
         public virtual DbSet<Patrimonio> Patrimonios { get; set; } = null!;
-        public virtual DbSet<PersonaJuntum> PersonaJunta { get; set; } = null!;
         public virtual DbSet<Propiedad> Propiedads { get; set; } = null!;
-        public virtual DbSet<Propietario> Propietarios { get; set; } = null!;
         public virtual DbSet<Proveedor> Proveedors { get; set; } = null!;
         public virtual DbSet<PuestoE> PuestoEs { get; set; } = null!;
         public virtual DbSet<ReciboCobro> ReciboCobros { get; set; } = null!;
@@ -66,7 +62,7 @@ namespace Prueba.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;Trusted_Connection=True;User ID=sa;Password=Pass123456;");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;Trusted_Connection=True;");
             }
         }
 
@@ -79,17 +75,6 @@ namespace Prueba.Context
                 entity.Property(e => e.IdActivo).HasColumnName("id_activo");
 
                 entity.Property(e => e.IdAsiento).HasColumnName("id_asiento");
-            });
-
-            modelBuilder.Entity<Administrador>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("Administrador");
-
-                entity.Property(e => e.IdAdmin).HasColumnName("id_admin");
-
-                entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             });
 
             modelBuilder.Entity<AreaComun>(entity =>
@@ -294,7 +279,9 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdAdministrador).HasColumnName("id_administrador");
 
-                entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(50)
+                    .HasColumnName("nombre");
 
                 entity.Property(e => e.Rif)
                     .HasMaxLength(20)
@@ -309,12 +296,6 @@ namespace Prueba.Context
                     .HasForeignKey<Condominio>(d => d.IdAdministrador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Condominio_AspNetUsers");
-
-                entity.HasOne(d => d.IdInmuebleNavigation)
-                    .WithMany(p => p.Condominios)
-                    .HasForeignKey(d => d.IdInmueble)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Condominio_Inmueble");
             });
 
             modelBuilder.Entity<Empleado>(entity =>
@@ -511,6 +492,8 @@ namespace Prueba.Context
                     .ValueGeneratedOnAdd()
                     .HasColumnName("id_inmueble");
 
+                entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
+
                 entity.Property(e => e.IdZona).HasColumnName("id_zona");
 
                 entity.Property(e => e.Nombre)
@@ -519,28 +502,17 @@ namespace Prueba.Context
 
                 entity.Property(e => e.TotalPropiedad).HasColumnName("total_propiedad");
 
+                entity.HasOne(d => d.IdCondominioNavigation)
+                    .WithMany(p => p.Inmuebles)
+                    .HasForeignKey(d => d.IdCondominio)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Inmueble_Condominio");
+
                 entity.HasOne(d => d.IdInmuebleNavigation)
                     .WithOne(p => p.Inmueble)
                     .HasForeignKey<Inmueble>(d => d.IdInmueble)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Inmueble_Zonas");
-            });
-
-            modelBuilder.Entity<Junta>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.Property(e => e.Fin)
-                    .HasColumnType("date")
-                    .HasColumnName("fin");
-
-                entity.Property(e => e.IdJunta).HasColumnName("id_junta");
-
-                entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-
-                entity.Property(e => e.Inicio)
-                    .HasColumnType("date")
-                    .HasColumnName("inicio");
             });
 
             modelBuilder.Entity<LdiarioGlobal>(entity =>
@@ -713,23 +685,6 @@ namespace Prueba.Context
                 entity.Property(e => e.IdPatrimonio).HasColumnName("id_patrimonio");
             });
 
-            modelBuilder.Entity<PersonaJuntum>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("Persona_Junta");
-
-                entity.Property(e => e.Cargo)
-                    .HasMaxLength(30)
-                    .HasColumnName("cargo");
-
-                entity.Property(e => e.IdJunta).HasColumnName("id_junta");
-
-                entity.Property(e => e.IdPJunta).HasColumnName("id_pJunta");
-
-                entity.Property(e => e.IdPropietario).HasColumnName("id_propietario");
-            });
-
             modelBuilder.Entity<Propiedad>(entity =>
             {
                 entity.HasKey(e => e.IdPropiedad);
@@ -781,27 +736,6 @@ namespace Prueba.Context
                     .HasConstraintName("FK_Propiedad_AspNetUsers");
             });
 
-            modelBuilder.Entity<Propietario>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToTable("Propietario");
-
-                entity.Property(e => e.Deuda)
-                    .HasColumnType("money")
-                    .HasColumnName("deuda");
-
-                entity.Property(e => e.IdPropietario).HasColumnName("id_propietario");
-
-                entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-
-                entity.Property(e => e.Saldo)
-                    .HasColumnType("money")
-                    .HasColumnName("saldo");
-
-                entity.Property(e => e.Solvencia).HasColumnName("solvencia");
-            });
-
             modelBuilder.Entity<Proveedor>(entity =>
             {
                 entity.HasNoKey();
@@ -827,9 +761,10 @@ namespace Prueba.Context
 
             modelBuilder.Entity<PuestoE>(entity =>
             {
-                entity.HasKey(e => e.IdPuestoE);
+                entity.HasKey(e => e.IdPuestoE)
+                    .HasName("PK_Puesto_E");
 
-                entity.ToTable("Puesto_E");
+                entity.ToTable("PuestoE");
 
                 entity.Property(e => e.IdPuestoE).HasColumnName("id_puestoE");
 
@@ -846,6 +781,12 @@ namespace Prueba.Context
                     .HasForeignKey(d => d.IdEstacionamiento)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Puesto_E_Estacionamiento");
+
+                entity.HasOne(d => d.IdPropiedadNavigation)
+                    .WithMany(p => p.PuestoEs)
+                    .HasForeignKey(d => d.IdPropiedad)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Puesto_E_Propiedad");
             });
 
             modelBuilder.Entity<ReciboCobro>(entity =>

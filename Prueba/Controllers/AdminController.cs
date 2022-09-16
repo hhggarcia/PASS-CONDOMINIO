@@ -10,17 +10,20 @@ using Prueba.Core.ViewModels;
 using Prueba.Models;
 using Prueba.Services;
 using Prueba.Utils;
+using System.Collections;
+using System.Web;
 
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
-     
+
     public class AdminController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
+        private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailService _serviceEmail;
         private readonly IManageExcel _manageExcel;
         private readonly PruebaContext _context;
@@ -31,15 +34,16 @@ namespace Prueba.Controllers
             IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail,
             IManageExcel manageExcel,
-            PruebaContext dbContext)
+            PruebaContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
+            _emailStore = GetEmailStore();
             _serviceEmail = serviceEmail;
             _manageExcel = manageExcel;
-            _context = dbContext;
+            _context = context;
         }
 
         /* ETIQUETA
@@ -51,7 +55,7 @@ namespace Prueba.Controllers
         /*METODO PARA MOSTRAR LOS CONDOMINIOS
          * 
          */
-        public IActionResult Edificios()
+        public IActionResult Edificio()
         {
             return View();
         }
@@ -144,19 +148,132 @@ namespace Prueba.Controllers
         {
             return View();
         }
+
         /* POST LLENA MODELO
          * PARA CREAR CONDOMINIO
          * INFO DE ADMIN Y LISTA DE PROPIETARIOS
          */
+        /*POR HACER
+         * VALIDAR EXCEL DE ERRORES EN TABLA
+         * MOSTRAR ERRORES
+         * VALIDAR SI LOS USUARIOS YA EXISTEN
+         */
         [HttpPost]
-        public IActionResult RegistrarUsuarios(NuevoCondominio modelo)
+        public async Task<IActionResult> RegistrarUsuarios(NuevoCondominio modelo)
         {
-            //Extraer del excel los usuario
-            var usuarios = _manageExcel.ExcelUsuarios(modelo.ExcelPropietarios);
+            if (ModelState.IsValid)
+            {
+                //Extraer del excel los usuario
+                var usuarios = _manageExcel.ExcelUsuarios(modelo.ExcelPropietarios);
 
-            //verificar si el admin esta existe o no 
+                //CREAR ADMINISTRADOR
+                var user = CreateUser();
+                user.FirstName = modelo.Administrador.FirstName;
+                user.LastName = modelo.Administrador.LastName;
+                await _userStore.SetUserNameAsync(user, modelo.Administrador.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, modelo.Administrador.Email, CancellationToken.None);
+
+                //CREAR
+                var resultAdminCreate = await _userManager.CreateAsync(user, modelo.Administrador.Password);
+                //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
+                if (resultAdminCreate.Succeeded)
+                {
+                    //AGREGAR ROL DE ADMINISTRADOR 
+                    //AddToRoleAsync para añadir un rol (usuario, "Rol")
+                    await _signInManager.UserManager.AddToRoleAsync(user, "Administrador");
+
+                    //GUARDAR EN COOKIE EL ADMINISTRADOR DEL NUEVO CONDOMINIO
+                    TempData["Administrador"] = modelo.Administrador.Email;
+                }
+                else
+                {
+                    foreach (var error in resultAdminCreate.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return View(modelo);
+                }
+
+                //FOR LOOP PARA REGISTRAR A LOS PROPIETARIOS
+                TempData["numPropietarios"] = usuarios.Count().ToString();
+                for (int i = 0; i < usuarios.Count(); i++)
+                {
+                    var userPro = CreateUser();
+                    userPro.FirstName = usuarios[i].FirstName;
+                    userPro.LastName = usuarios[i].LastName;
+                    await _userStore.SetUserNameAsync(userPro, usuarios[i].Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(userPro, usuarios[i].Email, CancellationToken.None);
+
+
+
+                    //CREAR
+                    var resultPropietarioCreate = await _userManager.CreateAsync(userPro, usuarios[i].Password);
+                    //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
+                    if (resultPropietarioCreate.Succeeded)
+                    {
+                        //AGREGAR ROL DE Propietario
+                        //AddToRoleAsync para añadir un rol (usuario, "Rol")
+                        await _signInManager.UserManager.AddToRoleAsync(userPro, "Propietario");
+
+                        //agregar a Temp propietarios
+                        //guardar en TempData la lista de propietarios
+                        string nombreTempData = "Propietarios" + i.ToString();
+                        TempData[nombreTempData] = userPro.Email;
+                    }
+                    else
+                    {
+                        foreach (var error in resultPropietarioCreate.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        return View(modelo);
+                    }
+                }
+
+                TempData.Keep();
+
+                return View("CrearCondominio", modelo);
+            }
+
+            return View(modelo);
+
+        }
+
+        [HttpGet]
+        public IActionResult CrearCondominio(NuevoCondominio modelo)
+        {
+            return View(modelo);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CrearCondominioPost(NuevoCondominio modelo)
+        {
+
+            //extraer adminstrador email de tempdata
+            string emailAdmin = TempData.Peek("Administrador").ToString();
+            //buscar administrador por email
+            ApplicationUser admin = await _signInManager.UserManager.FindByEmailAsync(emailAdmin);
+            var condominio = new Condominio
+            {
+                Nombre = modelo.Condominio.Nombre,
+                IdAdministrador = admin.Id,
+                Rif = modelo.Condominio.Rif,
+                Tipo = modelo.Condominio.Tipo
+
+            };
+
+            await _context.Condominios.AddAsync(condominio);
+
+            await _context.SaveChangesAsync();
 
             //LLENAR INFORMACION DE LOS SELECTS EN INMUEBLES
+            var condominio2 = from c in _context.Condominios
+                              where c.Rif == condominio.Rif
+                              select c;
+
+            TempData["IdCondominio"] = condominio2.FirstOrDefault().Rif;
+
             IQueryable<Zona> zonas = from z in _context.Zonas
                                      select z;
             IQueryable<Parroquia> parroquias = from p in _context.Parroquias
@@ -183,10 +300,12 @@ namespace Prueba.Controllers
                 Parroquias = parroquiaModel,
                 Zonas = zonaModel
             };
-
             modelo.Ubicacion = ubicaciones;
 
+            TempData.Keep();
+
             return View("RegistroInmueble", modelo);
+
         }
 
         [HttpGet]
@@ -194,10 +313,96 @@ namespace Prueba.Controllers
         {
             return View(modelo);
         }
-
         [HttpPost]
-        public IActionResult RegistroInmueblePost(NuevoCondominio modelo)
+        public async Task<IActionResult> RegistroInmueblePost(NuevoCondominio modelo)
         {
+            //Recuperar ID del condominio
+
+            var condominio = from c in _context.Condominios
+                             where c.Rif == TempData.Peek("IdCondominio").ToString()
+                             select c;
+
+            //LLENAR SELECT DE USUARIOS PARA ASIGNAR PROPIEDADES
+            IList<ApplicationUser> usuarios = new List<ApplicationUser>();
+
+            for (int i = 0; i < Convert.ToInt32(TempData["numPropietarios"]); i++)
+            {
+                string nombreTempData = "Propietarios" + i.ToString();
+                string emailProp = TempData.Peek(nombreTempData).ToString();
+
+                ApplicationUser prop = await _signInManager.UserManager.FindByEmailAsync(emailProp);
+
+                if (prop != null)
+                {
+                    usuarios.Add(prop);
+                }
+            }
+
+            var propietariosModel = usuarios.Select(u => new SelectListItem(u.Email, u.Id));
+
+            modelo.Propietarios = propietariosModel;
+            //// REGISTRAR EL INMUEBLE
+
+            Inmueble inmueble = new Inmueble
+            {
+                IdCondominio = condominio.FirstOrDefault().IdCondominio,
+                IdZona = modelo.Ubicacion.IdZona,
+                Nombre = modelo.Inmueble.Nombre,
+                TotalPropiedad = modelo.Inmueble.TotalPropiedad
+            };
+
+            using (var dbcontext = new PruebaContext())
+            {
+                await dbcontext.Inmuebles.AddAsync(inmueble);
+                await dbcontext.SaveChangesAsync();
+
+            }
+
+            //GUARDAR EN TEMPDATA EL ID DEL INMUEBLE CREADO
+            TempData["IdInmueble"] = inmueble.IdInmueble.ToString();
+            ViewBag.numPropInmueble = inmueble.TotalPropiedad.ToString();
+
+
+            TempData.Keep();
+
+
+            return View("RegistrarPropiedades", modelo);
+
+        }
+
+        [HttpGet]
+        public IActionResult RegistrarPropiedades(NuevoCondominio modelo)
+        {
+            return View(modelo);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegistrarPropiedadesPost(NuevoCondominio modelo)
+        {
+            //RECUPERAR ID DEL INMUEBLE
+            var idInmueble = Convert.ToInt32(TempData.Peek("IdInmueble").ToString());
+
+            //REGISTRAR PROPIEDADES EN BD
+            foreach (var propiedad in modelo.Propiedades)
+            {
+                propiedad.IdInmueble = idInmueble;
+
+                await _context.Propiedads.AddAsync(propiedad);
+
+            }
+
+            await _context.SaveChangesAsync();
+
+            //  GUARDAR PROPIEDADES PARA SABER SI SE CREARA UN ESTACIONAMIENTO Y ASIGNAR LOS PUESTOS
+            TempData["numPropiedades"] = modelo.Propiedades.Count().ToString();
+
+            for (int i = 0; i < modelo.Propiedades.Count(); i++)
+            {
+                string nombreTempData = "Propiedad" + i.ToString();
+
+                TempData[nombreTempData] = modelo.Propiedades[i].IdPropiedad.ToString();
+            }
+
+            TempData.Keep();
 
             return View("RegistrarEstacionamiento", modelo);
         }
@@ -208,33 +413,73 @@ namespace Prueba.Controllers
             return View(modelo);
         }
         [HttpPost]
-        public IActionResult RegistrarEstacionamientoPost(NuevoCondominio modelo)
+        public async Task<IActionResult> RegistrarEstacionamientoPost(NuevoCondominio modelo)
         {
-            var puestos = _manageExcel.ExcelPuestos_Est(modelo.ExcelPuestos_Est);
+            var idInmueble = Convert.ToInt32(TempData.Peek("IdInmueble").ToString());
 
-            return View("RegistrarPropiedades", modelo);
+            modelo.Estacionamiento.IdInmueble = idInmueble;
+
+            //REGISTRAR ESTACIONAMIENTO CON EL ID DEL INMUEBLE
+
+            using (var dbcontext = new PruebaContext())
+            {
+                await dbcontext.Estacionamientos.AddAsync(modelo.Estacionamiento);
+                await dbcontext.SaveChangesAsync();
+
+            }
+            //GUARDAR ID DE ESTACIONAMIENTO EN TEMP DATA
+            TempData["idEstacionamiento"] = modelo.Estacionamiento.IdEstacionamiento.ToString();
+            TempData["numPuestos"] = modelo.Estacionamiento.NumPuestos.ToString();
+
+            //LLENAR SELECT DE PROPIEDADES
+            IList<Propiedad> propiedadesDb = new List<Propiedad>();
+
+            for (int i = 0; i < Convert.ToInt32(TempData.Peek("numPropiedades")); i++)
+            {
+                string nombreTempData = "Propiedad" + i.ToString();
+
+                var idPropiedad = Convert.ToInt32(TempData.Peek(nombreTempData));
+
+                var propiedad = await _context.Propiedads.FindAsync(idPropiedad);
+
+                if (propiedad != null)
+                {
+                    propiedadesDb.Add(propiedad);
+                }
+            }
+
+            var propiedadesModel = propiedadesDb.Select(p => new SelectListItem(p.Codigo, p.IdPropiedad.ToString()));
+
+            modelo.SelectPropiedades = propiedadesModel;
+
+            return View("RegistrarPuestosE", modelo);
         }
 
         [HttpGet]
-        public IActionResult RegistrarPropiedades(NuevoCondominio modelo)
+        public IActionResult RegistrarPuestosE(NuevoCondominio modelo)
         {
             return View(modelo);
         }
-        [HttpPost]
-        public IActionResult RegistrarPropiedadesPost(NuevoCondominio modelo)
-        {
-            return View("CrearCondominio", modelo);
-        }
-        public IActionResult CrearCondominio()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult CrearCondominioPost()
-        {
-            return View("Edificios");
-        }
 
+        public async Task<IActionResult> RegistrarPuestosEPost(NuevoCondominio modelo)
+        {
+            
+            //RECUPERAR ID DEL ESTACIONAMIENTO
+            var idEstacionamiento = Convert.ToInt32(TempData.Peek("IdEstacionamiento").ToString());
+
+            //REGISTRAR PUESTOS EN BD
+            foreach (var puesto in modelo.Puesto_Est)
+            {
+                puesto.IdEstacionamiento = idEstacionamiento;
+
+                await _context.PuestoEs.AddAsync(puesto);
+
+            }
+
+            await _context.SaveChangesAsync();
+
+            return View("Edificio");
+        }
 
         public IActionResult Dashboard()
         {
@@ -283,7 +528,14 @@ namespace Prueba.Controllers
             }
         }
 
-
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
 
 
     }
