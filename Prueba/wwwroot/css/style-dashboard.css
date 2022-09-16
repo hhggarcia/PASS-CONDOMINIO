@@ -11210,7 +11210,7 @@ a:focus {
 }
 
 .text-gray-600 {
-    color: #858796 !important;
+    color: #212529 !important;
 }
 
 .text-gray-700 {
@@ -13174,3 +13174,38 @@ button, input, optgroup, select, textarea {
     cursor: pointer;
     outline: inherit;
 }
+img.img-error {
+    padding: 3rem 0;
+    width: 30%;
+}
+#error {
+    background-color: #ebf3ff;
+    padding: 5rem 0;
+}
+
+.divider {
+    display: block;
+    text-align: center;
+    overflow: hidden;
+    margin: 1rem 0;
+
+}
+    .divider .divider-text {
+        position: relative;
+        display: inline-block;
+        padding: 0 1rem;
+        background-color: #fff;
+    }
+        .divider .divider-text:after, .divider .divider-text:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 9999px;
+            border-top: 1px solid #94b6f6;
+        }
+        .divider .divider-text:after {
+            left: 100%;
+        }
+        .divider .divider-text:before {
+            right: 100%;
+        }

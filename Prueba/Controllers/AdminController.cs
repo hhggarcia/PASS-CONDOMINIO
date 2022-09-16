@@ -181,5 +181,17 @@ namespace Prueba.Controllers
         {
             return View();
         }
+        public IActionResult Condominio()
+        {
+            return View();
+        }
+        public IActionResult Inmueble()
+        {
+            return View();
+        }
+        public IActionResult AccesoDenegado()
+        {
+            return View();
+        }
     }
 }
