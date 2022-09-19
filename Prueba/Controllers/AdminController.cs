@@ -15,7 +15,7 @@ using System.Web;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "RequireAdmin")]
+    [Authorize(Policy = "RequireSuperAdmin")]
 
     public class AdminController : Controller
     {
@@ -52,13 +52,11 @@ namespace Prueba.Controllers
          * enviar correo al finalizar los la creacion del condominio
          */
 
-        /*METODO PARA MOSTRAR LOS CONDOMINIOS
-         * 
-         */
-        public IActionResult Edificio()
+        public IActionResult Dashboard()
         {
             return View();
         }
+
         public IActionResult Index()
         {
             var users = _unitOfWork.User.GetUsers();
@@ -143,7 +141,7 @@ namespace Prueba.Controllers
             return RedirectToAction("Edit", new { id = user.Id });
         }
 
-        public async  Task<IActionResult> Condominio()
+        public async  Task<IActionResult> IndexCondominios()
         {
             var condominios = from c in _context.Condominios
                               select c;
@@ -493,13 +491,10 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
 
-            return View("Condominio");
+            return View("IndexCondominios");
         }
 
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
+
         public IActionResult PerfilUsuario()
         {
             return View();
@@ -508,26 +503,7 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        public IActionResult RegistrarPagos()
-        {
-            return View();
-        }
-        public IActionResult PagosRecibidos()
-        {
-            return View();
-        }
-        public IActionResult LibroDiario()
-        {
-            return View();
-        }
-        public IActionResult Deudores()
-        {
-            return View();
-        }
-        public IActionResult RelaciondeGastos()
-        {
-            return View();
-        }
+        
 
         private ApplicationUser CreateUser()
         {

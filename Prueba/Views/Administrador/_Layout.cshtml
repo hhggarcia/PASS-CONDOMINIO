@@ -84,13 +84,13 @@
 
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item active">
-                    <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">
+                    <a class="nav-link" asp-controller="Admin" asp-action="Index">
                         <i class="far fa-fw fa-tachometer"></i>
                         <span>Inicio</span>
                     </a>
                 </li>
 
-                <!-- Divider -->
+                @*<!-- Divider -->
                 <hr class="sidebar-divider" />
 
                 <!-- Heading -->
@@ -111,13 +111,13 @@
                         <i class="fas fa-fw bi bi-people"></i>
                         <span>Gestión de Usuarios</span>
                     </a>
-                    @*<a class="nav-link" asp-controller="Admin" asp-action="CrearUsuario">
+                    <a class="nav-link" asp-controller="Admin" asp-action="CrearUsuario">
                         <i class="fas fa-fw bi bi-people"></i>
                         <span>Crear Usuarios</span>
-                    </a>*@
-                </li>
+                    </a>
+                </li>*@
 
-               @* <!-- Pagos -->
+                <!-- pagos -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
@@ -126,22 +126,22 @@
                        aria-expanded="true"
                        aria-controls="collapse5">
                         <i class="fas fa-fw fa-dollar-sign"></i>
-                        <span>Pagos</span>
+                        <span>pagos</span>
                     </a>
                     <div id="collapse5"
                          class="collapse"
                          aria-labelledby="heading5"
-                         data-parent="#accordionSidebar">
+                         data-parent="#accordionsidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Pagos:</h6>
-                            <a class="collapse-item" asp-controller="Admin" asp-action="RegistrarPagos">Registrar Pagos</a>
-                            <a class="collapse-item" asp-controller="Admin" asp-action="PagosRecibidos">Pagos Recibidos</a>
+                            <h6 class="collapse-header">pagos:</h6>
+                            <a class="collapse-item" asp-controller="admin" asp-action="registrarpagos">registrar pagos</a>
+                            <a class="collapse-item" asp-controller="admin" asp-action="pagosrecibidos">pagos recibidos</a>
                         </div>
                     </div>
                 </li>
 
 
-                <!-- Gestion de Contaduria -->
+                <!-- gestion de contabilidad -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
@@ -150,65 +150,65 @@
                        aria-expanded="true"
                        aria-controls="collapse7">
                         <i class="fas fa-fw bi bi-clipboard-data"></i>
-                        <span>Gestión de Contaduria</span>
+                        <span>Gestión de contabilidad</span>
                     </a>
                     <div id="collapse7"
                          class="collapse"
                          aria-labelledby="heading7"
-                         data-parent="#accordionSidebar">
+                         data-parent="#accordionsidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Contaduria:</h6>
-                            <a class="collapse-item" asp-controller="Admin" asp-action="RelaciondeGastos">Crear Relación de Gastos</a>
-                            <a class="collapse-item" href="#">Cuentas Contables</a>
-                            <a class="collapse-item" asp-controller="Admin" asp-action="LibroDiario">Libro Diario</a>
-                            <a class="collapse-item" asp-controller="Admin" asp-action="Deudores">Deudores</a>
+                            <h6 class="collapse-header">contaduria:</h6>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="relaciondegastos">crear relación de gastos</a>
+                            <a class="collapse-item" href="#">cuentas contables</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="librodiario">libro diario</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="deudores">deudores</a>
                         </div>
                     </div>
                 </li>
 
-                <!-- Reportes -->
+                <!-- reportes -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
-                       data-target="#collapseUtilities"
+                       data-target="#collapseutilities"
                        aria-expanded="true"
-                       aria-controls="collapseUtilities">
+                       aria-controls="collapseutilities">
                         <i class="bi bi-file-earmark-ruled"></i>
-                        <span>Reportes</span>
+                        <span>reportes</span>
                     </a>
-                    <div id="collapseUtilities"
+                    <div id="collapseutilities"
                          class="collapse"
-                         aria-labelledby="headingUtilities"
-                         data-parent="#accordionSidebar">
+                         aria-labelledby="headingutilities"
+                         data-parent="#accordionsidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Reportes:</h6>
-                            <a class="collapse-item" href="#">Estado Resultado</a>
-                            <a class="collapse-item" href="#">Balance de Comporobación</a>
-                            <a class="collapse-item" href="#">Estado Situación</a>
+                            <h6 class="collapse-header">reportes:</h6>
+                            <a class="collapse-item" href="#">estado resultado</a>
+                            <a class="collapse-item" href="#">balance de comporobación</a>
+                            <a class="collapse-item" href="#">estado situación</a>
                         </div>
                     </div>
                 </li>
 
-                <!-- Reservaciones -->
+                @*<!-- reservaciones -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
                        data-target="#collapse8"
                        aria-expanded="true"
-                       aria-controls="collapseUtilities">
+                       aria-controls="collapseutilities">
                         <i class="bi bi-journal-bookmark"></i>
-                        <span>Reservaciones</span>
+                        <span>reservaciones</span>
                     </a>
                     <div id="collapse8"
                          class="collapse"
-                         aria-labelledby="headingUtilities"
-                         data-parent="#accordionSidebar">
+                         aria-labelledby="headingutilities"
+                         data-parent="#accordionsidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Reservaciones:</h6>
-                            <a class="collapse-item" href="#">Crear Reservaciones</a>
-                            <a class="collapse-item" href="#">Reservaciones Creadas</a>
+                            <h6 class="collapse-header">reservaciones:</h6>
+                            <a class="collapse-item" href="#">crear reservaciones</a>
+                            <a class="collapse-item" href="#">reservaciones creadas</a>
                         </div>
                     </div>
                 </li>*@

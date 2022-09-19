@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "RequireAdmin")]
+    [Authorize(Policy = "RequireSuperAdmin")]
 
     public class UserController : Controller
     {

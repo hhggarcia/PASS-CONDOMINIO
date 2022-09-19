@@ -138,30 +138,22 @@ namespace Prueba.Areas.Identity.Pages.Account
 
                         _logger.LogInformation("User logged in.");
 
+                        TempData["idUserLog"] = user.Id;
 
-                        //if (roles.FirstOrDefault() == "SuperAdmin")
-                        //{
 
-                        //    return RedirectToAction("Dashboard", "Admin");
-
-                        //}
-                        //if (roles.FirstOrDefault() == "Administrador")
-                        //{
-                        //    return RedirectToAction("Dashboard", "Admin");
-
-                        //}
-                        //if (roles.FirstOrDefault() == "Propietario")
-                        //{
-
-                        //}
                         switch (roles.FirstOrDefault())
                         {
-                            case "SuperAdmin":
-                                return RedirectToAction("Dashboard", "Admin");
+                            case "Propietarios":
+                                //GUARDAR EN TEMPDATA EL ID DEL PROPIETARIO LOGEADO
+                                return RedirectToAction("DashboardUsuario", "Propietarios");
                             case "Administrador":
+                                //GUARDAR EN TEMPDATA EL ID DEL ADMINISTRADOR LOGEADO
+                                return RedirectToAction("Index", "Administrador");
+                            case "SuperAdmin":
+                                //GUARDAR EN TEMPDATA EL ID DEL SUPERADMIN LOGEADO
                                 return RedirectToAction("Dashboard", "Admin");
                             default:
-                                return RedirectToAction("DashboardUsuario", "Propietarios");
+                                return RedirectToAction("Index", "Home");
                         }
                     }
 
