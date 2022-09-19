@@ -143,6 +143,24 @@ namespace Prueba.Controllers
             return RedirectToAction("Edit", new { id = user.Id });
         }
 
+        public async  Task<IActionResult> Condominio()
+        {
+            var condominios = from c in _context.Condominios
+                              select c;
+
+            foreach (var item in condominios)
+            {
+                var inmuebles = from i in _context.Inmuebles
+                                where item.IdCondominio == i.IdCondominio
+                                select i;
+
+                item.Inmuebles = await inmuebles.ToListAsync();
+            }
+
+            var condominiosModel = await condominios.ToListAsync(); 
+            return View(condominiosModel);
+        }
+
         [HttpGet]
         public IActionResult RegistrarUsuarios()
         {
@@ -268,11 +286,8 @@ namespace Prueba.Controllers
             await _context.SaveChangesAsync();
 
             //LLENAR INFORMACION DE LOS SELECTS EN INMUEBLES
-            var condominio2 = from c in _context.Condominios
-                              where c.Rif == condominio.Rif
-                              select c;
 
-            TempData["IdCondominio"] = condominio2.FirstOrDefault().Rif;
+            TempData["IdCondominio"] = condominio.IdCondominio.ToString();
 
             IQueryable<Zona> zonas = from z in _context.Zonas
                                      select z;
@@ -319,7 +334,7 @@ namespace Prueba.Controllers
             //Recuperar ID del condominio
 
             var condominio = from c in _context.Condominios
-                             where c.Rif == TempData.Peek("IdCondominio").ToString()
+                             where c.IdCondominio == Convert.ToInt32(TempData.Peek("IdCondominio").ToString())
                              select c;
 
             //LLENAR SELECT DE USUARIOS PARA ASIGNAR PROPIEDADES
@@ -478,7 +493,7 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
 
-            return View("Edificio");
+            return View("Condominio");
         }
 
         public IActionResult Dashboard()

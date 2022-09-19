@@ -16,7 +16,7 @@ namespace Prueba.Utils
         //List<PuestoE> ExcelPuestos_Est(IFormFile archivoExcel);
         List<Usuario> ExcelUsuarios(IFormFile archivoExcel);
     }
-    public class ManageExcel: IManageExcel
+    public class ManageExcel : IManageExcel
     {
 
         /*Crear metodo para leer excel y retornar lista de MODELO de Usuarios a los cuales asignar rol de usuarios*/
@@ -49,13 +49,18 @@ namespace Prueba.Utils
 
                 IRow fila = HojaExcel.GetRow(i);
 
-                listaUsuarios.Add(new Usuario
+                if (fila != null)
                 {
-                    FirstName = fila.GetCell(0).ToString(),
-                    LastName = fila.GetCell(1).ToString(),
-                    Email = fila.GetCell(2).ToString()
-                    //generar claves alaetorias
-                });
+                    listaUsuarios.Add(new Usuario
+                    {
+                        FirstName = fila.GetCell(0).ToString(),
+                        LastName = fila.GetCell(1).ToString(),
+                        Email = fila.GetCell(2).ToString()
+                        //generar claves alaetorias
+                    });
+                }
+
+
             }
 
             return listaUsuarios;
