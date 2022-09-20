@@ -1,4 +1,11 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@*
+           For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+@using Microsoft.AspNetCore.Identity
 @using Prueba.Areas.Identity.Data
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -14,7 +21,7 @@
     <link rel="icon" href="~/images/isotipo.png" type="image/x-icon" />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
           rel="stylesheet"
-          type="text/css"/>
+          type="text/css" />
     <link href="~/css/fontawesome-free/css/all.min.css"
           rel="stylesheet"
           type="text/css" />
@@ -66,213 +73,8 @@
     <div class="page">
         <div id="wrapper">
 
-            <!-- Sidebar -->
-            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled"
-                id="accordionSidebar">
-                <!-- Sidebar - Brand -->
-                <a class="sidebar-brand d-flex align-items-center justify-content-center"
-                   href="index.html">
-                    <div class="sidebar-brand-icon rotate-n-15">
-                        <img src="~/images/isotipo-2.png" alt="" />
-                    </div>
-                    <div class="sidebar-brand-text mx-3">
-                        <img src="~/images/logo-2.png" alt="" />
-                    </div>
-                </a>
-
-                <!-- Divider -->
-                <hr class="sidebar-divider my-0" />
-
-                <!-- Nav Item - Dashboard -->
-                <li class="nav-item active">
-                    <a class="nav-link" asp-controller="Admin" asp-action="Index">
-                        <i class="far fa-fw fa-tachometer"></i>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-
-                @*<!-- Divider -->
-                <hr class="sidebar-divider" />
-
-                <!-- Heading -->
-                <div class="sidebar-heading">Menu</div>
 
 
-                <!-- Registro de Condominios -->
-                <li class="nav-item">
-                <a class="nav-link" asp-controller="Admin" asp-action="IndexCondominios">
-                <i class="fas fa-fw bi bi-building"></i>
-                <span>Condominios</span>
-                </a>
-                </li>
-
-                <!-- Crear Usuarios -->
-                <li class="nav-item">
-                <a class="nav-link" asp-controller="Admin" asp-action="Index">
-                <i class="fas fa-fw bi bi-people"></i>
-                <span>Gestión de Usuarios</span>
-                </a>
-                <a class="nav-link" asp-controller="Admin" asp-action="CrearUsuario">
-                <i class="fas fa-fw bi bi-people"></i>
-                <span>Crear Usuarios</span>
-                </a>
-                </li>*@
-
-                <!-- pagos -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapse5"
-                       aria-expanded="true"
-                       aria-controls="collapse5">
-                        <i class="fas fa-fw fa-dollar-sign"></i>
-                        <span>pagos</span>
-                    </a>
-                    <div id="collapse5"
-                         class="collapse"
-                         aria-labelledby="heading5"
-                         data-parent="#accordionsidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">pagos:</h6>
-                            <a class="collapse-item" asp-controller="admin" asp-action="registrarpagos">registrar pagos</a>
-                            <a class="collapse-item" asp-controller="admin" asp-action="pagosrecibidos">pagos recibidos</a>
-                        </div>
-                    </div>
-                </li>
-
-
-                <!-- gestion de contabilidad -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapse7"
-                       aria-expanded="true"
-                       aria-controls="collapse7">
-                        <i class="fas fa-fw bi bi-clipboard-data"></i>
-                        <span>Gestión de contabilidad</span>
-                    </a>
-                    <div id="collapse7"
-                         class="collapse"
-                         aria-labelledby="heading7"
-                         data-parent="#accordionsidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">contaduria:</h6>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="relaciondegastos">crear relación de gastos</a>
-                            <a class="collapse-item" href="#">cuentas contables</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="librodiario">libro diario</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="deudores">deudores</a>
-                        </div>
-                    </div>
-                </li>
-
-                <!-- reportes -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapseutilities"
-                       aria-expanded="true"
-                       aria-controls="collapseutilities">
-                        <i class="bi bi-file-earmark-ruled"></i>
-                        <span>reportes</span>
-                    </a>
-                    <div id="collapseutilities"
-                         class="collapse"
-                         aria-labelledby="headingutilities"
-                         data-parent="#accordionsidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">reportes:</h6>
-                            <a class="collapse-item" href="#">estado resultado</a>
-                            <a class="collapse-item" href="#">balance de comporobación</a>
-                            <a class="collapse-item" href="#">estado situación</a>
-                        </div>
-                    </div>
-                </li>
-
-                @*<!-- reservaciones -->
-                <li class="nav-item">
-                <a class="nav-link collapsed"
-                href="#"
-                data-toggle="collapse"
-                data-target="#collapse8"
-                aria-expanded="true"
-                aria-controls="collapseutilities">
-                <i class="bi bi-journal-bookmark"></i>
-                <span>reservaciones</span>
-                </a>
-                <div id="collapse8"
-                class="collapse"
-                aria-labelledby="headingutilities"
-                data-parent="#accordionsidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">reservaciones:</h6>
-                <a class="collapse-item" href="#">crear reservaciones</a>
-                <a class="collapse-item" href="#">reservaciones creadas</a>
-                </div>
-                </div>
-                </li>*@
-
-                <!-- Divider -->
-                <hr class="sidebar-divider" />
-
-                <!-- Heading -->
-                <div class="sidebar-heading">Addons</div>
-
-                <!-- Nav Item - Pages Collapse Menu -->
-                <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapsePages"
-                       aria-expanded="true"
-                       aria-controls="collapsePages">
-                        <i class="fas fa-fw fa-folder"></i>
-                        <span>Pages</span>
-                    </a>
-                    <div id="collapsePages"
-                         class="collapse"
-                         aria-labelledby="headingPages"
-                         data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Login Screens:</h6>
-                            <a class="collapse-item" href="login.html">Login</a>
-                            <a class="collapse-item" href="register.html">Register</a>
-                            <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                            <div class="collapse-divider"></div>
-                            <h6 class="collapse-header">Other Pages:</h6>
-                            <a class="collapse-item" href="404.html">404 Page</a>
-                            <a class="collapse-item" href="blank.html">Blank Page</a>
-                        </div>
-                    </div>
-                </li>
-
-                <!-- Nav Item - Charts -->
-                <li class="nav-item">
-                    <a class="nav-link" href="charts.html">
-                        <i class="fas fa-fw fa-chart-area"></i>
-                        <span>Charts</span>
-                    </a>
-                </li>
-
-                <!-- Nav Item - Tables -->
-                <li class="nav-item">
-                    <a class="nav-link" href="dashboard-tables.html">
-                        <i class="fas fa-fw fa-table"></i>
-                        <span>Tablas</span>
-                    </a>
-                </li>
-
-                <!-- Divider -->
-                <hr class="sidebar-divider d-none d-md-block" />
-
-                <!-- Sidebar Toggler (Sidebar) -->
-                <div class="text-center d-none d-md-inline">
-                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
-                </div>
-            </ul>
-            <!-- End of Sidebar -->
             <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
                 <!-- Main Content -->
@@ -491,28 +293,28 @@
                             </a>*@
                             <partial name="_LoginPartial" />
                             <!-- Dropdown - User Information -->
-                           @* <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" asp-action="PerfilUsuario">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Perfil
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item"
-                                   href="index.html"
-                                   data-toggle="modal"
-                                   data-target="#logoutModal">
-                                    <i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Cerrar Sesión
-                                </a>
+                            @* <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="userDropdown">
+                            <a class="dropdown-item" asp-action="PerfilUsuario">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Perfil
+                            </a>
+                            <a class="dropdown-item" href="#">
+                            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Settings
+                            </a>
+                            <a class="dropdown-item" href="#">
+                            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Activity Log
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                            href="index.html"
+                            data-toggle="modal"
+                            data-target="#logoutModal">
+                            <i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Cerrar Sesión
+                            </a>
                             </div>
                             </li>*@
                         </ul>

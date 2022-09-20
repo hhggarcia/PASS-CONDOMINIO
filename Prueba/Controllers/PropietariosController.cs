@@ -4,6 +4,10 @@ namespace Prueba.Controllers
 {
     public class PropietariosController : Controller
     {
+        public IActionResult Index()
+        {
+            return View();
+        }
         public IActionResult Historial()
         {
             return View();

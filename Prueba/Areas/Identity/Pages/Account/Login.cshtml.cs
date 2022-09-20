@@ -143,9 +143,9 @@ namespace Prueba.Areas.Identity.Pages.Account
 
                         switch (roles.FirstOrDefault())
                         {
-                            case "Propietarios":
+                            case "Propietario":
                                 //GUARDAR EN TEMPDATA EL ID DEL PROPIETARIO LOGEADO
-                                return RedirectToAction("DashboardUsuario", "Propietarios");
+                                return RedirectToAction("Index", "Propietarios");
                             case "Administrador":
                                 //GUARDAR EN TEMPDATA EL ID DEL ADMINISTRADOR LOGEADO
                                 return RedirectToAction("Index", "Administrador");
