@@ -141,7 +141,7 @@ namespace Prueba.Controllers
             return RedirectToAction("Edit", new { id = user.Id });
         }
 
-        public async  Task<IActionResult> IndexCondominios()
+        public async  Task<IActionResult> Condominio()
         {
             var condominios = from c in _context.Condominios
                               select c;
@@ -491,7 +491,7 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
 
-            return View("IndexCondominios");
+            return View("Condominio");
         }
 
 
