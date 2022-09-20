@@ -503,7 +503,6 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        
 
         private ApplicationUser CreateUser()
         {
