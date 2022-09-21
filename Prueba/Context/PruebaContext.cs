@@ -27,8 +27,10 @@ namespace Prueba.Context
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; } = null!;
         public virtual DbSet<BalanceComprobacion> BalanceComprobacions { get; set; } = null!;
         public virtual DbSet<CambioSueldo> CambioSueldos { get; set; } = null!;
+        public virtual DbSet<Clase> Clases { get; set; } = null!;
         public virtual DbSet<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; } = null!;
         public virtual DbSet<Condominio> Condominios { get; set; } = null!;
+        public virtual DbSet<Cuenta> Cuenta { get; set; } = null!;
         public virtual DbSet<Empleado> Empleados { get; set; } = null!;
         public virtual DbSet<Estacionamiento> Estacionamientos { get; set; } = null!;
         public virtual DbSet<Estado> Estados { get; set; } = null!;
@@ -36,6 +38,7 @@ namespace Prueba.Context
         public virtual DbSet<EstadoSituacion> EstadoSituacions { get; set; } = null!;
         public virtual DbSet<Factura> Facturas { get; set; } = null!;
         public virtual DbSet<Gasto> Gastos { get; set; } = null!;
+        public virtual DbSet<Grupo> Grupos { get; set; } = null!;
         public virtual DbSet<Ingreso> Ingresos { get; set; } = null!;
         public virtual DbSet<Inmueble> Inmuebles { get; set; } = null!;
         public virtual DbSet<LdiarioGlobal> LdiarioGlobals { get; set; } = null!;
@@ -55,6 +58,7 @@ namespace Prueba.Context
         public virtual DbSet<ReferenciasPr> ReferenciasPrs { get; set; } = null!;
         public virtual DbSet<RegistroNomina> RegistroNominas { get; set; } = null!;
         public virtual DbSet<RelacionGasto> RelacionGastos { get; set; } = null!;
+        public virtual DbSet<SubCuenta> SubCuenta { get; set; } = null!;
         public virtual DbSet<Zona> Zonas { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -62,7 +66,7 @@ namespace Prueba.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server= DESKTOP-NF5DL1U\\SQLEXPRESS01; Database= Prueba; Trusted_Connection=True;");
             }
         }
 
@@ -70,11 +74,17 @@ namespace Prueba.Context
         {
             modelBuilder.Entity<Activo>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.IdActivo);
 
                 entity.Property(e => e.IdActivo).HasColumnName("id_activo");
 
                 entity.Property(e => e.IdAsiento).HasColumnName("id_asiento");
+
+                entity.HasOne(d => d.IdAsientoNavigation)
+                    .WithMany(p => p.Activos)
+                    .HasForeignKey(d => d.IdAsiento)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Activos_LDiario_Global");
             });
 
             modelBuilder.Entity<AreaComun>(entity =>
@@ -237,6 +247,15 @@ namespace Prueba.Context
                     .HasColumnName("salario");
             });
 
+            modelBuilder.Entity<Clase>(entity =>
+            {
+                entity.ToTable("Clase");
+
+                entity.Property(e => e.Codigo).HasMaxLength(1);
+
+                entity.Property(e => e.Descripcion).HasMaxLength(10);
+            });
+
             modelBuilder.Entity<CodigoCuentasGlobal>(entity =>
             {
                 entity.HasKey(e => e.IdCodCuenta);
@@ -245,19 +264,15 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
 
-                entity.Property(e => e.Clase).HasColumnName("clase");
-
-                entity.Property(e => e.Cuenta).HasColumnName("cuenta");
-
-                entity.Property(e => e.Description)
-                    .HasMaxLength(40)
-                    .HasColumnName("description");
-
-                entity.Property(e => e.Grupo).HasColumnName("grupo");
+                entity.Property(e => e.IdCodigo).HasColumnName("id_Codigo");
 
                 entity.Property(e => e.IdCondominio).HasColumnName("id_Condominio");
 
-                entity.Property(e => e.Subcuenta).HasColumnName("subcuenta");
+                entity.HasOne(d => d.IdCodigoNavigation)
+                    .WithMany(p => p.CodigoCuentasGlobals)
+                    .HasForeignKey(d => d.IdCodigo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CodigoCuentas_Global_SubCuenta");
 
                 entity.HasOne(d => d.IdCondominioNavigation)
                     .WithMany(p => p.CodigoCuentasGlobals)
@@ -296,6 +311,21 @@ namespace Prueba.Context
                     .HasForeignKey<Condominio>(d => d.IdAdministrador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Condominio_AspNetUsers");
+            });
+
+            modelBuilder.Entity<Cuenta>(entity =>
+            {
+                entity.Property(e => e.Codigo).HasMaxLength(2);
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.IdGrupoNavigation)
+                    .WithMany(p => p.Cuenta)
+                    .HasForeignKey(d => d.IdGrupo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Cuenta_Grupo");
             });
 
             modelBuilder.Entity<Empleado>(entity =>
@@ -465,6 +495,21 @@ namespace Prueba.Context
                     .HasForeignKey(d => d.IdAsiento)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Gastos_LDiario_Global");
+            });
+
+            modelBuilder.Entity<Grupo>(entity =>
+            {
+                entity.ToTable("Grupo");
+
+                entity.Property(e => e.Codigo).HasMaxLength(1);
+
+                entity.Property(e => e.Descripcion).HasMaxLength(10);
+
+                entity.HasOne(d => d.IdClaseNavigation)
+                    .WithMany(p => p.Grupos)
+                    .HasForeignKey(d => d.IdClase)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Grupo_Clase");
             });
 
             modelBuilder.Entity<Ingreso>(entity =>
@@ -667,22 +712,34 @@ namespace Prueba.Context
 
             modelBuilder.Entity<Pasivo>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.IdPasivo);
+
+                entity.Property(e => e.IdPasivo).HasColumnName("id_pasivo");
 
                 entity.Property(e => e.IdAsiento).HasColumnName("id_asiento");
 
-                entity.Property(e => e.IdPasivo).HasColumnName("id_pasivo");
+                entity.HasOne(d => d.IdAsientoNavigation)
+                    .WithMany(p => p.Pasivos)
+                    .HasForeignKey(d => d.IdAsiento)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Pasivos_LDiario_Global");
             });
 
             modelBuilder.Entity<Patrimonio>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.IdPatrimonio);
 
                 entity.ToTable("Patrimonio");
 
+                entity.Property(e => e.IdPatrimonio).HasColumnName("id_patrimonio");
+
                 entity.Property(e => e.IdAsiento).HasColumnName("id_asiento");
 
-                entity.Property(e => e.IdPatrimonio).HasColumnName("id_patrimonio");
+                entity.HasOne(d => d.IdAsientoNavigation)
+                    .WithMany(p => p.Patrimonios)
+                    .HasForeignKey(d => d.IdAsiento)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Patrimonio_LDiario_Global");
             });
 
             modelBuilder.Entity<Propiedad>(entity =>
@@ -958,6 +1015,19 @@ namespace Prueba.Context
                     .HasForeignKey(d => d.IdCondominio)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Relacion_Gastos_Condominio");
+            });
+
+            modelBuilder.Entity<SubCuenta>(entity =>
+            {
+                entity.Property(e => e.Codigo).HasMaxLength(2);
+
+                entity.Property(e => e.Descricion).HasMaxLength(10);
+
+                entity.HasOne(d => d.IdCuentaNavigation)
+                    .WithMany(p => p.SubCuenta)
+                    .HasForeignKey(d => d.IdCuenta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SubCuenta_Cuenta");
             });
 
             modelBuilder.Entity<Zona>(entity =>

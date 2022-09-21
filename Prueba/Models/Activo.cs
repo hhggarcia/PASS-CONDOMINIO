@@ -7,5 +7,7 @@ namespace Prueba.Models
     {
         public int IdActivo { get; set; }
         public int IdAsiento { get; set; }
+
+        public virtual LdiarioGlobal IdAsientoNavigation { get; set; } = null!;
     }
 }

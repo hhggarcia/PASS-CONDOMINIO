@@ -8,7 +8,7 @@ namespace Prueba.Models
         public Condominio()
         {
             CodigoCuentasGlobals = new HashSet<CodigoCuentasGlobal>();
-            Inmuebles = new List<Inmueble>();
+            Inmuebles = new HashSet<Inmueble>();
             PagoEmitidos = new HashSet<PagoEmitido>();
             RelacionGastos = new HashSet<RelacionGasto>();
         }
@@ -21,7 +21,7 @@ namespace Prueba.Models
 
         public virtual AspNetUser IdAdministradorNavigation { get; set; } = null!;
         public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; }
-        public virtual IList<Inmueble> Inmuebles { get; set; }
+        public virtual ICollection<Inmueble> Inmuebles { get; set; }
         public virtual ICollection<PagoEmitido> PagoEmitidos { get; set; }
         public virtual ICollection<RelacionGasto> RelacionGastos { get; set; }
     }

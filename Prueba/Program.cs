@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
-using Prueba.Context;
 using Prueba.Core;
 using Prueba.Core.Repositories;
+using Prueba.Context;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
