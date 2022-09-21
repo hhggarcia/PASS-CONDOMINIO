@@ -1,4 +1,6 @@
-﻿@model IList<Condominio>
+﻿
+
+@model IList<Condominio>
 
 @{
     Layout = "_layout2";
@@ -14,10 +16,8 @@
 
 
 
-    @if (@Model != null && @Model.Any())
-    {
-        @foreach (var condominio in Model)
-        {
+ 
+       
             <!-- Content Row -->
             <div class="row justify-content-center">
                 <div class="col-xl-4 col-lg-4">
@@ -53,35 +53,34 @@
                                 <div class="card-body pt-0">
                                     <div class="text-center">
                                         <h5 class="h3">
-                                            @condominio.Nombre
+                                            Nombre
                                         </h5>
                                         <h5 class="font-weight-300">
 
-                                            Rif: @condominio.Rif
+                                            Rif: Rif
                                         </h5>
                                         <h5 class="h5 mt-4">
-                                            Inmuebles: @condominio.Inmuebles.Count()
+                                            Inmuebles: 
                                         </h5>
                                         @*<h5 class="h5 mt-4">
-                                            Administrador: @condominio.IdAdministrador
-                                        </h5>*@
+                                Administrador: @condominio.IdAdministrador
+                                </h5>*@
 
                                         <div class="col-12 d-flex justify-content-center mt-4">
                                             @*<button type="submit"
-                                            class="btn btn-primary me-1 mb-1"
-                                            asp-controller="Admin"
-                                            asp-action="RegistrarPuesto">
-                                                Editar
-                                            </button>
-                                            <button type="submit"
-                                            class="btn btn-primary me-1 mb-1"
-                                            asp-controller="Admin"
-                                            asp-action="RegistroCondominio">
-                                                Borrar
-                                            </button>*@
-                                            <a
-                                            class="btn btn-primary me-1 mb-1"
-                                            asp-action="Dashboard">
+                                    class="btn btn-primary me-1 mb-1"
+                                    asp-controller="Admin"
+                                    asp-action="RegistrarPuesto">
+                                    Editar
+                                    </button>
+                                    <button type="submit"
+                                    class="btn btn-primary me-1 mb-1"
+                                    asp-controller="Admin"
+                                    asp-action="RegistroCondominio">
+                                    Borrar
+                                    </button>*@
+                                            <a class="btn btn-primary me-1 mb-1"
+                                       asp-action="DashboardUsuario">
                                                 Ver
                                             </a>
                                         </div>
@@ -94,8 +93,8 @@
 
             </div>
             <!-- Content Row -->
-        }
+        
 
-    }
+    
 
 </div>
