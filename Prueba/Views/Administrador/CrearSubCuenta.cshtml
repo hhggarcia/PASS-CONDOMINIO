@@ -1,0 +1,39 @@
+﻿@model SubcuentaCascadingVM
+@{
+}
+<h3>Formulario para crear sub cuenta</h3>
+<p>generar ajax para el droplist dependiente</p>
+<p>Cargar selects de clases -> dependiendo de la clases llenar select de grupos -> llenar selects de cuentas</p>
+<p>solicitar descripcion y codigo</p>
+
+<body>
+
+    @Html.DropDownListFor(m => m.IdClase, Model.Clases, "Please select", new {@class = "form-control"})
+    <br />
+    <br />
+    @Html.DropDownList("IdGrupo", new List<SelectListItem>(), "Please select", new {@class = "form-control"})
+    <br />
+    <br />
+    @Html.DropDownList("IdCuenta", new List<SelectListItem>(), "Please select", new {@class = "form-control"})
+    <br />
+    <br />
+
+</body>
+
+@section Scripts{
+
+
+    <script>
+        $(document).ready(function() {
+            $("#IdClase").change(function() {
+                $.get("/Administrador/GetListGrupo", { value: $("#IdClase").val() }, function(data) {
+                    $("#IdGrupo").empty();
+                    $.each(data, function(index, row) {
+                        $("#IdGrupo").append("<option value='" + row.value + "'>" + row.text + "</option>")
+                    });
+                });
+            })
+        }
+    </script>
+
+}

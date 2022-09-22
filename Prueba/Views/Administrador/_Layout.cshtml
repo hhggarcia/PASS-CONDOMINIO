@@ -118,75 +118,84 @@
                 </a>
                 </li>*@
 
-                <!-- pagos -->
+                <!-- pagos -->        
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
-                       data-target="#collapse5"
+                       data-target="#collapsePagos"
                        aria-expanded="true"
-                       aria-controls="collapse5">
-                        <i class="fas fa-fw fa-dollar-sign"></i>
-                        <span>pagos</span>
+                       aria-controls="collapsePagos">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Pagos</span>
                     </a>
-                    <div id="collapse5"
+                    <div id="collapsePagos"
                          class="collapse"
-                         aria-labelledby="heading5"
-                         data-parent="#accordionsidebar">
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">pagos:</h6>
-                            <a class="collapse-item" asp-controller="admin" asp-action="registrarpagos">registrar pagos</a>
-                            <a class="collapse-item" asp-controller="admin" asp-action="pagosrecibidos">pagos recibidos</a>
+                            <h6 class="collapse-header">Pagos:</h6>
+                            <a class="collapse-item" href="#">Registrar pagos</a>
+                            <a class="collapse-item" href="#">pagos recibidos</a>
+                            
                         </div>
                     </div>
                 </li>
 
 
-                <!-- gestion de contabilidad -->
+
+
+
+
+                <!-- gestion de contabilidad -->             
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
-                       data-target="#collapse7"
+                       data-target="#collapseContabilidad"
                        aria-expanded="true"
-                       aria-controls="collapse7">
-                        <i class="fas fa-fw bi bi-clipboard-data"></i>
-                        <span>Gestión de contabilidad</span>
+                       aria-controls="collapseContabilidad">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Contabilidad</span>
                     </a>
-                    <div id="collapse7"
+                    <div id="collapseContabilidad"
                          class="collapse"
-                         aria-labelledby="heading7"
-                         data-parent="#accordionsidebar">
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">contaduria:</h6>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="relaciondegastos">crear relación de gastos</a>
-                            <a class="collapse-item" href="#">cuentas contables</a>
+                            <h6 class="collapse-header">Gestion Contable:</h6>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="cuentasContables">Plan de Cuentas</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="relaciondegastos">Relación de gastos</a>
                             <a class="collapse-item" asp-controller="Administrador" asp-action="librodiario">libro diario</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="deudores">deudores</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="deudores">deudores</a>                            
                         </div>
                     </div>
                 </li>
 
                 <!-- reportes -->
+                
+
+
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
-                       data-target="#collapseutilities"
+                       data-target="#collapseReportes"
                        aria-expanded="true"
-                       aria-controls="collapseutilities">
+                       aria-controls="collapseReportes">
                         <i class="bi bi-file-earmark-ruled"></i>
-                        <span>reportes</span>
+                        <span>Reportes</span>
                     </a>
-                    <div id="collapseutilities"
+                    <div id="collapseReportes"
                          class="collapse"
-                         aria-labelledby="headingutilities"
-                         data-parent="#accordionsidebar">
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">reportes:</h6>
-                            <a class="collapse-item" href="#">estado resultado</a>
-                            <a class="collapse-item" href="#">balance de comporobación</a>
-                            <a class="collapse-item" href="#">estado situación</a>
+                            <h6 class="collapse-header">Reportes:</h6>
+                            <a class="collapse-item" href="#">Estado resultado</a>
+                            <a class="collapse-item" href="#">Balance de comporobación</a>
+                            <a class="collapse-item" href="#">Estado situación</a>
+                         
                         </div>
                     </div>
                 </li>
