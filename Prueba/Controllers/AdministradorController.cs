@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
@@ -134,39 +135,68 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
-        public JsonResult GetListGrupo(int value)
+        [HttpPost]
+        public async Task<JsonResult> AjaxMethod(string tipo, int valor)
         {
-            var grupos = _context.Grupos.Where(x => x.IdClase == value).ToList();
+            SubcuentaCascadingVM model = new SubcuentaCascadingVM();
+            switch (tipo)
+            {
+                case "IdClase":
+                    var grupos = from c in _context.Grupos
+                                 where c.IdClase == valor
+                                 select c;
 
-            return Json(new SelectList(grupos,"Id", "Descripcion"));
+                    model.Grupos = await grupos.Select(c => new SelectListItem { Text = c.Descripcion, Value = c.Id.ToString() }).ToListAsync();
+                    break;
+                case "IdGrupo":
+                    var cuentas = from c in _context.Cuenta
+                                  where c.IdGrupo == valor
+                                  select c;
+
+                    model.Cuentas = await cuentas.Select(c => new SelectListItem { Text = c.Descripcion, Value = c.Id.ToString() }).ToListAsync();
+                    break;
+            }
+            return Json(model);
         }
-        
-        public JsonResult GetListCuentas(int value)
+
+
+        public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
         {
-            var cuentas = _context.Cuenta.Where(x => x.IdGrupo == value).ToList();
+            if (ModelState.IsValid)
+            {
+                // REGISTRAR SUB CUENTA CON IDCUENTA, DESCRIP Y CODIGO
 
-            return Json(new SelectList(cuentas, "Id", "Descripcion"));
-        }
+                var nuevaSubCuenta = new SubCuenta
+                {
+                    IdCuenta = modelo.IdCuenta,
+                    Descricion = modelo.Descripcion,
+                    Codigo = modelo.Codigo
+                };
 
+                using (var _dbContext = new PruebaContext())
+                {
+                    _dbContext.Add(nuevaSubCuenta);
+                    _dbContext.SaveChanges();
+                }
 
-        public IActionResult CrearSubCuentaPost(int claseId, int grupoId, int cuentaId)
-        {
-            var modelo = new SubCuentaCrearVM();
+                // REGISTRAR EN CUENTAS CONTABLES GLOBAL ID CONDOMINIO Y ID SUB CUENTA
+                //recuperar el id del condominio
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var nuevoCC = new CodigoCuentasGlobal
+                {
+                    IdCodCuenta = nuevaSubCuenta.Id,
+                    IdCondominio = idCondominio
+                };
 
-            var clases = from c in _context.Clases
-                         where c.Id == claseId
-                         select c;
-            modelo.Clase = clases.FirstOrDefault();
+                using (var _dContext = new PruebaContext())
+                {
+                    _dContext.Add(nuevoCC);
+                    _dContext.SaveChanges();
+                }
 
-            var grupos = from c in _context.Grupos
-                         where c.Id == grupoId
-                         select c;
-            modelo.Grupo = grupos.FirstOrDefault();
+                return View("Index");
 
-            var cuentas = from c in _context.Cuenta
-                          where c.Id == cuentaId
-                          select c;
-            modelo.Cuenta = cuentas.FirstOrDefault();
+            }
 
             return View(modelo);
         }

@@ -1,39 +1,116 @@
-﻿@model SubcuentaCascadingVM
+﻿@using Newtonsoft.Json.Linq;
+
+@model SubcuentaCascadingVM
 @{
 }
 <h3>Formulario para crear sub cuenta</h3>
-<p>generar ajax para el droplist dependiente</p>
-<p>Cargar selects de clases -> dependiendo de la clases llenar select de grupos -> llenar selects de cuentas</p>
-<p>solicitar descripcion y codigo</p>
+
 
 <body>
 
-    @Html.DropDownListFor(m => m.IdClase, Model.Clases, "Please select", new {@class = "form-control"})
-    <br />
-    <br />
-    @Html.DropDownList("IdGrupo", new List<SelectListItem>(), "Please select", new {@class = "form-control"})
-    <br />
-    <br />
-    @Html.DropDownList("IdCuenta", new List<SelectListItem>(), "Please select", new {@class = "form-control"})
-    <br />
-    <br />
+    @using (Html.BeginForm("CrearSubCuentaPost", "Administrador", FormMethod.Post))
+    {
+        @Html.DropDownListFor(m => m.IdClase, Model.Clases, "Seleccione una Clase", new {@class = "form-control"})
+        <br />
+        <br />
+        @Html.DropDownListFor(m => m.IdGrupo, Model.Grupos, "Seleccione un Grupo", new {@class = "form-control"})
+        <br />
+        <br />
+        @Html.DropDownListFor(m => m.IdCuenta, Model.Cuentas, "Seleccione una Cuenta", new {@class = "form-control"})
+        <br />
+        <br />
+
+        <label>Descripción</label>
+        <input type="text" placeholder="Descripción" asp-for="Descripcion"/>
+
+        <label>Código</label>
+        <input type="text" placeholder="Código" asp-for="Codigo"/>
+
+        <input class="btn btn-primary" type="submit" value="Submit" />
+    }
+
+
 
 </body>
 
 @section Scripts{
 
-
-    <script>
-        $(document).ready(function() {
-            $("#IdClase").change(function() {
-                $.get("/Administrador/GetListGrupo", { value: $("#IdClase").val() }, function(data) {
-                    $("#IdGrupo").empty();
-                    $.each(data, function(index, row) {
-                        $("#IdGrupo").append("<option value='" + row.value + "'>" + row.text + "</option>")
-                    });
+    <script type="text/javascript">
+        $(function () {
+            $("select").each(function () {
+                if ($(this).find("option").length <= 1) {
+                    $(this).attr("disabled", "disabled");
+                }
+            });
+ 
+            $("select").change(function () {
+                var value = 0;
+                if ($(this).val() != "") {
+                    value = $(this).val();
+                }
+                var id = $(this).attr("id");
+                var dataRequest = {
+                    tipo: id,
+                    valor: value
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/Administrador/AjaxMethod",
+                    data: dataRequest,
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        var dropDownId;
+                        var list;
+                        switch (id) {
+                            case "IdClase":
+                                list = response.grupos;
+                                DisableDropDown("#IdGrupo");
+                                DisableDropDown("#IdCuenta");
+                                PopulateDropDown("#IdGrupo", list);
+                                break;
+                            case "IdGrupo":
+                                dropDownId = "#IdCuenta";
+                                list = response.cuentas;
+                                DisableDropDown("#IdCuenta");
+                                PopulateDropDown("#IdCuenta", list);
+                                break;
+                        }
+                       
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
                 });
-            })
+            });
+        });
+ 
+        function DisableDropDown(dropDownId) {
+            $(dropDownId).attr("disabled", "disabled");
+            $(dropDownId).empty().append('<option selected="selected" value="0">Please select</option>');
         }
+ 
+        function PopulateDropDown(dropDownId, list) {
+            if (list != null && list.length > 0) {
+                $(dropDownId).removeAttr("disabled");
+                $.each(list, function () {
+                    $(dropDownId).append($("<option></option>").val(this['value']).html(this['text']));
+                });
+            }
+        }
+ 
+        $(function () {
+            if ($("#IdClase").val() != "" && $("#IdGrupo").val() != "" && $("#IdCuenta").val() != "") {
+                var message = "Country: " + $("#IdClase option:selected").text();
+                message += "\nState: " + $("#IdGrupo option:selected").text();
+                message += "\nCity: " + $("#IdCuenta option:selected").text();
+                alert(message);
+            }
+        });
     </script>
 
 }

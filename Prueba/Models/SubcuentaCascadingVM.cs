@@ -14,8 +14,10 @@ namespace Prueba.Models
         public List<SelectListItem>? Grupos { get; set; }
         public List<SelectListItem>? Cuentas { get; set; }
 
-        public int IdClase { get; set; }
-        public int IdGrupo { get; set; }
-        public int IdCuenta { get; set; }
+        public string Descripcion { get; set; }
+        public string Codigo { get; set; }
+        public short IdClase { get; set; }
+        public short IdGrupo { get; set; }
+        public short IdCuenta { get; set; }
     }
 }
