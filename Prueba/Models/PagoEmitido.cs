@@ -12,7 +12,20 @@ namespace Prueba.Models
         public decimal Monto { get; set; }
         public bool FormaPago { get; set; }
 
-        public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-        public virtual ReferenciasPe ReferenciasPe { get; set; } = null!;
+        public virtual Condominio IdCondominioNavigation { get; set; } = new Condominio
+        {
+            IdCondominio = 0,
+            IdAdministrador = "aux",
+            Rif = "aux",
+            Tipo = "aux",
+            Nombre = "aux"
+
+        };
+        public virtual ReferenciasPe ReferenciasPe { get; set; } = new ReferenciasPe
+        {
+            IdPagoEmitido = 0,
+            NumReferencia= 0,
+            Banco = "aux"
+        };
     }
 }

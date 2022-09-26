@@ -284,6 +284,7 @@ namespace Prueba.Controllers
         [HttpPost]
         public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
         {
+            modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
             if (ModelState.IsValid)
             {
                 // TRAER EL ID DEL CONDOMINIO
@@ -366,7 +367,7 @@ namespace Prueba.Controllers
                 RedirectToAction("Index");
 
             }
-            return View(modelo);
+            return View("RegistrarPagos", modelo);
         }
         public IActionResult PagosRecibidos()
         {
