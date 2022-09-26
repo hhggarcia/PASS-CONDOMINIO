@@ -134,7 +134,6 @@ namespace Prueba.Controllers
 
             return View(modelo);
         }
-
         [HttpPost]
         public async Task<JsonResult> AjaxMethod(string tipo, int valor)
         {
@@ -158,7 +157,6 @@ namespace Prueba.Controllers
             }
             return Json(model);
         }
-
 
         public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
         {
@@ -201,9 +199,96 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
+        public async Task<IActionResult> IndexPagosEmitidos()
+        {
+            var modelo = new List<PagoEmitido>();
+
+            var listaPagos = from c in _context.PagoEmitidos
+                             select c;
+
+            modelo = await listaPagos.ToListAsync();
+
+            return View(modelo);
+        }
         public IActionResult RegistrarPagos()
         {
-            return View();
+            var modelo = new RegistroPagoVM();
+            //LLENAR SELECT DE SUBCUENTAS DE GASTOS
+
+            //traer subcuentas del condominio
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                       where c.IdCondominio == idCondominio
+                                       select c;
+
+            //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
+
+            IQueryable<Grupo> gruposGastos = from c in _context.Grupos
+                                             where c.IdClase == 5
+                                             select c;
+
+            IQueryable<Cuenta> cuentas = from c in _context.Cuenta
+                                         select c;
+
+            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
+                                               select c;
+
+            IList<Cuenta> cuentasGastos = new List<Cuenta>();
+            foreach (var grupo in gruposGastos)
+            {
+                foreach (var cuenta in cuentas)
+                {
+                    if (cuenta.IdGrupo == grupo.Id)
+                    {
+                        cuentasGastos.Add(cuenta);
+                    }
+                    continue;
+                }
+            }
+
+            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
+            foreach (var cuenta in cuentasGastos)
+            {
+                foreach (var subcuenta in subcuentas)
+                {
+                    if (subcuenta.IdCuenta == cuenta.Id)
+                    {
+                        subcuentasGastos.Add(subcuenta);
+                    }
+                    continue;
+                }
+            }
+
+            IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
+            foreach (var condominioCC in cuentasContablesCond)
+            {
+                foreach (var subcuenta in subcuentasGastos)
+                {
+                    if (condominioCC.IdCodCuenta == subcuenta.Id)
+                    {
+                        subcuentasModel.Add(subcuenta);
+                    }
+                    continue;
+                }
+            }
+
+            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            // ENVIAR MODELO
+
+            TempData.Keep();
+
+            return View(modelo);
+        }
+
+        public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
+        {
+            if (ModelState.IsValid)
+            {
+                // TRAER EL ID DEL CONDOMINIO
+
+            }
+            return View(modelo);
         }
         public IActionResult PagosRecibidos()
         {
