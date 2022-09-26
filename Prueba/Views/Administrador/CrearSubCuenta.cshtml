@@ -16,7 +16,7 @@
 
     <!-- Content Row -->
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-lg-7">
             <!-- Default Card Example -->
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
@@ -31,159 +31,206 @@
                         <div class="form-body">
                             <div class="row">
 
-                                <!-- Pais -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Pais</label>
-                                        <div class="position-relative">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="basicSelect" data-val="true" data-val-required="The IdPais field is required." name="Ubicacion.IdPais">
-                                                    <option value="">Seleccione un Pais</option>
-                                                    <option value="1">Afganistán</option>
-                                                    <option value="238">Yibuti</option>
-                                                    <option value="239">Zambia</option>
-                                                    <option value="240">Zimbabue</option>
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Estado -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Estado</label>
-                                        <div class="position-relative">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="basicSelect" data-val="true" data-val-required="The IdEstado field is required." name="Ubicacion.IdEstado">
-                                                    <option value="">Seleccione un estado</option>
-
-                                                    <option value="1">DISTRITO CAPITAL</option>
-                                                    <option value="23">SUCRE</option>
-                                                    <option value="24">VARGAS</option>
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Municipio -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Municipios</label>
-                                        <div class="position-relative">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="basicSelect" data-val="true" data-val-required="The IdMunicipio field is required." name="Ubicacion.IdMunicipio">
-                                                    <option value="">Seleccione un municipio</option>
-
-                                                    <option value="1">Libertador</option>
-                                                    <option value="325">Ribero</option>
-                                                    <option value="326">Bermúdez</option>
-                                                    <option value="327">Benítez</option>
-                                                    <option value="328">Libertador</option>
-                                                    <option value="329">Cajigal</option>
-                                                    <option value="330">Mariño</option>
-                                                    <option value="331">Valdez</option>
-                                                    <option value="332">Arismendi</option>
-                                                    <option value="333">Andrés Mata</option>
-                                                    <option value="334">Andrés Eloy Blanco</option>
-                                                    <option value="335">Vargas</option>
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                               
-
-                                <div class="col-12 d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary me-1 mb-1">
-                                        Siguiente
-                                    </button>
-                                </div>
-
-
-
-                                <div>
-                                    <h1>Create a Multi-Step Form Using HTML, CSS, and JavaScript</h1>
+@*                                <div>
+                                    
                                     <div id="multi-step-form-container">
-                                        <!-- Form Steps / Progress Bar -->
+                                        <!-- LineaProgreso -->
                                         <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
-                                            <!-- Step 1 -->
+                                            <!-- Paso 1 -->
                                             <li class="form-stepper-active text-center form-stepper-list" step="1">
                                                 <a class="mx-2">
                                                     <span class="form-stepper-circle">
                                                         <span>1</span>
                                                     </span>
-                                                    <div class="label">Account Basic Details</div>
+                                                    <div class="label">Seleccionar Clase</div>
                                                 </a>
                                             </li>
-                                            <!-- Step 2 -->
+                                            <!-- Paso 2 -->
                                             <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
                                                 <a class="mx-2">
                                                     <span class="form-stepper-circle text-muted">
                                                         <span>2</span>
                                                     </span>
-                                                    <div class="label text-muted">Social Profiles</div>
+                                                    <div class="label text-muted">Seleccionar Grupo</div>
                                                 </a>
                                             </li>
-                                            <!-- Step 3 -->
+                                            <!-- Paso 3 -->
                                             <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
                                                 <a class="mx-2">
                                                     <span class="form-stepper-circle text-muted">
                                                         <span>3</span>
                                                     </span>
-                                                    <div class="label text-muted">Personal Details</div>
+                                                    <div class="label text-muted">Seleccionar Cuenta</div>
                                                 </a>
                                             </li>
                                         </ul>
-                                        <!-- Step Wise Form Content -->
+                                        
+                                            
+
                                         <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
-                                            <!-- Step 1 Content -->
+
+                                            <!-- Paso 1 Content -->
                                             <section id="step-1" class="form-step">
-                                                <h2 class="font-normal">Account Basic Details</h2>
+                                                <h2 class="font-normal">Seleccionar una Clase</h2>
                                                 <!-- Step 1 input fields -->
                                                 <div class="mt-3">
-                                                    Step 1 input fields goes here..
+                                                 texto
                                                 </div>
                                                 <div class="mt-3">
-                                                    <button class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
+                                                    <button class="btn btn-primary me-1 mb-1" type="button" step_number="2">Next</button>
                                                 </div>
                                             </section>
-                                            <!-- Step 2 Content, default hidden on page load. -->
+                                            <!-- Paso 2 Content -->
                                             <section id="step-2" class="form-step d-none">
-                                                <h2 class="font-normal">Social Profiles</h2>
+                                                <h2 class="font-normal">Seleccionar un Grupo</h2>
                                                 <!-- Step 2 input fields -->
                                                 <div class="mt-3">
-                                                    Step 2 input fields goes here..
+
+                                                  texto2
                                                 </div>
                                                 <div class="mt-3">
-                                                    <button class="button btn-navigate-form-step" type="button" step_number="1">Prev</button>
-                                                    <button class="button btn-navigate-form-step" type="button" step_number="3">Next</button>
+                                                    <button class="btn btn-primary me-1 mb-1" type="button" step_number="1">Prev</button>
+                                                    <button class="btn btn-primary me-1 mb-1" type="button" step_number="3">Next</button>
                                                 </div>
                                             </section>
-                                            <!-- Step 3 Content, default hidden on page load. -->
+                                            <!-- Pso 3 Content -->
                                             <section id="step-3" class="form-step d-none">
-                                                <h2 class="font-normal">Personal Details</h2>
+                                                <h2 class="font-normal">Seleccionar una Cuenta</h2>
                                                 <!-- Step 3 input fields -->
                                                 <div class="mt-3">
-                                                    Step 3 input fields goes here..
+
+                                                    testp3
+
+
+                                                    
                                                 </div>
                                                 <div class="mt-3">
-                                                    <button class="button btn-navigate-form-step" type="button" step_number="2">Prev</button>
-                                                    <button class="button submit-btn" type="submit">Save</button>
+                                                    <button class="btn btn-primary me-1 mb-1" type="button" step_number="2">Prev</button>
+                                                    <button class="btn btn-primary me-1 mb-1" type="submit">Save</button>
                                                 </div>
                                             </section>
+
+
+
                                         </form>
                                     </div>
                                 </div>
+*@
+
+                                @using (Html.BeginForm("CrearSubCuentaPost", "Administrador", FormMethod.Post))
+                                {
+
+                                    <div>
+                                        <div id="multi-step-form-container">
+                                            <!-- LineaProgreso -->
+                                            <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
+                                                <!-- Paso 1 -->
+                                                <li class="form-stepper-active text-center form-stepper-list" step="1">
+                                                    <a class="mx-2">
+                                                        <span class="form-stepper-circle">
+                                                            <span>1</span>
+                                                        </span>
+                                                        <div class="label">Seleccionar Clase</div>
+                                                    </a>
+                                                </li>
+                                                <!-- Paso 2 -->
+                                                <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
+                                                    <a class="mx-2">
+                                                        <span class="form-stepper-circle text-muted">
+                                                            <span>2</span>
+                                                        </span>
+                                                        <div class="label text-muted">Seleccionar Grupo</div>
+                                                    </a>
+                                                </li>
+                                                <!-- Paso 3 -->
+                                                <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
+                                                    <a class="mx-2">
+                                                        <span class="form-stepper-circle text-muted">
+                                                            <span>3</span>
+                                                        </span>
+                                                        <div class="label text-muted">Seleccionar Cuenta</div>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <!-- Step Wise Form Content -->
+                                            <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+                                                <!-- Step 1 Content -->
+                                                <section id="step-1" class="form-step">
+                                                    <h2 class="font-normal">Seleccionar una Clase</h2>
+                                                    <!-- Step 1 input fields -->
+                                                    <div class="mt-3">
+                                                        @Html.DropDownListFor(m => m.IdClase, Model.Clases, "Seleccione una Clase", new {@class = "form-control"})
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        <button class="btn-primary btn button btn-navigate-form-step" type="button" step_number="2">Siguiente</button>
+                                                    </div>
+                                                </section>
+                                                <!-- Step 2 Content, default hidden on page load. -->
+                                                <section id="step-2" class="form-step d-none">
+                                                    <h2 class="font-normal">Seleccionar un Grupo</h2>
+                                                    <!-- Step 2 input fields -->
+                                                    <div class="mt-3">
+                                                        @Html.DropDownListFor(m => m.IdGrupo, Model.Grupos, "Seleccione un Grupo", new {@class = "form-control"})
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        <button class="btn btn-primary btnbutton btn-navigate-form-step" type="button" step_number="1">Atras</button>
+                                                        <button class="btn btn-primary btnbutton btn-navigate-form-step" type="button" step_number="3">Siguiente</button>
+                                                    </div>
+                                                </section>
+                                                <!-- Pso 3 Content -->
+                                                <section id="step-3" class="form-step d-none">
+                                                    <h2 class="font-normal">Seleccionar una Cuenta</h2>
+                                                    <!-- Step 3 input fields -->
+                                                    <div class="mt-3">
+                                                        @Html.DropDownListFor(m => m.IdCuenta, Model.Cuentas, "Seleccione una Cuenta", new {@class = "form-control"})
+                                                        <br />
+                                                        <br />
+
+                                                        <div class="row">
+                                                            <!-- Descricción -->
+                                                            <div class="col-md-6 col-12">
+                                                                <div class="form-group has-icon-left mandaory">
+                                                                    <label for="last-name-column">Descripción</label>
+                                                                    <div class="position-relative">
+                                                                        <input type="text" placeholder="Descripción" asp-for="Descripcion" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Código -->
+                                                            <div class="col-md-6 col-12">
+                                                                <div class="form-group has-icon-left mandaory">
+                                                                    <label for="last-name-column">Código</label>
+                                                                    <div class="position-relative">
+                                                                        <input type="text" placeholder="Código" asp-for="Codigo" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        <button class="btn-primary btn button btn-navigate-form-step" type="button" step_number="2">Atras</button>
+                                                        <input class="btn btn-primary" type="submit" value="Submit" />
+                                                        @*<button class="button submit-btn" type="submit">Save</button>*@
+                                                    </div>
+                                                </section>
+                                            </form>
+                                        </div>
+                                    </div>
+
+
+                                    
+                                    
+                                    
+                                }
 
 
                             </div>
                         </div>
-                        <input name="__RequestVerificationToken" type="hidden" value="CfDJ8HR2p97CX9lNiKuae8qj2R-wvEnw_3pCs3gMyC8msdUUqk4cZ3izczjNF72ozkDUA4GFZakNcg6Y8RP3JLnRlIvYwptzJNdEM8DUb5O_q3HJg-HewM2JtKlNrKBJl3RzATykWtAsdnVkPVC71MEUhOlOn0RMdXzIfAx0IRcqyZOpgqn_zpi7sqB_K6N_EA1q7Q">
+                        
                     </form>
                 </div>
             </div>
@@ -192,13 +239,10 @@
     <!-- Content Row -->
 </div>
 
-<body>
 
 
 
-
-
-
+@*<body>
 
     @using (Html.BeginForm("CrearSubCuentaPost", "Administrador", FormMethod.Post))
     {
@@ -223,7 +267,7 @@
 
 
 
-</body>
+</body>*@
 
 @section Scripts{
 

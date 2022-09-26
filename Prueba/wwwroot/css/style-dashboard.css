@@ -162,7 +162,7 @@ sup {
 
 a {
     color: #4e73df;
-    text-decoration: none;
+    text-decoration: none !important;
     background-color: transparent;
 }
 
@@ -13219,13 +13219,6 @@ img.img-error {
 
 
 
-#multi-step-form-container {
-    margin-top: 5rem;
-}
-.submit-btn {
-    border: 1px solid #0e9594;
-    background-color: #0e9594;
-}
 .form-step {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
@@ -13307,6 +13300,7 @@ ul.form-stepper > li:not(:last-of-type) {
 
     .form-stepper-horizontal li:last-child {
         flex: unset;
+        text-decoration: none;
     }
 
 ul.form-stepper li a .form-stepper-circle {
@@ -13367,4 +13361,10 @@ ul.form-stepper li a .form-stepper-circle {
 
 .form-stepper a {
     cursor: default;
+}
+
+.form-step {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 3rem;
 }
