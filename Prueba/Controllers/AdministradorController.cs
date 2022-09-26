@@ -281,11 +281,89 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
+        [HttpPost]
         public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
         {
             if (ModelState.IsValid)
             {
                 // TRAER EL ID DEL CONDOMINIO
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
+                // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
+                PagoEmitido pago = new PagoEmitido
+                {
+                    IdCondominio = idCondominio,
+                    Fecha = modelo.Fecha,
+                    Monto = modelo.Monto,
+                };
+
+                if (modelo.Pagoforma == FormaPago.Efectivo)
+                {
+                    pago.FormaPago = true;
+
+                    using (var _dbContext = new PruebaContext())
+                    {
+                        _dbContext.Add(pago);
+                        _dbContext.SaveChanges();
+                    }
+                }
+                else if (modelo.Pagoforma == FormaPago.Transferencia)
+                {
+                    pago.FormaPago = false;
+
+                    using (var _dbContext = new PruebaContext())
+                    {
+                        _dbContext.Add(pago);
+                        _dbContext.SaveChanges();
+                    }
+
+                    ReferenciasPe referencia = new ReferenciasPe
+                    {
+                        IdPagoEmitido = pago.IdPagoEmitido,
+                        NumReferencia = modelo.NumReferencia,
+                        Banco = modelo.Banco
+                    };
+
+                    using (var _dbContext = new PruebaContext())
+                    {
+                        _dbContext.Add(referencia);
+                        _dbContext.SaveChanges();
+                    }
+
+                }
+
+                //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
+                //buscar el id en codigo de cuentas global de la subcuenta seleccionada
+                LdiarioGlobal asiento = new LdiarioGlobal
+                {
+                    IdCodCuenta = modelo.IdSubcuenta,
+                    Fecha = modelo.Fecha,
+                    Descripcion = modelo.Descripcion,
+                    Concepto = modelo.Concepto,
+                    Monto = modelo.Monto,
+                    TipoOperacion = (modelo.TipoOperacion == TipoOperacion.Haber) ? true : false
+                };
+
+                using (var _dbContext = new PruebaContext())
+                {
+                    _dbContext.Add(asiento);
+                    _dbContext.SaveChanges();
+                }
+
+                //REGISTRAR ASIENTO EN LA TABLA GASTOS
+                Gasto gasto = new Gasto
+                {
+                    IdAsiento = asiento.IdAsiento
+                };
+
+                using (var _dbContext = new PruebaContext())
+                {
+                    _dbContext.Add(gasto);
+                    _dbContext.SaveChanges();
+                }
+
+                RedirectToAction("Index");
 
             }
             return View(modelo);
