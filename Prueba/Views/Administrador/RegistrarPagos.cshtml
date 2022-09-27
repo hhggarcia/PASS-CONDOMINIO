@@ -23,8 +23,7 @@
                 <div class="card-body">
 
                     <!-- Inicio -->
-                    <form class="form form-horizontal"
-                    asp-action="RegistrarPagosPost">
+                    <form class="form form-horizontal">
                         <div class="form-body">
                             <div class="row">
 
@@ -127,24 +126,18 @@
                                     </div>
                                 </div>
 
+                               
 
                                 <div class="col-md-12">
                                     <div class="card-body">
                                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
+                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false"><option value="@FormaPago.Efectivo">Efectivo</option></a>
                                             </li>
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
+                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><option value="@FormaPago.Transferencia">Transferencia</option></a>
                                             </li>
-
-
                                         </ul>
-
-                                        <select asp-for="Pagoforma" asp-items="Html.GetEnumSelectList<FormaPago>()" class="form-select">
-                                            <option value="">Seleccione una forma de pago</option>
-                                        </select>
-
                                         <div class="tab-content" id="myTabContent">
                                             <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
                                                 <!-- Efectivo -->
@@ -191,6 +184,8 @@
                                         </div>
                                     </div>
 
+
+
                                 </div>
 
 
@@ -212,3 +207,6 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
+@section Scripts{
+
+}
