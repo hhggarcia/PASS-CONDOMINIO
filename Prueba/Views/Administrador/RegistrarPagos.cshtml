@@ -140,7 +140,10 @@
 
                                         </ul>
 
-                                        <select asp-for="Pagoforma" asp-items="Html.GetEnumSelectList<FormaPago>()" class="form-select"></select>
+                                        <select asp-for="Pagoforma" asp-items="Html.GetEnumSelectList<FormaPago>()" 
+                                            class="form-select">
+                                            <option value="">Seleccione una forma de pago</option>
+                                        </select>
 
                                         <div class="tab-content" id="myTabContent">
                                             <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -150,7 +153,7 @@
                                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                                 <!-- Transferencia -->
                                                 <div class="card-body">
-                                                    <form class="form form-horizontal">
+                                                    <div class="form form-horizontal">
                                                         <div class="form-body">
                                                             <div class="row">
                                                                 <!-- Pago Emitido -->
@@ -171,10 +174,10 @@
                                                                         <label for="last-name-column">Banco</label>
                                                                         <div class="position-relative">
                                                                             <fieldset class="form-group">
-                                                                                <select class="form-select" id="basicSelect">
-                                                                                    <option>Banesco</option>
-                                                                                    <option>Provincial</option>
-                                                                                    <option>Banco Central de Venezuela</option>
+                                                                                <select asp-for="IdCodigoCuentaBanco" 
+                                                                                asp-items="Model.SubCuentasBancos" 
+                                                                                class="form-select" id="basicSelect">
+                                                                                <option value="">Seleccione un banco</option>
                                                                                 </select>
                                                                             </fieldset>
                                                                         </div>
@@ -182,11 +185,9 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </form>
+                                                    </div>
                                                 </div>
                                             </div>
-
-
                                         </div>
                                     </div>
 

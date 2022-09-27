@@ -224,6 +224,7 @@ namespace Prueba.Controllers
 
             //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
 
+            //CARGAR SELECT DE SUB CUENTAS DE GASTOS
             IQueryable<Grupo> gruposGastos = from c in _context.Grupos
                                              where c.IdClase == 5
                                              select c;
@@ -233,6 +234,15 @@ namespace Prueba.Controllers
 
             IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
                                                select c;
+
+            //CARGAR SELECT DE SUB CUENTAS DE BANCOS
+            IQueryable<Cuenta> bancos = from c in _context.Cuenta
+                                        where c.Descripcion.ToUpper().Trim() == "BANCOS"
+                                        select c;
+
+            IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
+                                                     where c.IdCuenta == bancos.FirstOrDefault().Id
+                                                     select c;
 
             IList<Cuenta> cuentasGastos = new List<Cuenta>();
             foreach (var grupo in gruposGastos)
@@ -273,7 +283,9 @@ namespace Prueba.Controllers
                 }
             }
 
+
             modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             // ENVIAR MODELO
 
             TempData.Keep();
@@ -322,8 +334,7 @@ namespace Prueba.Controllers
                     ReferenciasPe referencia = new ReferenciasPe
                     {
                         IdPagoEmitido = pago.IdPagoEmitido,
-                        NumReferencia = modelo.NumReferencia,
-                        Banco = modelo.Banco
+                        NumReferencia = modelo.NumReferencia
                     };
 
                     using (var _dbContext = new PruebaContext())

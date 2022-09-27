@@ -10,6 +10,7 @@ namespace Prueba.Models
         public TipoOperacion TipoOperacion { get; set; }
         public FormaPago Pagoforma { get; set; }
         public IList<SelectListItem>? SubCuentasGastos { get; set; }
+        public IList<SelectListItem>? SubCuentasBancos { get; set; }
         public int IdSubcuenta { get; set; }
         public int NumReferencia { get; set; }
         public int IdCodigoCuentaBanco { get; set; }
