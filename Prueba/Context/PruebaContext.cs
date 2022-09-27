@@ -66,7 +66,7 @@ namespace Prueba.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server= DESKTOP-NF5DL1U\\SQLEXPRESS01; Database= Prueba;Trusted_Connection=True;");
             }
         }
 
@@ -586,6 +586,8 @@ namespace Prueba.Context
                     .HasColumnType("money")
                     .HasColumnName("monto");
 
+                entity.Property(e => e.NumAsiento).HasColumnName("num_Asiento");
+
                 entity.Property(e => e.TipoOperacion).HasColumnName("tipo_operacion");
 
                 entity.HasOne(d => d.IdCodCuentaNavigation)
@@ -1021,7 +1023,7 @@ namespace Prueba.Context
             {
                 entity.Property(e => e.Codigo).HasMaxLength(2);
 
-                entity.Property(e => e.Descricion).HasMaxLength(10);
+                entity.Property(e => e.Descricion).HasMaxLength(70);
 
                 entity.HasOne(d => d.IdCuentaNavigation)
                     .WithMany(p => p.SubCuenta)

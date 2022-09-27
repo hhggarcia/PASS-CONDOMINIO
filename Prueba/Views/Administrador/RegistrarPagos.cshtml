@@ -23,7 +23,8 @@
                 <div class="card-body">
 
                     <!-- Inicio -->
-                    <form class="form form-horizontal">
+                    <form class="form form-horizontal"
+                    asp-action="RegistrarPagosPost">
                         <div class="form-body">
                             <div class="row">
 
@@ -140,8 +141,7 @@
 
                                         </ul>
 
-                                        <select asp-for="Pagoforma" asp-items="Html.GetEnumSelectList<FormaPago>()" 
-                                            class="form-select">
+                                        <select asp-for="Pagoforma" asp-items="Html.GetEnumSelectList<FormaPago>()" class="form-select">
                                             <option value="">Seleccione una forma de pago</option>
                                         </select>
 
@@ -190,8 +190,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-
 
                                 </div>
 

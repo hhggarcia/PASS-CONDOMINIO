@@ -347,35 +347,64 @@ namespace Prueba.Controllers
 
                 //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
                 //buscar el id en codigo de cuentas global de la subcuenta seleccionada
-                LdiarioGlobal asiento = new LdiarioGlobal
+                var diario = from l in _context.LdiarioGlobals
+                             select l;
+
+                int numAsiento = 1;
+
+                if (diario.Count() > 0)
+                {
+                    numAsiento = diario.LastOrDefault().NumAsiento;
+                }
+
+                LdiarioGlobal asientoGasto = new LdiarioGlobal
                 {
                     IdCodCuenta = modelo.IdSubcuenta,
                     Fecha = modelo.Fecha,
                     Descripcion = modelo.Descripcion,
                     Concepto = modelo.Concepto,
                     Monto = modelo.Monto,
-                    TipoOperacion = (modelo.TipoOperacion == TipoOperacion.Haber) ? true : false
+                    TipoOperacion = true,
+                    NumAsiento = numAsiento
+                };
+                LdiarioGlobal asientoBanco = new LdiarioGlobal
+                {
+                    IdCodCuenta = modelo.IdCodigoCuentaBanco,
+                    Fecha = modelo.Fecha,
+                    Descripcion = modelo.Descripcion,
+                    Concepto = modelo.Concepto,
+                    Monto = modelo.Monto,
+                    TipoOperacion = false,
+                    NumAsiento = numAsiento
                 };
 
                 using (var _dbContext = new PruebaContext())
                 {
-                    _dbContext.Add(asiento);
+                    _dbContext.Add(asientoGasto);
+                    _dbContext.Add(asientoBanco);
                     _dbContext.SaveChanges();
                 }
 
                 //REGISTRAR ASIENTO EN LA TABLA GASTOS
                 Gasto gasto = new Gasto
                 {
-                    IdAsiento = asiento.IdAsiento
+                    IdAsiento = asientoGasto.IdAsiento
+                };
+                //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                Activo activo = new Activo
+                {
+                    IdAsiento = asientoBanco.IdAsiento
                 };
 
                 using (var _dbContext = new PruebaContext())
                 {
                     _dbContext.Add(gasto);
+                    _dbContext.Add(activo);
                     _dbContext.SaveChanges();
                 }
 
-                RedirectToAction("Index");
+
+                RedirectToAction("RegistrarPagos");
 
             }
             return View("RegistrarPagos", modelo);

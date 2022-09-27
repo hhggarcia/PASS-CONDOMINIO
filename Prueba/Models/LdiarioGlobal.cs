@@ -21,6 +21,7 @@ namespace Prueba.Models
         public string Concepto { get; set; } = null!;
         public decimal Monto { get; set; }
         public bool TipoOperacion { get; set; }
+        public int NumAsiento { get; set; }
 
         public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
         public virtual ICollection<Activo> Activos { get; set; }

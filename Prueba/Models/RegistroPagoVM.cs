@@ -2,8 +2,13 @@
 
 namespace Prueba.Models
 {
-    public class RegistroPagoVM: PagoEmitido
+    public class RegistroPagoVM
     {
+        public int IdCondominio { get; set; }
+        public int? IdProveedor { get; set; }
+        public DateTime Fecha { get; set; }
+        public decimal Monto { get; set; }
+        public bool FormaPago { get; set; }
         public string? Descripcion { get; set; }
         public string? Concepto { get; set; }
         public int IdCodigoCuentaGasto { get; set; }
