@@ -237,7 +237,7 @@ namespace Prueba.Controllers
 
             //CARGAR SELECT DE SUB CUENTAS DE BANCOS
             IQueryable<Cuenta> bancos = from c in _context.Cuenta
-                                        where c.Descripcion.ToUpper().Trim() == "BANCOS"
+                                        where c.Descripcion.ToUpper().Trim() == "BANCO"
                                         select c;
 
             IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
