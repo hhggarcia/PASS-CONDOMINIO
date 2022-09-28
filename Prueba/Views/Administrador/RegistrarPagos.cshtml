@@ -27,8 +27,6 @@
                         <div class="form-body">
                             <div class="row">
 
-
-
                                 <!-- Concepto -->
                                 <div class="col-md-6 col-12">
                                     <div class="form-group has-icon-left">
@@ -65,7 +63,7 @@
                                     </div>
                                 </div>
 
-                                @*                                <!-- Tipo Operacion -->
+                                @*<!-- Tipo Operacion -->
                                 <div class="col-md-6 col-12">
                                 <div class="form-group has-icon-left mandaory">
                                 <label for="last-name-column">Tipo Operacion</label>
@@ -128,7 +126,7 @@
                                     </div>
                                 </div>
 
-                                
+
 
                                 <div class="col-md-12 col-12">
                                     <div class="form-group has-icon-left mandaory">
@@ -136,21 +134,18 @@
                                         <div class="position-relative">
                                             <div class="tab-area">
 
-                                                <form class="col-sm-5">
+                                                <div class="col-sm-5">
 
                                                     <select asp-for="Pagoforma" id='mySelect' class="form-select nav-tabs-selector">
 
                                                         <option value="0">
-
                                                             Efectivo
                                                         </option>
                                                         <option value="1">
-
                                                             Transferencia
                                                         </option>
-                                                        
                                                     </select>
-                                                </form>
+                                                </div>
 
                                                 <ul class="nav nav-tabs" id="myTab">
                                                     <li class="active"><a href="#home"></a></li>
@@ -228,18 +223,15 @@
                                                         </div>
                                                     </div>
 
+                                                    <div class="tab-pane" id="messages">
+                                                    </div>
+
                                                 </div>
 
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                
-
-
-
-
 
                                 <div class="col-12 d-flex justify-content-end">
                                     <button type="submit"
@@ -258,7 +250,10 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
-
-
-
-
+@section Scripts{
+    <script>
+        $('.nav-tabs-selector').on('change', function(e) {
+            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+    </script>
+}

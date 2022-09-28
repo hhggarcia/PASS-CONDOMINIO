@@ -534,6 +534,12 @@ namespace Prueba.Controllers
 
             var subcuentas = from c in _context.SubCuenta
                              select c;
+            var clases = from c in _context.Clases
+                                       select c;
+            var grupos = from c in _context.Grupos
+                                       select c;
+            var cuentas = from c in _context.Cuenta
+                                         select c;
             // CARGAR DIARIO COMPLETO
             var diario = from d in _context.LdiarioGlobals
                          select d;
@@ -577,6 +583,9 @@ namespace Prueba.Controllers
             {
                 AsientosCondominio = asientosCondominio,
                 CuentasDiarioCondominio = subCuentasModel,
+                Clases = clases.ToList(),
+                Grupos = grupos.ToList(),
+                Cuentas = cuentas.ToList(),
                 TotalDebe = totalDebe,
                 TotalHaber = totalHaber,
                 Diferencia = diferencia
