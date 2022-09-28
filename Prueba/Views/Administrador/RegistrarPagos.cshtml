@@ -27,7 +27,7 @@
                         <div class="form-body">
                             <div class="row">
 
-                                
+
 
                                 <!-- Concepto -->
                                 <div class="col-md-6 col-12">
@@ -65,18 +65,18 @@
                                     </div>
                                 </div>
 
-@*                                <!-- Tipo Operacion -->
+                                @*                                <!-- Tipo Operacion -->
                                 <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Tipo Operacion</label>
-                                        <div class="position-relative">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="basicSelect"
-                                                        asp-for="TipoOperacion" asp-items="Html.GetEnumSelectList<TipoOperacion>()">
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                    </div>
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Tipo Operacion</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
+                                <select class="form-select" id="basicSelect"
+                                asp-for="TipoOperacion" asp-items="Html.GetEnumSelectList<TipoOperacion>()">
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
                                 </div>*@
 
                                 <!-- Monto -->
@@ -128,20 +128,27 @@
                                     </div>
                                 </div>
 
-                               
+                                <select asp-for="Pagoforma">
+
+                                    <option value="@FormaPago.Efectivo">
+
+                                        Efectivo
+                                    </option>
+                                    <option value="@FormaPago.Transferencia">
+
+                                        Transferencia
+                                    </option>
+                                </select>
 
                                 <div class="col-md-12">
                                     <div class="card-body">
+
                                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" 
-                                                role="tab" aria-controls="home" aria-selected="false">
-                                                <option value="@FormaPago.Efectivo">Efectivo</option></a>
+                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
                                             </li>
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" 
-                                                role="tab" aria-controls="profile" aria-selected="false">
-                                                <option value="@FormaPago.Transferencia">Transferencia</option></a>
+                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
                                             </li>
                                         </ul>
                                         <div class="tab-content" id="myTabContent">
@@ -151,17 +158,17 @@
                                                     <div class="form form-horizontal">
                                                         <div class="form-body">
                                                             <div class="row">
-                                                                
+
                                                                 <!-- Tipo de Banco -->
                                                                 <div class="col-md-6 col-12">
                                                                     <div class="form-group has-icon-left mandaory">
-@*                                                                        <label for="last-name-column">Banco</label>*@
+                                                                        @*                                                                        <label for="last-name-column">Banco</label>*@
                                                                         <div class="position-relative">
                                                                             <fieldset class="form-group">
-                                                                                <select asp-for="IdCodigoCuentaCaja" 
-                                                                                asp-items="Model.SubCuentasCaja" 
-                                                                                class="form-select" id="basicSelect">
-                                                                                <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                <select asp-for="IdCodigoCuentaCaja"
+                                                                                        asp-items="Model.SubCuentasCaja"
+                                                                                        class="form-select" id="basicSelect">
+                                                                                    <option value="0">Seleccione un tipo de efectivo</option>
                                                                                 </select>
                                                                             </fieldset>
                                                                         </div>
@@ -184,9 +191,9 @@
                                                                     <div class="form-group has-icon-left">
                                                                         <label for="last-name-column">Número de Referencia</label>
                                                                         <div class="position-relative">
-                                                                            <input type="number" class="form-control" 
-                                                                            placeholder="Referencia" id="first-name-icon" required=""
-                                                                            asp-for="NumReferencia">
+                                                                            <input type="number" class="form-control"
+                                                                                   placeholder="Referencia" id="first-name-icon" required=""
+                                                                                   asp-for="NumReferencia">
                                                                             <div class="form-control-icon">
                                                                                 <i class="bi bi-credit-card"></i>
                                                                             </div>
@@ -199,10 +206,10 @@
                                                                         <label for="last-name-column">Banco</label>
                                                                         <div class="position-relative">
                                                                             <fieldset class="form-group">
-                                                                                <select asp-for="IdCodigoCuentaBanco" 
-                                                                                asp-items="Model.SubCuentasBancos" 
-                                                                                class="form-select" id="basicSelect">
-                                                                                <option value="0">Seleccione un banco</option>
+                                                                                <select asp-for="IdCodigoCuentaBanco"
+                                                                                        asp-items="Model.SubCuentasBancos"
+                                                                                        class="form-select" id="basicSelect">
+                                                                                    <option value="0">Seleccione un banco</option>
                                                                                 </select>
                                                                             </fieldset>
                                                                         </div>
