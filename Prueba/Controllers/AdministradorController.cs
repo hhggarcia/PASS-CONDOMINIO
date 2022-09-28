@@ -442,7 +442,7 @@ namespace Prueba.Controllers
 
                     if (diario.Count() > 0)
                     {
-                        numAsiento = diario.ToList().LastOrDefault().NumAsiento;
+                        numAsiento = diario.ToList().LastOrDefault().NumAsiento + 1;
                     }
 
                     LdiarioGlobal asientoGasto = new LdiarioGlobal
@@ -502,8 +502,21 @@ namespace Prueba.Controllers
 
         public IActionResult RelaciondeGastos()
         {
+            // CARGAR GASTOS REGISTRADOS
+
+            // CARGAR CUENTAS GASTOS DEL CONDOMINIO
+
+            // BUSCAR ASIENTOS EN EL DIARIO CORRESPONDIENTES A LAS CUENTAS GASTOS DEL CONDOMINIO
+
+            // CREAR MODELO PARA LOS TOTALES DE LA RELACION DE GASTOS Y CARGAR VISTA
+
+
             return View();
         }
+        
+        // generar recibos de cobro
+
+        // generar pdf
 
         public IActionResult PagosRecibidos()
         {
@@ -511,7 +524,66 @@ namespace Prueba.Controllers
         }
         public IActionResult LibroDiario()
         {
-            return View();
+
+            //traer subcuentas del condominio
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                       where c.IdCondominio == idCondominio
+                                       select c;
+
+            var subcuentas = from c in _context.SubCuenta
+                             select c;
+            // CARGAR DIARIO COMPLETO
+            var diario = from d in _context.LdiarioGlobals
+                         select d;
+
+            // BUSCAR ASIENTOS CORRESPONDIENTES A LAS SUBCUENTAS DEL CONDOMINIO
+            // CALCULAR EL TOTAL DEL DEBE Y HABER Y SU DIFERENCIA
+
+            IList<LdiarioGlobal> asientosCondominio = new List<LdiarioGlobal>();
+            IList<SubCuenta> subCuentasModel = new List<SubCuenta>();
+            decimal totalDebe = 0;
+            decimal totalHaber = 0;
+
+            foreach (var asiento in diario)
+            {
+                foreach (var ccCondominio in cuentasContablesCond)
+                {
+                    if (asiento.IdCodCuenta == ccCondominio.IdCodCuenta)
+                    {
+                        asientosCondominio.Add(asiento);
+                        var aux = subcuentas.Where(c => c.Id == asiento.IdCodCuenta).ToList();
+                        subCuentasModel.Add(aux.FirstOrDefault());
+                        if (asiento.TipoOperacion)
+                        {
+                            totalDebe += asiento.Monto;
+                        }
+                        else
+                        {
+                            totalHaber += asiento.Monto;
+                        }
+                    }
+                    continue;
+                }
+
+            }
+
+            decimal diferencia = totalDebe - totalHaber;
+
+            // LLENAR MODELO
+
+            var modelo = new LibroDiarioVM
+            {
+                AsientosCondominio = asientosCondominio,
+                CuentasDiarioCondominio = subCuentasModel,
+                TotalDebe = totalDebe,
+                TotalHaber = totalHaber,
+                Diferencia = diferencia
+            };
+            TempData.Keep();
+
+            return View(modelo);
         }
         public IActionResult Deudores()
         {

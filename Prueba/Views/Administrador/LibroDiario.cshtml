@@ -1,4 +1,4 @@
-﻿
+﻿@model LibroDiarioVM
 @{
     ViewData["Title"] = "Libro Diario";
 }
@@ -128,45 +128,57 @@
                                                     <table class="table mb-0">
                                                         <thead>
                                                             <tr>
-                                                                <th>#</th>
-                                                                <th>Código</th>
+                                                                <th>Asiento</th>
                                                                 <th>Fecha</th>
+                                                                <th>Código</th>
+                                                                <th>Descripción</th>
                                                                 <th>Concepto</th>
                                                                 <th class="text-danger">Debe</th>
                                                                 <th class="text-success">Haber</th>
-                                                                <th>Descripción</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td class="text-bold-500">1</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="text-bold-500">2</td>
-                                                                <td>$13/hr</td>
-                                                                <td class="text-bold-500">Graphic concepts</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
+
+                                                            @foreach (var asiento in Model.AsientosCondominio)
+                                                            {
+                                                                var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == asiento.IdCodCuenta).ToList();
+                                                                if (asiento.IdCodCuenta == subcuenta.FirstOrDefault().Id)
+                                                                {
+                                                                    <tr>
+                                                                        <td>@asiento.NumAsiento</td>
+                                                                        <td class="text-bold-500">@asiento.Fecha.ToString("dd/MM/yyyy")</td>
+                                                                        <td>@subcuenta.FirstOrDefault().Codigo</td>
+                                                                        <td class="text-bold-500">@subcuenta.FirstOrDefault().Descricion</td>
+                                                                        <td class="text-bold-500">@asiento.Concepto</td>
+                                                                        @if (asiento.TipoOperacion)
+                                                                        {
+                                                                            <td class="text-bold-500">@asiento.Monto</td>
+                                                                            <td class="text-bold-500"></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td class="text-bold-500"></td>
+                                                                            <td class="text-bold-500">@asiento.Monto</td>
+                                                                        }
+                                                                    </tr>
+
+                                                                }
+
+
+                                                            }
+
+
                                                         </tbody>
                                                     </table>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+
+
+
                                 </div>
-
-
-
                             </div>
-                        </div>
                     </form>
                 </div>
             </div>

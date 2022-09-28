@@ -128,103 +128,109 @@
                                     </div>
                                 </div>
 
-                                <select asp-for="Pagoforma">
+                                <div class="col-md-12 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Método de Pago</label>
+                                        <div class="position-relative">
+                                            <div class="tab-area">
 
-                                    <option value="@FormaPago.Efectivo">
+                                                <form class="col-sm-5">
 
-                                        Efectivo
-                                    </option>
-                                    <option value="@FormaPago.Transferencia">
+                                                    <select asp-for="Pagoforma" id='mySelect' class="form-select nav-tabs-selector">
 
-                                        Transferencia
-                                    </option>
-                                </select>
+                                                        <option value="0">
 
-                                <div class="col-md-12">
-                                    <div class="card-body">
+                                                            Efectivo
+                                                        </option>
+                                                        <option value="1">
 
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                                <!-- Efectivo -->
-                                                <div class="card-body">
-                                                    <div class="form form-horizontal">
-                                                        <div class="form-body">
-                                                            <div class="row">
+                                                            Transferencia
+                                                        </option>
 
-                                                                <!-- Tipo de Banco -->
-                                                                <div class="col-md-6 col-12">
-                                                                    <div class="form-group has-icon-left mandaory">
-                                                                        @*                                                                        <label for="last-name-column">Banco</label>*@
-                                                                        <div class="position-relative">
-                                                                            <fieldset class="form-group">
-                                                                                <select asp-for="IdCodigoCuentaCaja"
-                                                                                        asp-items="Model.SubCuentasCaja"
-                                                                                        class="form-select" id="basicSelect">
-                                                                                    <option value="0">Seleccione un tipo de efectivo</option>
-                                                                                </select>
-                                                                            </fieldset>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    </select>
+                                                </form>
 
-                                            </div>
-                                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                                <!-- Transferencia -->
-                                                <div class="card-body">
-                                                    <div class="form form-horizontal">
-                                                        <div class="form-body">
-                                                            <div class="row">
-                                                                <!-- Pago Emitido -->
-                                                                <div class="col-md-6 col-12">
-                                                                    <div class="form-group has-icon-left">
-                                                                        <label for="last-name-column">Número de Referencia</label>
-                                                                        <div class="position-relative">
-                                                                            <input type="number" class="form-control"
-                                                                                   placeholder="Referencia" id="first-name-icon" required=""
-                                                                                   asp-for="NumReferencia">
-                                                                            <div class="form-control-icon">
-                                                                                <i class="bi bi-credit-card"></i>
+                                                <ul class="nav nav-tabs" id="myTab">
+                                                    <li class="active"><a href="#home"></a></li>
+                                                    <li><a href="#profile"></a></li>
+                                                    <li><a href="#messages"></a></li>
+                                                    <li><a href="#settings"></a></li>
+                                                </ul>
+
+                                                <div class="tab-content">
+                                                    <div class="tab-pane active" id="home">
+                                                        <!-- Efectivo -->
+                                                        <div class="card-body">
+                                                            <div class="form form-horizontal">
+                                                                <div class="form-body">
+                                                                    <div class="row">
+
+                                                                        <!-- Tipo de Banco -->
+                                                                        <div class="col-md-6 col-12">
+                                                                            <div class="form-group has-icon-left mandaory">
+                                                                                @*                                                                        <label for="last-name-column">Banco</label>*@
+                                                                                <div class="position-relative">
+                                                                                    <fieldset class="form-group">
+                                                                                        <select asp-for="IdCodigoCuentaCaja"
+                                                                                                asp-items="Model.SubCuentasCaja"
+                                                                                                class="form-select" id="basicSelect">
+                                                                                            <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                        </select>
+                                                                                    </fieldset>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <!-- Tipo de Banco -->
-                                                                <div class="col-md-6 col-12">
-                                                                    <div class="form-group has-icon-left mandaory">
-                                                                        <label for="last-name-column">Banco</label>
-                                                                        <div class="position-relative">
-                                                                            <fieldset class="form-group">
-                                                                                <select asp-for="IdCodigoCuentaBanco"
-                                                                                        asp-items="Model.SubCuentasBancos"
-                                                                                        class="form-select" id="basicSelect">
-                                                                                    <option value="0">Seleccione un banco</option>
-                                                                                </select>
-                                                                            </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane" id="profile">
+                                                        <!-- Transferencia -->
+                                                        <div class="card-body">
+                                                            <div class="form form-horizontal">
+                                                                <div class="form-body">
+                                                                    <div class="row">
+                                                                        <!-- Pago Emitido -->
+                                                                        <div class="col-md-6 col-12">
+                                                                            <div class="form-group has-icon-left">
+                                                                                <label for="last-name-column">Número de Referencia</label>
+                                                                                <div class="position-relative">
+                                                                                    <input type="number" class="form-control"
+                                                                                           placeholder="Referencia" id="first-name-icon" required=""
+                                                                                           asp-for="NumReferencia">
+                                                                                    <div class="form-control-icon">
+                                                                                        <i class="bi bi-credit-card"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- Tipo de Banco -->
+                                                                        <div class="col-md-6 col-12">
+                                                                            <div class="form-group has-icon-left mandaory">
+                                                                                <label for="last-name-column">Banco</label>
+                                                                                <div class="position-relative">
+                                                                                    <fieldset class="form-group">
+                                                                                        <select asp-for="IdCodigoCuentaBanco"
+                                                                                                asp-items="Model.SubCuentasBancos"
+                                                                                                class="form-select" id="basicSelect">
+                                                                                            <option value="0">Seleccione un banco</option>
+                                                                                        </select>
+                                                                                    </fieldset>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
-
-
-
                                 </div>
 
 

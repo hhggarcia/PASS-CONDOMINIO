@@ -52,17 +52,30 @@
                                     {
                                         if (item.FormaPago)
                                         {
-                                            <tr>
-                                                <td>@item.Fecha</td>
-                                                <td>@item.Monto</td>
-                                                <td>@FormaPago.Transferencia</td>
-                                            </tr>
-                                        } else
+                                            foreach (var referencia in @Model.Referencias)
+                                            {
+                                                if (item.IdPagoEmitido == referencia.IdPagoEmitido)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                                        <td>@item.Monto</td>
+                                                        <td>@FormaPago.Transferencia</td>
+                                                        <td>@referencia.NumReferencia</td>
+                                                        <td>@referencia.Banco</td>
+                                                    </tr>
+                                                }
+
+                                            }
+
+                                        }
+                                        else
                                         {
                                             <tr>
-                                                <td>@item.Fecha</td>
+                                                <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                                                 <td>@item.Monto</td>
                                                 <td>@FormaPago.Efectivo</td>
+                                                <td>Sin referencia</td>
+                                                <td>Sin Banco</td>
                                             </tr>
                                         }
 
