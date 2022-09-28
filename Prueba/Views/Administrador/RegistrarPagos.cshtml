@@ -23,27 +23,11 @@
                 <div class="card-body">
 
                     <!-- Inicio -->
-                    <form class="form form-horizontal">
+                    <form class="form form-horizontal" asp-action="RegistrarPagosPost">
                         <div class="form-body">
                             <div class="row">
 
-                                <!-- Descripcion -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left">
-                                        <label for="last-name-column">Descripcion</label>
-                                        <div class="position-relative">
-                                            <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Name"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Descripcion" />
-                                            <div class="form-control-icon">
-                                                <i class="bi bi-building"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                
 
                                 <!-- Concepto -->
                                 <div class="col-md-6 col-12">
@@ -52,7 +36,7 @@
                                         <div class="position-relative">
                                             <input type="text"
                                                    class="form-control"
-                                                   placeholder="Name"
+                                                   placeholder="Concepto"
                                                    id="first-name-icon"
                                                    required
                                                    asp-for="Concepto" />
@@ -63,7 +47,25 @@
                                     </div>
                                 </div>
 
-                                <!-- Tipo Operacion -->
+                                <!-- Descripcion -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Descripcion</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Descripcion"
+                                                   id="first-name-icon"
+                                                   required
+                                                   asp-for="Descripcion" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+@*                                <!-- Tipo Operacion -->
                                 <div class="col-md-6 col-12">
                                     <div class="form-group has-icon-left mandaory">
                                         <label for="last-name-column">Tipo Operacion</label>
@@ -75,7 +77,7 @@
                                             </fieldset>
                                         </div>
                                     </div>
-                                </div>
+                                </div>*@
 
                                 <!-- Monto -->
                                 <div class="col-md-6 col-12">
@@ -132,15 +134,43 @@
                                     <div class="card-body">
                                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false"><option value="@FormaPago.Efectivo">Efectivo</option></a>
+                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" 
+                                                role="tab" aria-controls="home" aria-selected="false">
+                                                <option value="@FormaPago.Efectivo">Efectivo</option></a>
                                             </li>
                                             <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false"><option value="@FormaPago.Transferencia">Transferencia</option></a>
+                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" 
+                                                role="tab" aria-controls="profile" aria-selected="false">
+                                                <option value="@FormaPago.Transferencia">Transferencia</option></a>
                                             </li>
                                         </ul>
                                         <div class="tab-content" id="myTabContent">
                                             <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
                                                 <!-- Efectivo -->
+                                                <div class="card-body">
+                                                    <div class="form form-horizontal">
+                                                        <div class="form-body">
+                                                            <div class="row">
+                                                                
+                                                                <!-- Tipo de Banco -->
+                                                                <div class="col-md-6 col-12">
+                                                                    <div class="form-group has-icon-left mandaory">
+@*                                                                        <label for="last-name-column">Banco</label>*@
+                                                                        <div class="position-relative">
+                                                                            <fieldset class="form-group">
+                                                                                <select asp-for="IdCodigoCuentaCaja" 
+                                                                                asp-items="Model.SubCuentasCaja" 
+                                                                                class="form-select" id="basicSelect">
+                                                                                <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                </select>
+                                                                            </fieldset>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                             </div>
                                             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
@@ -154,7 +184,9 @@
                                                                     <div class="form-group has-icon-left">
                                                                         <label for="last-name-column">Número de Referencia</label>
                                                                         <div class="position-relative">
-                                                                            <input type="number" class="form-control" placeholder="Referencia" id="first-name-icon" required="">
+                                                                            <input type="number" class="form-control" 
+                                                                            placeholder="Referencia" id="first-name-icon" required=""
+                                                                            asp-for="NumReferencia">
                                                                             <div class="form-control-icon">
                                                                                 <i class="bi bi-credit-card"></i>
                                                                             </div>
@@ -170,7 +202,7 @@
                                                                                 <select asp-for="IdCodigoCuentaBanco" 
                                                                                 asp-items="Model.SubCuentasBancos" 
                                                                                 class="form-select" id="basicSelect">
-                                                                                <option value="">Seleccione un banco</option>
+                                                                                <option value="0">Seleccione un banco</option>
                                                                                 </select>
                                                                             </fieldset>
                                                                         </div>

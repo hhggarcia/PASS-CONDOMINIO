@@ -5,6 +5,11 @@ namespace Prueba.Models
 {
     public partial class PagoRecibido
     {
+        public PagoRecibido()
+        {
+            ReferenciasPrs = new HashSet<ReferenciasPr>();
+        }
+
         public int IdPagoRecibido { get; set; }
         public int IdPropiedad { get; set; }
         public bool FormaPago { get; set; }
@@ -13,6 +18,6 @@ namespace Prueba.Models
         public bool Conciliado { get; set; }
 
         public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
-        public virtual ReferenciasPr ReferenciasPr { get; set; } = null!;
+        public virtual ICollection<ReferenciasPr> ReferenciasPrs { get; set; }
     }
 }

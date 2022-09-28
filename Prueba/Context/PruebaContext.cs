@@ -900,47 +900,47 @@ namespace Prueba.Context
 
             modelBuilder.Entity<ReferenciasPe>(entity =>
             {
-                entity.HasKey(e => e.IdPagoEmitido)
-                    .HasName("PK_Referencias_PE_1");
+                entity.HasKey(e => e.IdReferencia);
 
                 entity.ToTable("Referencias_PE");
 
-                entity.Property(e => e.IdPagoEmitido)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("id_pagoEmitido");
+                entity.Property(e => e.IdReferencia).HasColumnName("id_referencia");
 
                 entity.Property(e => e.Banco)
                     .HasMaxLength(30)
                     .HasColumnName("banco");
 
+                entity.Property(e => e.IdPagoEmitido).HasColumnName("id_pagoEmitido");
+
                 entity.Property(e => e.NumReferencia).HasColumnName("num_referencia");
 
                 entity.HasOne(d => d.IdPagoEmitidoNavigation)
-                    .WithOne(p => p.ReferenciasPe)
-                    .HasForeignKey<ReferenciasPe>(d => d.IdPagoEmitido)
+                    .WithMany(p => p.ReferenciasPes)
+                    .HasForeignKey(d => d.IdPagoEmitido)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Referencias_PE_Pago_Emitido");
             });
 
             modelBuilder.Entity<ReferenciasPr>(entity =>
             {
-                entity.HasKey(e => e.IdPagoRecibido);
+                entity.HasKey(e => e.IdReferencia)
+                    .HasName("PK_Referencias_PR_1");
 
                 entity.ToTable("Referencias_PR");
 
-                entity.Property(e => e.IdPagoRecibido)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("id_pagoRecibido");
+                entity.Property(e => e.IdReferencia).HasColumnName("id_referencia");
 
                 entity.Property(e => e.Banco)
                     .HasMaxLength(30)
                     .HasColumnName("banco");
 
+                entity.Property(e => e.IdPagoRecibido).HasColumnName("id_pagoRecibido");
+
                 entity.Property(e => e.NumReferencia).HasColumnName("num_referencia");
 
                 entity.HasOne(d => d.IdPagoRecibidoNavigation)
-                    .WithOne(p => p.ReferenciasPr)
-                    .HasForeignKey<ReferenciasPr>(d => d.IdPagoRecibido)
+                    .WithMany(p => p.ReferenciasPrs)
+                    .HasForeignKey(d => d.IdPagoRecibido)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Referencias_PR_Pago_Recibido");
             });

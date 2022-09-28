@@ -1,4 +1,4 @@
-﻿@model IList<PagoEmitido>
+﻿@model IndexPagosVM
 @{
 }
 
@@ -41,19 +41,31 @@
                                     <th>Fecha</th>
                                     <th>Monto</th>
                                     <th>Forma de pago</th>
-
+                                    <th>Referencia</th>
+                                    <th>Banco</th>
                                 </tr>
                             </tfoot>
                             <tbody>
-                                @if (@Model.Count() > 0)
+                                @if (@Model.PagosEmitidos.Count() > 0)
                                 {
-                                    foreach (var item in @Model)
+                                    foreach (var item in @Model.PagosEmitidos)
                                     {
-                                        <tr>
-                                            <td>@item.Fecha</td>
-                                            <td>@item.Monto</td>
-                                            <td>@item.FormaPago</td>
-                                        </tr>
+                                        if (item.FormaPago)
+                                        {
+                                            <tr>
+                                                <td>@item.Fecha</td>
+                                                <td>@item.Monto</td>
+                                                <td>@FormaPago.Transferencia</td>
+                                            </tr>
+                                        } else
+                                        {
+                                            <tr>
+                                                <td>@item.Fecha</td>
+                                                <td>@item.Monto</td>
+                                                <td>@FormaPago.Efectivo</td>
+                                            </tr>
+                                        }
+
                                     }
                                 }
                                 else
