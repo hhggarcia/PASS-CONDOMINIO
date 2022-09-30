@@ -38,15 +38,26 @@
                         Relación de Gastos.
                     </h6>
                 </div>
-                <div class="card-body">
-                    <form class="form form-horizontal">
-                        <div class="form-body">
-                            <div class="row">
+                                                    <div class="card-body">
 
-                                <div class="col-md-12">
-                                    <div class="card-body">
-                                        <div class="table-responsive text-center">
+                                        <div class="table-responsive text-center pb-3">
                                             <table class="table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Total: @Model.Total</th>
+                                                        <th>Sub Total: @Model.SubTotal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="text-center table table-bordered"
+                                                   id="dataTable"
+                                                   width="100%"
+                                                   cellspacing="0">
                                                 <thead>
                                                     <tr>
                                                         <th>Descripción</th>
@@ -55,8 +66,17 @@
                                                         <th>Bs</th>
                                                     </tr>
                                                 </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Descripción</th>
+                                                        <th>USD</th>
+                                                        <th>Tasa</th>
+                                                        <th>Bs</th>
+                                                    </tr>
+                                                </tfoot>
                                                 <tbody>
-                                                    @if (Model.SubcuentasGastos.Count() > 0 && Model.GastosDiario.Count() > 0)
+
+                                                     @if (Model.SubcuentasGastos.Count() > 0 && Model.GastosDiario.Count() > 0)
                                                     {
                                                         @foreach (var item in Model.GastosDiario)
                                                         {
@@ -70,11 +90,11 @@
                                                         }
 
 
-                                                        <h4>Sub Total: @Model.SubTotal</h4>
+                                                        @*<h4>Sub Total: @Model.SubTotal</h4>
 
 
 
-                                                        <h4>Total: @Model.Total</h4>
+                                                        <h4>Total: @Model.Total</h4>*@
 
                                                     }
                                                     else
@@ -86,17 +106,11 @@
                                                             <td>:D</td>
                                                         </tr>
                                                     }
-
                                                 </tbody>
-
                                             </table>
                                         </div>
                                     </div>
 
-                                </div>
-                            </div>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
