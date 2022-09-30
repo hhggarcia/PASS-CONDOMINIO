@@ -37,6 +37,7 @@ namespace Prueba.Context
         public virtual DbSet<EstadoResultado> EstadoResultados { get; set; } = null!;
         public virtual DbSet<EstadoSituacion> EstadoSituacions { get; set; } = null!;
         public virtual DbSet<Factura> Facturas { get; set; } = null!;
+        public virtual DbSet<Fondo> Fondos { get; set; } = null!;
         public virtual DbSet<Gasto> Gastos { get; set; } = null!;
         public virtual DbSet<Grupo> Grupos { get; set; } = null!;
         public virtual DbSet<Ingreso> Ingresos { get; set; } = null!;
@@ -51,6 +52,7 @@ namespace Prueba.Context
         public virtual DbSet<Patrimonio> Patrimonios { get; set; } = null!;
         public virtual DbSet<Propiedad> Propiedads { get; set; } = null!;
         public virtual DbSet<Proveedor> Proveedors { get; set; } = null!;
+        public virtual DbSet<Provision> Provisiones { get; set; } = null!;
         public virtual DbSet<PuestoE> PuestoEs { get; set; } = null!;
         public virtual DbSet<ReciboCobro> ReciboCobros { get; set; } = null!;
         public virtual DbSet<ReciboNomina> ReciboNominas { get; set; } = null!;
@@ -482,6 +484,31 @@ namespace Prueba.Context
                     .HasColumnName("total");
             });
 
+            modelBuilder.Entity<Fondo>(entity =>
+            {
+                entity.HasKey(e => e.IdFondo);
+
+                entity.Property(e => e.IdFondo).HasColumnName("id_Fondo");
+
+                entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
+
+                entity.Property(e => e.IdRgasto).HasColumnName("id_rgasto");
+
+                entity.Property(e => e.Porcentaje).HasColumnName("porcentaje");
+
+                entity.HasOne(d => d.IdCodCuentaNavigation)
+                    .WithMany(p => p.Fondos)
+                    .HasForeignKey(d => d.IdCodCuenta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Fondos_CodigoCuentas_Global");
+
+                entity.HasOne(d => d.IdRgastoNavigation)
+                    .WithMany(p => p.Fondos)
+                    .HasForeignKey(d => d.IdRgasto)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Fondos_Relacion_Gastos");
+            });
+
             modelBuilder.Entity<Gasto>(entity =>
             {
                 entity.HasKey(e => e.IdGasto);
@@ -571,10 +598,6 @@ namespace Prueba.Context
                 entity.Property(e => e.Concepto)
                     .HasMaxLength(30)
                     .HasColumnName("concepto");
-
-                entity.Property(e => e.Descripcion)
-                    .HasMaxLength(30)
-                    .HasColumnName("descripcion");
 
                 entity.Property(e => e.Fecha)
                     .HasColumnType("date")
@@ -818,6 +841,33 @@ namespace Prueba.Context
                 entity.Property(e => e.Telefono).HasColumnName("telefono");
             });
 
+            modelBuilder.Entity<Provision>(entity =>
+            {
+                entity.HasKey(e => e.IdProvision);
+
+                entity.Property(e => e.IdProvision).HasColumnName("id_provision");
+
+                entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
+
+                entity.Property(e => e.IdRgasto).HasColumnName("id_rgasto");
+
+                entity.Property(e => e.Monto)
+                    .HasColumnType("smallmoney")
+                    .HasColumnName("monto");
+
+                entity.HasOne(d => d.IdCodCuentaNavigation)
+                    .WithMany(p => p.Provisiones)
+                    .HasForeignKey(d => d.IdCodCuenta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Provisiones_CodigoCuentas_Global");
+
+                entity.HasOne(d => d.IdRgastoNavigation)
+                    .WithMany(p => p.Provisiones)
+                    .HasForeignKey(d => d.IdRgasto)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Provisiones_Relacion_Gastos");
+            });
+
             modelBuilder.Entity<PuestoE>(entity =>
             {
                 entity.HasKey(e => e.IdPuestoE)
@@ -986,23 +1036,7 @@ namespace Prueba.Context
                     .HasColumnType("date")
                     .HasColumnName("fecha");
 
-                entity.Property(e => e.GastosNomina)
-                    .HasColumnType("money")
-                    .HasColumnName("gastos_nomina");
-
-                entity.Property(e => e.GastosPatrimonio)
-                    .HasColumnType("money")
-                    .HasColumnName("gastos_patrimonio");
-
-                entity.Property(e => e.GastosServicios)
-                    .HasColumnType("money")
-                    .HasColumnName("gastos_servicios");
-
                 entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
-
-                entity.Property(e => e.IdFactura).HasColumnName("id_factura");
-
-                entity.Property(e => e.IdRegistroNomina).HasColumnName("id_registroNomina");
 
                 entity.Property(e => e.SubTotal)
                     .HasColumnType("money")

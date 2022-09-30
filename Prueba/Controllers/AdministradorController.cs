@@ -68,14 +68,12 @@ namespace Prueba.Controllers
 
             return View(condominiosModel);
         }
-
         public IActionResult Dashboard(int? id)
         {
             // GUARDAR ID CONDOMINIO PARA SELECCIONAR SUS CUENTAS CONTABLES
             TempData["idCondominio"] = id.ToString();
             return View();
         }
-
         public IActionResult CuentasContables()
         {
             //HACER MODELO PARA CARGAR TODAS LAS CUENTAS A LA TABLA INDEX
@@ -368,7 +366,6 @@ namespace Prueba.Controllers
                     {
                         IdCodCuenta = modelo.IdSubcuenta,
                         Fecha = modelo.Fecha,
-                        Descripcion = modelo.Descripcion,
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = false,
@@ -378,7 +375,6 @@ namespace Prueba.Controllers
                     {
                         IdCodCuenta = modelo.IdCodigoCuentaCaja,
                         Fecha = modelo.Fecha,
-                        Descripcion = modelo.Descripcion,
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = true,
@@ -449,7 +445,6 @@ namespace Prueba.Controllers
                     {
                         IdCodCuenta = modelo.IdSubcuenta,
                         Fecha = modelo.Fecha,
-                        Descripcion = modelo.Descripcion,
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = true,
@@ -459,7 +454,6 @@ namespace Prueba.Controllers
                     {
                         IdCodCuenta = modelo.IdCodigoCuentaBanco,
                         Fecha = modelo.Fecha,
-                        Descripcion = modelo.Descripcion,
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = false,
@@ -500,20 +494,101 @@ namespace Prueba.Controllers
 
         }
 
-        public IActionResult RelaciondeGastos()
+        public async Task<IActionResult> RelaciondeGastos()
         {
             // CARGAR GASTOS REGISTRADOS
+            //traer subcuentas del condominio
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var modelo = await LoadDataRelacionGastos(idCondominio);
+            TempData.Keep();
+            return View(modelo);
+
+        }
+
+
+        // cargar relacion de gastos dependiendo del condominio
+        private async Task<RelacionDeGastosVM> LoadDataRelacionGastos(int id)
+        {
+            var condominio = await _context.Condominios.FindAsync(id);
+
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                       where c.IdCondominio == condominio.IdCondominio
+                                       select c;
+
+            var gruposGastos = from c in _context.Grupos
+                               where c.IdClase == 5
+                               select c;
+
+            var cuentas = from c in _context.Cuenta
+                          select c;
+
+            var subcuentas = from c in _context.SubCuenta
+                             select c;
+
+            // CARGAR DIARIO COMPLETO
+            var diario = from d in _context.LdiarioGlobals
+                         select d;
 
             // CARGAR CUENTAS GASTOS DEL CONDOMINIO
+            IList<Cuenta> cuentasGastos = new List<Cuenta>();
+            foreach (var grupo in gruposGastos)
+            {
+                foreach (var cuenta in cuentas)
+                {
+                    if (cuenta.IdGrupo == grupo.Id)
+                    {
+                        cuentasGastos.Add(cuenta);
+                    }
+                    continue;
+                }
+            }
+
+            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
+            foreach (var cuenta in cuentasGastos)
+            {
+                foreach (var subcuenta in subcuentas)
+                {
+                    if (subcuenta.IdCuenta == cuenta.Id)
+                    {
+                        subcuentasGastos.Add(subcuenta);
+                    }
+                    continue;
+                }
+            }
 
             // BUSCAR ASIENTOS EN EL DIARIO CORRESPONDIENTES A LAS CUENTAS GASTOS DEL CONDOMINIO
-
+            IList<LdiarioGlobal> asientosGastosCondominio = new List<LdiarioGlobal>();
+            IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
+            decimal subtotal = 0;
+            decimal total = 0;
+            foreach (var asiento in diario)
+            {
+                foreach (var gasto in subcuentasGastos)
+                {
+                    if (asiento.IdCodCuenta == gasto.Id)
+                    {
+                        subtotal += asiento.Monto;
+                        total += asiento.Monto;
+                        asientosGastosCondominio.Add(asiento);
+                        subcuentasModel.Add(gasto);
+                    }
+                    continue;
+                }
+            }
             // CREAR MODELO PARA LOS TOTALES DE LA RELACION DE GASTOS Y CARGAR VISTA
+            var modelo = new RelacionDeGastosVM
+            {
+                GastosDiario = asientosGastosCondominio,
+                SubcuentasGastos = subcuentasModel,
+                Total = total,
+                SubTotal = subtotal,
+                Fecha = DateTime.Today,
+                Condominio = condominio
+            };
 
-
-            return View();
+            return modelo;
         }
-        
+
         // generar recibos de cobro
 
         // generar pdf
@@ -535,11 +610,11 @@ namespace Prueba.Controllers
             var subcuentas = from c in _context.SubCuenta
                              select c;
             var clases = from c in _context.Clases
-                                       select c;
+                         select c;
             var grupos = from c in _context.Grupos
-                                       select c;
+                         select c;
             var cuentas = from c in _context.Cuenta
-                                         select c;
+                          select c;
             // CARGAR DIARIO COMPLETO
             var diario = from d in _context.LdiarioGlobals
                          select d;
@@ -598,7 +673,5 @@ namespace Prueba.Controllers
         {
             return View();
         }
-
-
     }
 }

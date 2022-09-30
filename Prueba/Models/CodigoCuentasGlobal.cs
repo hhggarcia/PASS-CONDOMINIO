@@ -7,7 +7,9 @@ namespace Prueba.Models
     {
         public CodigoCuentasGlobal()
         {
+            Fondos = new HashSet<Fondo>();
             LdiarioGlobals = new HashSet<LdiarioGlobal>();
+            Provisiones = new HashSet<Provision>();
         }
 
         public int IdCodCuenta { get; set; }
@@ -16,6 +18,8 @@ namespace Prueba.Models
 
         public virtual SubCuenta IdCodigoNavigation { get; set; } = null!;
         public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+        public virtual ICollection<Fondo> Fondos { get; set; }
         public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; set; }
+        public virtual ICollection<Provision> Provisiones { get; set; }
     }
 }

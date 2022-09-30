@@ -17,7 +17,6 @@ namespace Prueba.Models
         public int IdAsiento { get; set; }
         public int IdCodCuenta { get; set; }
         public DateTime Fecha { get; set; }
-        public string Descripcion { get; set; } = null!;
         public string Concepto { get; set; } = null!;
         public decimal Monto { get; set; }
         public bool TipoOperacion { get; set; }
