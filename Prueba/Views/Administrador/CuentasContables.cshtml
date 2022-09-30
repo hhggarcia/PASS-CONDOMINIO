@@ -17,7 +17,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Cuentas Contables
+                       Cuentas Contables
                     </h6>
 
                 </div>
@@ -54,7 +54,7 @@
                                             {
                                                 <tr>
                                                     <td>@(Model.Clases[i].Codigo+"."+Model.Grupos[j].Codigo+".00.00")</td>
-                                                    <td> -> @Model.Grupos[j].Descripcion</td>
+                                                    <td> &nbsp; <i class="text-s-1 bi bi-arrow-return-right"></i> @Model.Grupos[j].Descripcion</td>
                                                 </tr>
                                                 for (int k = 0; k < @Model.Cuentas.Count(); k++)
                                                 {
@@ -62,7 +62,7 @@
                                                     {
                                                         <tr>
                                                             <td>@(Model.Clases[i].Codigo+"."+Model.Grupos[j].Codigo+"."+Model.Cuentas[k].Codigo+".00")</td>
-                                                            <td> ->  -> @Model.Cuentas[k].Descripcion</td>
+                                                            <td> &nbsp; &nbsp; &nbsp; <i class="text-s-2 bi bi-arrow-return-right"></i> @Model.Cuentas[k].Descripcion</td>
                                                         </tr>
                                                         for (int z = 0; z < @Model.SubCuentas.Count(); z++)
                                                         {
@@ -70,7 +70,7 @@
                                                             {
                                                                 <tr>
                                                                     <td>@(Model.Clases[i].Codigo+"."+Model.Grupos[j].Codigo+"."+Model.Cuentas[k].Codigo+"."+Model.SubCuentas[z].Codigo)</td>
-                                                                    <td> ->  ->  ->  -> @Model.SubCuentas[z].Descricion</td>
+                                                                    <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentas[z].Descricion</td>
                                                                 </tr>
 
                                                             }
