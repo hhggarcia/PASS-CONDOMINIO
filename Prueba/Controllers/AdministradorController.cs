@@ -180,7 +180,7 @@ namespace Prueba.Controllers
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
                 var nuevoCC = new CodigoCuentasGlobal
                 {
-                    IdCodCuenta = nuevaSubCuenta.Id,
+                    IdCodigo = nuevaSubCuenta.Id,
                     IdCondominio = idCondominio
                 };
 
@@ -190,7 +190,7 @@ namespace Prueba.Controllers
                     _dContext.SaveChanges();
                 }
 
-                return View("Index");
+                return RedirectToAction("CuentasContables");
 
             }
 
@@ -497,14 +497,192 @@ namespace Prueba.Controllers
         public async Task<IActionResult> RelaciondeGastos()
         {
             // CARGAR GASTOS REGISTRADOS
+
+            // BUSCAR FONDOS Y PREVISIONES POR idCODCUEENTASGLOBAL -> ID CONDOMINIO
+
             //traer subcuentas del condominio
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
             var modelo = await LoadDataRelacionGastos(idCondominio);
+
+            // BUSCAR PROVISIONES en los asientos del diario
+            var proviciones = from p in _context.Provisiones
+                              select p;
+            // BUSCAR FONDOS
+            var fondos = from f in _context.Fondos
+                         select f;
+
+            var subcuentas = from c in _context.SubCuenta
+                             select c;
+
+            if (proviciones.Any() && fondos.Any())
+            {
+                modelo.Provisiones = await proviciones.ToListAsync();
+                modelo.Fondos = await fondos.ToListAsync();
+
+                IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+                foreach (var fondo in modelo.Fondos)
+                {
+                    var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+
+                    if (subcuentaFondo.Any())
+                    {
+                        SubCuenta aux = subcuentaFondo.FirstOrDefault();
+                        if (aux != null)
+                        {
+                            subcuentasFondosModel.Add(aux);
+                        }
+                    }
+                }
+                modelo.SubCuentasFondos = subcuentasFondosModel;
+            }
+            else if (proviciones.Any() && !fondos.Any())
+            {
+                modelo.Provisiones = await proviciones.ToListAsync();
+
+            }
+            else if (!proviciones.Any() && fondos.Any())
+            {
+                modelo.Fondos = await fondos.ToListAsync();
+                IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+
+                foreach (var fondo in modelo.Fondos)
+                {
+                    var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+
+                    if (subcuentaFondo.Any())
+                    {
+                        SubCuenta aux = subcuentaFondo.FirstOrDefault();
+                        if (aux != null)
+                        {
+                            subcuentasFondosModel.Add(aux);
+                        }
+                    }
+                }
+                modelo.SubCuentasFondos = subcuentasFondosModel;
+
+            }
+
             TempData.Keep();
             return View(modelo);
 
         }
 
+        public IActionResult CrearFondo()
+        {
+            var modelo = new CrearFondoVM();
+
+            // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                       where c.IdCondominio == idCondominio
+                                       select c;
+
+            IQueryable<Grupo> gruposPatrimonio = from c in _context.Grupos
+                                                 where c.IdClase == 3
+                                                 select c;
+            IQueryable<Cuenta> cuentas = from c in _context.Cuenta
+                                         where gruposPatrimonio.FirstOrDefault().Id == c.IdGrupo
+                                         select c;
+            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
+                                               where cuentas.FirstOrDefault().Id == c.IdCuenta
+                                               select c;
+
+            // LLENAR SELECT CON LOS FONDOS REGISTRADOS
+            modelo.Fondos = subcuentas.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+
+            TempData.Keep();
+
+            return View(modelo);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CrearFondo(CrearFondoVM modelo)
+        {
+            if (ModelState.IsValid)
+            {
+                var fondo = new Fondo
+                {
+                    IdCodCuenta = modelo.IdFondo,
+                    Porcentaje = modelo.Porcentaje
+                };
+                using (var db_context = new PruebaContext())
+                {
+                    await db_context.AddAsync(fondo);
+                    await db_context.SaveChangesAsync();
+                }
+
+                return RedirectToAction("RelaciondeGastos");
+            }
+            return View(modelo);
+        }
+
+        public IActionResult CrearProvision()
+        {
+            var modelo = new CrearProvisionVM();
+
+            // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                       where c.IdCondominio == idCondominio
+                                       select c;
+            var gruposGastos = from c in _context.Grupos
+                               where c.IdClase == 5
+                               select c;
+
+            var cuentaProvision = from c in _context.Cuenta
+                                 where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
+                                 select c;
+
+            var subcuentasProvisiones = from c in _context.SubCuenta
+                                        where c.IdCuenta == cuentaProvision.FirstOrDefault().Id
+                                        select c;
+
+            var cuentas = from c in _context.Cuenta
+                          select c;
+
+            var subcuentas = from c in _context.SubCuenta
+                             select c;
+
+            // CARGAR CUENTAS GASTOS DEL CONDOMINIO
+            IList<Cuenta> cuentasGastos = new List<Cuenta>();
+            foreach (var grupo in gruposGastos)
+            {
+                foreach (var cuenta in cuentas)
+                {
+                    if (cuenta.IdGrupo == grupo.Id)
+                    {
+                        cuentasGastos.Add(cuenta);
+                    }
+                    continue;
+                }
+            }
+
+            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
+            foreach (var cuenta in cuentasGastos)
+            {
+                foreach (var subcuenta in subcuentas)
+                {
+                    if (subcuenta.IdCuenta == cuenta.Id)
+                    {
+                        subcuentasGastos.Add(subcuenta);
+                    }
+                    continue;
+                }
+            }
+
+            modelo.Gastos = subcuentasGastos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.Provisiones = subcuentasProvisiones.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+
+            return View(modelo);
+        }
+        [HttpPost]
+        public IActionResult CrearProvision(CrearProvisionVM modelo)
+        {
+            // GUARDAR PREVISION EN BD
+
+            // CREAR ASIENTO SOBRE PREVISION
+
+            return View();
+        }
 
         // cargar relacion de gastos dependiendo del condominio
         private async Task<RelacionDeGastosVM> LoadDataRelacionGastos(int id)
@@ -590,7 +768,6 @@ namespace Prueba.Controllers
         }
 
         // generar recibos de cobro
-
         // generar pdf
 
         public IActionResult PagosRecibidos()

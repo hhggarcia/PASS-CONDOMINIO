@@ -7,8 +7,6 @@ namespace Prueba.Models
     {
         public RelacionGasto()
         {
-            Fondos = new HashSet<Fondo>();
-            Provisiones = new HashSet<Provision>();
             ReciboCobros = new HashSet<ReciboCobro>();
         }
 
@@ -19,8 +17,6 @@ namespace Prueba.Models
         public int IdCondominio { get; set; }
 
         public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-        public virtual ICollection<Fondo> Fondos { get; set; }
-        public virtual ICollection<Provision> Provisiones { get; set; }
         public virtual ICollection<ReciboCobro> ReciboCobros { get; set; }
     }
 }

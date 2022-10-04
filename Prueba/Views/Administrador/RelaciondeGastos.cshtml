@@ -16,12 +16,12 @@
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Recibo de Cobro
         </a>
-        <a asp-action="FondoRG"
+        <a asp-action="CrearFondo"
            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i>
             Agregar Fondo
         </a>
-        <a asp-action="ProvisionRG"
+        <a asp-action="CrearProvision"
            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i>
             Agregar Provisión
@@ -69,10 +69,24 @@
                                                             </tr>
                                                         }
 
-
                                                         <h4>Sub Total: @Model.SubTotal</h4>
 
+                                                        if (Model.Fondos.Count() > 0)
+                                                        {
+                                                            foreach (var fondo in Model.Fondos)
+                                                            {
+                                                                var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+                                                                <tr>
+                                                                    <th>@subcuenta.FirstOrDefault().Descricion</th>
+                                                                    <th>$$$$$$$$$</th>
+                                                                    <th>BCV</th>
+                                                                    <th>@(Model.SubTotal*fondo.Porcentaje/100)</th>
+                                                                </tr>
 
+                                                                @(Model.Total += Model.SubTotal*fondo.Porcentaje/100)
+                                                            }
+
+                                                        }
 
                                                         <h4>Total: @Model.Total</h4>
 

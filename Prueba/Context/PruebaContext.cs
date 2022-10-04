@@ -492,8 +492,6 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
 
-                entity.Property(e => e.IdRgasto).HasColumnName("id_rgasto");
-
                 entity.Property(e => e.Porcentaje).HasColumnName("porcentaje");
 
                 entity.HasOne(d => d.IdCodCuentaNavigation)
@@ -501,12 +499,6 @@ namespace Prueba.Context
                     .HasForeignKey(d => d.IdCodCuenta)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Fondos_CodigoCuentas_Global");
-
-                entity.HasOne(d => d.IdRgastoNavigation)
-                    .WithMany(p => p.Fondos)
-                    .HasForeignKey(d => d.IdRgasto)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Fondos_Relacion_Gastos");
             });
 
             modelBuilder.Entity<Gasto>(entity =>
@@ -849,23 +841,23 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
 
-                entity.Property(e => e.IdRgasto).HasColumnName("id_rgasto");
+                entity.Property(e => e.IdCodGasto).HasColumnName("id_codGasto");
 
                 entity.Property(e => e.Monto)
                     .HasColumnType("smallmoney")
                     .HasColumnName("monto");
 
                 entity.HasOne(d => d.IdCodCuentaNavigation)
-                    .WithMany(p => p.Provisiones)
+                    .WithMany(p => p.ProvisioneIdCodCuentaNavigations)
                     .HasForeignKey(d => d.IdCodCuenta)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Provisiones_CodigoCuentas_Global");
 
-                entity.HasOne(d => d.IdRgastoNavigation)
-                    .WithMany(p => p.Provisiones)
-                    .HasForeignKey(d => d.IdRgasto)
+                entity.HasOne(d => d.IdCodGastoNavigation)
+                    .WithMany(p => p.ProvisioneIdCodGastoNavigations)
+                    .HasForeignKey(d => d.IdCodGasto)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Provisiones_Relacion_Gastos");
+                    .HasConstraintName("FK_Provisiones_CodigoCuentas_Global1");
             });
 
             modelBuilder.Entity<PuestoE>(entity =>

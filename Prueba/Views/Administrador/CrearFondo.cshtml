@@ -1,0 +1,18 @@
+﻿@model CrearFondoVM
+@{
+}
+
+<h3>Crear Fondo</h3>
+
+<form asp-action="CrearFondo">
+    <label>Fondos</label>
+    <select asp-for="IdFondo" asp-items="Model.Fondos">
+        <option value="">Seleccione el fondo</option>
+    </select>
+
+    <label>Porcentaje destiando al fondo</label>
+    <input type="number" asp-for="Porcentaje"/>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="RelaciondeGastos" class="btn">Volver</a>
+</form>

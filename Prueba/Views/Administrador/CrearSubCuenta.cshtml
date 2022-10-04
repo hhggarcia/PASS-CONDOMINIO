@@ -3,11 +3,6 @@
 @model SubcuentaCascadingVM
 @{
 }
-
-
-
-
-
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -25,7 +20,7 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form class="form form-horizontal" method="post" action="/Admin/RegistroInmueblePost">
+                    <div >
 
 
                         <div class="form-body">
@@ -153,7 +148,7 @@
                                                 </li>
                                             </ul>
                                             <!-- Step Wise Form Content -->
-                                            <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+                                            <div >
                                                 <!-- Step 1 Content -->
                                                 <section id="step-1" class="form-step">
                                                     <h2 class="font-normal">Seleccionar una Clase</h2>
@@ -213,11 +208,11 @@
                                                     </div>
                                                     <div class="mt-3">
                                                         <button class="btn-primary btn button btn-navigate-form-step" type="button" step_number="2">Atras</button>
-                                                        <input class="btn btn-primary" type="submit" value="Submit" />
-                                                        @*<button class="button submit-btn" type="submit">Save</button>*@
+
+                                                        <button class="btn btn-primary" type="submit">Save</button>
                                                     </div>
                                                 </section>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -226,7 +221,7 @@
                             </div>
                         </div>
                         
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
