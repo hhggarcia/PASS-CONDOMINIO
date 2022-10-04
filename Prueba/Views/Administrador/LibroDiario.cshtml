@@ -33,165 +33,89 @@
                                 <div class="col-md-12">
                                     <div class="card-body">
 
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="todo-tab" data-bs-toggle="tab" href="#todo" role="tab" aria-controls="todo" aria-selected="true">Todo</a>
-                                            </li>
+                                        <div class="table-responsive text-center pb-3">
+                                            <table class="table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-danger">Total Debe: @Model.TotalDebe</th>
+                                                        <th class="text-success">Total Haber: @Model.TotalHaber</th>
+                                                        <th>Diferencia: @Model.Diferencia</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                                <!-- Efectivo -->
-                                                <div class="table-responsive text-center">
-                                                    <table class="table mb-0">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>#</th>
-                                                                <th>Código</th>
-                                                                <th>Fecha</th>
-                                                                <th>Concepto</th>
-                                                                <th class="text-danger">Debe</th>
-                                                                <th class="text-success">Haber</th>
-                                                                <th>Descripción</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td class="text-bold-500">1</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="text-bold-500">2</td>
-                                                                <td>$13/hr</td>
-                                                                <td class="text-bold-500">Graphic concepts</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                                <!-- Trasnaferencia -->
-                                                <div class="table-responsive text-center">
-                                                    <table class="table mb-0">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>#</th>
-                                                                <th>Código</th>
-                                                                <th>Fecha</th>
-                                                                <th>Concepto</th>
-                                                                <th class="text-danger">Debe</th>
-                                                                <th class="text-success">Haber</th>
-                                                                <th>Descripción</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td class="text-bold-500">1</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="text-bold-500">2</td>
-                                                                <td>$13/hr</td>
-                                                                <td class="text-bold-500">Graphic concepts</td>
-                                                                <td class="text-bold-500">Michael Right</td>
-                                                                <td>$15/hr</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                                <td class="text-bold-500">UI/UX</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
+                                        <div class="table-responsive">
+                                            <table class="text-center table table-bordered"
+                                                   id="dataTable"
+                                                   width="100%"
+                                                   cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Asiento</th>
+                                                        <th>Fecha</th>
+                                                        <th>Código</th>
+                                                        <th>Descripción</th>
+                                                        <th>Concepto</th>
+                                                        <th class="text-danger">Debe</th>
+                                                        <th class="text-success">Haber</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Asiento</th>
+                                                        <th>Fecha</th>
+                                                        <th>Código</th>
+                                                        <th>Descripción</th>
+                                                        <th>Concepto</th>
+                                                        <th class="text-danger">Debe</th>
+                                                        <th class="text-success">Haber</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
 
-                                            <div class="tab-pane fade" id="todo" role="tabpanel" aria-labelledby="todo-tab">
-                                                <!-- Todo -->
-                                                <div class="table-responsive text-center">
-                                                    <table class="table mb-0">
-                                                        <thead>
+                                                    @foreach (var asiento in Model.AsientosCondominio)
+                                                    {
+                                                        var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == asiento.IdCodCuenta).ToList();
+                                                        var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.FirstOrDefault().IdCuenta).ToList();
+                                                        var grupo = Model.Grupos.Where(c => c.Id == cuenta.FirstOrDefault().IdGrupo).ToList();
+                                                        var clase = Model.Clases.Where(c => c.Id == grupo.FirstOrDefault().IdClase).ToList();
+
+                                                        if (asiento.IdCodCuenta == subcuenta.FirstOrDefault().Id)
+                                                        {
                                                             <tr>
-                                                                <th>Asiento</th>
-                                                                <th>Fecha</th>
-                                                                <th>Código</th>
-                                                                <th>Descripción</th>
-                                                                <th>Concepto</th>
-                                                                <th class="text-danger">Debe</th>
-                                                                <th class="text-success">Haber</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                            @foreach (var asiento in Model.AsientosCondominio)
-                                                            {
-                                                                var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == asiento.IdCodCuenta).ToList();
-                                                                var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.FirstOrDefault().IdCuenta).ToList();
-                                                                var grupo = Model.Grupos.Where(c => c.Id == cuenta.FirstOrDefault().IdGrupo).ToList();
-                                                                var clase = Model.Clases.Where(c => c.Id == grupo.FirstOrDefault().IdClase).ToList();
-
-                                                                if (asiento.IdCodCuenta == subcuenta.FirstOrDefault().Id)
+                                                                <td>@asiento.NumAsiento</td>
+                                                                <td class="text-bold-500">@asiento.Fecha.ToString("dd/MM/yyyy")</td>
+                                                                <td>@(clase.FirstOrDefault().Codigo + "." + grupo.FirstOrDefault().Codigo + "." + cuenta.FirstOrDefault().Codigo + "." + subcuenta.FirstOrDefault().Codigo)</td>
+                                                                <td class="text-bold-500">@subcuenta.FirstOrDefault().Descricion</td>
+                                                                <td class="text-bold-500">@asiento.Concepto</td>
+                                                                @if (asiento.TipoOperacion)
                                                                 {
-                                                                    <tr>
-                                                                        <td>@asiento.NumAsiento</td>
-                                                                        <td class="text-bold-500">@asiento.Fecha.ToString("dd/MM/yyyy")</td>
-                                                                        <td>@(clase.FirstOrDefault().Codigo+"."+grupo.FirstOrDefault().Codigo+"."+cuenta.FirstOrDefault().Codigo+"."+subcuenta.FirstOrDefault().Codigo)</td>
-                                                                        <td class="text-bold-500">@subcuenta.FirstOrDefault().Descricion</td>
-                                                                        <td class="text-bold-500">@asiento.Concepto</td>
-                                                                        @if (asiento.TipoOperacion)
-                                                                        {
-                                                                            <td class="text-bold-500">@asiento.Monto</td>
-                                                                            <td class="text-bold-500"></td>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <td class="text-bold-500"></td>
-                                                                            <td class="text-bold-500">@asiento.Monto</td>
-                                                                        }
-                                                                    </tr>
-
+                                                                    <td class="text-bold-500">@asiento.Monto</td>
+                                                                    <td class="text-bold-500"></td>
                                                                 }
-                                                            }
+                                                                else
+                                                                {
+                                                                    <td class="text-bold-500"></td>
+                                                                    <td class="text-bold-500">@asiento.Monto</td>
+                                                                }
+                                                            </tr>
 
-                                                        </tbody>
-                                                    </table>
-                                                    <h3>Total Debe: @Model.TotalDebe</h3>
-                                                    <h3>Total Haber: @Model.TotalHaber</h3>
-                                                    <h3>Diferencia: @Model.Diferencia</h3>
-                                                </div>
-                                            </div>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-
-
-
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 

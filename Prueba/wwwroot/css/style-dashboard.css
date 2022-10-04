@@ -2239,7 +2239,7 @@ select.form-control:focus::-ms-value {
 
 .form-control-sm {
     height: calc(1.5em + 0.5rem + 2px);
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.9rem;
     font-size: 0.875rem;
     line-height: 1.5;
     border-radius: 0.2rem;
@@ -10981,7 +10981,7 @@ a:focus {
     /* Bg Gradient */
     #wrapper #content-wrapper {
         width: 100%;
-        background-image: radial-gradient(at 55% 9%, #dde8f0 0, transparent 50%), radial-gradient(at 90% 3%, #4b79f7 0, transparent 50%), radial-gradient(at 1% 39%, #004581 0, transparent 50%), radial-gradient(at 12% 77%, #6b66ff 0, transparent 50%), radial-gradient(at 79% 58%, #018add 0, transparent 50%), radial-gradient(at 97% 92%, #dde8f0 0, transparent 50%), radial-gradient(at 1% 2%, #018add 0, transparent 50%);
+        background-image: radial-gradient(at 55% 9%, #435ebe 0, transparent 50%), radial-gradient(at 90% 3%, #4b79f7 0, transparent 50%), radial-gradient(at 1% 39%, #004581 0, transparent 50%), radial-gradient(at 12% 77%, #6b66ff 0, transparent 50%), radial-gradient(at 79% 58%, #018add 0, transparent 50%), radial-gradient(at 97% 92%, #435ebe 0, transparent 50%), radial-gradient(at 1% 2%, #018add 0, transparent 50%);
         overflow-x: hidden;
     }
 
@@ -13367,4 +13367,14 @@ ul.form-stepper li a .form-stepper-circle {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     padding: 3rem;
+}
+
+.text-s-1 {
+    color: #eb8c1c;
+}
+.text-s-2 {
+    color: #68ad2c;
+}
+.text-s-3 {
+    color: #833084;
 }
