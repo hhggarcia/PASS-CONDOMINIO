@@ -45,8 +45,25 @@
 
                                 <div class="col-md-12">
                                     <div class="card-body">
-                                        <div class="table-responsive text-center">
+
+                                        <div class="table-responsive text-center pb-3">
                                             <table class="table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sub Total: @Model.SubTotal</th>
+                                                        <th>Total: @Model.Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="text-center table table-bordered"
+                                                   id="dataTable"
+                                                   width="100%"
+                                                   cellspacing="0">
                                                 <thead>
                                                     <tr>
                                                         <th>Descripción</th>
@@ -55,6 +72,14 @@
                                                         <th>Bs</th>
                                                     </tr>
                                                 </thead>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>Descripción</th>
+                                                        <th>USD</th>
+                                                        <th>Tasa</th>
+                                                        <th>Bs</th>
+                                                    </tr>
+                                                </tfoot>
                                                 <tbody>
                                                     @if (Model.SubcuentasGastos.Count() > 0 && Model.GastosDiario.Count() > 0)
                                                     {
@@ -69,7 +94,7 @@
                                                             </tr>
                                                         }
 
-                                                        <h4>Sub Total: @Model.SubTotal</h4>
+                                                       @* <h4>Sub Total: @Model.SubTotal</h4>*@
 
                                                         if (Model.Fondos.Count() > 0)
                                                         {
@@ -80,15 +105,15 @@
                                                                     <th>@subcuenta.FirstOrDefault().Descricion</th>
                                                                     <th>$$$$$$$$$</th>
                                                                     <th>BCV</th>
-                                                                    <th>@(Model.SubTotal*fondo.Porcentaje/100)</th>
+                                                                    <th>@(Model.SubTotal * fondo.Porcentaje / 100)</th>
                                                                 </tr>
 
-                                                                @(Model.Total += Model.SubTotal*fondo.Porcentaje/100)
+                                                                @(Model.Total += Model.SubTotal * fondo.Porcentaje / 100)
                                                             }
 
                                                         }
 
-                                                        <h4>Total: @Model.Total</h4>
+                                                        @*<h4>Total: @Model.Total</h4>*@
 
                                                     }
                                                     else
@@ -102,11 +127,9 @@
                                                     }
 
                                                 </tbody>
-
                                             </table>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                     </form>
