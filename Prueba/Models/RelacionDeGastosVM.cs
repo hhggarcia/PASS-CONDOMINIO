@@ -7,6 +7,8 @@
         public IList<SubCuenta>? SubcuentasGastos { get; set; }
         // LISTA DE PROVISIONES
         public IList<Provision>? Provisiones { get; set; }
+        public IList<SubCuenta>? SubCuentasProvisiones { get; set; }
+
         // SUBCUENTAS FONDOS
         public IList<SubCuenta>? SubCuentasFondos { get; set; }
         // LISTA DE FONDOS

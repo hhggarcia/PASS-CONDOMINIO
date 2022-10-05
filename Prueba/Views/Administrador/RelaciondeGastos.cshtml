@@ -56,7 +56,8 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @if (Model.SubcuentasGastos.Count() > 0 && Model.GastosDiario.Count() > 0)
+
+                                                    @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any()) && (Model.GastosDiario != null && Model.GastosDiario.Any()))
                                                     {
                                                         @foreach (var item in Model.GastosDiario)
                                                         {
@@ -69,9 +70,24 @@
                                                             </tr>
                                                         }
 
+                                                        if (Model.Provisiones != null && Model.Provisiones.Any())
+                                                        {
+                                                            foreach (var provisiones in Model.Provisiones)
+                                                            {
+                                                                var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                                                                <tr>
+                                                                    <th>@subcuenta.FirstOrDefault().Descricion</th>
+                                                                    <th>$$$$$$$$$</th>
+                                                                    <th>BCV</th>
+                                                                    <th>@provisiones.Monto</th>
+                                                                </tr>
+                                                            }
+
+                                                        }
+
                                                         <h4>Sub Total: @Model.SubTotal</h4>
 
-                                                        if (Model.Fondos.Count() > 0)
+                                                        if (Model.Fondos != null && Model.Fondos.Any())
                                                         {
                                                             foreach (var fondo in Model.Fondos)
                                                             {
@@ -82,8 +98,6 @@
                                                                     <th>BCV</th>
                                                                     <th>@(Model.SubTotal*fondo.Porcentaje/100)</th>
                                                                 </tr>
-
-                                                                @(Model.Total += Model.SubTotal*fondo.Porcentaje/100)
                                                             }
 
                                                         }
@@ -100,7 +114,6 @@
                                                             <td>:D</td>
                                                         </tr>
                                                     }
-
                                                 </tbody>
 
                                             </table>

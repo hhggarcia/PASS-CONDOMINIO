@@ -502,6 +502,7 @@ namespace Prueba.Controllers
 
             //traer subcuentas del condominio
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             var modelo = await LoadDataRelacionGastos(idCondominio);
 
             // BUSCAR PROVISIONES en los asientos del diario
@@ -529,15 +530,50 @@ namespace Prueba.Controllers
                         SubCuenta aux = subcuentaFondo.FirstOrDefault();
                         if (aux != null)
                         {
+                            modelo.Total += modelo.SubTotal * (fondo.Porcentaje / 100);
                             subcuentasFondosModel.Add(aux);
                         }
                     }
                 }
+                IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                foreach (var provision in modelo.Provisiones)
+                {
+                    var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+
+                    if (subcuentaProvision.Any())
+                    {
+                        SubCuenta aux = subcuentaProvision.FirstOrDefault();
+                        if (aux != null)
+                        {
+                            modelo.SubTotal += provision.Monto;
+                            subcuentasProvisionesModel.Add(aux);
+                        }
+                    }
+                }
                 modelo.SubCuentasFondos = subcuentasFondosModel;
+                modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
             }
             else if (proviciones.Any() && !fondos.Any())
             {
                 modelo.Provisiones = await proviciones.ToListAsync();
+
+                IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                foreach (var provision in modelo.Provisiones)
+                {
+                    var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+
+                    if (subcuentaProvision.Any())
+                    {
+                        SubCuenta aux = subcuentaProvision.FirstOrDefault();
+                        if (aux != null)
+                        {
+                            modelo.SubTotal += provision.Monto;
+                            subcuentasProvisionesModel.Add(aux);
+                        }
+                    }
+                }
+
+                modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
 
             }
             else if (!proviciones.Any() && fondos.Any())
@@ -554,12 +590,12 @@ namespace Prueba.Controllers
                         SubCuenta aux = subcuentaFondo.FirstOrDefault();
                         if (aux != null)
                         {
+                            modelo.Total += modelo.SubTotal*fondo.Porcentaje/100;
                             subcuentasFondosModel.Add(aux);
                         }
                     }
                 }
                 modelo.SubCuentasFondos = subcuentasFondosModel;
-
             }
 
             TempData.Keep();
@@ -604,6 +640,7 @@ namespace Prueba.Controllers
                     IdCodCuenta = modelo.IdFondo,
                     Porcentaje = modelo.Porcentaje
                 };
+
                 using (var db_context = new PruebaContext())
                 {
                     await db_context.AddAsync(fondo);
@@ -675,13 +712,62 @@ namespace Prueba.Controllers
             return View(modelo);
         }
         [HttpPost]
-        public IActionResult CrearProvision(CrearProvisionVM modelo)
+        public async Task<IActionResult> CrearProvision(CrearProvisionVM modelo)
         {
-            // GUARDAR PREVISION EN BD
+            if (ModelState.IsValid)
+            {
+                // GUARDAR PREVISION EN BD
+                var provision = new Provision
+                {
+                    IdCodGasto = modelo.IdGasto,
+                    IdCodCuenta = modelo.IdcodCuenta,
+                    Monto = modelo.Monto
+                };
 
-            // CREAR ASIENTO SOBRE PREVISION
+                // CREAR ASIENTO SOBRE PREVISION
 
-            return View();
+                var diario = from l in _context.LdiarioGlobals
+                             select l;
+
+                int numAsiento = 1;
+
+                if (diario.Count() > 0)
+                {
+                    numAsiento = diario.ToList().LastOrDefault().NumAsiento + 1;
+                }
+
+                LdiarioGlobal asientoProvision = new LdiarioGlobal
+                {
+                    IdCodCuenta = provision.IdCodCuenta,
+                    Fecha = DateTime.Today,
+                    Concepto = modelo.Concepto,
+                    Monto = modelo.Monto,
+                    TipoOperacion = false,
+                    NumAsiento = numAsiento
+                };
+                LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
+                {
+                    IdCodCuenta = modelo.IdGasto,
+                    Fecha = DateTime.Today,
+                    Concepto = modelo.Concepto,
+                    Monto = modelo.Monto,
+                    TipoOperacion = true,
+                    NumAsiento = numAsiento
+                };
+                using (var db_context = new PruebaContext())
+                {
+                    await db_context.AddAsync(provision);
+                    await db_context.AddAsync(asientoProvision);
+                    await db_context.AddAsync(asientoGastoProvisionado);
+                    await db_context.SaveChangesAsync();
+                }
+
+                return RedirectToAction("RelaciondeGastos");
+
+            }
+
+
+            return View(modelo);
         }
 
         // cargar relacion de gastos dependiendo del condominio
