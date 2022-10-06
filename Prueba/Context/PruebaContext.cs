@@ -793,9 +793,7 @@ namespace Prueba.Context
                     .HasColumnType("money")
                     .HasColumnName("saldo");
 
-                entity.Property(e => e.Solvencia)
-                    .HasColumnType("money")
-                    .HasColumnName("solvencia");
+                entity.Property(e => e.Solvencia).HasColumnName("solvencia");
 
                 entity.HasOne(d => d.IdInmuebleNavigation)
                     .WithMany(p => p.Propiedads)
@@ -899,7 +897,7 @@ namespace Prueba.Context
                 entity.Property(e => e.IdReciboCobro).HasColumnName("id_reciboCobro");
 
                 entity.Property(e => e.Fecha)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasColumnName("fecha");
 
                 entity.Property(e => e.IdPropiedad).HasColumnName("id_propiedad");
@@ -1025,7 +1023,7 @@ namespace Prueba.Context
                 entity.Property(e => e.IdRgastos).HasColumnName("id_rgastos");
 
                 entity.Property(e => e.Fecha)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasColumnName("fecha");
 
                 entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");

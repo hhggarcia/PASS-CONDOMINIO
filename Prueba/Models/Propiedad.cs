@@ -18,7 +18,7 @@ namespace Prueba.Models
         public string Codigo { get; set; } = null!;
         public decimal Dimensiones { get; set; }
         public decimal Alicuota { get; set; }
-        public decimal Solvencia { get; set; }
+        public bool Solvencia { get; set; }
         public decimal Saldo { get; set; }
         public decimal Deuda { get; set; }
 

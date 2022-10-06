@@ -1,6 +1,7 @@
 ﻿@model RelacionDeGastosVM
 @{
     ViewData["Title"] = "Relación de Gastos";
+
 }
 
 <div class="container-fluid">
@@ -11,7 +12,7 @@
            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> PDF
         </a>
-        <a href="#"
+        <a asp-action="GenerarReciboCobro"
            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Recibo de Cobro
@@ -81,39 +82,49 @@
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
-                                                    @if (Model.SubcuentasGastos.Count() > 0 && Model.GastosDiario.Count() > 0)
+                                                    @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any()) && (Model.GastosDiario != null && Model.GastosDiario.Any()))
                                                     {
                                                         @foreach (var item in Model.GastosDiario)
                                                         {
                                                             var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
                                                             <tr>
                                                                 <td class="text-bold-500">@subcuenta.FirstOrDefault().Descricion</td>
-                                                                <td>$$$$$$$$$</td>
-                                                                <td class="text-bold-500">solo lo sabe BCV</td>
+                                                                <th>$$$$$$$$$</th>
+                                                                    <th>BCV</th>
                                                                 <td>@item.Monto</td>
                                                             </tr>
                                                         }
 
-                                                       @* <h4>Sub Total: @Model.SubTotal</h4>*@
+                                                        if (Model.Provisiones != null && Model.Provisiones.Any())
+                                                        {
+                                                            foreach (var provisiones in Model.Provisiones)
+                                                            {
+                                                                var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                                                                <tr>
+                                                                    <th>@subcuenta.FirstOrDefault().Descricion</th>
+                                                                    <th>$$$$$$$$$</th>
+                                                                    <th>BCV</th>
+                                                                    <th>@provisiones.Monto</th>
+                                                                </tr>
+                                                            }
 
-                                                        if (Model.Fondos.Count() > 0)
+                                                        }
+
+                                                        if (Model.Fondos != null && Model.Fondos.Any())
                                                         {
                                                             foreach (var fondo in Model.Fondos)
                                                             {
                                                                 var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
                                                                 <tr>
-                                                                    <th>@subcuenta.FirstOrDefault().Descricion</th>
+                                                                    <th>@subcuenta.FirstOrDefault().Descricion - @fondo.Porcentaje % </th>
                                                                     <th>$$$$$$$$$</th>
                                                                     <th>BCV</th>
                                                                     <th>@(Model.SubTotal * fondo.Porcentaje / 100)</th>
                                                                 </tr>
 
-                                                                @(Model.Total += Model.SubTotal * fondo.Porcentaje / 100)
                                                             }
 
                                                         }
-
-                                                        @*<h4>Total: @Model.Total</h4>*@
 
                                                     }
                                                     else
@@ -125,8 +136,7 @@
                                                             <td>:D</td>
                                                         </tr>
                                                     }
-
-                                                </tbody>
+                                                </tbody>                                                
                                             </table>
                                         </div>
                                     </div>
