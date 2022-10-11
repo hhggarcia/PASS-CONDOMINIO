@@ -9,18 +9,26 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Deudores</h1>
     </div>
-    @if (Model.Inmuebles != null && Model.Inmuebles.Any()
-    && Model.Propiedades != null && Model.Propiedades.Any()
-    && Model.Propietarios != null && Model.Propietarios.Any()
-    && Model.Recibos != null && Model.Recibos.Any())
-    {
-        @foreach (var propiedad in Model.Propiedades)
+
+
+    <div class="row">
+
+
+        @if (Model.Inmuebles != null && Model.Inmuebles.Any()
+        && Model.Propiedades != null && Model.Propiedades.Any()
+        && Model.Propietarios != null && Model.Propietarios.Any()
+        && Model.Recibos != null && Model.Recibos.Any())
         {
-            var propietario = Model.Propietarios.Where(c => c.Id == propiedad.IdUsuario).ToList();
-            var inmueble = Model.Inmuebles.Where(c => c.IdInmueble == propiedad.IdInmueble).ToList();
 
 
-            <div class="row">
+
+            @foreach (var propiedad in Model.Propiedades)
+            {
+                var propietario = Model.Propietarios.Where(c => c.Id == propiedad.IdUsuario).ToList();
+                var inmueble = Model.Inmuebles.Where(c => c.IdInmueble == propiedad.IdInmueble).ToList();
+
+
+
                 <div class="col-xl-4 col-lg-4">
                     <div class="card shadow mb-4 bg-content-bg">
                         <!-- Card Header - Dropdown -->
@@ -64,7 +72,7 @@
                                         <button type="button"
                                         class="btn btn-outline-success"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#exampleModalScrollable"
+                                        data-bs-target="#wholePost_@propiedad.IdPropiedad"
                                         onclick="showContent(@propiedad.IdPropiedad);">
                                             Ver
                                         </button>
@@ -74,18 +82,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            var recibos = Model.Recibos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
 
-            <!--scrolling content Modal -->
-            <div id="wholePost_@propiedad.IdPropiedad">
+                var recibos = Model.Recibos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+
+
+                <!--scrolling content Modal -->
                 <div class="modal fade"
-                     id="exampleModalScrollable"
-                     tabindex="-1"
-                     role="dialog"
-                     aria-labelledby="exampleModalScrollableTitle"
-                     aria-hidden="true">
+             id="wholePost_@propiedad.IdPropiedad"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="exampleModalScrollableTitle"
+             aria-hidden="true">
+
+
                     <div class="modal-dialog modal-dialog-scrollable"
                  role="document">
                         <div class="modal-content">
@@ -136,10 +146,10 @@
                                                 }
                                                 else
                                                 {
-                                                    <tr>
-                                                        <td class="text-bold-500">Sin</td>
-                                                        <td>Recibos</td>
-                                                    </tr>
+                                                <tr>
+                                                    <td class="text-bold-500">Sin</td>
+                                                    <td>Recibos</td>
+                                                </tr>
                                                 }
 
                                         </tbody>
@@ -162,17 +172,34 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
-            </div>
+
+
+            }
+
+
 
         }
+        else
+        {
+            <h2>No hay Deudores :D</h2>
+        }
 
-    }
-    else
-    {
-        <h2>No hay Deudores :D</h2>
-    }
+
+    </div>
+
+
+
+
+
+
+
+
+
+
 
 
     <!-- Content Row -->
@@ -182,7 +209,7 @@
     <script>
         function showContent(id) {
             console.log(id);
-            $("#wholePost_"+id).show();
+            $("#wholePost_" + id).show();
         };
     </script>
 }
