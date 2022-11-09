@@ -68,7 +68,7 @@ namespace Prueba.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server= DESKTOP-NF5DL1U\\SQLEXPRESS01; Database= Prueba;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01; Database=Prueba;Trusted_Connection=True;");
             }
         }
 
@@ -669,7 +669,10 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdPagoRecibido).HasColumnName("id_pagoRecibido");
 
-                entity.Property(e => e.Conciliado).HasColumnName("conciliado");
+                entity.Property(e => e.Concepto)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("concepto");
 
                 entity.Property(e => e.Fecha)
                     .HasColumnType("date")
@@ -678,6 +681,8 @@ namespace Prueba.Context
                 entity.Property(e => e.FormaPago).HasColumnName("forma_pago");
 
                 entity.Property(e => e.IdPropiedad).HasColumnName("id_propiedad");
+
+                entity.Property(e => e.IdSubCuenta).HasColumnName("idSubCuenta");
 
                 entity.Property(e => e.Monto)
                     .HasColumnType("money")
@@ -907,6 +912,8 @@ namespace Prueba.Context
                 entity.Property(e => e.Monto)
                     .HasColumnType("money")
                     .HasColumnName("monto");
+
+                entity.Property(e => e.Pagado).HasColumnName("pagado");
 
                 entity.HasOne(d => d.IdPropiedadNavigation)
                     .WithMany(p => p.ReciboCobros)

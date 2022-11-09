@@ -1,4 +1,4 @@
-﻿
+﻿@model PagoRecibidoVM
 @{
     ViewData["Title"] = "Registrar Pagos";
 }
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Content Row -->
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-lg-6">
             <!-- Default Card Example -->
             <div class="card shadow mb-4 bg-content-bg">
@@ -21,195 +21,293 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form class="form form-horizontal">
-                        <div class="form-body">
-                            <div class="row">
+                    @if (Model != null)
+                    {
+                        @if (Model.Propiedades != null
+                       && Model.Propiedades.Count > 0)
+                        {
+                            <!-- Inicio -->
+                            <form class="form form-horizontal" asp-action="RegistrarPagos">
+                                <div class="form-body">
+                                    <div class="row">
 
-                                <!-- Pago Emitido -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left">
-                                        <label for="last-name-column">Pago Emitido</label>
-                                        <div class="position-relative">
-                                            <input type="number"
+                                        <!-- Select Propiedades -->
+                                @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Seleccione una Propiedad", new {@class = "form-control"})
+
+                                        <button type="button"
+                                        class="btn btn-outline-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalRecibos"
+                                        onclick="showContent();">
+                                            Ver
+                                        </button>
+                                        <!-- Agregar informacion de la deudad - propiedad -->
+                                        <!-- Cargar modal con los recibos pendientes (boton de ver detalles ) -->
+                                        <div class="modal fade"
+                                     id="modalRecibos"
+                                     tabindex="-1"
+                                     role="dialog"
+                                     aria-labelledby="exampleModalScrollableTitle"
+                                     aria-hidden="true">
+
+
+                                            <div class="modal-dialog modal-dialog-scrollable"
+                                         role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title"
+                                                    id="exampleModalScrollableTitle">
+                                                            Información de Deuda
+                                                        </h5>
+                                                        <button type="button"
+                                                        class="close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                            <i data-feather="x"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <p>
+                                                            <strong> Deuda Actual </strong> =
+                                                            <div id="Saldo"></div>
+                                                        </p>
+
+                                                        <p>
+                                                            <strong>Deuda Vencida</strong> = <div id="Deuda"></div>
+                                                        </p>
+                                                        <p>
+                                                            <strong>Total</strong> = 0
+                                                        </p>
+                                                        <div class="table-responsive text-center">
+                                                            <table class="table mb-0">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Monto</th>
+                                                                        <th>Fecha</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody id="contenido"></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button"
+                                                        class="btn btn-light-secondary"
+                                                        data-bs-dismiss="modal">
+                                                            <i class="bx bx-x d-block d-sm-none"></i>
+                                                            <span class="d-none d-sm-block">Close</span>
+                                                        </button>
+                                                        <button type="button"
+                                                        class="btn btn-primary ml-1"
+                                                        data-bs-dismiss="modal">
+                                                            <i class="bx bx-check d-block d-sm-none"></i>
+                                                            <span class="d-none d-sm-block">Accept</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- end modal-->
+                                        <!-- Select Opciones a pagar -->
+                                        <select asp-for="DeudaPagar" id='mySelect' class="form-select nav-tabs-selector">
+
+                                            <option value="0">
+                                                Seleccione su deuda a pagar
+                                            </option>
+                                            <option value="1">
+                                                Actual
+                                            </option>
+                                            <option value="2">
+                                                Vencida
+                                            </option>
+                                            <option value="3">
+                                                Total
+                                            </option>
+                                        </select>
+
+                                        <!-- Concepto -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Concepto</label>
+                                                <div class="position-relative">
+                                                    <input type="text"
                                                    class="form-control"
-                                                   placeholder="Referencia"
+                                                   placeholder="Concepto"
                                                    id="first-name-icon"
-                                                   required />
-                                            <div class="form-control-icon">
-                                                <i class="bi bi-credit-card"></i>
+                                                   required
+                                                   asp-for="Concepto" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <!-- Condominio -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left">
-                                        <label for="last-name-column">Condominio</label>
-                                        <div class="position-relative">
-                                            <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Name"
-                                                   id="first-name-icon"
-                                                   required />
-                                            <div class="form-control-icon">
-                                                <i class="bi bi-building"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Proveedor -->
-                                <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Proveedor</label>
-                                        <div class="position-relative">
-                                            <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Name"
-                                                   id="first-name-icon" />
-                                            <div class="form-control-icon">
-                                                <i class="bi bi-person"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Fecha -->
-                                <div class="col-md-6 col-12">
-                              <div class="form-group has-icon-left">
-                                <label for="last-name-column">Fecha</label>
+                                        <!-- Monto -->
+                                        @*<div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Monto</label>
                                 <div class="position-relative">
-                                  <input
-                                    type="date"
-                                    class="form-control"
-                                    placeholder="Name"
-                                    id="first-name-icon"
-                                    required
-                                  />
-                                  <div class="form-control-icon">
-                                    <i class="bi bi-calendar-date"></i>
-                                  </div>
+                                <input type="text"
+                                class="form-control"
+                                placeholder="Name"
+                                id="first-name-icon"
+                                asp-for="Monto" />
+                                <div class="form-control-icon">
+                                <i class="bi bi-person"></i>
                                 </div>
-                              </div>
-                            </div>
-                           
-
-                                
-                                <div class="col-12 d-flex justify-content-end">
-                                    <button type="submit"
-                                            class="btn btn-primary me-1 mb-1">
-                                        Registrar
-                                    </button>
-                                    
                                 </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <!-- Default Card Example -->
-            <div class="card shadow mb-4 bg-content-bg">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        Forma de Pago.
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <form class="form form-horizontal">
-                        <div class="form-body">
-                            <div class="row">
-                                
-                                <div class="col-md-12">
-                                    <div class="card-body">
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Efectivo</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Transferencia</a>
-                                            </li>
+                                </div>
+                                </div>*@
 
-                                        </ul>
-                                        <div class="tab-content" id="myTabContent">
-                                            <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                                <!-- Monto -->
-                                                <div class="col-md-12 col-12 p-3">
-                                                    <div class="form-group has-icon-left">
-                                                        <label for="last-name-column">Monto</label>
-                                                        <div class="position-relative">
-                                                            <input type="number"
-                                                                   class="form-control"
-                                                                   placeholder="Monto"
-                                                                   id="first-name-icon"
-                                                                   required />
-                                                            <div class="form-control-icon">
-                                                                <i class="bi bi-credit-card"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                                <!-- Numero de Referencia -->
-                                                <div class="col-md-12 col-12 p-3">
-                                                    <div class="form-group has-icon-left">
-                                                        <label for="last-name-column">Número de Referencia</label>
-                                                        <div class="position-relative">
-                                                            <input type="number"
-                                                                   class="form-control"
-                                                                   placeholder="Referencia"
-                                                                   id="first-name-icon"
-                                                                   required />
-                                                            <div class="form-control-icon">
-                                                                <i class="bi bi-credit-card"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Tipo de Banco -->
-                                                <div class="col-md-12 col-12">
-                                                    <div class="form-group has-icon-left mandaory">
-                                                        <label for="last-name-column">Banco</label>
-                                                        <div class="position-relative">
-                                                            <fieldset class="form-group">
-                                                                <select class="form-select" id="basicSelect">
-                                                                    <option>Banesco</option>
-                                                                    <option>Provincial</option>
-                                                                    <option>Banco Central de Venezuela</option>
-                                                                </select>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- Monto -->
-                                                <div class="col-md-12 col-12 p-3">
-                                                    <div class="form-group has-icon-left">
-                                                        <label for="last-name-column">Monto</label>
-                                                        <div class="position-relative">
-                                                            <input type="number"
-                                                                   class="form-control"
-                                                                   placeholder="Monto"
-                                                                   id="first-name-icon"
-                                                                   required />
-                                                            <div class="form-control-icon">
-                                                                <i class="bi bi-credit-card"></i>
-                                                            </div>
-                                                        </div>
+                                        <!-- Fecha -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Fecha</label>
+                                                <div class="position-relative">
+                                                    <input type="date"
+                                                   class="form-control"
+                                                   placeholder="Name"
+                                                   id="first-name-icon"
+                                                   asp-for="Fecha"
+                                                   value="@DateTime.Today" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-calendar-date"></i>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Metodo de pago -->
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group has-icon-left mandaory">
+                                                <label for="last-name-column">Método de Pago</label>
+                                                <div class="position-relative">
+                                                    <div class="tab-area">
+
+                                                        <div class="col-sm-5">
+
+                                                            <select asp-for="Pagoforma" id='mySelect' class="form-select nav-tabs-selector">
+
+                                                                <option value="0">
+                                                                    Efectivo
+                                                                </option>
+                                                                <option value="1">
+                                                                    Transferencia
+                                                                </option>
+                                                            </select>
+                                                        </div>
+
+                                                        <ul class="nav nav-tabs" id="myTab">
+                                                            <li class="active"><a href="#home"></a></li>
+                                                            <li><a href="#profile"></a></li>
+                                                            <li><a href="#messages"></a></li>
+                                                            <li><a href="#settings"></a></li>
+                                                        </ul>
+
+                                                        <div class="tab-content">
+                                                            <div class="tab-pane active" id="home">
+                                                                <!-- Efectivo -->
+                                                                <div class="card-body">
+                                                                    <div class="form form-horizontal">
+                                                                        <div class="form-body">
+                                                                            <div class="row">
+
+                                                                                <!-- Tipo de Banco -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left mandaory">
+                                                                                        <label for="last-name-column">Banco</label>
+                                                                                        <div class="position-relative">
+                                                                                            <fieldset class="form-group">
+                                                                                                <select asp-for="IdCodigoCuentaCaja"
+                                                                                                asp-items="Model.SubCuentasCaja"
+                                                                                                class="form-select" id="efectivos">
+                                                                                                    <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                                </select>
+                                                                                            </fieldset>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="tab-pane" id="profile">
+                                                                <!-- Transferencia -->
+                                                                <div class="card-body">
+                                                                    <div class="form form-horizontal">
+                                                                        <div class="form-body">
+                                                                            <div class="row">
+                                                                                <!-- Pago Emitido -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left">
+                                                                                        <label for="last-name-column">Número de Referencia</label>
+                                                                                        <div class="position-relative">
+                                                                                            <input type="number" class="form-control"
+                                                                                           placeholder="Referencia" id="first-name-icon" required=""
+                                                                                           asp-for="NumReferencia">
+                                                                                            <div class="form-control-icon">
+                                                                                                <i class="bi bi-credit-card"></i>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <!-- Tipo de Banco -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left mandaory">
+                                                                                        <label for="last-name-column">Cuenta Bancaria</label>
+                                                                                        <div class="position-relative">
+                                                                                            <fieldset class="form-group">
+                                                                                                <select asp-for="IdCodigoCuentaBanco"
+                                                                                                asp-items="Model.SubCuentasBancos"
+                                                                                                class="form-select" id="bancos">
+                                                                                                    <option value="0">Seleccione un banco</option>
+                                                                                                </select>
+                                                                                            </fieldset>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="tab-pane" id="messages">
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 d-flex justify-content-end">
+                                            <button type="submit"
+                                            class="btn btn-primary me-1 mb-1">
+                                                Enviar
+                                            </button>
+
+                                        </div>
                                     </div>
-
                                 </div>
+                            </form>
 
+                        }
+                        else
+                        {
+                            <h2>Hace falta data!</h2>
+                        }
+                    }
+                    else{
+                        <h1>Error en el modelo!</h1>
+                    }
 
-                                
-                            </div>
-                        </div>
-                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -217,3 +315,97 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
+@section Scripts{
+    <script type="text/javascript">
+
+        function showContent() {
+            $("#modalRecibos").show();
+        };
+
+        $('.nav-tabs-selector').on('change', function (e) {
+            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+
+        $("select").change(function () {
+            var value = 0;
+            if ($(this).val() != "") {
+                value = $(this).val();
+            }
+            var id = $(this).attr("id");
+            var dataRequest = {
+                valor: value
+            }
+
+            if (id == "IdPropiedad") {
+                $.ajax({
+                    type: "POST",
+                    url: "/Propietarios/AjaxCargarRecibos",
+                    data: dataRequest,
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+
+                        console.log(response);
+
+                        bancos = response.subCuentasBancos;
+                        efectivos = response.subCuentasCaja;
+
+                        var aux1 = String(response.deuda);
+                        var aux2 = String(response.saldo);
+                        //desactivar dropdown de propiedades
+                        //DisableDropDown("#IdPropiedad");
+                        // LLENAR BANCOS
+                        PopulateDropDown("#bancos", bancos);
+                        // LLENAR EFECTIVO
+                        PopulateDropDown("#efectivos", efectivos);
+                        // LLENAR MODAL CON LISTA DE REGISTRO
+
+                        LoadTable("#contenido", response.recibos)
+                        // LLENAR DEUDA
+                        //$("#Deuda").innerText(response.deuda);
+                        document.querySelector("#Deuda").innerText = aux1;
+
+                        // LLENAR SALDO
+                        //$("#Saldo").innerText(response.saldo);
+                        $("#Saldo").html("<p>" + aux2 + "</p>");
+
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        })
+
+        function DisableDropDown(dropDownId) {
+            $(dropDownId).attr("disabled", "disabled");
+            $(dropDownId).empty().append('<option selected="selected" value="0">Please select</option>');
+        }
+
+        function PopulateDropDown(dropDownId, list) {
+            if (list != null && list.length > 0) {
+                $(dropDownId).removeAttr("disabled");
+                $.each(list, function () {
+                    $(dropDownId).append($("<option></option>").val(this['value']).html(this['text']));
+                });
+            }
+        }
+
+        function LoadTable(tableId, list) {
+            CLearTable(tableId);
+            $.each(list, function (idex, value) {
+                $(tableId).append("<tr><td>" + value.monto + "</td><td>" + value.fecha + "</td><tr>");
+            });
+        }
+
+        function CLearTable(tableId) {
+            $(tableId).empty();
+        }
+
+    </script>
+
+}

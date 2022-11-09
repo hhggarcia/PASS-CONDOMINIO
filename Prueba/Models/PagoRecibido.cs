@@ -15,7 +15,8 @@ namespace Prueba.Models
         public bool FormaPago { get; set; }
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
-        public bool Conciliado { get; set; }
+        public int IdSubCuenta { get; set; }
+        public string Concepto { get; set; } = null!;
 
         public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
         public virtual ICollection<ReferenciasPr> ReferenciasPrs { get; set; }

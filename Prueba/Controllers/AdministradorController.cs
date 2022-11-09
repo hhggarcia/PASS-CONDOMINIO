@@ -12,7 +12,6 @@ using Prueba.Models;
 using Prueba.Services;
 using Prueba.Utils;
 
-
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
@@ -132,6 +131,7 @@ namespace Prueba.Controllers
 
             return View(modelo);
         }
+
         [HttpPost]
         public async Task<JsonResult> AjaxMethod(string tipo, int valor)
         {
@@ -156,6 +156,7 @@ namespace Prueba.Controllers
             return Json(model);
         }
 
+        [HttpPost]
         public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
         {
             if (ModelState.IsValid)
@@ -802,6 +803,11 @@ namespace Prueba.Controllers
         }
 
         // generar recibos de cobro
+        /* AUN FALTA
+         *  VERIFICAR SI YA EXISTE UNA RELACION DE GASTOS 
+         *  EN EL MES ACTUAL 
+         * 
+         */
         public async Task<IActionResult> GenerarReciboCobro()
         {
             try

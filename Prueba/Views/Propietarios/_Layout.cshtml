@@ -79,7 +79,8 @@
 
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item">
-                    <a class="nav-link" href="dashboard.html">
+                    <a class="nav-link"
+                       asp-action="DashboardUsuario">
                         <i class="far fa-fw fa-tachometer"></i>
                         <span>Inicio</span>
                     </a>
@@ -456,6 +457,7 @@
     <!-- Scripts Toastify -->
     <script src="~/js/toastify/toastify.js"></script>
     <script src="~/js/toastify-2.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>

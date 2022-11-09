@@ -7,6 +7,7 @@ using Prueba.Context;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
@@ -24,6 +25,8 @@ builder.Services.AddTransient<IManageExcel, ManageExcel>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 #region Authorization
 
