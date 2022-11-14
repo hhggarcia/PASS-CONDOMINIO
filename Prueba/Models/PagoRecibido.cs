@@ -17,6 +17,7 @@ namespace Prueba.Models
         public DateTime Fecha { get; set; }
         public int IdSubCuenta { get; set; }
         public string Concepto { get; set; } = null!;
+        public bool Confirmado { get; set; }
 
         public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
         public virtual ICollection<ReferenciasPr> ReferenciasPrs { get; set; }

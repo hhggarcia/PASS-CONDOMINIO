@@ -674,6 +674,8 @@ namespace Prueba.Context
                     .IsUnicode(false)
                     .HasColumnName("concepto");
 
+                entity.Property(e => e.Confirmado).HasColumnName("confirmado");
+
                 entity.Property(e => e.Fecha)
                     .HasColumnType("date")
                     .HasColumnName("fecha");
@@ -901,6 +903,8 @@ namespace Prueba.Context
 
                 entity.Property(e => e.IdReciboCobro).HasColumnName("id_reciboCobro");
 
+                entity.Property(e => e.EnProceso).HasColumnName("enProceso");
+
                 entity.Property(e => e.Fecha)
                     .HasColumnType("datetime")
                     .HasColumnName("fecha");
@@ -978,7 +982,7 @@ namespace Prueba.Context
                 entity.Property(e => e.IdReferencia).HasColumnName("id_referencia");
 
                 entity.Property(e => e.Banco)
-                    .HasMaxLength(30)
+                    .HasMaxLength(70)
                     .HasColumnName("banco");
 
                 entity.Property(e => e.IdPagoRecibido).HasColumnName("id_pagoRecibido");

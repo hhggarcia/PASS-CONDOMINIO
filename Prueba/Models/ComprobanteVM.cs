@@ -8,5 +8,6 @@
         public PagoRecibido? PagoRecibido { get; set; }
         public ReferenciasPr? Referencias { get; set; }
         public DateTime FechaComprobante { get; set; }
+        public string? Mensaje { get; set; }
     }
 }

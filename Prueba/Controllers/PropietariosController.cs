@@ -45,9 +45,37 @@ namespace Prueba.Controllers
         {
             return View();
         }
-        public IActionResult Historial()
+        public async Task<IActionResult> Historial()
         {
-            return View();
+            try
+            {
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                //llamar a pagos realizados
+                // pasar diccionario de propiedades y por cada propiedad una lista de pagos realizados
+                var modelo = new Dictionary<Propiedad, List<PagoRecibido>>();
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                if (propiedades != null && propiedades.Count() > 0)
+                {
+                    foreach (var item in propiedades)
+                    {
+                        var listaPagosPorPropiedad = await _context.PagoRecibidos.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+                        modelo.Add(item, listaPagosPorPropiedad);
+                    }
+                }
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }            
+            
         }
 
         public IActionResult DashboardUsuario()
@@ -55,27 +83,34 @@ namespace Prueba.Controllers
             return View();
         }
 
-        /*POR HACER...
-         * Lista de propiedades
-         * por cada propiedad -> Recibos pendientes y recibo actual (Mostrar en modal)
-         * deuda vencida y deuda actual (En Propiedad)
-         * 
-         */
         public async Task<IActionResult> RegistrarPagos()
         {
-            var modelo = new PagoRecibidoVM();
+            try
+            {
+                var modelo = new PagoRecibidoVM();
 
-            string idPropietario = TempData.Peek("idUserLog").ToString();
+                string idPropietario = TempData.Peek("idUserLog").ToString();
 
-            var propiedades = from c in _context.Propiedads
-                              where c.IdUsuario == idPropietario
-                              select c;
+                var propiedades = from c in _context.Propiedads
+                                  where c.IdUsuario == idPropietario
+                                  select c;
 
-            modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
+                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
 
-            TempData.Keep();
+                TempData.Keep();
 
-            return View(modelo);
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }       
+            
 
         }
 
@@ -115,11 +150,11 @@ namespace Prueba.Controllers
 
                 modelo.Deuda = propiedad.Deuda;
 
-                var listaRecibos = _context.ReciboCobros.Where(c => c.IdPropiedad == valor && c.Pagado == false);
 
                 modelo.SubCuentasBancos = await subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToListAsync();
                 modelo.SubCuentasCaja = await subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToListAsync();
-                modelo.Recibos = await listaRecibos.ToListAsync();
+                modelo.Recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == valor && c.EnProceso == false && c.Pagado == false)
+                                                            .OrderBy(c => c.Fecha).ToListAsync();
             }
 
             return Json(modelo);
@@ -138,7 +173,7 @@ namespace Prueba.Controllers
                     var propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == modelo.IdPropiedad).ToListAsync();
                     var inmuebles = await _context.Inmuebles.Where(c => c.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
                     var condominio = await _context.Condominios.Where(c => c.IdCondominio == inmuebles.First().IdCondominio).ToListAsync();
-                    var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == modelo.IdPropiedad).ToListAsync();
+                    var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == modelo.IdPropiedad && c.EnProceso == false).OrderBy(c => c.Fecha).ToListAsync();
 
                     var comprobante = new ComprobanteVM()
                     {
@@ -148,29 +183,40 @@ namespace Prueba.Controllers
                         FechaComprobante = DateTime.Today
                     };
 
-                    var pago = new PagoRecibido()
-                    {
-                        IdPropiedad = modelo.IdPropiedad,
-                        Fecha = modelo.Fecha,
-                        IdSubCuenta = modelo.IdSubcuenta,
-                        Concepto = modelo.Concepto
-                    };
-
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
+                        var pago = new PagoRecibido()
+                        {
+                            IdPropiedad = modelo.IdPropiedad,
+                            Fecha = modelo.Fecha,
+                            IdSubCuenta = modelo.IdCodigoCuentaBanco,
+                            Concepto = modelo.Concepto,
+                            Confirmado = false
+                        };
+
                         pago.FormaPago = true;
-                        var banco = await _context.SubCuenta.Where(c => c.Id == modelo.IdSubcuenta).ToListAsync();
+
+                        var banco = await _context.SubCuenta.Where(c => c.Id == modelo.IdCodigoCuentaBanco).ToListAsync();
 
                         switch (modelo.DeudaPagar)
                         {
                             case 1:
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Saldo;
+                                    var monto = propiedades.First().Saldo;
 
-                                    pago.Monto = monto;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
+                                // regitrar en bd el pago
                                 using (var dbcontext = new PruebaContext())
                                 {
                                     dbcontext.PagoRecibidos.Add(pago);
@@ -181,26 +227,45 @@ namespace Prueba.Controllers
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
                                     NumReferencia = modelo.NumReferencia,
-                                    Banco = banco.FirstOrDefault().Descricion
+                                    Banco = banco.First().Descricion
                                 };
 
+                                // regitrar en bd la referencia del pago
                                 using (var dbcontext = new PruebaContext())
                                 {
                                     dbcontext.ReferenciasPrs.Add(referencia);
                                     dbcontext.SaveChanges();
                                 }
 
+                                // cambiar a -en proceso = true- el recibo mas actual 
+                                var reciboActual = recibos.First();
+                                reciboActual.EnProceso = true;
+
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    dbcontext.ReciboCobros.Update(reciboActual);
+                                    dbcontext.SaveChanges();
+                                }
+
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Referencias = referencia;
+                                comprobante.Mensaje = "Gracias por su pago!";
 
-                                return RedirectToAction("Comprobante");
+                                return View("Comprobante", comprobante);
                             case 2:
 
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Deuda;
-
-                                    pago.Monto = monto;
+                                    var monto = propiedades.First().Deuda;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
                                 using (var dbcontext = new PruebaContext())
@@ -213,7 +278,7 @@ namespace Prueba.Controllers
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
                                     NumReferencia = modelo.NumReferencia,
-                                    Banco = banco.FirstOrDefault().Descricion
+                                    Banco = banco.First().Descricion
                                 };
 
                                 using (var dbcontext = new PruebaContext())
@@ -221,18 +286,39 @@ namespace Prueba.Controllers
                                     dbcontext.ReferenciasPrs.Add(referencia2);
                                     dbcontext.SaveChanges();
                                 }
+
+                                // cambiar a -en proceso = true- de los recibos 
+                                
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    foreach (var item in recibos.Skip(0))
+                                    {
+                                        item.EnProceso = true;
+                                        dbcontext.ReciboCobros.Update(item);
+                                    }
+                                    dbcontext.SaveChanges();
+                                }
+
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Referencias = referencia2;
+                                comprobante.Mensaje = "Gracias por su pago!";
 
-                                return RedirectToAction("Comprobante");
+                                return View("Comprobante", comprobante);
 
                             case 3:
 
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Saldo + propiedades.FirstOrDefault().Deuda;
-
-                                    pago.Monto = monto;
+                                    var monto = propiedades.First().Saldo + propiedades.First().Deuda;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
                                 using (var dbcontext = new PruebaContext())
@@ -245,7 +331,7 @@ namespace Prueba.Controllers
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
                                     NumReferencia = modelo.NumReferencia,
-                                    Banco = banco.FirstOrDefault().Descricion
+                                    Banco = banco.First().Descricion
                                 };
 
                                 using (var dbcontext = new PruebaContext())
@@ -253,11 +339,22 @@ namespace Prueba.Controllers
                                     dbcontext.ReferenciasPrs.Add(referencia3);
                                     dbcontext.SaveChanges();
                                 }
+                                // cambiar a -en proceso = true- de los recibos 
 
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    foreach (var item in recibos)
+                                    {
+                                        item.EnProceso = true;
+                                        dbcontext.ReciboCobros.Update(item);
+                                    }
+                                    dbcontext.SaveChanges();
+                                }
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Referencias = referencia3;
+                                comprobante.Mensaje = "Gracias por su pago!";
 
-                                return RedirectToAction("Comprobante");
+                                return View("Comprobante", comprobante);
 
                             default:
                                 return RedirectToAction("RegistrarPagos");
@@ -265,6 +362,14 @@ namespace Prueba.Controllers
                     }
                     else
                     {
+                        var pago = new PagoRecibido()
+                        {
+                            IdPropiedad = modelo.IdPropiedad,
+                            Fecha = modelo.Fecha,
+                            IdSubCuenta = modelo.IdCodigoCuentaCaja,
+                            Concepto = modelo.Concepto
+                        };
+
                         pago.FormaPago = false;                        
 
                         switch (modelo.DeudaPagar)
@@ -272,9 +377,17 @@ namespace Prueba.Controllers
                             case 1:
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Saldo;
+                                    var monto = propiedades.First().Saldo;
 
-                                    pago.Monto = monto;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
                                 using (var dbcontext = new PruebaContext())
@@ -282,16 +395,36 @@ namespace Prueba.Controllers
                                     dbcontext.PagoRecibidos.Add(pago);
                                     dbcontext.SaveChanges();
                                 }
+                                // cambiar a -en proceso = true- el recibo mas actual 
+                                var reciboActual = recibos.First();
+                                reciboActual.EnProceso = true;
+
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    dbcontext.ReciboCobros.Update(reciboActual);
+                                    dbcontext.SaveChanges();
+                                }
 
                                 comprobante.PagoRecibido = pago;
-                                return RedirectToAction("Comprobante");
+                                comprobante.Mensaje = "Gracias por su pago!";
+
+                                return View("Comprobante", comprobante);
+
                             case 2:
 
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Deuda;
+                                    var monto = propiedades.First().Deuda;
 
-                                    pago.Monto = monto;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
                                 using (var dbcontext = new PruebaContext())
@@ -300,16 +433,36 @@ namespace Prueba.Controllers
                                     dbcontext.SaveChanges();
                                 }
 
-                                comprobante.PagoRecibido = pago;
+                                // cambiar a -en proceso = true- de los recibos 
 
-                                return RedirectToAction("Comprobante");
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    foreach (var item in recibos.Skip(0))
+                                    {
+                                        item.EnProceso = true;
+                                        dbcontext.ReciboCobros.Update(item);
+                                    }
+                                    dbcontext.SaveChanges();
+                                }
+                                comprobante.PagoRecibido = pago;
+                                comprobante.Mensaje = "Gracias por su pago!";
+
+                                return View("Comprobante", comprobante);
 
                             case 3:
                                 if (propiedades.Count() > 0)
                                 {
-                                    var monto = propiedades.FirstOrDefault().Saldo + propiedades.FirstOrDefault().Deuda;
+                                    var monto = propiedades.First().Saldo + propiedades.First().Deuda;
 
-                                    pago.Monto = monto;
+                                    if (monto > 0 && recibos.Count() > 0)
+                                    {
+                                        pago.Monto = monto;
+                                    }
+                                    else
+                                    {
+                                        comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                        return View("Comprobante", comprobante);
+                                    }
                                 }
 
                                 using (var dbcontext = new PruebaContext())
@@ -318,9 +471,20 @@ namespace Prueba.Controllers
                                     dbcontext.SaveChanges();
                                 }
 
-                                comprobante.PagoRecibido = pago;
+                                // cambiar a -en proceso = true- de los recibos 
 
-                                return RedirectToAction("Comprobante");
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    foreach (var item in recibos)
+                                    {
+                                        item.EnProceso = true;
+                                        dbcontext.ReciboCobros.Update(item);
+                                    }
+                                    dbcontext.SaveChanges();
+                                }
+                                comprobante.PagoRecibido = pago;
+                                comprobante.Mensaje = "Gracias por su pago!";
+                                return View("Comprobante", comprobante);
 
                             default:
                                 return RedirectToAction("RegistrarPagos");
@@ -328,12 +492,48 @@ namespace Prueba.Controllers
                     }
                 }
                 catch (Exception ex)
-                {                    
-                    return RedirectToAction("RegistrarPagos");
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = ex.Message
+                    };
+
+                    return View("Error", modeloError);
                 }
             }
 
             return RedirectToAction("RegistrarPagos");
+        }
+
+        public async Task<IActionResult> Recibos()
+        {
+            try
+            {
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                var modelo = new Dictionary<Propiedad, List<ReciboCobro>>();
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                if (propiedades != null && propiedades.Count() > 0)
+                {
+                    foreach (var item in propiedades)
+                    {
+                        var listaRecibosPorPropiedad = await _context.ReciboCobros.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+                        modelo.Add(item, listaRecibosPorPropiedad);
+                    }
+                }
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+            
         }
 
         public async Task<IList<int>> IdsCondominios(string IdUsuario)

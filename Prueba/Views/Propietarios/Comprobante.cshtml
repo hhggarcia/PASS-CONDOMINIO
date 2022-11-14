@@ -1,6 +1,64 @@
 ﻿@model ComprobanteVM
 
-@{
-}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Comprobante</h1>
+    </div>
 
-<h2>Comprobante </h2>
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Verifique los Pagos Recibidos
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h3>Condominio</h3>
+                        @if (Model.Condominio != null
+                        && Model.Inmueble != null
+                        && Model.Propiedad != null)
+                        {
+                            <p>Condominio: @Model.Condominio.Nombre</p>
+                            <p>Inmueble: @Model.Inmueble.Nombre</p>
+                            <p>Propiedad: @Model.Propiedad.Codigo</p>
+                        }
+
+                        @if (Model.PagoRecibido != null)
+                        {
+                            <p>Fecha: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
+
+                            @if (Model.PagoRecibido.FormaPago
+                           && Model.Referencias != null)
+                            {
+                                <h3>Transferencia</h3>
+                                <p>Cuenta: @Model.Referencias.Banco</p>
+                                <p>Referencia: @Model.Referencias.NumReferencia</p>
+                                <p>Monto: @Model.PagoRecibido.Monto</p>
+                                <p>Fecha de comprobante: @DateTime.Today</p>
+                            }
+                            else
+                            {
+                                <h3>Eefctivo</h3>
+                                <p>Monto: @Model.PagoRecibido.Monto</p>
+                                <p>Fecha de comprobante: @DateTime.Today</p>
+                            }
+                        }
+
+                        <h4>@Model.Mensaje</h4>
+
+                        <a asp-action="RegitrarPagos">Realizar otro pago</a>
+                        <a asp-action="DashboardUsuarios">Finalizar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

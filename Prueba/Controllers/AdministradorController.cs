@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.DotNet.Scaffolding.Shared.Project;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Prueba.Areas.Identity.Data;
@@ -44,97 +45,152 @@ namespace Prueba.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            //CON EL ID DEL USUARIO LOGEADO BUSCAR SUS CONDOMINIOS ASIGNADOS
-            var idAdministrador = TempData.Peek("idUserLog").ToString();
-
-            //CARGAR LIST DE CONDOMINIOS
-            var condominios = from c in _context.Condominios
-                              where c.IdAdministrador == idAdministrador
-                              select c;
-
-            foreach (var item in condominios)
+            try
             {
-                var inmuebles = from i in _context.Inmuebles
-                                where item.IdCondominio == i.IdCondominio
-                                select i;
+                //CON EL ID DEL USUARIO LOGEADO BUSCAR SUS CONDOMINIOS ASIGNADOS
+                var idAdministrador = TempData.Peek("idUserLog").ToString();
 
-                item.Inmuebles = await inmuebles.ToListAsync();
+                //CARGAR LIST DE CONDOMINIOS
+                var condominios = from c in _context.Condominios
+                                  where c.IdAdministrador == idAdministrador
+                                  select c;
+
+                foreach (var item in condominios)
+                {
+                    var inmuebles = from i in _context.Inmuebles
+                                    where item.IdCondominio == i.IdCondominio
+                                    select i;
+
+                    item.Inmuebles = await inmuebles.ToListAsync();
+                }
+
+                var condominiosModel = await condominios.ToListAsync();
+
+                TempData.Keep();
+
+                return View(condominiosModel);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
             }
 
-            var condominiosModel = await condominios.ToListAsync();
-
-            TempData.Keep();
-
-            return View(condominiosModel);
         }
         public IActionResult Dashboard(int? id)
         {
-            // GUARDAR ID CONDOMINIO PARA SELECCIONAR SUS CUENTAS CONTABLES
-            TempData["idCondominio"] = id.ToString();
-            return View();
+            try
+            {
+                // GUARDAR ID CONDOMINIO PARA SELECCIONAR SUS CUENTAS CONTABLES
+                TempData["idCondominio"] = id.ToString();
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }            
         }
         public IActionResult CuentasContables()
         {
-            //HACER MODELO PARA CARGAR TODAS LAS CUENTAS A LA TABLA INDEX
-            var modelo = new IndexCuentasContablesVM();
-
-            // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == idCondominio
-                                       select c;
-
-            //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
-
-            IQueryable<Clase> clases = from c in _context.Clases
-                                       select c;
-            IQueryable<Grupo> grupos = from c in _context.Grupos
-                                       select c;
-            IQueryable<Cuenta> cuentas = from c in _context.Cuenta
-                                         select c;
-            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
-                                               select c;
-
-            IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
-
-            foreach (var item in cuentasContablesCond)
+            try
             {
-                foreach (var subcuenta in subcuentas)
+                //HACER MODELO PARA CARGAR TODAS LAS CUENTAS A LA TABLA INDEX
+                var modelo = new IndexCuentasContablesVM();
+
+                // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdCondominio == idCondominio
+                                           select c;
+
+                //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
+
+                IQueryable<Clase> clases = from c in _context.Clases
+                                           select c;
+                IQueryable<Grupo> grupos = from c in _context.Grupos
+                                           select c;
+                IQueryable<Cuenta> cuentas = from c in _context.Cuenta
+                                             select c;
+                IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
+                                                   select c;
+
+                IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
+
+                foreach (var item in cuentasContablesCond)
                 {
-                    if (item.IdCodigo == subcuenta.Id)
+                    foreach (var subcuenta in subcuentas)
                     {
-                        subcuentasModel.Add(subcuenta);
+                        if (item.IdCodigo == subcuenta.Id)
+                        {
+                            subcuentasModel.Add(subcuenta);
+                        }
                     }
                 }
+
+                //PASAR MODELO
+                modelo.Clases = clases.ToList();
+                modelo.Grupos = grupos.ToList();
+                modelo.Cuentas = cuentas.ToList();
+                modelo.SubCuentas = subcuentasModel;
+                //CREAR FOR PARA CREAR LAS FILAS CON LA INFO 
+
+                TempData.Keep();
+                return View(modelo);
             }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
-            //PASAR MODELO
-            modelo.Clases = clases.ToList();
-            modelo.Grupos = grupos.ToList();
-            modelo.Cuentas = cuentas.ToList();
-            modelo.SubCuentas = subcuentasModel;
-            //CREAR FOR PARA CREAR LAS FILAS CON LA INFO 
-
-            TempData.Keep();
-            return View(modelo);
+                return View("Error", modeloError);
+            }
+            
         }
         public IActionResult CrearSubCuenta()
         {
-            SubcuentaCascadingVM modelo = new SubcuentaCascadingVM();
+            try
+            {
+                SubcuentaCascadingVM modelo = new SubcuentaCascadingVM();
 
-            var clases = from c in _context.Clases
-                         select c;
+                var clases = from c in _context.Clases
+                             select c;
 
-            var clasesModel = clases.Select(c => new SelectListItem { Text = c.Descripcion, Value = c.Id.ToString() });
+                var clasesModel = clases.Select(c => new SelectListItem { Text = c.Descripcion, Value = c.Id.ToString() });
 
-            modelo.Clases = clasesModel.ToList();
+                modelo.Clases = clasesModel.ToList();
 
-            return View(modelo);
+                return View(modelo);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+            
         }
 
         [HttpPost]
         public async Task<JsonResult> AjaxMethod(string tipo, int valor)
         {
+
             SubcuentaCascadingVM model = new SubcuentaCascadingVM();
             switch (tipo)
             {
@@ -159,168 +215,208 @@ namespace Prueba.Controllers
         [HttpPost]
         public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // REGISTRAR SUB CUENTA CON IDCUENTA, DESCRIP Y CODIGO
-
-                var nuevaSubCuenta = new SubCuenta
+                if (ModelState.IsValid)
                 {
-                    IdCuenta = modelo.IdCuenta,
-                    Descricion = modelo.Descripcion,
-                    Codigo = modelo.Codigo
-                };
+                    // REGISTRAR SUB CUENTA CON IDCUENTA, DESCRIP Y CODIGO
 
-                using (var _dbContext = new PruebaContext())
-                {
-                    _dbContext.Add(nuevaSubCuenta);
-                    _dbContext.SaveChanges();
+                    var nuevaSubCuenta = new SubCuenta
+                    {
+                        IdCuenta = modelo.IdCuenta,
+                        Descricion = modelo.Descripcion,
+                        Codigo = modelo.Codigo
+                    };
+
+                    using (var _dbContext = new PruebaContext())
+                    {
+                        _dbContext.Add(nuevaSubCuenta);
+                        _dbContext.SaveChanges();
+                    }
+
+                    // REGISTRAR EN CUENTAS CONTABLES GLOBAL ID CONDOMINIO Y ID SUB CUENTA
+                    //recuperar el id del condominio
+                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                    var nuevoCC = new CodigoCuentasGlobal
+                    {
+                        IdCodigo = nuevaSubCuenta.Id,
+                        IdCondominio = idCondominio
+                    };
+
+                    using (var _dContext = new PruebaContext())
+                    {
+                        _dContext.Add(nuevoCC);
+                        _dContext.SaveChanges();
+                    }
+
+                    return RedirectToAction("CuentasContables");
+
                 }
 
-                // REGISTRAR EN CUENTAS CONTABLES GLOBAL ID CONDOMINIO Y ID SUB CUENTA
-                //recuperar el id del condominio
-                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                var nuevoCC = new CodigoCuentasGlobal
-                {
-                    IdCodigo = nuevaSubCuenta.Id,
-                    IdCondominio = idCondominio
-                };
-
-                using (var _dContext = new PruebaContext())
-                {
-                    _dContext.Add(nuevoCC);
-                    _dContext.SaveChanges();
-                }
-
-                return RedirectToAction("CuentasContables");
+                return View(modelo);
 
             }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
-            return View(modelo);
+                return View("Error", modeloError);
+            }            
         }
 
         public async Task<IActionResult> IndexPagosEmitidos()
         {
-            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var modelo = new IndexPagosVM();
-
-            var listaPagos = from c in _context.PagoEmitidos
-                             where c.IdCondominio == idCondominio
-                             select c;
-
-            var referencias = from r in _context.ReferenciasPes
-                              select r;
-
-            IList<ReferenciasPe> referenciaModel = new List<ReferenciasPe>();
-            foreach (var pago in listaPagos)
+            try
             {
-                if (pago.FormaPago)
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var modelo = new IndexPagosVM();
+
+                var listaPagos = from c in _context.PagoEmitidos
+                                 where c.IdCondominio == idCondominio
+                                 select c;
+
+                var referencias = from r in _context.ReferenciasPes
+                                  select r;
+
+                IList<ReferenciasPe> referenciaModel = new List<ReferenciasPe>();
+                foreach (var pago in listaPagos)
                 {
-                    foreach (var referencia in referencias)
+                    if (pago.FormaPago)
                     {
-                        if (pago.IdPagoEmitido == referencia.IdPagoEmitido)
+                        foreach (var referencia in referencias)
                         {
-                            referenciaModel.Add(referencia);
+                            if (pago.IdPagoEmitido == referencia.IdPagoEmitido)
+                            {
+                                referenciaModel.Add(referencia);
+                            }
+                            continue;
+                        }
+                    }
+                    continue;
+                }
+                modelo.PagosEmitidos = await listaPagos.ToListAsync();
+                modelo.Referencias = referenciaModel;
+
+
+                return View(modelo);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }            
+            
+        }
+        public IActionResult RegistrarPagos()
+        {
+            try
+            {
+                var modelo = new RegistroPagoVM();
+                //LLENAR SELECT DE SUBCUENTAS DE GASTOS
+
+                //traer subcuentas del condominio
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdCondominio == idCondominio
+                                           select c;
+
+                //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
+
+                //CARGAR SELECT DE SUB CUENTAS DE GASTOS
+                IQueryable<Grupo> gruposGastos = from c in _context.Grupos
+                                                 where c.IdClase == 5
+                                                 select c;
+
+                IQueryable<Cuenta> cuentas = from c in _context.Cuenta
+                                             select c;
+
+                IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
+                                                   select c;
+
+                //CARGAR SELECT DE SUB CUENTAS DE BANCOS
+                IQueryable<Cuenta> bancos = from c in _context.Cuenta
+                                            where c.Descripcion.ToUpper().Trim() == "BANCO"
+                                            select c;
+                IQueryable<Cuenta> caja = from c in _context.Cuenta
+                                          where c.Descripcion.ToUpper().Trim() == "CAJA"
+                                          select c;
+
+                IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
+                                                         where c.IdCuenta == bancos.FirstOrDefault().Id
+                                                         select c;
+                IQueryable<SubCuenta> subcuentasCaja = from c in _context.SubCuenta
+                                                       where c.IdCuenta == caja.FirstOrDefault().Id
+                                                       select c;
+
+                IList<Cuenta> cuentasGastos = new List<Cuenta>();
+                foreach (var grupo in gruposGastos)
+                {
+                    foreach (var cuenta in cuentas)
+                    {
+                        if (cuenta.IdGrupo == grupo.Id)
+                        {
+                            cuentasGastos.Add(cuenta);
                         }
                         continue;
                     }
                 }
-                continue;
-            }
-            modelo.PagosEmitidos = await listaPagos.ToListAsync();
-            modelo.Referencias = referenciaModel;
 
-
-            return View(modelo);
-        }
-        public IActionResult RegistrarPagos()
-        {
-            var modelo = new RegistroPagoVM();
-            //LLENAR SELECT DE SUBCUENTAS DE GASTOS
-
-            //traer subcuentas del condominio
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == idCondominio
-                                       select c;
-
-            //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
-
-            //CARGAR SELECT DE SUB CUENTAS DE GASTOS
-            IQueryable<Grupo> gruposGastos = from c in _context.Grupos
-                                             where c.IdClase == 5
-                                             select c;
-
-            IQueryable<Cuenta> cuentas = from c in _context.Cuenta
-                                         select c;
-
-            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
-                                               select c;
-
-            //CARGAR SELECT DE SUB CUENTAS DE BANCOS
-            IQueryable<Cuenta> bancos = from c in _context.Cuenta
-                                        where c.Descripcion.ToUpper().Trim() == "BANCO"
-                                        select c;
-            IQueryable<Cuenta> caja = from c in _context.Cuenta
-                                      where c.Descripcion.ToUpper().Trim() == "CAJA"
-                                      select c;
-
-            IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
-                                                     where c.IdCuenta == bancos.FirstOrDefault().Id
-                                                     select c;
-            IQueryable<SubCuenta> subcuentasCaja = from c in _context.SubCuenta
-                                                   where c.IdCuenta == caja.FirstOrDefault().Id
-                                                   select c;
-
-            IList<Cuenta> cuentasGastos = new List<Cuenta>();
-            foreach (var grupo in gruposGastos)
-            {
-                foreach (var cuenta in cuentas)
+                IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
+                foreach (var cuenta in cuentasGastos)
                 {
-                    if (cuenta.IdGrupo == grupo.Id)
+                    foreach (var subcuenta in subcuentas)
                     {
-                        cuentasGastos.Add(cuenta);
+                        if (subcuenta.IdCuenta == cuenta.Id)
+                        {
+                            subcuentasGastos.Add(subcuenta);
+                        }
+                        continue;
                     }
-                    continue;
                 }
-            }
 
-            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-            foreach (var cuenta in cuentasGastos)
-            {
-                foreach (var subcuenta in subcuentas)
+                IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
+                foreach (var condominioCC in cuentasContablesCond)
                 {
-                    if (subcuenta.IdCuenta == cuenta.Id)
+                    foreach (var subcuenta in subcuentasGastos)
                     {
-                        subcuentasGastos.Add(subcuenta);
+                        if (condominioCC.IdCodCuenta == subcuenta.Id)
+                        {
+                            subcuentasModel.Add(subcuenta);
+                        }
+                        continue;
                     }
-                    continue;
                 }
-            }
 
-            IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
-            foreach (var condominioCC in cuentasContablesCond)
+
+                modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+                modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+                modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+                // ENVIAR MODELO
+
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
             {
-                foreach (var subcuenta in subcuentasGastos)
+                var modeloError = new ErrorViewModel()
                 {
-                    if (condominioCC.IdCodCuenta == subcuenta.Id)
-                    {
-                        subcuentasModel.Add(subcuenta);
-                    }
-                    continue;
-                }
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
             }
-
-
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-            modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-            modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-            // ENVIAR MODELO
-
-            TempData.Keep();
-
-            return View(modelo);
+            
         }
 
         /*EN REVISION
@@ -329,477 +425,551 @@ namespace Prueba.Controllers
         [HttpPost]
         public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
         {
-            modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            if (ModelState.IsValid)
+            try
             {
-                // TRAER EL ID DEL CONDOMINIO
-                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
-                // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
-                PagoEmitido pago = new PagoEmitido
+                if (ModelState.IsValid)
                 {
-                    IdCondominio = idCondominio,
-                    Fecha = modelo.Fecha,
-                    Monto = modelo.Monto,
-                };
+                    // TRAER EL ID DEL CONDOMINIO
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var provisiones = from c in _context.Provisiones
-                                  where c.IdCodGasto == modelo.IdSubcuenta
-                                  select c;
-
-                var diario = from l in _context.LdiarioGlobals
-                             select l;
-
-                int numAsiento = 1;
-
-                if (diario.Count() > 0)
-                {
-                    numAsiento = diario.ToList().LastOrDefault().NumAsiento;
-                }
-
-                if (modelo.Pagoforma == FormaPago.Efectivo)
-                {
-                    pago.FormaPago = false;
-
-                    using (var _dbContext = new PruebaContext())
+                    // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
+                    // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
+                    PagoEmitido pago = new PagoEmitido
                     {
-                        _dbContext.Add(pago);
-                        _dbContext.SaveChanges();
-                    }
-                    //verficar si existe una provision sobre la sub cuenta
-
-                    if (provisiones != null && provisiones.Any())
-                    {
-                        LdiarioGlobal asientoProvision = new LdiarioGlobal
-                        {
-                            IdCodCuenta = provisiones.FirstOrDefault().IdCodCuenta,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = provisiones.FirstOrDefault().Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
-                        };
-                        LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdCodigoCuentaCaja,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
-                        };
-                        LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
-                        {
-                            IdCodCuenta = provisiones.FirstOrDefault().IdCodGasto,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto - provisiones.FirstOrDefault().Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
-                        };
-                        using (var _dbContext = new PruebaContext())
-                        {
-                            _dbContext.Add(asientoProvisionGasto);
-                            _dbContext.Add(asientoProvision);
-                            _dbContext.Add(asientoProvisionCaja);
-                            _dbContext.SaveChanges();
-                        }
-
-                        //REGISTRAR ASIENTO EN LA TABLA GASTOS
-
-                        //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                        Activo activoProvision = new Activo
-                        {
-                            IdAsiento = asientoProvisionCaja.IdAsiento
-                        };
-                        Pasivo pasivoProvision = new Pasivo
-                        {
-                            IdAsiento = asientoProvision.IdAsiento
-                        };
-                        //Gasto gastoProvision = new Gasto
-                        //{
-                        //    IdAsiento = asientoProvisionGasto.IdAsiento
-                        //};
-
-                        using (var _dbContext = new PruebaContext())
-                        {
-                            _dbContext.Add(activoProvision);
-                            _dbContext.Add(pasivoProvision);
-                            //_dbContext.Add(gastoProvision);
-                            _dbContext.SaveChanges();
-                        }
-                    }
-                    else
-                    {
-                        LdiarioGlobal asientoGasto = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdSubcuenta,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
-                        };
-                        LdiarioGlobal asientoCaja = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdCodigoCuentaCaja,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
-                        };
-
-                        using (var _dbContext = new PruebaContext())
-                        {
-                            _dbContext.Add(asientoGasto);
-                            _dbContext.Add(asientoCaja);
-                            _dbContext.SaveChanges();
-                        }
-
-                        //REGISTRAR ASIENTO EN LA TABLA GASTOS
-                        Gasto gasto = new Gasto
-                        {
-                            IdAsiento = asientoGasto.IdAsiento
-                        };
-                        //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                        Activo activo = new Activo
-                        {
-                            IdAsiento = asientoCaja.IdAsiento
-                        };
-
-                        using (var _dbContext = new PruebaContext())
-                        {
-                            _dbContext.Add(gasto);
-                            _dbContext.Add(activo);
-                            _dbContext.SaveChanges();
-                        }
-                    }
-
-                }
-                else if (modelo.Pagoforma == FormaPago.Transferencia)
-                {
-                    pago.FormaPago = true;
-
-                    using (var _dbContext = new PruebaContext())
-                    {
-                        _dbContext.Add(pago);
-                        _dbContext.SaveChanges();
-                    }
-
-                    ReferenciasPe referencia = new ReferenciasPe
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        NumReferencia = modelo.NumReferencia,
-                        Banco = modelo.IdCodigoCuentaBanco.ToString()
+                        IdCondominio = idCondominio,
+                        Fecha = modelo.Fecha,
+                        Monto = modelo.Monto,
                     };
 
-                    using (var _dbContext = new PruebaContext())
+                    var provisiones = from c in _context.Provisiones
+                                      where c.IdCodGasto == modelo.IdSubcuenta
+                                      select c;
+
+                    var diario = from l in _context.LdiarioGlobals
+                                 select l;
+
+                    int numAsiento = 1;
+
+                    if (diario.Count() > 0)
                     {
-                        _dbContext.Add(referencia);
-                        _dbContext.SaveChanges();
+                        numAsiento = diario.ToList().Last().NumAsiento;
                     }
-                    if (provisiones != null && provisiones.Any())
+
+                    if (modelo.Pagoforma == FormaPago.Efectivo)
                     {
-                        LdiarioGlobal asientoProvision = new LdiarioGlobal
-                        {
-                            IdCodCuenta = provisiones.FirstOrDefault().IdCodCuenta,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = provisiones.FirstOrDefault().Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
-                        };
-                        LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdCodigoCuentaBanco,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
-                        };
-                        LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
-                        {
-                            IdCodCuenta = provisiones.FirstOrDefault().IdCodGasto,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto - provisiones.FirstOrDefault().Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
-                        };
-                        using (var _dbContext = new PruebaContext())
-                        {
-                            _dbContext.Add(asientoProvisionGasto);
-                            _dbContext.Add(asientoProvision);
-                            _dbContext.Add(asientoProvisionBanco);
-                            _dbContext.SaveChanges();
-                        }
-
-                        //REGISTRAR ASIENTO EN LA TABLA GASTOS
-
-                        //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                        Activo activoProvision = new Activo
-                        {
-                            IdAsiento = asientoProvisionBanco.IdAsiento
-                        };
-                        Pasivo pasivoProvision = new Pasivo
-                        {
-                            IdAsiento = asientoProvision.IdAsiento
-                        };
-                        //Gasto gastoProvision = new Gasto
-                        //{
-                        //    IdAsiento = asientoProvisionGasto.IdAsiento
-                        //};
+                        pago.FormaPago = false;
 
                         using (var _dbContext = new PruebaContext())
                         {
-                            _dbContext.Add(activoProvision);
-                            _dbContext.Add(pasivoProvision);
-                            // _dbContext.Add(gastoProvision);
+                            _dbContext.Add(pago);
                             _dbContext.SaveChanges();
                         }
+                        //verficar si existe una provision sobre la sub cuenta
+
+                        if (provisiones != null && provisiones.Any())
+                        {
+                            LdiarioGlobal asientoProvision = new LdiarioGlobal
+                            {
+                                IdCodCuenta = provisiones.FirstOrDefault().IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = provisiones.FirstOrDefault().Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdCodigoCuentaCaja,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
+                            {
+                                IdCodCuenta = provisiones.FirstOrDefault().IdCodGasto,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto - provisiones.FirstOrDefault().Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(asientoProvisionGasto);
+                                _dbContext.Add(asientoProvision);
+                                _dbContext.Add(asientoProvisionCaja);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA GASTOS
+
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activoProvision = new Activo
+                            {
+                                IdAsiento = asientoProvisionCaja.IdAsiento
+                            };
+                            Pasivo pasivoProvision = new Pasivo
+                            {
+                                IdAsiento = asientoProvision.IdAsiento
+                            };
+                            //Gasto gastoProvision = new Gasto
+                            //{
+                            //    IdAsiento = asientoProvisionGasto.IdAsiento
+                            //};
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(activoProvision);
+                                _dbContext.Add(pasivoProvision);
+                                //_dbContext.Add(gastoProvision);
+                                _dbContext.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            LdiarioGlobal asientoGasto = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdSubcuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoCaja = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdCodigoCuentaCaja,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1
+                            };
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(asientoGasto);
+                                _dbContext.Add(asientoCaja);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA GASTOS
+                            Gasto gasto = new Gasto
+                            {
+                                IdAsiento = asientoGasto.IdAsiento
+                            };
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activo = new Activo
+                            {
+                                IdAsiento = asientoCaja.IdAsiento
+                            };
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(gasto);
+                                _dbContext.Add(activo);
+                                _dbContext.SaveChanges();
+                            }
+                        }
+
                     }
-                    else
+                    else if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
-                        //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
-                        //buscar el id en codigo de cuentas global de la subcuenta seleccionada
-
-                        LdiarioGlobal asientoGasto = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdSubcuenta,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = true,
-                            NumAsiento = numAsiento
-                        };
-                        LdiarioGlobal asientoBanco = new LdiarioGlobal
-                        {
-                            IdCodCuenta = modelo.IdCodigoCuentaBanco,
-                            Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
-                            Monto = modelo.Monto,
-                            TipoOperacion = false,
-                            NumAsiento = numAsiento
-                        };
+                        pago.FormaPago = true;
 
                         using (var _dbContext = new PruebaContext())
                         {
-                            _dbContext.Add(asientoGasto);
-                            _dbContext.Add(asientoBanco);
+                            _dbContext.Add(pago);
                             _dbContext.SaveChanges();
                         }
 
-                        //REGISTRAR ASIENTO EN LA TABLA GASTOS
-                        Gasto gasto = new Gasto
+                        ReferenciasPe referencia = new ReferenciasPe
                         {
-                            IdAsiento = asientoGasto.IdAsiento
-                        };
-                        //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                        Activo activo = new Activo
-                        {
-                            IdAsiento = asientoBanco.IdAsiento
+                            IdPagoEmitido = pago.IdPagoEmitido,
+                            NumReferencia = modelo.NumReferencia,
+                            Banco = modelo.IdCodigoCuentaBanco.ToString()
                         };
 
                         using (var _dbContext = new PruebaContext())
                         {
-                            _dbContext.Add(gasto);
-                            _dbContext.Add(activo);
+                            _dbContext.Add(referencia);
                             _dbContext.SaveChanges();
+                        }
+                        if (provisiones != null && provisiones.Any())
+                        {
+                            LdiarioGlobal asientoProvision = new LdiarioGlobal
+                            {
+                                IdCodCuenta = provisiones.FirstOrDefault().IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = provisiones.FirstOrDefault().Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdCodigoCuentaBanco,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
+                            {
+                                IdCodCuenta = provisiones.FirstOrDefault().IdCodGasto,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto - provisiones.FirstOrDefault().Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(asientoProvisionGasto);
+                                _dbContext.Add(asientoProvision);
+                                _dbContext.Add(asientoProvisionBanco);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA GASTOS
+
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activoProvision = new Activo
+                            {
+                                IdAsiento = asientoProvisionBanco.IdAsiento
+                            };
+                            Pasivo pasivoProvision = new Pasivo
+                            {
+                                IdAsiento = asientoProvision.IdAsiento
+                            };
+                            //Gasto gastoProvision = new Gasto
+                            //{
+                            //    IdAsiento = asientoProvisionGasto.IdAsiento
+                            //};
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(activoProvision);
+                                _dbContext.Add(pasivoProvision);
+                                // _dbContext.Add(gastoProvision);
+                                _dbContext.SaveChanges();
+                            }
+                        }
+                        else
+                        {
+                            //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
+                            //buscar el id en codigo de cuentas global de la subcuenta seleccionada
+
+                            LdiarioGlobal asientoGasto = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdSubcuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1
+                            };
+                            LdiarioGlobal asientoBanco = new LdiarioGlobal
+                            {
+                                IdCodCuenta = modelo.IdCodigoCuentaBanco,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1
+                            };
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(asientoGasto);
+                                _dbContext.Add(asientoBanco);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA GASTOS
+                            Gasto gasto = new Gasto
+                            {
+                                IdAsiento = asientoGasto.IdAsiento
+                            };
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activo = new Activo
+                            {
+                                IdAsiento = asientoBanco.IdAsiento
+                            };
+
+                            using (var _dbContext = new PruebaContext())
+                            {
+                                _dbContext.Add(gasto);
+                                _dbContext.Add(activo);
+                                _dbContext.SaveChanges();
+                            }
+
                         }
 
                     }
+
+                    return RedirectToAction("IndexPagosEmitidos");
 
                 }
-
-                return RedirectToAction("IndexPagosEmitidos");
-
+                return RedirectToAction("RegistrarPagos");
             }
-            return RedirectToAction("RegistrarPagos");
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }            
         }
 
         public async Task<IActionResult> RelaciondeGastos()
         {
-            // CARGAR GASTOS REGISTRADOS
+            try
+            {
+                // CARGAR GASTOS REGISTRADOS
 
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var modelo = await LoadDataRelacionGastos(idCondominio);
+                var modelo = await LoadDataRelacionGastos(idCondominio);
 
-            TempData.Keep();
+                TempData.Keep();
 
-            return View(modelo);
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
+                return View("Error", modeloError);
+            }
         }
 
         public IActionResult CrearFondo()
         {
-            var modelo = new CrearFondoVM();
+            try
+            {
+                var modelo = new CrearFondoVM();
 
-            // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == idCondominio
-                                       select c;
+                // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdCondominio == idCondominio
+                                           select c;
 
-            IQueryable<Grupo> gruposPatrimonio = from c in _context.Grupos
-                                                 where c.IdClase == 3
-                                                 select c;
-            IQueryable<Cuenta> cuentas = from c in _context.Cuenta
-                                         where gruposPatrimonio.FirstOrDefault().Id == c.IdGrupo
-                                         select c;
-            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
-                                               where cuentas.FirstOrDefault().Id == c.IdCuenta
-                                               select c;
+                IQueryable<Grupo> gruposPatrimonio = from c in _context.Grupos
+                                                     where c.IdClase == 3
+                                                     select c;
+                IQueryable<Cuenta> cuentas = from c in _context.Cuenta
+                                             where gruposPatrimonio.FirstOrDefault().Id == c.IdGrupo
+                                             select c;
+                IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
+                                                   where cuentas.FirstOrDefault().Id == c.IdCuenta
+                                                   select c;
 
-            // LLENAR SELECT CON LOS FONDOS REGISTRADOS
-            modelo.Fondos = subcuentas.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+                // LLENAR SELECT CON LOS FONDOS REGISTRADOS
+                modelo.Fondos = subcuentas.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
 
-            TempData.Keep();
+                TempData.Keep();
 
-            return View(modelo);
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+            
         }
         [HttpPost]
         public async Task<IActionResult> CrearFondo(CrearFondoVM modelo)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var fondo = new Fondo
+                if (ModelState.IsValid)
                 {
-                    IdCodCuenta = modelo.IdFondo,
-                    Porcentaje = modelo.Porcentaje
+                    var fondo = new Fondo
+                    {
+                        IdCodCuenta = modelo.IdFondo,
+                        Porcentaje = modelo.Porcentaje
+                    };
+
+                    using (var db_context = new PruebaContext())
+                    {
+                        await db_context.AddAsync(fondo);
+                        await db_context.SaveChangesAsync();
+                    }
+
+                    return RedirectToAction("RelaciondeGastos");
+                }
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
                 };
 
-                using (var db_context = new PruebaContext())
-                {
-                    await db_context.AddAsync(fondo);
-                    await db_context.SaveChangesAsync();
-                }
-
-                return RedirectToAction("RelaciondeGastos");
+                return View("Error", modeloError);
             }
-            return View(modelo);
+            
         }
 
         public IActionResult CrearProvision()
         {
-            var modelo = new CrearProvisionVM();
-
-            // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == idCondominio
-                                       select c;
-            var gruposGastos = from c in _context.Grupos
-                               where c.IdClase == 5
-                               select c;
-
-            var cuentaProvision = from c in _context.Cuenta
-                                  where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
-                                  select c;
-
-            var subcuentasProvisiones = from c in _context.SubCuenta
-                                        where c.IdCuenta == cuentaProvision.FirstOrDefault().Id
-                                        select c;
-
-            var cuentas = from c in _context.Cuenta
-                          select c;
-
-            var subcuentas = from c in _context.SubCuenta
-                             select c;
-
-            // CARGAR CUENTAS GASTOS DEL CONDOMINIO
-            IList<Cuenta> cuentasGastos = new List<Cuenta>();
-            foreach (var grupo in gruposGastos)
+            try
             {
-                foreach (var cuenta in cuentas)
-                {
-                    if (cuenta.IdGrupo == grupo.Id)
-                    {
-                        cuentasGastos.Add(cuenta);
-                    }
-                    continue;
-                }
-            }
+                var modelo = new CrearProvisionVM();
 
-            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-            foreach (var cuenta in cuentasGastos)
+                // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdCondominio == idCondominio
+                                           select c;
+                var gruposGastos = from c in _context.Grupos
+                                   where c.IdClase == 5
+                                   select c;
+
+                var cuentaProvision = from c in _context.Cuenta
+                                      where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
+                                      select c;
+
+                var subcuentasProvisiones = from c in _context.SubCuenta
+                                            where c.IdCuenta == cuentaProvision.FirstOrDefault().Id
+                                            select c;
+
+                var cuentas = from c in _context.Cuenta
+                              select c;
+
+                var subcuentas = from c in _context.SubCuenta
+                                 select c;
+
+                // CARGAR CUENTAS GASTOS DEL CONDOMINIO
+                IList<Cuenta> cuentasGastos = new List<Cuenta>();
+                foreach (var grupo in gruposGastos)
+                {
+                    foreach (var cuenta in cuentas)
+                    {
+                        if (cuenta.IdGrupo == grupo.Id)
+                        {
+                            cuentasGastos.Add(cuenta);
+                        }
+                        continue;
+                    }
+                }
+
+                IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
+                foreach (var cuenta in cuentasGastos)
+                {
+                    foreach (var subcuenta in subcuentas)
+                    {
+                        if (subcuenta.IdCuenta == cuenta.Id)
+                        {
+                            subcuentasGastos.Add(subcuenta);
+                        }
+                        continue;
+                    }
+                }
+
+                modelo.Gastos = subcuentasGastos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+                modelo.Provisiones = subcuentasProvisiones.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
             {
-                foreach (var subcuenta in subcuentas)
+                var modeloError = new ErrorViewModel()
                 {
-                    if (subcuenta.IdCuenta == cuenta.Id)
-                    {
-                        subcuentasGastos.Add(subcuenta);
-                    }
-                    continue;
-                }
-            }
+                    RequestId = ex.Message
+                };
 
-            modelo.Gastos = subcuentasGastos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-            modelo.Provisiones = subcuentasProvisiones.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-
-            return View(modelo);
+                return View("Error", modeloError);
+            }            
         }
         [HttpPost]
         public async Task<IActionResult> CrearProvision(CrearProvisionVM modelo)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // GUARDAR PREVISION EN BD
-                var provision = new Provision
+                if (ModelState.IsValid)
                 {
-                    IdCodGasto = modelo.IdGasto,
-                    IdCodCuenta = modelo.IdcodCuenta,
-                    Monto = modelo.Monto
-                };
+                    // GUARDAR PREVISION EN BD
+                    var provision = new Provision
+                    {
+                        IdCodGasto = modelo.IdGasto,
+                        IdCodCuenta = modelo.IdcodCuenta,
+                        Monto = modelo.Monto
+                    };
 
-                // CREAR ASIENTO SOBRE PREVISION
+                    // CREAR ASIENTO SOBRE PREVISION
 
-                var diario = from l in _context.LdiarioGlobals
-                             select l;
+                    var diario = from l in _context.LdiarioGlobals
+                                 select l;
 
-                int numAsiento = 1;
+                    int numAsiento = 1;
 
-                if (diario.Count() > 0)
-                {
-                    numAsiento = diario.ToList().LastOrDefault().NumAsiento + 1;
+                    if (diario.Count() > 0)
+                    {
+                        numAsiento = diario.ToList().LastOrDefault().NumAsiento + 1;
+                    }
+
+                    LdiarioGlobal asientoProvision = new LdiarioGlobal
+                    {
+                        IdCodCuenta = provision.IdCodCuenta,
+                        Fecha = DateTime.Today,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        TipoOperacion = false,
+                        NumAsiento = numAsiento
+                    };
+                    LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
+                    {
+                        IdCodCuenta = modelo.IdGasto,
+                        Fecha = DateTime.Today,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        TipoOperacion = true,
+                        NumAsiento = numAsiento
+                    };
+                    using (var db_context = new PruebaContext())
+                    {
+                        await db_context.AddAsync(provision);
+                        await db_context.AddAsync(asientoGastoProvisionado);
+                        await db_context.AddAsync(asientoProvision);
+                        await db_context.SaveChangesAsync();
+                    }
+
+                    return RedirectToAction("RelaciondeGastos");
+
                 }
 
-                LdiarioGlobal asientoProvision = new LdiarioGlobal
-                {
-                    IdCodCuenta = provision.IdCodCuenta,
-                    Fecha = DateTime.Today,
-                    Concepto = modelo.Concepto,
-                    Monto = modelo.Monto,
-                    TipoOperacion = false,
-                    NumAsiento = numAsiento
-                };
-                LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
-                {
-                    IdCodCuenta = modelo.IdGasto,
-                    Fecha = DateTime.Today,
-                    Concepto = modelo.Concepto,
-                    Monto = modelo.Monto,
-                    TipoOperacion = true,
-                    NumAsiento = numAsiento
-                };
-                using (var db_context = new PruebaContext())
-                {
-                    await db_context.AddAsync(provision);
-                    await db_context.AddAsync(asientoGastoProvisionado);
-                    await db_context.AddAsync(asientoProvision);
-                    await db_context.SaveChangesAsync();
-                }
 
-                return RedirectToAction("RelaciondeGastos");
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
+                return View("Error", modeloError);
             }
 
-
-            return View(modelo);
         }
 
         // generar recibos de cobro
@@ -814,108 +984,125 @@ namespace Prueba.Controllers
             {
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var modelo = await LoadDataRelacionGastos(idCondominio);
-                // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
-                var inmueblesCondominio = from c in _context.Inmuebles
-                                          where c.IdCondominio == idCondominio
-                                          select c;
+                var relacionesDeGasto = from c in _context.RelacionGastos
+                                        select c;
+                var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month != DateTime.Today.Month).ToListAsync();
 
-                var propiedades = from c in _context.Propiedads
-                                  select c;
-                var propietarios = from c in _context.AspNetUsers
-                                   select c;
-
-                // REGISTRAR EN BD LA RELACION DE GASTOS
-                var relacionGasto = new RelacionGasto
+                if (!existeActualRG.Any())
                 {
-                    SubTotal = modelo.SubTotal,
-                    TotalMensual = modelo.Total,
-                    Fecha = DateTime.Today,
-                    IdCondominio = idCondominio
-                };
+                    var modelo = await LoadDataRelacionGastos(idCondominio);
+                    // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
+                    var inmueblesCondominio = from c in _context.Inmuebles
+                                              where c.IdCondominio == idCondominio
+                                              select c;
 
-                using (var db_context = new PruebaContext())
-                {
-                    await db_context.AddAsync(relacionGasto);
-                    await db_context.SaveChangesAsync();
-                }
+                    var propiedades = from c in _context.Propiedads
+                                      select c;
+                    var propietarios = from c in _context.AspNetUsers
+                                       select c;
 
-                IList<Propiedad> listaPropiedadesCondominio = new List<Propiedad>();
-                if (inmueblesCondominio != null && inmueblesCondominio.Any() && propiedades != null && propiedades.Any())
-                {
-                    foreach (var item in inmueblesCondominio)
+                    // REGISTRAR EN BD LA RELACION DE GASTOS
+                    var relacionGasto = new RelacionGasto
                     {
-                        var propiedadsCond = await propiedades.Where(c => c.IdInmueble == item.IdInmueble).ToListAsync();
-                        var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
-                        listaPropiedadesCondominio = aux2;
-                    }
-
-                    // CALCULAR LOS PAGOS DE CADA PROPIEDAD POR SU ALICUOTA
-                    // CAMBIAR SOLVENCIA, SALDO Y DEUDA DE LA PROPIEDAD
-                    IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
-                    foreach (var propiedad in listaPropiedadesCondominio)
-                    {
-                        // VERIFICAR SOLVENCIA
-                        // SI ES TRUE (ESTA SOLVENTE, AL DIA) NO SE BUSCA EN LA DEUDA
-                        // SI ES FALSO PARA EL MONTO TOTAL A PAGAR DEBE MOSTRARSELE LA DEUDA
-                        // Y EL TOTAL DEL MES MAS LA DEUDA
-                        if (propiedad.Solvencia)
-                        {
-                            propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                            propiedad.Solvencia = false;
-                        }
-                        else
-                        {
-                            propiedad.Deuda += propiedad.Saldo;
-                            propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                        }
-
-                        // INFO DEL RECIBO
-                        var recibo = new ReciboCobro
-                        {
-                            IdPropiedad = propiedad.IdPropiedad,
-                            IdRgastos = relacionGasto.IdRgastos,
-                            Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100 + propiedad.Deuda,
-                            Fecha = DateTime.Today
-                        };
-
-                        recibosCobroCond.Add(recibo);
-                    }
-
-                    // REGISTRAR EN BD LOS RECIBOS DE COBRO PARA CADA PROPIEDAD
-                    //  Y EDITAR LAS PROPIEDADES
+                        SubTotal = modelo.SubTotal,
+                        TotalMensual = modelo.Total,
+                        Fecha = DateTime.Today,
+                        IdCondominio = idCondominio
+                    };
 
                     using (var db_context = new PruebaContext())
                     {
-                        foreach (var item in recibosCobroCond)
-                        {
-                            await db_context.AddAsync(item);
-                        }
-                        foreach (var propiedad in listaPropiedadesCondominio)
-                        {
-                            db_context.Update(propiedad);
-                        }
+                        await db_context.AddAsync(relacionGasto);
                         await db_context.SaveChangesAsync();
                     }
 
-                    // CREAR MODELO PARA NUEVA VISTA
-                    var aux = new RecibosCreadosVM
+                    IList<Propiedad> listaPropiedadesCondominio = new List<Propiedad>();
+                    if (inmueblesCondominio != null && inmueblesCondominio.Any() && propiedades != null && propiedades.Any())
                     {
-                        Propiedades = listaPropiedadesCondominio,
-                        Propietarios = propietarios.ToList(),
-                        Recibos = recibosCobroCond,
-                        Inmuebles = inmueblesCondominio.ToList(),
-                        RelacionGastos = modelo
+                        foreach (var item in inmueblesCondominio)
+                        {
+                            var propiedadsCond = await propiedades.Where(c => c.IdInmueble == item.IdInmueble).ToListAsync();
+                            var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
+                            listaPropiedadesCondominio = aux2;
+                        }
+
+                        // CALCULAR LOS PAGOS DE CADA PROPIEDAD POR SU ALICUOTA
+                        // CAMBIAR SOLVENCIA, SALDO Y DEUDA DE LA PROPIEDAD
+                        IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
+                        foreach (var propiedad in listaPropiedadesCondominio)
+                        {
+                            // VERIFICAR SOLVENCIA
+                            // SI ES TRUE (ESTA SOLVENTE, AL DIA) NO SE BUSCA EN LA DEUDA
+                            // SI ES FALSO PARA EL MONTO TOTAL A PAGAR DEBE MOSTRARSELE LA DEUDA
+                            // Y EL TOTAL DEL MES MAS LA DEUDA
+                            if (propiedad.Solvencia)
+                            {
+                                propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                propiedad.Solvencia = false;
+                            }
+                            else
+                            {
+                                propiedad.Deuda += propiedad.Saldo;
+                                propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                            }
+
+                            // INFO DEL RECIBO
+                            var recibo = new ReciboCobro
+                            {
+                                IdPropiedad = propiedad.IdPropiedad,
+                                IdRgastos = relacionGasto.IdRgastos,
+                                Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100 + propiedad.Deuda,
+                                Fecha = DateTime.Today
+                            };
+
+                            recibosCobroCond.Add(recibo);
+                        }
+
+                        // REGISTRAR EN BD LOS RECIBOS DE COBRO PARA CADA PROPIEDAD
+                        //  Y EDITAR LAS PROPIEDADES
+
+                        using (var db_context = new PruebaContext())
+                        {
+                            foreach (var item in recibosCobroCond)
+                            {
+                                await db_context.AddAsync(item);
+                            }
+                            foreach (var propiedad in listaPropiedadesCondominio)
+                            {
+                                db_context.Update(propiedad);
+                            }
+                            await db_context.SaveChangesAsync();
+                        }
+
+                        // CREAR MODELO PARA NUEVA VISTA
+                        var aux = new RecibosCreadosVM
+                        {
+                            Propiedades = listaPropiedadesCondominio,
+                            Propietarios = propietarios.ToList(),
+                            Recibos = recibosCobroCond,
+                            Inmuebles = inmueblesCondominio.ToList(),
+                            RelacionGastos = modelo
+                        };
+
+                        // REENVIAR A OTRA VISTA
+
+                        ViewBag.Recibos = "Exitoso";
+
+                        TempData.Keep();
+
+                        return View(aux);
+                    }
+                }
+                else
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Ya existe una relacion de gasto para este mes!"
                     };
 
-                    // REENVIAR A OTRA VISTA
-
-                    ViewBag.Recibos = "Exitoso";
-
-                    TempData.Keep();
-
-                    return View(aux);
+                    return View("Error", modeloError);
                 }
+                
 
             }
             catch (Exception ex)
@@ -933,91 +1120,533 @@ namespace Prueba.Controllers
         // generar pdf
         public IActionResult LibroDiario()
         {
-            //traer subcuentas del condominio
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == idCondominio
-                                       select c;
-
-            var subcuentas = from c in _context.SubCuenta
-                             select c;
-            var clases = from c in _context.Clases
-                         select c;
-            var grupos = from c in _context.Grupos
-                         select c;
-            var cuentas = from c in _context.Cuenta
-                          select c;
-            // CARGAR DIARIO COMPLETO
-            var diario = from d in _context.LdiarioGlobals
-                         select d;
-
-            // BUSCAR ASIENTOS CORRESPONDIENTES A LAS SUBCUENTAS DEL CONDOMINIO
-            // CALCULAR EL TOTAL DEL DEBE Y HABER Y SU DIFERENCIA
-
-            IList<LdiarioGlobal> asientosCondominio = new List<LdiarioGlobal>();
-            IList<SubCuenta> subCuentasModel = new List<SubCuenta>();
-            decimal totalDebe = 0;
-            decimal totalHaber = 0;
-
-            foreach (var asiento in diario)
+            try
             {
-                foreach (var ccCondominio in cuentasContablesCond)
+                //traer subcuentas del condominio
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdCondominio == idCondominio
+                                           select c;
+
+                var subcuentas = from c in _context.SubCuenta
+                                 select c;
+                var clases = from c in _context.Clases
+                             select c;
+                var grupos = from c in _context.Grupos
+                             select c;
+                var cuentas = from c in _context.Cuenta
+                              select c;
+                // CARGAR DIARIO COMPLETO
+                var diario = from d in _context.LdiarioGlobals
+                             select d;
+
+                // BUSCAR ASIENTOS CORRESPONDIENTES A LAS SUBCUENTAS DEL CONDOMINIO
+                // CALCULAR EL TOTAL DEL DEBE Y HABER Y SU DIFERENCIA
+
+                IList<LdiarioGlobal> asientosCondominio = new List<LdiarioGlobal>();
+                IList<SubCuenta> subCuentasModel = new List<SubCuenta>();
+                decimal totalDebe = 0;
+                decimal totalHaber = 0;
+
+                foreach (var asiento in diario)
                 {
-                    if (asiento.IdCodCuenta == ccCondominio.IdCodCuenta)
+                    foreach (var ccCondominio in cuentasContablesCond)
                     {
-                        asientosCondominio.Add(asiento);
-                        var aux = subcuentas.Where(c => c.Id == asiento.IdCodCuenta).ToList();
-                        subCuentasModel.Add(aux.FirstOrDefault());
-                        if (asiento.TipoOperacion)
+                        if (asiento.IdCodCuenta == ccCondominio.IdCodCuenta)
                         {
-                            totalDebe += asiento.Monto;
+                            asientosCondominio.Add(asiento);
+                            var aux = subcuentas.Where(c => c.Id == asiento.IdCodCuenta).ToList();
+                            subCuentasModel.Add(aux.FirstOrDefault());
+                            if (asiento.TipoOperacion)
+                            {
+                                totalDebe += asiento.Monto;
+                            }
+                            else
+                            {
+                                totalHaber += asiento.Monto;
+                            }
                         }
-                        else
+                        continue;
+                    }
+
+                }
+
+                decimal diferencia = totalDebe - totalHaber;
+
+                // LLENAR MODELO
+
+                var modelo = new LibroDiarioVM
+                {
+                    AsientosCondominio = asientosCondominio,
+                    CuentasDiarioCondominio = subCuentasModel,
+                    Clases = clases.ToList(),
+                    Grupos = grupos.ToList(),
+                    Cuentas = cuentas.ToList(),
+                    TotalDebe = totalDebe,
+                    TotalHaber = totalHaber,
+                    Diferencia = diferencia
+                };
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+        public async Task<IActionResult> Deudores()
+        {
+            try
+            {
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var modelo = await LoadDataDeudores(idCondominio);
+
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
+        public async Task<IActionResult> PagosRecibidos()
+        {
+            try
+            {
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                // propietarios
+                IList<ApplicationUser> listaPropietarios = await _signInManager.UserManager.Users.ToListAsync();
+                // propiedades
+                var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
+                // pagos recibidos
+                var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
+
+                foreach (var user in listaPropietarios)
+                {
+                    var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
+                    if (propiedades != null && propiedades.Count() > 0)
+                    {
+                        propiedadesPorUsuario.Add(user, propiedades);
+                        foreach (var propiedad in propiedades)
                         {
-                            totalHaber += asiento.Monto;
+                            var pagos = await _context.PagoRecibidos.Where(
+                                c => c.IdPropiedad == propiedad.IdPropiedad
+                                && c.Confirmado == false)
+                                .ToListAsync();
+
+                            if (pagos != null && pagos.Count() > 0)
+                            {
+                                pagosPorPropiedad.Add(propiedad, pagos);
+                            }
+                            continue;
                         }
                     }
                     continue;
                 }
+                IndexPagoRecibdioVM modelo = new IndexPagoRecibdioVM()
+                {
+                    UsuariosPropiedad = propiedadesPorUsuario,
+                    PropiedadPagos = pagosPorPropiedad
+                };
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
+                return View("Error", modeloError);
             }
 
-            decimal diferencia = totalDebe - totalHaber;
+            
+        }
 
-            // LLENAR MODELO
-
-            var modelo = new LibroDiarioVM
+        [HttpGet]
+        public IActionResult ConfirmarPagoRecibido(int id)
+        {
+            try
             {
-                AsientosCondominio = asientosCondominio,
-                CuentasDiarioCondominio = subCuentasModel,
-                Clases = clases.ToList(),
-                Grupos = grupos.ToList(),
-                Cuentas = cuentas.ToList(),
-                TotalDebe = totalDebe,
-                TotalHaber = totalHaber,
-                Diferencia = diferencia
-            };
-            TempData.Keep();
+                TempData["idPagoConfirmar"] = id.ToString();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
-            return View(modelo);
-        }
-        public async Task<IActionResult> Deudores()
-        {
-
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var modelo = await LoadDataDeudores(idCondominio);
-
-            TempData.Keep();
-
-            return View(modelo);
+                return View("Error", modeloError);
+            }
 
         }
 
-        public IActionResult PagosRecibidos()
+        [HttpGet]
+        public async Task<IActionResult> ConfirmarPagoRecibidoPost()
         {
-            return View();
+            try
+            {
+                int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
+                if (id > 0)
+                {
+                    // buscar pago
+                    var pago = await _context.PagoRecibidos.Where(c => c.IdPagoRecibido == id).ToListAsync();
+
+                    // buscar propiedad
+                    var propiedad = await _context.Propiedads.Where(c => c.IdPropiedad == pago.First().IdPropiedad).ToListAsync();
+
+                    // buscar recibos de la propiedad
+                    var recibosPropiedad = await _context.ReciboCobros.Where(
+                        c => c.IdPropiedad == propiedad.First().IdPropiedad
+                        && c.EnProceso == true
+                        && c.Pagado == false)
+                        .ToListAsync();
+
+                    // buscar subcuenta contable donde esta el pago del condominio
+                    var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
+                    // buscar referencia si tiene
+                    var referencias = new List<ReferenciasPr>();
+                    var cuentaAfectada = new List<SubCuenta>();
+
+                    if (pago != null && pago.Count() > 0)
+                    {
+                        if (pago.First().FormaPago)
+                        {
+                            referencias = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.First().IdPagoRecibido).ToListAsync();
+                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.First().IdSubCuenta).ToListAsync();
+                        }
+                        else
+                        {
+                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.First().IdSubCuenta).ToListAsync();
+                        }
+
+                        // buscar la manera de hacer match (por el monto ??)
+
+                        decimal actual = propiedad.First().Saldo;
+                        decimal vencida = propiedad.First().Deuda;
+                        decimal total = actual + vencida;
+
+                        //var reciboActual = recibosPropiedad.Where(c => c.Fecha.Month == DateTime.Now.Month).ToList();
+                        var reciboActual = recibosPropiedad.OrderBy(c => c.Fecha).ToList();
+
+                        if (pago.First().Monto == actual)
+                        {
+                            try
+                            {
+                                // se pago solo el recibo del mes actual
+                                using (var dbContext = new PruebaContext())
+                                {
+
+                                    // cambiar en propiedad Saldo - si tiene deuda > 0 Solvencia = false sino Solvencia = true
+                                    propiedad.First().Saldo = 0;
+
+                                    if (propiedad.First().Deuda == 0)
+                                    {
+                                        propiedad.First().Solvencia = true;
+                                    }
+
+                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+                                    reciboActual.First().EnProceso = false;
+                                    reciboActual.First().Pagado = true;
+
+                                    dbContext.Update(propiedad.First());
+                                    dbContext.Update(reciboActual.First());
+
+                                    int numAsiento = 1;
+
+                                    if (dbContext.LdiarioGlobals.Count() > 0)
+                                    {
+                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
+                                    }
+
+                                    // libro diario cuenta afecada
+                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
+                                    // -> contra subcuenta  banco o caja por el debe
+                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaAfectada.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaCondominio.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = false,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    dbContext.Add(asientoIngreso);
+                                    dbContext.Add(asientoBanco);
+
+                                    dbContext.SaveChanges();
+
+                                    // registrar asientos en bd
+
+                                    var ingreso = new Ingreso
+                                    {
+                                        IdAsiento = asientoIngreso.IdAsiento,
+                                    };
+
+                                    var activo = new Activo
+                                    {
+                                        IdAsiento = asientoBanco.IdAsiento,
+                                    };
+
+                                    using (var db_context = new PruebaContext())
+                                    {
+                                        db_context.Add(ingreso);
+                                        db_context.Add(activo);
+
+                                        db_context.SaveChanges();
+                                    }
+
+                                }
+                                return RedirectToAction("PagosRecibidos");
+                            }
+                            catch (Exception ex)
+                            {
+                                var error = new ErrorViewModel()
+                                {
+                                    RequestId = ex.Message
+                                };
+
+                                return View("Error", error);
+                            }
+
+                        }
+                        else if (pago.First().Monto == vencida)
+                        {
+                            // se pagaron los recibos pasados
+                            // cambiar en propiedad Deuda -> Solvencia = false
+                            // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+                            try
+                            {
+                                using (var dbContext = new PruebaContext())
+                                {
+
+                                    // cambiar en propiedad Deuda - si tiene saldo > 0 Solvencia = false sino Solvencia = true
+                                    propiedad.First().Deuda = 0;
+
+                                    if (propiedad.First().Saldo == 0)
+                                    {
+                                        propiedad.First().Solvencia = true;
+                                    }
+
+                                    dbContext.Update(propiedad.First());
+
+                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+
+                                    foreach (var recibo in recibosPropiedad.SkipWhile(c => c.IdReciboCobro == reciboActual.First().IdReciboCobro))
+                                    {
+                                        recibo.EnProceso = false;
+                                        recibo.Pagado = true;
+                                        dbContext.Update(recibo);
+
+                                    }
+
+                                    int numAsiento = 1;
+
+                                    if (dbContext.LdiarioGlobals.Count() > 0)
+                                    {
+                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
+                                    }
+                                    // libro diario cuenta afecada
+                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
+                                    // -> contra subcuenta  banco o caja por el debe
+                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaAfectada.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaCondominio.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = false,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    // registrar asientos en bd
+                                    dbContext.Add(asientoIngreso);
+                                    dbContext.Add(asientoBanco);
+
+                                    dbContext.SaveChanges();
+
+
+                                    var ingreso = new Ingreso
+                                    {
+                                        IdIngreso = cuentaCondominio.First().Id
+                                    };
+
+                                    var activo = new Activo
+                                    {
+                                        IdActivo = cuentaAfectada.First().Id
+                                    };
+
+                                    using (var db_context = new PruebaContext())
+                                    {
+                                        db_context.Add(ingreso);
+                                        db_context.Add(activo);
+
+                                        db_context.SaveChanges();
+                                    }
+
+
+                                    return RedirectToAction("PagosRecibidos");
+
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                var error = new ErrorViewModel()
+                                {
+                                    RequestId = ex.Message
+                                };
+
+                                return View("Error", error);
+                            }
+
+                        }
+                        else if (pago.First().Monto == total && total != actual)
+                        {
+                            // se pagaron todos los recibos
+                            // cambiar en propiedad ambas -> Solvencia = true
+                            // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+                            try
+                            {
+                                using (var dbContext = new PruebaContext())
+                                {
+
+                                    // cambiar en propiedad Deuda - si tiene saldo > 0 Solvencia = false sino Solvencia = true
+                                    propiedad.First().Deuda = 0;
+                                    propiedad.First().Saldo = 0;
+                                    propiedad.First().Solvencia = true;
+                                    dbContext.Update(propiedad.First());
+
+                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+
+                                    foreach (var recibo in recibosPropiedad)
+                                    {
+                                        recibo.EnProceso = false;
+                                        recibo.Pagado = true;
+                                        dbContext.Update(recibo);
+                                    }
+
+                                    int numAsiento = 1;
+
+                                    if (dbContext.LdiarioGlobals.Count() > 0)
+                                    {
+                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
+                                    }
+                                    // libro diario cuenta afecada
+                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
+                                    // -> contra subcuenta  banco o caja por el debe
+                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaAfectada.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = cuentaCondominio.First().Id,
+                                        Fecha = DateTime.Today,
+                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
+                                        Monto = pago.First().Monto,
+                                        TipoOperacion = false,
+                                        NumAsiento = numAsiento + 1
+                                    };
+
+                                    // registrar asientos en bd
+                                    dbContext.Add(asientoIngreso);
+                                    dbContext.Add(asientoBanco);
+
+                                    dbContext.SaveChanges();
+
+                                    var ingreso = new Ingreso
+                                    {
+                                        IdIngreso = cuentaCondominio.First().Id
+                                    };
+
+                                    var activo = new Activo
+                                    {
+                                        IdActivo = cuentaAfectada.First().Id
+                                    };
+
+                                    using (var db_context = new PruebaContext())
+                                    {
+                                        db_context.Add(ingreso);
+                                        db_context.Add(activo);
+
+                                        db_context.SaveChanges();
+                                    }
+
+                                    return RedirectToAction("PagosRecibidos");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                var error = new ErrorViewModel()
+                                {
+                                    RequestId = ex.Message
+                                };
+
+                                return View("Error", error);
+                            }
+                        }
+                    }
+                }
+
+                TempData.Keep();
+                return RedirectToAction("PagosRecibidos");
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+
+            
         }
 
         /* CARGAR DATA DE LAS PROPIEDADES CON DEUDA
@@ -1025,7 +1654,6 @@ namespace Prueba.Controllers
          */
         private async Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio)
         {
-
             // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
             var inmueblesCondominio = from c in _context.Inmuebles
                                       where c.IdCondominio == idCondominio
@@ -1113,6 +1741,7 @@ namespace Prueba.Controllers
 
             // CARGAR DIARIO COMPLETO
             var diario = from d in _context.LdiarioGlobals
+                         where d.Fecha.Month == DateTime.Today.Month
                          select d;
 
             // CARGAR CUENTAS GASTOS DEL CONDOMINIO
@@ -1265,7 +1894,6 @@ namespace Prueba.Controllers
 
             return modelo;
         }
-
 
     }
 }

@@ -1,4 +1,4 @@
-﻿@model Dictionary<Propiedad, List<PagoRecibido>>
+﻿@model Dictionary<Propiedad, List<ReciboCobro>>
 
 @{
     ViewData["Title"] = "Historial";
@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Historial</h1>
+        <h1 class="h3 mb-0 text-gray-800">Recibos</h1>
     </div>
 
     <!-- Content Row -->
@@ -19,7 +19,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Verifique su historial
+                        Verifique el estado de sus recibos
                     </h6>
 
                 </div>
@@ -36,8 +36,8 @@
                                         <th>Propiedad</th>
                                         <th>Fecha</th>
                                         <th>Monto</th>
-                                        <th>Forma de Pago</th>
-                                        <th>Concepto</th>
+                                        <th>Numero Relación de Gastos</th>
+                                        <th>Estado</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -45,8 +45,9 @@
                                         <th>Propiedad</th>
                                         <th>Fecha</th>
                                         <th>Monto</th>
-                                        <th>Forma de Pago</th>
-                                        <th>Concepto</th>
+                                        <th>Numero Relación de Gastos</th>
+                                        <th>Estado</th>
+
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -56,19 +57,30 @@
                                             <th>@item.Key.Codigo</th>
                                             @if (item.Value.Count() > 0)
                                             {
-                                                @foreach (var pago in item.Value)
+                                                @foreach (var recibo in item.Value)
                                                 {
-                                                    <td>@pago.Fecha</td>
-                                                    <td>@pago.Monto</td>
-                                                    <td>@pago.FormaPago</td>
-                                                    <td>@pago.Concepto</td>
+                                                    <td>@recibo.Fecha</td>
+                                                    <td>@recibo.Monto</td>
+                                                    <td>@recibo.IdRgastos</td>
+                                                    @if (@recibo.EnProceso)
+                                                    {
+                                                        <td>En proceso</td>
+                                                    } 
+                                                    else if(recibo.Pagado)
+                                                    {
+                                                        <td>Pagado</td>
+                                                    } 
+                                                    else
+                                                    {
+                                                        <td>En deuda</td>
+                                                    }
                                                 }
                                             }
                                             else
                                             {
                                                 <td>No</td>
                                                 <td>Hay</td>
-                                                <td>Pagos</td>
+                                                <td>Recibos</td>
                                                 <td>En esta propiedad</td>
                                             }
 
