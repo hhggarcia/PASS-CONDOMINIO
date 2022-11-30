@@ -3,60 +3,88 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Comprobante</h1>
     </div>
 
 
-    <div class="row">
-        <div class="col-lg-12 mb-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 mb-4">
 
 
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Verifique los Pagos Recibidos
+                        Comprobante
                     </h6>
 
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <h3>Condominio</h3>
-                        @if (Model.Condominio != null
-                        && Model.Inmueble != null
-                        && Model.Propiedad != null)
-                        {
-                            <p>Condominio: @Model.Condominio.Nombre</p>
-                            <p>Inmueble: @Model.Inmueble.Nombre</p>
-                            <p>Propiedad: @Model.Propiedad.Codigo</p>
-                        }
+                    <div class="row">
 
-                        @if (Model.PagoRecibido != null)
-                        {
-                            <p>Fecha: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group has-icon-left">
+                                <div class="position-relative">
 
-                            @if (Model.PagoRecibido.FormaPago
-                           && Model.Referencias != null)
-                            {
-                                <h3>Transferencia</h3>
-                                <p>Cuenta: @Model.Referencias.Banco</p>
-                                <p>Referencia: @Model.Referencias.NumReferencia</p>
-                                <p>Monto: @Model.PagoRecibido.Monto</p>
-                                <p>Fecha de comprobante: @DateTime.Today</p>
-                            }
-                            else
-                            {
-                                <h3>Eefctivo</h3>
-                                <p>Monto: @Model.PagoRecibido.Monto</p>
-                                <p>Fecha de comprobante: @DateTime.Today</p>
-                            }
-                        }
+                                    <h3>Condominio</h3>
+                                    @if (Model.Condominio != null
+                                    && Model.Inmueble != null
+                                    && Model.Propiedad != null)
+                                    {
+                                        <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
+                                        <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
+                                        <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
+                                    }
 
-                        <h4>@Model.Mensaje</h4>
+                                </div>
+                            </div>
+                        </div>
 
-                        <a asp-action="RegitrarPagos">Realizar otro pago</a>
-                        <a asp-action="DashboardUsuarios">Finalizar</a>
+
+                        <div class="col-md-6 col-12">
+                            <div class="form-group has-icon-left">
+                                <div class="position-relative">
+
+                                    @if (Model.PagoRecibido != null)
+                                    {
+                                        <p>Fecha: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
+
+                                        @if (Model.PagoRecibido.FormaPago
+                                       && Model.Referencias != null)
+                                        {
+                                            <h3>Transferencia</h3>
+                                            <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
+                                            <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
+                                            <p><strong>Monto</strong>: @Model.PagoRecibido.Monto</p>
+                                            <p><strong>Fecha de comprobante</strong>: @DateTime.Today</p>
+                                        }
+                                        else
+                                        {
+                                            <h3>Eefctivo</h3>
+                                            <p><strong>Monto</strong>: @Model.PagoRecibido.Monto</p>
+                                            <p><strong>Fecha de comprobante</strong>: @DateTime.Today</p>
+                                        }
+                                    }
+
+                                    <h4 class="text-center">@Model.Mensaje</h4>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end">
+                            <button asp-action="RegitrarPagos" type="submit"
+                                    class="btn btn-primary me-1 mb-1">
+                                Realizar otro pago
+                            </button>
+                            <button asp-action="DashboardUsuarios" type="submit"
+                                    class="btn btn-primary me-1 mb-1">
+                                Finalizar
+                            </button>
+                        </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
