@@ -53,49 +53,44 @@
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
-                                        <tr>
-                                            <th>@item.Key.Codigo</th>
-                                            @if (item.Value.Count() > 0)
+                                        @if (item.Value.Count() > 0)
+                                        {
+                                            @foreach (var recibo in item.Value)
                                             {
-                                                @foreach (var recibo in item.Value)
-                                                {
+                                                <tr>
+                                                    <th>@item.Key.Codigo</th>
                                                     <td>@recibo.Fecha</td>
                                                     <td>@recibo.Monto</td>
                                                     <td>@recibo.IdRgastos</td>
                                                     @if (@recibo.EnProceso)
                                                     {
                                                         <td>En proceso</td>
-                                                    } 
-                                                    else if(recibo.Pagado)
+                                                    }
+                                                    else if (recibo.Pagado)
                                                     {
                                                         <td>Pagado</td>
-                                                    } 
+                                                    }
                                                     else
                                                     {
                                                         <td>En deuda</td>
                                                     }
-                                                }
+                                                </tr>
+
                                             }
-                                            else
-                                            {
+
+                                        }
+                                        else
+                                        {
+                                            <tr>
                                                 <td>No</td>
                                                 <td>Hay</td>
                                                 <td>Recibos</td>
                                                 <td>En esta propiedad</td>
-                                            }
+                                                <td>:D</td>
+                                            </tr>
 
+                                        }
 
-                                            @*<td>2008/11/28</td>
-                                    <td>
-                                    <button type="button"
-                                    class="btn btn-outline-success"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#exampleModalScrollable">
-                                    Ver
-                                    </button>
-                                    </td>
-                                    <td>Pagado</td>*@
-                                        </tr>
                                     }
                                 </tbody>
                             </table>

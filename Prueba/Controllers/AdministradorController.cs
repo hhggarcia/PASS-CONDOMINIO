@@ -986,7 +986,7 @@ namespace Prueba.Controllers
 
                 var relacionesDeGasto = from c in _context.RelacionGastos
                                         select c;
-                var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month != DateTime.Today.Month).ToListAsync();
+                var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month == DateTime.Today.Month).ToListAsync();
 
                 if (!existeActualRG.Any())
                 {
