@@ -522,6 +522,8 @@ namespace Prueba.Controllers
                     }
                 }
 
+                TempData.Keep();
+
                 return View(modelo);
             }
             catch (Exception ex)
@@ -530,6 +532,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }

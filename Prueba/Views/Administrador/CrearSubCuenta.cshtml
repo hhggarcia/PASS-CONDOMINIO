@@ -2,11 +2,13 @@
 
 @model SubcuentaCascadingVM
 @{
+    ViewData["Title"] = "Sub Cuentas";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Formulario para crear sub cuenta</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Formulario para crear sub cuenta</h1>*@
     </div>
 
     <!-- Content Row -->
@@ -16,7 +18,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Rellene todos los campos.
+                        Nueva Sub Cuenta
                     </h6>
                 </div>
                 <div class="card-body">

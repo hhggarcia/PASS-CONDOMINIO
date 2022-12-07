@@ -1,6 +1,7 @@
 ﻿@model RecibosCreadosVM
 @{
     ViewData["Title"] = "Deudores";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
 <!-- Begin Page Content -->
@@ -112,12 +113,12 @@
                                 <p>
                                     <strong>
                                         Deuda Actual
-                                    </strong> = @propiedad.Saldo
+                                    </strong> = @(propiedad.Saldo.ToString("N"))
                                 <p>
-                                    <strong>Deuda Vencida</strong> = @propiedad.Deuda
+                                    <strong>Deuda Vencida</strong> = @(propiedad.Deuda.ToString("N"))
                                 </p>
                                 <p>
-                                    <strong>Total</strong> = @(propiedad.Saldo + propiedad.Deuda)
+                                    <strong>Total</strong> = @((propiedad.Saldo + propiedad.Deuda).ToString("N"))
                                 </p>
                                 <div class="table-responsive text-center">
                                     <table class="table mb-0">
@@ -134,8 +135,8 @@
                                                     @foreach (var recibo in recibos)
                                                     {
                                                     <tr>
-                                                        <td class="text-bold-500">@recibo.Monto</td>
-                                                        <td>@recibo.Fecha</td>
+                                                        <td class="text-bold-500">@(recibo.Monto.ToString("N"))</td>
+                                                        <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
                                                     </tr>
                                                     }
 

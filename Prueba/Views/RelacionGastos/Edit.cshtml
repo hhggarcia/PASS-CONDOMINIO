@@ -1,0 +1,73 @@
+﻿@model Prueba.Models.RelacionGasto
+
+@{
+    ViewData["Title"] = "Editar";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Editar relación de Gastos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <form asp-action="Edit">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            <input type="hidden" asp-for="IdRgastos" />
+                                            <div class="form-group">
+                                                <label asp-for="SubTotal" class="control-label"></label>
+                                                <input asp-for="SubTotal" class="form-control" />
+                                                <span asp-validation-for="SubTotal" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="TotalMensual" class="control-label"></label>
+                                                <input asp-for="TotalMensual" class="form-control" />
+                                                <span asp-validation-for="TotalMensual" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Fecha" class="control-label"></label>
+                                                <input asp-for="Fecha" class="form-control" />
+                                                <span asp-validation-for="Fecha" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="IdCondominio" class="control-label"></label>
+                                                <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                                                <span asp-validation-for="IdCondominio" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="submit" value="Save" class="btn btn-primary" />
+                                            </div>
+                                        </form>
+                                        <div>
+                                            <a asp-action="Index">Volver</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

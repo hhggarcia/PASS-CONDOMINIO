@@ -21,8 +21,6 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDBContext>();
 
-builder.Services.AddTransient<IManageExcel, ManageExcel>();
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -35,7 +33,7 @@ AddAuthorizationPolicies();
 #endregion
 AddScoped();
 
-
+AddTransient();
 
 var app = builder.Build();
 
@@ -87,4 +85,9 @@ void AddScoped()
 
 }
 
+void AddTransient()
+{
+    builder.Services.AddTransient<IManageExcel, ManageExcel>();
+    builder.Services.AddTransient<IRelacionGastoRepository, RelacionGastoRepository>();
+}
 

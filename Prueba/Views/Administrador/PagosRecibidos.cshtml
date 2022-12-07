@@ -2,13 +2,14 @@
 
 @{
     ViewData["Title"] = "Pagos Recibidos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Pagos Recibidos</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Pagos Recibidos</h1>*@
     </div>
 
     <!-- Content Row -->
@@ -31,9 +32,9 @@
                                cellspacing="0">
                             <thead>
                                 <tr>
+                                    <th>Fecha</th>
                                     <th>Propietario</th>
                                     <th>Propiedad</th>
-                                    <th>Fecha</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Forma de Pago</th>
@@ -41,9 +42,9 @@
                             </thead>
                             <tfoot>
                                 <tr>
+                                    <th>Fecha</th>
                                     <th>Propietario</th>
                                     <th>Propiedad</th>
-                                    <th>Fecha</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Forma de Pago</th>
@@ -70,11 +71,11 @@
                                                         {
                                                             @foreach (var pago in propiedadPago.Value)
                                                             {
+                                                                <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
                                                                 <td>@diccUsuarioPropiedad.Key.FirstName @diccUsuarioPropiedad.Key.LastName</td>
                                                                 <td>@propiedad.Codigo</td>
-                                                                <td>@pago.Fecha</td>
                                                                 <td>@pago.Concepto</td>
-                                                                <td>@pago.Monto</td>
+                                                                <td>@(pago.Monto.ToString("N"))</td>
                                                                 if (pago.FormaPago)
                                                                 {
                                                                     <td>Transferencia</td>

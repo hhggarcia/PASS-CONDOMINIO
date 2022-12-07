@@ -1,12 +1,14 @@
 ﻿@model IndexPagosVM
 @{
+    ViewData["Title"] = "Pagos Emitidos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>
-    </div>
+    </div>*@
     <a class="btn btn-primary mb-3" asp-controller="Administrador" asp-action="RegistrarPagos">Registrar Pago</a>
 
     <!-- Content Row -->
@@ -58,7 +60,7 @@
                                                 {
                                                     <tr>
                                                         <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                        <td>@item.Monto</td>
+                                                        <td>@(item.Monto.ToString("N"))</td>
                                                         <td>@FormaPago.Transferencia</td>
                                                         <td>@referencia.NumReferencia</td>
                                                         <td>@referencia.Banco</td>
@@ -72,7 +74,7 @@
                                         {
                                             <tr>
                                                 <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                <td>@item.Monto</td>
+                                                <td>@(item.Monto.ToString("N"))</td>
                                                 <td>@FormaPago.Efectivo</td>
                                                 <td>Sin referencia</td>
                                                 <td>Sin Banco</td>

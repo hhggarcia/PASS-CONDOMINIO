@@ -2,7 +2,7 @@
 {
     public class RelacionDeGastosVM
     {
-        //LISTA DE LOS GASTOS REGISTRADOS EN DIARIO DEL MES
+        // LISTA DE LOS GASTOS REGISTRADOS EN DIARIO DEL MES
         public IList<LdiarioGlobal>? GastosDiario { get; set; }
         public IList<SubCuenta>? SubcuentasGastos { get; set; }
         // LISTA DE PROVISIONES
