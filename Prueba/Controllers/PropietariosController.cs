@@ -41,10 +41,19 @@ namespace Prueba.Controllers
             _manageExcel = manageExcel;
             _context = context;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Historial()
         {
             try
@@ -78,10 +87,19 @@ namespace Prueba.Controllers
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult DashboardUsuario()
         {
             return View();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
 
         public async Task<IActionResult> RegistrarPagos()
         {
@@ -114,6 +132,11 @@ namespace Prueba.Controllers
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="valor"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<JsonResult> AjaxCargarRecibos(int valor)
         {
@@ -159,10 +182,21 @@ namespace Prueba.Controllers
 
             return Json(modelo);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Comprobante()
         {
             return View();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelo"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> RegistrarPagos(PagoRecibidoVM modelo)
         {
@@ -505,6 +539,11 @@ namespace Prueba.Controllers
             return RedirectToAction("RegistrarPagos");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+
         public async Task<IActionResult> Recibos()
         {
             try
@@ -539,30 +578,6 @@ namespace Prueba.Controllers
             
         }
 
-        public async Task<IList<int>> IdsCondominios(string IdUsuario)
-        {
-            var propiedades = from c in _context.Propiedads
-                              where c.IdUsuario == IdUsuario
-                              select c;
 
-            List<int> listIdCondominios = new List<int>();
-
-            if (propiedades != null && propiedades.Count() > 0)
-            {
-                foreach (var item in propiedades)
-                {
-                    var inmueble = await _context.Inmuebles.FindAsync(item.IdInmueble);
-
-                    if (inmueble != null)
-                    {
-                        listIdCondominios.Add(inmueble.IdCondominio);
-                    }
-                }
-
-                return listIdCondominios;
-            }
-
-            return listIdCondominios;
-        }
     }
 }
