@@ -426,6 +426,8 @@ namespace Prueba.Repositories
 
                 foreach (var recibo in recibos)
                 {
+                    var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+
                     _context.ReciboCobros.Remove(recibo);
                 }
 
