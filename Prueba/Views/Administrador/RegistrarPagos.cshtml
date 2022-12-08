@@ -7,8 +7,8 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Page Heading -->
-@*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
     </div>*@
 
     <!-- Content Row -->
@@ -23,9 +23,9 @@
                 </div>
                 <div class="card-body">
 
-                    @if (Model.SubCuentasBancos != null 
-                    && Model.SubCuentasBancos.Count > 0 
-                    && Model.SubCuentasCaja != null 
+                    @if (Model.SubCuentasBancos != null
+                    && Model.SubCuentasBancos.Count > 0
+                    && Model.SubCuentasCaja != null
                     && Model.SubCuentasCaja.Count > 0
                     && Model.SubCuentasGastos != null
                     && Model.SubCuentasGastos.Count > 0)
@@ -36,23 +36,53 @@
                             <div class="form-body">
                                 <div class="row">
 
-                                    <!-- Concepto -->
+                                    <!-- Subcuentas -->
                                     <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left">
-                                            <label for="last-name-column">Concepto</label>
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Sub Cuentas</label>
                                             <div class="position-relative">
-                                                <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Concepto"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Concepto" />
-                                                <div class="form-control-icon">
-                                                    <i class="bi bi-building"></i>
-                                                </div>
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="basicSelect"
+                                                        asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
+                                                        <option value="">Seleccione la Sub Cuenta a pagar</option>
+                                                    </select>
+                                                </fieldset>
                                             </div>
                                         </div>
                                     </div>
+
+                                    
+
+                                    @*<!-- Descripcion -->
+                                <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Descripcion</label>
+                                <div class="position-relative">
+                                <input type="text"
+                                class="form-control"
+                                placeholder="Descripcion"
+                                id="first-name-icon"
+                                required
+                                asp-for="Descripcion" />
+                                <div class="form-control-icon">
+                                <i class="bi bi-building"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                <!-- Tipo Operacion -->
+                                <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Tipo Operacion</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
+                                <select class="form-select" id="basicSelect"
+                                asp-for="TipoOperacion" asp-items="Html.GetEnumSelectList<TipoOperacion>()">
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
+                                </div>*@
 
                                     <!-- Monto -->
                                     <div class="col-md-6 col-12">
@@ -79,7 +109,6 @@
                                                    class="form-control"
                                                    placeholder="Name"
                                                    id="first-name-icon"
-                                                   value="@DateTime.Today"
                                                    required
                                                    asp-for="Fecha" />
                                                 <div class="form-control-icon">
@@ -89,17 +118,20 @@
                                         </div>
                                     </div>
 
-                                    <!-- Subcuentas -->
+                                    <!-- Concepto -->
                                     <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Sub Cuentas</label>
+                                        <div class="form-group has-icon-left">
+                                            <label for="last-name-column">Concepto</label>
                                             <div class="position-relative">
-                                                <fieldset class="form-group">
-                                                    <select class="form-select" id="basicSelect"
-                                                        asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
-                                                        <option value="">Seleccione la Sub Cuenta a pagar</option>
-                                                    </select>
-                                                </fieldset>
+                                                <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Concepto"
+                                                   id="first-name-icon"
+                                                   required
+                                                   asp-for="Concepto" />
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-building"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -123,7 +155,7 @@
                                                         </select>
                                                     </div>
 
-                                                    <ul class="nav nav-tabs" id="myTab">
+                                                    <ul class="nav nav-tabs mt-3" id="myTab">
                                                         <li class="active"><a href="#home"></a></li>
                                                         <li><a href="#profile"></a></li>
                                                         <li><a href="#messages"></a></li>
@@ -139,8 +171,9 @@
                                                                         <div class="row">
 
                                                                             <!-- Tipo de Banco -->
-                                                                            <div class="col-md-6 col-12">
+                                                                            <div class="col-md-12 col-12">
                                                                                 <div class="form-group has-icon-left mandaory">
+                                                                                    @*                                                                        <label for="last-name-column">Banco</label>*@
                                                                                     <div class="position-relative">
                                                                                         <fieldset class="form-group">
                                                                                             <select asp-for="IdCodigoCuentaCaja"
@@ -218,7 +251,8 @@
                                 </div>
                             </div>
                         </form>
-                    } else
+                    }
+                    else
                     {
                         <h2>Error al cargar datos de base de datos!</h2>
                     }
