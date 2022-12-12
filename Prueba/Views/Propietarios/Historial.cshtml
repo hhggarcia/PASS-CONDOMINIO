@@ -62,7 +62,7 @@
                                 <tbody>
                                     @foreach (var item in Model)
                                     {
-                                        <tr>
+                                        <tr class="tr_s">
                                             <th>@item.Key.Codigo</th>
                                             @if (item.Value.Count() > 0)
                                             {
@@ -139,7 +139,7 @@
                     });
 
                 doc.setFontSize(22)
-                doc.text(20, 40, 'Recibos')
+                doc.text(20, 40, 'Historial')
                 doc.setLineWidth(0.7)
                 doc.line(20, 45, 80, 45)
 
