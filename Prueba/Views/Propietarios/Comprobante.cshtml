@@ -4,7 +4,7 @@
 <div class="container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Comprobante</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Comprobante</h1>*@
     </div>
 
 
@@ -47,22 +47,23 @@
 
                                     @if (Model.PagoRecibido != null)
                                     {
-                                        <p>Fecha: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
 
                                         @if (Model.PagoRecibido.FormaPago
                                        && Model.Referencias != null)
                                         {
                                             <h3>Transferencia</h3>
+                                            <p><strong>Fecha</strong>: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
+
                                             <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
                                             <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
-                                            <p><strong>Monto</strong>: @Model.PagoRecibido.Monto</p>
-                                            <p><strong>Fecha de comprobante</strong>: @DateTime.Today</p>
+                                            <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                            <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
                                         }
                                         else
                                         {
-                                            <h3>Eefctivo</h3>
-                                            <p><strong>Monto</strong>: @Model.PagoRecibido.Monto</p>
-                                            <p><strong>Fecha de comprobante</strong>: @DateTime.Today</p>
+                                            <h3>Efectivo</h3>
+                                            <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                            <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                         }
                                     }
 
@@ -73,14 +74,14 @@
                         </div>
 
                         <div class="col-12 d-flex justify-content-end">
-                            <button asp-action="RegitrarPagos" type="submit"
+                            <a asp-action="RegitrarPagos"
                                     class="btn btn-primary me-1 mb-1">
                                 Realizar otro pago
-                            </button>
-                            <button asp-action="DashboardUsuarios" type="submit"
+                            </a>
+                            <a asp-action="DashboardUsuario"
                                     class="btn btn-primary me-1 mb-1">
                                 Finalizar
-                            </button>
+                            </a>
                         </div>
 
                     </div>

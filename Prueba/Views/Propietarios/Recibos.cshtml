@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Recibos</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Recibos</h1>*@
     </div>
 
     <!-- Content Row -->
@@ -33,20 +33,20 @@
                                cellspacing="0">
                                 <thead>
                                     <tr>
+                                        <th>Nr Relación de Gastos</th>
                                         <th>Propiedad</th>
                                         <th>Fecha</th>
                                         <th>Monto</th>
-                                        <th>Numero Relación de Gastos</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
+                                        <th>Nr Relación de Gastos</th>
                                         <th>Propiedad</th>
                                         <th>Fecha</th>
                                         <th>Monto</th>
-                                        <th>Numero Relación de Gastos</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
 
@@ -60,10 +60,10 @@
                                             @foreach (var recibo in item.Value)
                                             {
                                                 <tr>
-                                                    <th>@item.Key.Codigo</th>
-                                                    <td>@recibo.Fecha</td>
-                                                    <td>@recibo.Monto</td>
                                                     <td>@recibo.IdRgastos</td>
+                                                    <th>@item.Key.Codigo</th>
+                                                    <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
+                                                    <td>@(recibo.Monto.ToString("N"))</td>
                                                     @if (@recibo.EnProceso)
                                                     {
                                                         <td>En proceso</td>
@@ -76,7 +76,9 @@
                                                     {
                                                         <td>En deuda</td>
                                                     }
-                                                    <td><a href="#" class="btn btn-primary">Detalles</a></td>
+                                                    <td>
+                                                        <a asp-route-id="@recibo.IdRgastos" asp-action="DetalleRecibo" class="btn btn-primary">Detalles</a>
+                                                    </td>
                                                 </tr>
 
                                             }

@@ -193,10 +193,9 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Reportes:</h6>
-                            <a class="collapse-item" href="#">Estado resultado</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="EstadoResultado">Estado resultado</a>
                             <a class="collapse-item" href="#">Balance de comporobación</a>
                             <a class="collapse-item" href="#">Estado situación</a>
-
                         </div>
                     </div>
                 </li>
@@ -427,7 +426,9 @@
                             <img class="img-profile rounded-circle"
                             src="~/images/users/1.jpg" />
                             </a>*@
+
                             <partial name="_LoginPartial" />
+
                             <!-- Dropdown - User Information -->
                             @* <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                             aria-labelledby="userDropdown">

@@ -25,7 +25,10 @@
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
              aria-labelledby="userDropdown">
-                <a class="dropdown-item" asp-action="PerfilUsuario">
+                <a class="dropdown-item" 
+                asp-controller="User"
+                asp-action="Edit"
+                asp-route-id="@UserManager.GetUserId(User)">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Perfil
                 </a>
@@ -46,8 +49,13 @@
 
             </a>*@
                 <form id="logoutForm" data-toggle="modal"
-                  data-target="#logoutModal" class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button id="logout" class="b-nostyles" type="submit"><i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i> Logout</button>
+                  data-target="#logoutModal" class="dropdown-item" 
+                  asp-area="Identity" 
+                  asp-page="/Account/Logout" 
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button id="logout" class="b-nostyles" type="submit"><i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i> 
+                        Logout
+                    </button>
                 </form>
             </div>
         </li>

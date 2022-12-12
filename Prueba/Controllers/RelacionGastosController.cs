@@ -503,7 +503,6 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
         public async Task<IActionResult> GenerarReciboCobro()
         {
             try
@@ -577,7 +576,7 @@ namespace Prueba.Controllers
                             {
                                 IdPropiedad = propiedad.IdPropiedad,
                                 IdRgastos = relacionGasto.IdRgastos,
-                                Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100 + propiedad.Deuda,
+                                Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100,
                                 Fecha = DateTime.Today
                             };
 
@@ -638,7 +637,7 @@ namespace Prueba.Controllers
                 return View(aux);
             }
 
-            return RedirectToAction("Index");
+            return View(nameof(Index));
 
         }
 

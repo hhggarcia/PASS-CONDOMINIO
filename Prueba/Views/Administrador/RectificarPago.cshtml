@@ -23,16 +23,15 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <h6 class="m-0 font-weight-bold text-primary">
-                            Seguro que quiere confirmar este pago?
+                            Seguro que quiere rectificar este pago?
                         </h6>
                         <div>
-                            <form asp-action="ConfirmarPagoRecibidoPost">
-                                <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
+                            <form asp-action="ConfirmarRectificarPago">
+                                <p>Al rectificar el pago se mostrará el recibo en deuda para el propietario</p>
                                 <button class="btn btn-primary" type="submit">Si</button>
                                 <a asp-action="PagosRecibidos" class="btn">No</a>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>

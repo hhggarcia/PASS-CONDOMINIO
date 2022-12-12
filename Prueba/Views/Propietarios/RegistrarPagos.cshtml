@@ -7,7 +7,7 @@
 <div class="container-fluid">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>*@
     </div>
 
 
@@ -30,9 +30,6 @@
                             <form class="form form-horizontal" asp-action="RegistrarPagos">
                                 <div class="form-body">
                                     <div class="row">
-
-
-
                                         <!-- Select Propiedades -->
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
@@ -49,7 +46,7 @@
 
                                         <div class="col-md-6 col-12">
                                             <div class="text-center form-group">
-                                                <label for="last-name-column">Ver Propiedad</label>
+                                                @*<label for="last-name-column">Ver Propiedad</label>*@
                                                 <br />
                                                 <button type="button"
                                                 class="btn btn-outline-success"
@@ -65,15 +62,15 @@
                                         <!-- Agregar informacion de la deudad - propiedad -->
                                         <!-- Cargar modal con los recibos pendientes (boton de ver detalles ) -->
                                         <div class="modal fade"
-                                     id="modalRecibos"
-                                     tabindex="-1"
-                                     role="dialog"
-                                     aria-labelledby="exampleModalScrollableTitle"
-                                     aria-hidden="true">
+                                             id="modalRecibos"
+                                             tabindex="-1"
+                                             role="dialog"
+                                             aria-labelledby="exampleModalScrollableTitle"
+                                             aria-hidden="true">
 
 
                                             <div class="modal-dialog modal-dialog-scrollable"
-                                         role="document">
+                                                    role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title"
@@ -122,27 +119,21 @@
                                             </div>
                                         </div>
                                         <!-- Fin modal-->
-                                        <!-- Select Opciones a pagar -->
+
+                                        <!-- Select Recibo a pagar -->
 
                                         <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Seleccione una Propiedad</label>
+                                                <label for="last-name-column">Seleccione un Recibo</label>
                                                 <div class="position-relative">
-                                                    <select asp-for="DeudaPagar" id='mySelect' class="form-select nav-tabs-selector">
-
-                                                        <option value="0">
-                                                            Seleccione su deuda a pagar
-                                                        </option>
-                                                        <option value="1">
-                                                            Actual
-                                                        </option>
-                                                        <option value="2">
-                                                            Vencida
-                                                        </option>
-                                                        <option value="3">
-                                                            Total
-                                                        </option>
-                                                    </select>
+                                                    
+                                                    @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
+                                                    
+                                                        <select asp-for="IdRecibo"
+                                                        asp-items="Model.RecibosModel"
+                                                        class="form-select" id="recibos">
+                                                        <option value="0">Seleccionar</option>
+                                                        </select>
 
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
@@ -226,13 +217,13 @@
                                                                                 <!-- Tipo de Banco -->
                                                                                 <div class="col-md-6 col-12">
                                                                                     <div class="form-group has-icon-left mandaory">
-                                                                                        <label for="last-name-column">Banco</label>
+                                                                                        @*<label for="last-name-column">Banco</label>*@
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaCaja"
                                                                                                 asp-items="Model.SubCuentasCaja"
                                                                                                 class="form-select" id="efectivos">
-                                                                                                    <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                                    <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
                                                                                         </div>
@@ -272,7 +263,7 @@
                                                                                                 <select asp-for="IdCodigoCuentaBanco"
                                                                                                 asp-items="Model.SubCuentasBancos"
                                                                                                 class="form-select" id="bancos">
-                                                                                                    <option value="0">Seleccione un banco</option>
+                                                                                                    <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
                                                                                         </div>
@@ -336,6 +327,8 @@
         });
 
         $("select").change(function () {
+
+
             var value = 0;
             if ($(this).val() != "") {
                 value = $(this).val();
@@ -346,6 +339,9 @@
             }
 
             if (id == "IdPropiedad") {
+                ClearDropDown("#bancos");
+                ClearDropDown("#efectivos");
+                ClearDropDown("#recibos");
                 $.ajax({
                     type: "POST",
                     url: "/Propietarios/AjaxCargarRecibos",
@@ -367,6 +363,8 @@
                         PopulateDropDown("#bancos", bancos);
                         // LLENAR EFECTIVO
                         PopulateDropDown("#efectivos", efectivos);
+                        // LLENAR RECIBOS DE PROPIEDAD
+                        PopulateDropDown("#recibos", response.recibosModel);
                         // LLENAR MODAL CON LISTA DE REGISTRO
 
                         LoadTable("#contenido", response.recibos)
@@ -393,7 +391,7 @@
 
         function DisableDropDown(dropDownId) {
             $(dropDownId).attr("disabled", "disabled");
-            $(dropDownId).empty().append('<option selected="selected" value="0">Please select</option>');
+            $(dropDownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');
         }
 
         function PopulateDropDown(dropDownId, list) {
@@ -414,6 +412,10 @@
 
         function CLearTable(tableId) {
             $(tableId).empty();
+        }
+        
+        function ClearDropDown(dropdownId){
+            $(dropdownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');;
         }
 
     </script>

@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Historial</h1>
+        @*<h1 class="h3 mb-0 text-gray-800">Historial</h1>*@
     </div>
 
     <!-- Content Row -->
@@ -58,9 +58,17 @@
                                             {
                                                 @foreach (var pago in item.Value)
                                                 {
-                                                    <td>@pago.Fecha</td>
-                                                    <td>@pago.Monto</td>
-                                                    <td>@pago.FormaPago</td>
+                                                    <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
+                                                    <td>@(pago.Monto.ToString("N"))</td>
+                                                    @if (pago.FormaPago)
+                                                    {
+                                                        <td>Transferencia</td>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>Efectivo</td>
+                                                    }
                                                     <td>@pago.Concepto</td>
                                                 }
                                             }

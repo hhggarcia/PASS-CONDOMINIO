@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Propietarios\DetalleRecibo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="6.5.6" />
     <PackageReference Include="jQuery" Version="3.6.1" />
     <PackageReference Include="MailKit" Version="3.4.3" />
@@ -34,17 +30,5 @@
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Propietarios\DetalleRecibo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Propietarios\DetalleRecibo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Propietarios\DetalleRecibo.cshtml" />
-  </ItemGroup>
 
 </Project>
