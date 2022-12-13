@@ -155,11 +155,6 @@
                 doc.setLineWidth(0.7)
                 doc.line(20, 45, 80, 45)
 
-                var doc = new jsPDF();
-                var imgData='data:image/jpeg;base64,'+
-                Base64.encode('Koala.jpeg');
-                doc.addImage(imgData, 'JPEG', 15, 40, 180, 160);
-
                 doc.addImage(img, 'JPEG', 20, 60); // xx Margen left, xx Margen Top
                 // Nombre documento
                 doc.save('Recibos.pdf');
