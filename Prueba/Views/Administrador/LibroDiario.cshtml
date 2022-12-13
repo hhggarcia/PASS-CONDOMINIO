@@ -80,17 +80,17 @@
                                                     @foreach (var asiento in Model.AsientosCondominio)
                                                     {
                                                         var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == asiento.IdCodCuenta).ToList();
-                                                        var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.FirstOrDefault().IdCuenta).ToList();
-                                                        var grupo = Model.Grupos.Where(c => c.Id == cuenta.FirstOrDefault().IdGrupo).ToList();
-                                                        var clase = Model.Clases.Where(c => c.Id == grupo.FirstOrDefault().IdClase).ToList();
+                                                        var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                                        var grupo = Model.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                                        var clase = Model.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
 
-                                                        if (asiento.IdCodCuenta == subcuenta.FirstOrDefault().Id)
+                                                        if (asiento.IdCodCuenta == subcuenta.First().Id)
                                                         {
                                                             <tr>
                                                                 <td>@asiento.NumAsiento</td>
                                                                 <td class="text-bold-500">@asiento.Fecha.ToString("dd/MM/yyyy")</td>
-                                                                <td>@(clase.FirstOrDefault().Codigo + "." + grupo.FirstOrDefault().Codigo + "." + cuenta.FirstOrDefault().Codigo + "." + subcuenta.FirstOrDefault().Codigo)</td>
-                                                                <td class="text-bold-500">@subcuenta.FirstOrDefault().Descricion</td>
+                                                                <td>@(clase.First().Codigo + "." + grupo.First().Codigo + "." + cuenta.First().Codigo + "." + subcuenta.First().Codigo)</td>
+                                                                <td class="text-bold-500">@subcuenta.First().Descricion</td>
                                                                 <td class="text-bold-500">@asiento.Concepto</td>
                                                                 @if (asiento.TipoOperacion)
                                                                 {

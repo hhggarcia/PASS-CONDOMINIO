@@ -27,6 +27,16 @@ namespace Prueba.Controllers
         private readonly IManageExcel _manageExcel;
         private readonly PruebaContext _context;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="userManager"></param>
+        /// <param name="userStore"></param>
+        /// <param name="serviceEmail"></param>
+        /// <param name="manageExcel"></param>
+        /// <param name="context"></param>
         public AdministradorController(IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
@@ -43,6 +53,11 @@ namespace Prueba.Controllers
             _manageExcel = manageExcel;
             _context = context;
         }
+
+        /// <summary>
+        /// Busca los condominios asignados a un Administrador
+        /// </summary>
+        /// <returns>Vista con todos los condominios</returns>
         public async Task<IActionResult> Index()
         {
             try
@@ -82,6 +97,12 @@ namespace Prueba.Controllers
             }
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del condominio seleccionado</param>
+        /// <returns>Vista del dashboard</returns>
         public IActionResult Dashboard(int? id)
         {
             try
@@ -99,8 +120,13 @@ namespace Prueba.Controllers
                 };
 
                 return View("Error", modeloError);
-            }            
+            }
         }
+
+        /// <summary>
+        /// Busca las cuentas contables de un condominio
+        /// </summary>
+        /// <returns>Vista del Plan de Cuentas</returns>
         public IActionResult CuentasContables()
         {
             try
@@ -157,8 +183,13 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-            
+
         }
+
+        /// <summary>
+        /// Metodo get de la creación de una nueva subCuenta
+        /// </summary>
+        /// <returns>Retorna el formulario para la creación de una subCuenta</returns>
         public IActionResult CrearSubCuenta()
         {
             try
@@ -184,9 +215,15 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-            
+
         }
 
+        /// <summary>
+        /// Metodo Ajax para cargar los selects de Grupos y Cuentas
+        /// </summary>
+        /// <param name="tipo">ID de la etiqueta html</param>
+        /// <param name="valor">Id de la Clase o grupo seleccionada</param>
+        /// <returns>Modelo para los Selects en formato Json</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> AjaxMethod(string tipo, int valor)
@@ -213,6 +250,11 @@ namespace Prueba.Controllers
             return Json(model);
         }
 
+        /// <summary>
+        /// Metodo post para la creación de una subcuenta 
+        /// </summary>
+        /// <param name="modelo">Modelo con IdClase, IdGrupo, IdCuenta, Descripción, Código</param>
+        /// <returns>Regresa al Plan de Cuentas</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
@@ -266,9 +308,13 @@ namespace Prueba.Controllers
                 };
 
                 return View("Error", modeloError);
-            }            
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Index pagos emitidos</returns>
         public async Task<IActionResult> IndexPagosEmitidos()
         {
             try
@@ -315,9 +361,14 @@ namespace Prueba.Controllers
                 };
 
                 return View("Error", modeloError);
-            }            
-            
+            }
+
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult RegistrarPagos()
         {
             try
@@ -418,12 +469,14 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-            
+
         }
 
-        /*EN REVISION
-         * 
-         */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelo"></param>
+        /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
@@ -729,9 +782,13 @@ namespace Prueba.Controllers
                 };
 
                 return View("Error", modeloError);
-            }            
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult RelaciondeGastos()
         {
@@ -753,6 +810,10 @@ namespace Prueba.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult LibroDiario()
         {
             try
@@ -836,6 +897,11 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Deudores()
         {
             try
@@ -859,6 +925,10 @@ namespace Prueba.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> PagosRecibidos()
         {
             try
@@ -911,9 +981,102 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
 
-            
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult RectificarPago(int id)
+        {
+            try
+            {
+                TempData["idPagoConfirmar"] = id.ToString();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarRectificarPago()
+        {
+            try
+            {
+                int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
+
+                // buscar pago
+                var pago = await _context.PagoRecibidos.FindAsync(id);
+
+                if (pago != null)
+                {
+                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+
+                    if (propiedad != null)
+                    {
+                        // buscar recibos de la propiedad
+                        var recibosPropiedad = await _context.ReciboCobros.Where(
+                            c => c.IdPropiedad == propiedad.IdPropiedad
+                            && c.EnProceso == true
+                            && c.Pagado == false)
+                            .ToListAsync();
+
+                        var reciboActual = recibosPropiedad.Where(c => c.Monto == pago.Monto).ToList();
+
+
+                        // buscar referencia si tiene y eliminar pago
+
+                        if (pago.FormaPago)
+                        {
+                            var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                            _context.ReferenciasPrs.Remove(referencia.First());
+                            _context.PagoRecibidos.Remove(pago);                            
+                        }
+                        else
+                        {
+                            _context.PagoRecibidos.Remove(pago);
+                        }
+
+                        reciboActual.First().EnProceso = false;
+
+                        _context.ReciboCobros.Update(reciboActual.First());
+
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+
+                TempData.Keep();
+
+                return RedirectToAction("PagosRecibidos");
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ConfirmarPagoRecibido(int id)
         {
@@ -934,338 +1097,170 @@ namespace Prueba.Controllers
 
         }
 
-        [HttpGet]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
         public async Task<IActionResult> ConfirmarPagoRecibidoPost()
         {
             try
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
-                if (id > 0)
+
+                // buscar pago
+                var pago = await _context.PagoRecibidos.FindAsync(id);
+
+                if (pago != null)
                 {
-                    // buscar pago
-                    var pago = await _context.PagoRecibidos.Where(c => c.IdPagoRecibido == id).ToListAsync();
-
                     // buscar propiedad
-                    var propiedad = await _context.Propiedads.Where(c => c.IdPropiedad == pago.First().IdPropiedad).ToListAsync();
+                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
 
-                    // buscar recibos de la propiedad
-                    var recibosPropiedad = await _context.ReciboCobros.Where(
-                        c => c.IdPropiedad == propiedad.First().IdPropiedad
-                        && c.EnProceso == true
-                        && c.Pagado == false)
-                        .ToListAsync();
-
-                    // buscar subcuenta contable donde esta el pago del condominio
-                    var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
-                    // buscar referencia si tiene
-                    var referencias = new List<ReferenciasPr>();
-                    var cuentaAfectada = new List<SubCuenta>();
-
-                    if (pago != null && pago.Count() > 0)
+                    if (propiedad != null)
                     {
-                        if (pago.First().FormaPago)
+                        // buscar recibos de la propiedad
+                        var recibosPropiedad = await _context.ReciboCobros.Where(
+                            c => c.IdPropiedad == propiedad.IdPropiedad
+                            && c.EnProceso == true
+                            && c.Pagado == false)
+                            .ToListAsync();
+
+                        // buscar subcuenta contable donde esta el pago del condominio
+                        var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
+
+                        // buscar referencia si tiene
+                        var referencias = new List<ReferenciasPr>();
+                        var cuentaAfectada = new List<SubCuenta>();
+                        if (pago.FormaPago)
                         {
-                            referencias = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.First().IdPagoRecibido).ToListAsync();
-                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.First().IdSubCuenta).ToListAsync();
+                            referencias = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.IdSubCuenta).ToListAsync();
                         }
                         else
                         {
-                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.First().IdSubCuenta).ToListAsync();
+                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.IdSubCuenta).ToListAsync();
                         }
 
                         // buscar la manera de hacer match (por el monto ??)
 
-                        decimal actual = propiedad.First().Saldo;
-                        decimal vencida = propiedad.First().Deuda;
-                        decimal total = actual + vencida;
-
                         //var reciboActual = recibosPropiedad.Where(c => c.Fecha.Month == DateTime.Now.Month).ToList();
-                        var reciboActual = recibosPropiedad.OrderBy(c => c.Fecha).ToList();
-
-                        if (pago.First().Monto == actual)
+                        var reciboActual = recibosPropiedad.Where(c => c.Monto == pago.Monto).ToList();
+                        try
                         {
-                            try
+                            // se pago solo el recibo del mes actual
+                            using (var dbContext = new PruebaContext())
                             {
-                                // se pago solo el recibo del mes actual
-                                using (var dbContext = new PruebaContext())
+                                if (propiedad.Saldo == reciboActual.First().Monto
+                                    && propiedad.Deuda == 0)
                                 {
-
-                                    // cambiar en propiedad Saldo - si tiene deuda > 0 Solvencia = false sino Solvencia = true
-                                    propiedad.First().Saldo = 0;
-
-                                    if (propiedad.First().Deuda == 0)
-                                    {
-                                        propiedad.First().Solvencia = true;
-                                    }
-
-                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-                                    reciboActual.First().EnProceso = false;
-                                    reciboActual.First().Pagado = true;
-
-                                    dbContext.Update(propiedad.First());
-                                    dbContext.Update(reciboActual.First());
-
-                                    int numAsiento = 1;
-
-                                    if (dbContext.LdiarioGlobals.Count() > 0)
-                                    {
-                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
-                                    }
-
-                                    // libro diario cuenta afecada
-                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
-                                    // -> contra subcuenta  banco o caja por el debe
-                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaAfectada.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = true,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaCondominio.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = false,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    dbContext.Add(asientoIngreso);
-                                    dbContext.Add(asientoBanco);
-
-                                    dbContext.SaveChanges();
-
-                                    // registrar asientos en bd
-
-                                    var ingreso = new Ingreso
-                                    {
-                                        IdAsiento = asientoIngreso.IdAsiento,
-                                    };
-
-                                    var activo = new Activo
-                                    {
-                                        IdAsiento = asientoBanco.IdAsiento,
-                                    };
-
-                                    using (var db_context = new PruebaContext())
-                                    {
-                                        db_context.Add(ingreso);
-                                        db_context.Add(activo);
-
-                                        db_context.SaveChanges();
-                                    }
+                                    // hacer saldo = 0
+                                    propiedad.Saldo = 0;
+                                    // cambiar solvencia = True
+                                    propiedad.Solvencia = true;
 
                                 }
-                                return RedirectToAction("PagosRecibidos");
-                            }
-                            catch (Exception ex)
-                            {
-                                var error = new ErrorViewModel()
+                                else if (propiedad.Saldo == 0
+                                    && propiedad.Deuda >= reciboActual.First().Monto)
                                 {
-                                    RequestId = ex.Message
+                                    // restar de Deuda -Monto
+                                    propiedad.Deuda -= reciboActual.First().Monto;
+                                    // si deuda y saldo == 0 -> solvencia = true
+                                    if (propiedad.Deuda == 0)
+                                    {
+                                        propiedad.Solvencia = true;
+                                    }
+                                }
+                                else if (propiedad.Saldo > 0
+                                    && propiedad.Saldo != reciboActual.First().Monto
+                                    && propiedad.Deuda >= reciboActual.First().Monto)
+                                {
+                                    // restar de Deuda -Monto
+                                    propiedad.Deuda -= reciboActual.First().Monto;
+
+                                }
+
+                                // cambiar en recibo o en los recibos - en proceso a false y pagado a true
+                                reciboActual.First().EnProceso = false;
+                                reciboActual.First().Pagado = true;
+
+                                // cambiar pago.Confirmado a True
+                                pago.Confirmado = true;
+
+                                dbContext.Update(propiedad);
+                                dbContext.Update(reciboActual.First());
+                                dbContext.Update(pago);
+
+                                int numAsiento = 1;
+
+                                if (dbContext.LdiarioGlobals.Count() > 0)
+                                {
+                                    numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
+                                }
+
+                                // libro diario cuenta afecada
+                                // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
+                                // -> contra subcuenta  banco o caja por el debe
+                                LdiarioGlobal asientoBanco = new LdiarioGlobal
+                                {
+                                    IdCodCuenta = cuentaAfectada.First().Id,
+                                    Fecha = DateTime.Today,
+                                    Concepto = "Condominio Appt: " + propiedad.Codigo,
+                                    Monto = pago.Monto,
+                                    TipoOperacion = true,
+                                    NumAsiento = numAsiento + 1
                                 };
 
-                                return View("Error", error);
-                            }
+                                LdiarioGlobal asientoIngreso = new LdiarioGlobal
+                                {
+                                    IdCodCuenta = cuentaCondominio.First().Id,
+                                    Fecha = DateTime.Today,
+                                    Concepto = "Condominio Appt: " + propiedad.Codigo,
+                                    Monto = pago.Monto,
+                                    TipoOperacion = false,
+                                    NumAsiento = numAsiento + 1
+                                };
 
+                                dbContext.Add(asientoIngreso);
+                                dbContext.Add(asientoBanco);
+
+                                dbContext.SaveChanges();
+
+                                // registrar asientos en bd
+
+                                var ingreso = new Ingreso
+                                {
+                                    IdAsiento = asientoIngreso.IdAsiento,
+                                };
+
+                                var activo = new Activo
+                                {
+                                    IdAsiento = asientoBanco.IdAsiento,
+                                };
+
+                                using (var db_context = new PruebaContext())
+                                {
+                                    db_context.Add(ingreso);
+                                    db_context.Add(activo);
+
+                                    db_context.SaveChanges();
+                                }
+
+                            }
+                            TempData.Keep();
+
+                            return RedirectToAction("PagosRecibidos");
                         }
-                        else if (pago.First().Monto == vencida)
+                        catch (Exception ex)
                         {
-                            // se pagaron los recibos pasados
-                            // cambiar en propiedad Deuda -> Solvencia = false
-                            // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-                            try
+                            var error = new ErrorViewModel()
                             {
-                                using (var dbContext = new PruebaContext())
-                                {
+                                RequestId = ex.Message
+                            };
 
-                                    // cambiar en propiedad Deuda - si tiene saldo > 0 Solvencia = false sino Solvencia = true
-                                    propiedad.First().Deuda = 0;
-
-                                    if (propiedad.First().Saldo == 0)
-                                    {
-                                        propiedad.First().Solvencia = true;
-                                    }
-
-                                    dbContext.Update(propiedad.First());
-
-                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-
-                                    foreach (var recibo in recibosPropiedad.SkipWhile(c => c.IdReciboCobro == reciboActual.First().IdReciboCobro))
-                                    {
-                                        recibo.EnProceso = false;
-                                        recibo.Pagado = true;
-                                        dbContext.Update(recibo);
-
-                                    }
-
-                                    int numAsiento = 1;
-
-                                    if (dbContext.LdiarioGlobals.Count() > 0)
-                                    {
-                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
-                                    }
-                                    // libro diario cuenta afecada
-                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
-                                    // -> contra subcuenta  banco o caja por el debe
-                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaAfectada.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = true,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaCondominio.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = false,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    // registrar asientos en bd
-                                    dbContext.Add(asientoIngreso);
-                                    dbContext.Add(asientoBanco);
-
-                                    dbContext.SaveChanges();
-
-
-                                    var ingreso = new Ingreso
-                                    {
-                                        IdIngreso = cuentaCondominio.First().Id
-                                    };
-
-                                    var activo = new Activo
-                                    {
-                                        IdActivo = cuentaAfectada.First().Id
-                                    };
-
-                                    using (var db_context = new PruebaContext())
-                                    {
-                                        db_context.Add(ingreso);
-                                        db_context.Add(activo);
-
-                                        db_context.SaveChanges();
-                                    }
-
-
-                                    return RedirectToAction("PagosRecibidos");
-
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                var error = new ErrorViewModel()
-                                {
-                                    RequestId = ex.Message
-                                };
-
-                                return View("Error", error);
-                            }
-
-                        }
-                        else if (pago.First().Monto == total && total != actual)
-                        {
-                            // se pagaron todos los recibos
-                            // cambiar en propiedad ambas -> Solvencia = true
-                            // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-                            try
-                            {
-                                using (var dbContext = new PruebaContext())
-                                {
-
-                                    // cambiar en propiedad Deuda - si tiene saldo > 0 Solvencia = false sino Solvencia = true
-                                    propiedad.First().Deuda = 0;
-                                    propiedad.First().Saldo = 0;
-                                    propiedad.First().Solvencia = true;
-                                    dbContext.Update(propiedad.First());
-
-                                    // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-
-                                    foreach (var recibo in recibosPropiedad)
-                                    {
-                                        recibo.EnProceso = false;
-                                        recibo.Pagado = true;
-                                        dbContext.Update(recibo);
-                                    }
-
-                                    int numAsiento = 1;
-
-                                    if (dbContext.LdiarioGlobals.Count() > 0)
-                                    {
-                                        numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
-                                    }
-                                    // libro diario cuenta afecada
-                                    // asiento con los ingresos (Condominio) aumentar por haber Concepto (pago condominio -propiedad- -mes-)
-                                    // -> contra subcuenta  banco o caja por el debe
-                                    LdiarioGlobal asientoBanco = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaAfectada.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = true,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
-                                    {
-                                        IdCodCuenta = cuentaCondominio.First().Id,
-                                        Fecha = DateTime.Today,
-                                        Concepto = "Condominio Appt: " + propiedad.First().Codigo,
-                                        Monto = pago.First().Monto,
-                                        TipoOperacion = false,
-                                        NumAsiento = numAsiento + 1
-                                    };
-
-                                    // registrar asientos en bd
-                                    dbContext.Add(asientoIngreso);
-                                    dbContext.Add(asientoBanco);
-
-                                    dbContext.SaveChanges();
-
-                                    var ingreso = new Ingreso
-                                    {
-                                        IdIngreso = cuentaCondominio.First().Id
-                                    };
-
-                                    var activo = new Activo
-                                    {
-                                        IdActivo = cuentaAfectada.First().Id
-                                    };
-
-                                    using (var db_context = new PruebaContext())
-                                    {
-                                        db_context.Add(ingreso);
-                                        db_context.Add(activo);
-
-                                        db_context.SaveChanges();
-                                    }
-
-                                    return RedirectToAction("PagosRecibidos");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                var error = new ErrorViewModel()
-                                {
-                                    RequestId = ex.Message
-                                };
-
-                                return View("Error", error);
-                            }
+                            return View("Error", error);
                         }
                     }
+
                 }
 
                 TempData.Keep();
@@ -1281,12 +1276,93 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
 
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> EstadoResultado()
+        {
+            try
+            {
+                // buscar id de condominio
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var subcuentas = from c in _context.SubCuenta
+                                 select c;
+                var clases = from c in _context.Clases
+                             select c;
+                var grupos = from c in _context.Grupos
+                             select c;
+                var cuentas = from c in _context.Cuenta
+                              select c;
+
+                // buscar egresos
+                var egresos = _context.Gastos;
+                // buscar asientos de egresos de las cuentas del condominio
+                var asientos = from a in _context.LdiarioGlobals
+                               join c in _context.CodigoCuentasGlobals
+                               on a.IdCodCuenta equals c.IdCodCuenta
+                               where c.IdCondominio == idCondominio && a.Fecha.Month == DateTime.Today.Month
+                               select a;
+
+                var asientosEgresos = from a in asientos
+                                      join e in egresos
+                                      on a.IdAsiento equals e.IdAsiento
+                                      select a;
+                // buscar ingresos
+                var ingresos = _context.Ingresos;
+                // buscar asientos de ingresos de las cuentas del condominio
+                var asientosIngresos = from a in asientos
+                                       join i in ingresos
+                                       on a.IdAsiento equals i.IdAsiento
+                                       select a;
+                // cargar fecha
+                var fecha = DateTime.Today;
+                // calcular totales y diferencia
+                var totalIngreso = asientosIngresos.Where(c => c.TipoOperacion == false).Sum(c => c.Monto);
+                var totalEgreso = asientosEgresos.Where(c => c.TipoOperacion == true).Sum(c => c.Monto);
+                var diferencia = totalIngreso - totalEgreso;
+                //llenar modelo
+                // inicializar modelo
+                var modelo = new EstadoResultadoVM
+                {
+                    Egresos = await egresos.ToListAsync(),
+                    Ingresos = await ingresos.ToListAsync(),
+                    AsientosEgresos = await asientosEgresos.ToListAsync(),
+                    AsientosIngresos = await asientosIngresos.ToListAsync(),
+                    AsientosCondominio = await asientos.ToListAsync(),
+                    SubCuentas = await subcuentas.ToListAsync(),
+                    Cuentas = await cuentas.ToListAsync(),
+                    Grupos = await grupos.ToListAsync(),
+                    Clases = await clases.ToListAsync(),
+                    Fecha = fecha,
+                    TotalEgresos = totalEgreso,
+                    TotalIngresos = totalIngreso,
+                    Difenrencia = diferencia
+                };
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var error = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", error);
+            }
             
         }
 
-        /* CARGAR DATA DE LAS PROPIEDADES CON DEUDA
-         * cargar relacion de gastos dependiendo del condominio
-         */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idCondominio"></param>
+        /// <returns></returns>
         private async Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio)
         {
             // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
@@ -1325,7 +1401,8 @@ namespace Prueba.Controllers
                 // BUSCAR PROPIEDADES CON DEUDA
                 foreach (var propiedad in listaPropiedadesCondominio)
                 {
-                    var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                    var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad
+                                                            && c.Pagado != true).ToListAsync();
                     var aux = recibosCobroCond.Concat(recibo).ToList();
                     recibosCobroCond = aux;
                 }

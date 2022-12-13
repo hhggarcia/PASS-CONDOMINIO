@@ -38,6 +38,7 @@
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Forma de Pago</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -48,35 +49,38 @@
                                     <th>Concepto</th>
                                     <th>Monto</th>
                                     <th>Forma de Pago</th>
+                                    <th></th>
                                 </tr>
                             </tfoot>
-                            @if (Model.UsuariosPropiedad != null
-                            && Model.UsuariosPropiedad.Count() > 0
-                            && Model.PropiedadPagos != null
-                            && Model.PropiedadPagos.Count() > 0)
-                            {
-                                @foreach (var diccUsuarioPropiedad in Model.UsuariosPropiedad)
+                            <tbody>
+
+                                @if (Model.UsuariosPropiedad != null
+                                && Model.UsuariosPropiedad.Count() > 0
+                                && Model.PropiedadPagos != null
+                                && Model.PropiedadPagos.Count() > 0)
                                 {
-                                    <tbody>
+                                    @foreach (var diccUsuarioPropiedad in Model.UsuariosPropiedad)
+                                    {
 
-                                        <tr>
 
-                                            @foreach (var propiedad in @diccUsuarioPropiedad.Value)
+                                        @foreach (var propiedad in @diccUsuarioPropiedad.Value)
+                                        {
+                                            @if (propiedad.Saldo > 0 || propiedad.Deuda > 0)
                                             {
-                                                @if (propiedad.Saldo > 0 || propiedad.Deuda > 0)
+                                                @foreach (var propiedadPago in Model.PropiedadPagos)
                                                 {
-                                                    @foreach (var propiedadPago in Model.PropiedadPagos)
+                                                    @if (propiedadPago.Key.IdPropiedad == propiedad.IdPropiedad)
                                                     {
-                                                        @if (propiedadPago.Key.IdPropiedad == propiedad.IdPropiedad)
+                                                        @foreach (var pago in propiedadPago.Value)
                                                         {
-                                                            @foreach (var pago in propiedadPago.Value)
-                                                            {
+                                                            <tr>
+
                                                                 <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
                                                                 <td>@diccUsuarioPropiedad.Key.FirstName @diccUsuarioPropiedad.Key.LastName</td>
                                                                 <td>@propiedad.Codigo</td>
                                                                 <td>@pago.Concepto</td>
                                                                 <td>@(pago.Monto.ToString("N"))</td>
-                                                                if (pago.FormaPago)
+                                                                @if (pago.FormaPago)
                                                                 {
                                                                     <td>Transferencia</td>
                                                                 }
@@ -85,32 +89,36 @@
                                                                     <td>Efectivo</td>
                                                                 }
                                                                 <td>
-                                                                    @*<button type="button"
-                                                                    class="btn btn-outline-success"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#exampleModalScrollable">*@
+
                                                                     <a class="btn btn-outline-success"
                                                                        asp-controller="Administrador"
                                                                        asp-action="ConfirmarPagoRecibido"
                                                                        asp-route-id="@pago.IdPagoRecibido">
                                                                         Confirmar Pago
                                                                     </a>
-                                                                </td>
-                                                                @*<td>Pagado</td>*@
-                                                            }
+                                                                    <a class="btn btn-outline-danger"
+                                                                       asp-controller="Administrador"
+                                                                       asp-action="RectificarPago"
+                                                                       asp-route-id="@pago.IdPagoRecibido">
+                                                                        Rectificar
+                                                                    </a>
 
+                                                                </td>
+                                                            </tr>
+
+                                                            @*<td>Pagado</td>*@
                                                         }
+
                                                     }
                                                 }
                                             }
-                                        </tr>
-                                    </tbody>
+                                        }
+                                    }
+
                                 }
 
-                            }
-                            else
-                            {
-                                <tbody>
+                                else
+                                {
                                     <tr>
                                         <td>No</td>
                                         <td>hay</td>
@@ -119,8 +127,9 @@
                                         <td>por</td>
                                         <td>confirmar</td>
                                     </tr>
-                                </tbody>
-                            }
+                                }
+                            </tbody>
+
                         </table>
                     </div>
                 </div>

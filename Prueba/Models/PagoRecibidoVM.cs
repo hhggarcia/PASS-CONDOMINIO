@@ -14,12 +14,12 @@ namespace Prueba.Models
         public IList<SelectListItem>? SubCuentasBancos { get; set; }
         public IList<SelectListItem>? SubCuentasCaja { get; set; }
         public IList<SelectListItem>? Propiedades { get; set; }
-        //public IList<SelectListItem>? RecibosModel { get; set; }
+        public IList<SelectListItem>? RecibosModel { get; set; }
         public decimal Saldo { get; set; }
         public decimal Deuda { get; set; } 
         public IList<ReciboCobro>? Recibos { get; set; }
         public int IdPropiedad { get; set; }
-        //public int IdRecibo { get; set; }
+        public int IdRecibo { get; set; }
         public int IdSubcuenta { get; set; }
         public int NumReferencia { get; set; }
         public int IdCodigoCuentaBanco { get; set; }

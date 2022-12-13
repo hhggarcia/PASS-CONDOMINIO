@@ -62,15 +62,16 @@
                                                                 @Html.DisplayFor(modelItem => item.TotalMensual)
                                                             </td>
                                                             <td>
-                                                                @Html.DisplayFor(modelItem => item.Fecha)
+                                                                @*@Html.DisplayFor(modelItem => item.Fecha)*@
+                                                                @(item.Fecha.ToString("dd/MM/yyyy"))
                                                             </td>
                                                             @*<td>
                                                                 @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
                                                             </td>*@
                                                             <td>
                                                                 @*<a asp-action="Edit" asp-route-id="@item.IdRgastos">Editar</a> |*@
-                                                                <a asp-action="Details" asp-route-id="@item.IdRgastos">Detalles</a> |
-                                                                <a asp-action="Delete" asp-route-id="@item.IdRgastos">Eliminar</a>
+                                                                <a asp-action="Details" asp-route-id="@item.IdRgastos">Detalles</a> 
+                                                                @*<a asp-action="Delete" asp-route-id="@item.IdRgastos">Eliminar</a>*@
                                                             </td>
                                                         </tr>
                                                     }

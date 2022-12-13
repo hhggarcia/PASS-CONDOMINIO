@@ -1,0 +1,171 @@
+﻿@model EstadoResultadoVM
+
+@{
+    ViewData["Title"] = "Estado de Resultado";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Estado de Resultado. Ingresos vs Egresos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <div class="table-responsive text-center pb-3">
+                                            <table class="table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-danger">Total Egresos: @(Model.TotalEgresos.ToString("N"))</th>
+                                                        <th class="text-success">Total Ingresos: @(Model.TotalIngresos.ToString("N"))</th>
+                                                        <th>Diferencia: @(Model.Difenrencia.ToString("N"))</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <h4>Ingresos</h4>
+                                        @if (Model.AsientosIngresos != null && Model.AsientosIngresos.Any()
+                                        && Model.AsientosCondominio != null && Model.AsientosCondominio.Any()
+                                        && Model.SubCuentas != null && Model.SubCuentas.Any()
+                                        && Model.Cuentas != null && Model.Cuentas.Any()
+                                        && Model.Grupos != null && Model.Grupos.Any()
+                                        && Model.Clases != null && Model.Clases.Any()
+                                        )
+                                        {
+                                            <div class="table-responsive">
+                                                <table class="text-center table table-bordered"
+                                                   id="dataTable"
+                                                   width="100%"
+                                                   cellspacing="0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Código</th>
+                                                            <th>Descripción</th>
+                                                            <th>Concepto</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var ingreso in Model.AsientosIngresos)
+                                                        {
+                                                            var asiento = Model.AsientosCondominio.Where(c => c.IdAsiento == ingreso.IdAsiento).ToList();
+                                                            var subcuenta = Model.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
+                                                            var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                                            var grupo = Model.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                                            var clase = Model.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+
+                                                            <tr>
+                                                                <td>@(clase.First().Codigo + "." + grupo.First().Codigo + "." + cuenta.First().Codigo + "." + subcuenta.First().Codigo)</td>
+                                                                <td class="text-bold-500">@subcuenta.First().Descricion</td>
+                                                                <td class="text-bold-500">@asiento.First().Concepto</td>
+                                                                <td class="text-bold-500">@asiento.First().Monto.ToString("N")</td>
+                                                                <td></td>
+                                                            </tr>
+
+                                                        }
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>Total Ingresos: @Model.TotalIngresos.ToString("N")</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <p>No hay Ingresos</p>
+                                        }
+
+                                    </div>
+
+                                    <div class="card-body">
+                                        <h4>Egresos</h4>
+                                        @if (Model.AsientosEgresos != null && Model.AsientosEgresos.Any()
+                                        && Model.AsientosCondominio != null && Model.AsientosCondominio.Any()
+                                        && Model.SubCuentas != null && Model.SubCuentas.Any()
+                                        && Model.Cuentas != null && Model.Cuentas.Any()
+                                        && Model.Grupos != null && Model.Grupos.Any()
+                                        && Model.Clases != null && Model.Clases.Any()
+                                        )
+                                        {
+                                            <div class="table-responsive">
+                                                <table class="text-center table table-bordered"
+                                                   id="dataTable"
+                                                   width="100%"
+                                                   cellspacing="0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Código</th>
+                                                            <th>Descripción</th>
+                                                            <th>Concepto</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var egreso in Model.AsientosEgresos)
+                                                        {
+                                                            var asiento = Model.AsientosCondominio.Where(c => c.IdAsiento == egreso.IdAsiento).ToList();
+                                                            var subcuenta = Model.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
+                                                            var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                                            var grupo = Model.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                                            var clase = Model.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+
+                                                            <tr>
+                                                                <td>@(clase.First().Codigo + "." + grupo.First().Codigo + "." + cuenta.First().Codigo + "." + subcuenta.First().Codigo)</td>
+                                                                <td class="text-bold-500">@subcuenta.First().Descricion</td>
+                                                                <td class="text-bold-500">@asiento.First().Concepto</td>
+                                                                <td class="text-bold-500">@asiento.First().Monto.ToString("N")</td>
+                                                                <td></td>
+                                                            </tr>
+
+                                                        }
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>Total Egresos: @Model.TotalEgresos.ToString("N")</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+
+                                        }
+                                        else
+                                        {
+                                            <p>No hay Egresos</p>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
