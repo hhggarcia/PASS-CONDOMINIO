@@ -70,8 +70,8 @@
                                             {
                                                 <tr class="tr_s">
                                                     <th>@item.Key.Codigo</th>
-                                                    <td>@recibo.Fecha</td>
-                                                    <td>@recibo.Monto</td>
+                                                    <td>@recibo.Fecha.ToString("dd/MM/yyyy")</td>
+                                                    <td>@recibo.Monto.ToString("N")</td>
                                                     <td>@recibo.IdRgastos</td>
                                                     @if (@recibo.EnProceso)
                                                     {
@@ -85,7 +85,10 @@
                                                     {
                                                         <td>En deuda</td>
                                                     }
-                                                    <td><a href="#" class="btn btn-primary">Detalles</a></td>
+                                                    <td><a
+                                                        asp-controller="Propietarios"
+                                                        asp-action="DetalleRecibo" 
+                                                        asp-route-id="@recibo.IdRgastos" class="btn btn-primary">Detalles</a></td>
                                                 </tr>
 
                                             }
