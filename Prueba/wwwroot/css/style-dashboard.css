@@ -13372,9 +13372,33 @@ ul.form-stepper li a .form-stepper-circle {
 .text-s-1 {
     color: #eb8c1c;
 }
+
 .text-s-2 {
     color: #68ad2c;
 }
+
 .text-s-3 {
     color: #833084;
+}
+
+tr.tr_s {
+    color: black !important;
+    opacity: 0.9;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #ebebeb;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #5c6ade;
 }
