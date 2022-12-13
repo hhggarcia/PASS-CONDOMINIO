@@ -1,6 +1,6 @@
 ﻿@model RelacionDeGastosVM
 
-<div class="table-responsive text-center pb-3">
+@*<div class="table-responsive text-center pb-3">
     <table class="table mb-0">
         <thead>
             <tr>
@@ -11,10 +11,10 @@
         <tbody>
         </tbody>
     </table>
-</div>
+</div>*@
 
 <div class="table-responsive">
-    <table class="table table-bordered"
+    <table class="table table-bordered form"
            id="dataTable"
            width="100%"
            cellspacing="0">
@@ -28,10 +28,10 @@
         </thead>
         <tfoot>
             <tr>
-                <th>Descripción</th>
-                <th>USD</th>
-                <th>Tasa</th>
-                <th>Bs</th>
+                <th></th>
+                <th>Sub Total: @(Model.SubTotal.ToString("N"))</th>
+                <th>Total: @(Model.Total.ToString("N"))</th>
+                <th></th>
             </tr>
         </tfoot>
         <tbody>
@@ -41,8 +41,8 @@
                 @foreach (var item in Model.GastosDiario)
                 {
                     var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
-                    <tr>
-                        <td class="text-bold-500">@subcuenta.First().Descricion</td>
+                    <tr class="tr_s">
+                        <td>@subcuenta.First().Descricion</td>
                         <td>$$$$$$$$$</td>
                         <td>BCV</td>
                         <td>@(item.Monto.ToString("N"))</td>
@@ -54,7 +54,7 @@
                     foreach (var provisiones in Model.Provisiones)
                     {
                         var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
-                        <tr>
+                        <tr class="tr_s">
                             <td>@subcuenta.First().Descricion</td>
                             <td>$$$$$$$$$</td>
                             <td>BCV</td>
@@ -69,7 +69,7 @@
                     foreach (var fondo in Model.Fondos)
                     {
                         var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
-                        <tr>
+                        <tr class="tr_s">
                             <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
                             <th>$$$$$$$$$</th>
                             <th>BCV</th>
