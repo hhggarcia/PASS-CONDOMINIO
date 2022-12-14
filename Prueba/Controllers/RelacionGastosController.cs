@@ -622,7 +622,7 @@ namespace Prueba.Controllers
                 {
                     var modeloError = new ErrorViewModel()
                     {
-                        RequestId = "Ya existe una relacion de gasto para este mes!"
+                        RequestId = "Ya existe una relación de gasto para este mes!"
                     };
 
                     return View("Error", modeloError);

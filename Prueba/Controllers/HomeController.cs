@@ -52,7 +52,7 @@ namespace Prueba.Controllers
                         {
                             case "Propietario":
                                 //GUARDAR EN TEMPDATA EL ID DEL PROPIETARIO LOGEADO
-                                return RedirectToAction("Index", "Propietarios");
+                                return RedirectToAction("DashboardUsuario", "Propietarios");
                             case "Administrador":
                                 //GUARDAR EN TEMPDATA EL ID DEL ADMINISTRADOR LOGEADO
                                 return RedirectToAction("Index", "Administrador");
