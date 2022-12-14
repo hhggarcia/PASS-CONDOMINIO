@@ -72,20 +72,22 @@ namespace Prueba.Areas.Identity.Pages.Account
 
         }
 
-        public IActionResult OnGet(string code = null)
+        public IActionResult OnGet()
         {
-            if (code == null)
-            {
-                return BadRequest("A code must be supplied for password reset.");
-            }
-            else
-            {
-                Input = new InputModel
-                {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
-                };
-                return Page();
-            }
+            //string code = null
+            //if (code == null)
+            //{
+            //    return BadRequest("A code must be supplied for password reset.");
+            //}
+            //else
+            //{
+            //    Input = new InputModel
+            //    {
+            //        Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+            //    };
+            //    return Page();
+            //}
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -105,7 +107,7 @@ namespace Prueba.Areas.Identity.Pages.Account
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return View("Index", "Home");
             }
 
             foreach (var error in result.Errors)
