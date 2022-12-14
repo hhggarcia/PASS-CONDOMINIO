@@ -10,6 +10,7 @@ using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Models;
+using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
 
@@ -25,6 +26,7 @@ namespace Prueba.Controllers
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IEmailService _serviceEmail;
         private readonly IManageExcel _manageExcel;
+        private readonly IReportesRepository _repoReportes;
         private readonly PruebaContext _context;
 
         /// <summary>
@@ -43,6 +45,7 @@ namespace Prueba.Controllers
             IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail,
             IManageExcel manageExcel,
+            IReportesRepository repoReportes,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -51,6 +54,7 @@ namespace Prueba.Controllers
             _userStore = userStore;
             _serviceEmail = serviceEmail;
             _manageExcel = manageExcel;
+            _repoReportes = repoReportes;
             _context = context;
         }
 
@@ -103,13 +107,14 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="id">id del condominio seleccionado</param>
         /// <returns>Vista del dashboard</returns>
-        public IActionResult Dashboard(int? id)
+        public async Task<IActionResult> Dashboard(int id)
         {
             try
             {
                 // GUARDAR ID CONDOMINIO PARA SELECCIONAR SUS CUENTAS CONTABLES
                 TempData["idCondominio"] = id.ToString();
-                return View();
+                var modelo = await _repoReportes.InformacionGeneral(id);
+                return View(modelo);
 
             }
             catch (Exception ex)

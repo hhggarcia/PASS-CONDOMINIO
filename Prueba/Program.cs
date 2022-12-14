@@ -89,5 +89,6 @@ void AddTransient()
 {
     builder.Services.AddTransient<IManageExcel, ManageExcel>();
     builder.Services.AddTransient<IRelacionGastoRepository, RelacionGastoRepository>();
+    builder.Services.AddTransient<IReportesRepository, ReportesRepository>();
 }
 

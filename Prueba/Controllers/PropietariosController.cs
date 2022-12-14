@@ -25,6 +25,7 @@ namespace Prueba.Controllers
         private readonly IEmailService _serviceEmail;
         private readonly IManageExcel _manageExcel;
         private readonly IRelacionGastoRepository _repoRelacionGasto;
+        private readonly IReportesRepository _repoReportes;
         private readonly PruebaContext _context;
 
         public PropietariosController(IUnitOfWork unitOfWork,
@@ -34,6 +35,7 @@ namespace Prueba.Controllers
             IEmailService serviceEmail,
             IManageExcel manageExcel,
             IRelacionGastoRepository repoRelacionGasto,
+            IReportesRepository repoReportes,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -43,6 +45,7 @@ namespace Prueba.Controllers
             _serviceEmail = serviceEmail;
             _manageExcel = manageExcel;
             _repoRelacionGasto = repoRelacionGasto;
+            _repoReportes = repoReportes;
             _context = context;
         }
 
@@ -96,9 +99,38 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public IActionResult DashboardUsuario()
+        public async Task<IActionResult> DashboardUsuario()
         {
-            return View();
+            try
+            {
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+
+                if (propiedades != null && propiedades.Any())
+                {
+                    var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
+                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == inmuebles.First().IdCondominio).ToListAsync();
+                    var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
+                    return View(modelo);
+                }
+
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Este usuario no tiene propiedades"
+                };
+
+                return View("Error", modeloError);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
         }
 
         /// <summary>
