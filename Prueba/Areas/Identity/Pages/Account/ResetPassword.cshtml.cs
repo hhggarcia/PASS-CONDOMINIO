@@ -107,7 +107,7 @@ namespace Prueba.Areas.Identity.Pages.Account
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
-                return View("Index", "Home");
+                return RedirectToPage("./ResetPasswordConfirmation");
             }
 
             foreach (var error in result.Errors)
