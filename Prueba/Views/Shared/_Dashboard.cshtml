@@ -264,8 +264,8 @@
     {
         @foreach (var mesIngreso in Model.Ingresos)
         {
-            var ingreso = mesIngreso.Value;
-            <input value="@ingreso" id=@("ingreso"+mesIngreso.Key.ToString()) type="hidden" />
+            var ingreso = (int)mesIngreso.Value;
+            <input value="@ingreso" id="@("ingreso"+mesIngreso.Key.ToString())" type="hidden"  />
 
         }
     }
@@ -273,8 +273,8 @@
     {
         @foreach (var mesEgreso in Model.Egresos)
         {
-            var egreso = mesEgreso.Value;
-            <input value="@egreso" id=@("egreso"+mesEgreso.Key.ToString()) type="hidden" />
+            var egreso = (int)mesEgreso.Value;
+            <input value="@egreso" id="@("egreso"+mesEgreso.Key.ToString())" type="hidden" />
 
         }
     }

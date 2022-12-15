@@ -3,8 +3,8 @@ Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,Bli
 Chart.defaults.global.defaultFontColor = '#858796';
 
 function number_format(number, decimals, dec_point, thousands_sep) {
-  // *     example: number_format(1234.56, 2, ',', ' ');
-  // *     return: '1 234,56'
+   //*     example: number_format(1234.56, 2, ',', ' ');
+   //*     return: '1 234,56'
   number = (number + '').replace(',', '').replace(' ', '');
   var n = !isFinite(+number) ? 0 : +number,
     prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
@@ -24,7 +24,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     s[1] = s[1] || '';
     s[1] += new Array(prec - s[1].length + 1).join('0');
   }
-  return s.join(dec);
+  return s.join(number);
 }
 
 // Area Chart Example
@@ -59,7 +59,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-        data: [ingresoEnero, ingresoFebrero, ingresoMarzo, ingresoAbril, ingresoMayo, ingresoJunio, ingresoJulio, ingresoAgosto, ingresoSeptiembre, ingresoOctubre, ingresoNoviembre, ingresoDiciembre],
+      data: [ingresoEnero, ingresoFebrero, ingresoMarzo, ingresoAbril, ingresoMayo, ingresoJunio, ingresoJulio, ingresoAgosto, ingresoSeptiembre, ingresoOctubre, ingresoNoviembre, ingresoDiciembre],
     }],
   },
   options: {
@@ -82,7 +82,7 @@ var myLineChart = new Chart(ctx, {
           drawBorder: false
         },
         ticks: {
-          maxTicksLimit: 7
+          maxTicksLimit: 12
         }
       }],
       yAxes: [{
@@ -161,7 +161,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-        data: [eEnero, eFebrero, eMarzo, eAbril, eMayo, eJunio, eJulio, eAgosto, eSeptiembre, eOctubre, eNoviembre, eDiciembre],
+        data: [0, eFebrero, eMarzo, eAbril, eMayo, eJunio, eJulio, eAgosto, eSeptiembre, eOctubre, eNoviembre, eDiciembre],
     }],
   },
   options: {
@@ -184,7 +184,7 @@ var myLineChart = new Chart(ctx, {
           drawBorder: false
         },
         ticks: {
-          maxTicksLimit: 7
+            maxTicksLimit: 12
         }
       }],
       yAxes: [{
