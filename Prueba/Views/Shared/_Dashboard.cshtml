@@ -169,6 +169,42 @@
                 </div>
             </div>
         </div>
+        
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4 bg-content-bg">
+
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Resumen de los Egresos
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChartEgresos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <div class="col-xl-4 col-lg-5">
@@ -176,7 +212,7 @@
 
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Resumen de los Ingresos
+                        Estado de Propiedades
                     </h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle"
@@ -205,14 +241,14 @@
                     </div>
                     <div class="mt-4 text-center small">
                         <span class="mr-2">
-                            <i class="fas fa-circle text-primary"></i> Direct
+                            <i class="fas fa-circle text-primary"></i> Deudores
                         </span>
                         <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Social
+                            <i class="fas fa-circle text-success"></i> Solventes
                         </span>
-                        <span class="mr-2">
+                        @*<span class="mr-2">
                             <i class="fas fa-circle text-info"></i> Referral
-                        </span>
+                        </span>*@
                     </div>
                 </div>
             </div>
@@ -224,6 +260,25 @@
 <form>
     <input value="@Model.Deudores" id="Deudores" type="hidden"/>
     <input value="@Model.NoDeudores" id="NoDeudores" type="hidden"/>
+    @if (Model.Ingresos != null && Model.Ingresos.Any())
+    {
+        @foreach (var mesIngreso in Model.Ingresos)
+        {
+            var ingreso = mesIngreso.Value;
+            <input value="@ingreso" id=@("ingreso"+mesIngreso.Key.ToString()) type="hidden" />
+
+        }
+    }
+    @if (Model.Egresos != null && Model.Egresos.Any())
+    {
+        @foreach (var mesEgreso in Model.Egresos)
+        {
+            var egreso = mesEgreso.Value;
+            <input value="@egreso" id=@("egreso"+mesEgreso.Key.ToString()) type="hidden" />
+
+        }
+    }
+
 </form>
 
 @*@section scripts{
