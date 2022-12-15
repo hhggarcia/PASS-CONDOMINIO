@@ -7,6 +7,7 @@
         public decimal RecibosPagados { get; set; }
         public decimal RecibosNoPagados { get; set; }
         public decimal Deudores { get; set; }
+        public decimal NoDeudores { get; set; }
         public Dictionary<int, decimal>? Ingresos { get; set; }
         public Dictionary<int, decimal>? Egresos { get; set; }
     }

@@ -9,6 +9,7 @@ namespace Prueba.Repositories
     {
         Task<decimal> CalculoCuentaPorCobrar(int idCondominio);
         Task<int> CantidadDeudores(int idCondominio);
+        Task<int> CantidadNoDeudores(int idCondominio);
         Task<decimal> CantidadRecibosNoPagados(int idCondominio);
         Task<decimal> CantidadRecibosPagados(int idCondominio);
         Task<decimal> CantidadRecibosPendientes(int idCondominio);
@@ -219,6 +220,43 @@ namespace Prueba.Repositories
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="idCondominio"></param>
+        /// <returns></returns>
+        public async Task<int> CantidadNoDeudores(int idCondominio)
+        {
+            int totalNoDeudores = 0;
+
+            var condominio = await _context.Condominios.FindAsync(idCondominio);
+            if (condominio != null)
+            {
+                var inmuebles = from a in _context.Inmuebles
+                                where a.IdCondominio == condominio.IdCondominio
+                                select a;
+
+                IList<Propiedad> propiedades = new List<Propiedad>();
+
+                foreach (var inmueble in inmuebles)
+                {
+                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+
+                    var aux = propiedades.Concat(propiedad).ToList();
+                    propiedades = aux.ToList();
+                }
+
+                foreach (var propiedad in propiedades)
+                {
+                    if (propiedad.Solvencia == true)
+                    {
+                        totalNoDeudores += 1;
+                    }
+                }
+            }
+
+            return totalNoDeudores;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="mes"></param>
         /// <param name="idCondominio"></param>
         /// <returns></returns>
@@ -291,6 +329,8 @@ namespace Prueba.Repositories
                 modelo.RecibosPagados = await CantidadRecibosPagados(id);
                 modelo.RecibosNoPagados = await CantidadRecibosNoPagados(id);
                 modelo.Deudores = await CantidadDeudores(id);
+                modelo.NoDeudores = await CantidadNoDeudores(id);
+
 
                 for (int i = 1; i < 13; i++)
                 {

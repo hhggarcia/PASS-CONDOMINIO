@@ -1407,7 +1407,10 @@ namespace Prueba.Controllers
                 foreach (var propiedad in listaPropiedadesCondominio)
                 {
                     var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad
-                                                            && c.Pagado != true).ToListAsync();
+                                                            && c.EnProceso != true
+                                                            && c.Pagado != true)
+                                                    .ToListAsync();
+
                     var aux = recibosCobroCond.Concat(recibo).ToList();
                     recibosCobroCond = aux;
                 }
