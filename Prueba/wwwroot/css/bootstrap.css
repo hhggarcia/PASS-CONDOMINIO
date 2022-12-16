@@ -7302,7 +7302,7 @@ textarea.form-control-lg {
 }
 
 .text-primary {
-    color: #435ebe 
+    color: #435ebe !important;
 }
 
 .text-secondary {

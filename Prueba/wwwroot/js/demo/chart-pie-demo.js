@@ -45,7 +45,7 @@ var cantNoDeudores = $("#NoDeudores").val();
 var myPieChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ["Direct", "Referral", "Social"],
+        labels: ["Deudores", "Solventes", "Social"],
         datasets: [{
             data: [cantDeudores, cantNoDeudores],
             backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
