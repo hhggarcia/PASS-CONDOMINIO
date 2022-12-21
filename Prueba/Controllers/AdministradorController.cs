@@ -230,7 +230,7 @@ namespace Prueba.Controllers
         /// <param name="valor">Id de la Clase o grupo seleccionada</param>
         /// <returns>Modelo para los Selects en formato Json</returns>
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<JsonResult> AjaxMethod(string tipo, int valor)
         {
 
