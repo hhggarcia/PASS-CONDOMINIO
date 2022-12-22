@@ -44,10 +44,10 @@ namespace Prueba.Utils
             List<Usuario> listaUsuarios = new List<Usuario>();
 
             //FOR - para recorrer la hoja y extraer los usuarios
-            for (int i = 1; i <= cantidadFilas; i++)
+            for (int i = 0; i < cantidadFilas; i++)
             {
 
-                IRow fila = HojaExcel.GetRow(i);
+                IRow fila = HojaExcel.GetRow(i+1);
 
                 if (fila != null)
                 {
@@ -55,7 +55,8 @@ namespace Prueba.Utils
                     {
                         FirstName = fila.GetCell(0).ToString(),
                         LastName = fila.GetCell(1).ToString(),
-                        Email = fila.GetCell(2).ToString()
+                        Email = fila.GetCell(2).ToString(),
+                        CantPropiedades = fila.GetCell(3).ToString()
                         //generar claves alaetorias
                     });
                 }

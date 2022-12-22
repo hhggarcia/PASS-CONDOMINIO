@@ -230,8 +230,6 @@ namespace Prueba.Controllers
                     await _userStore.SetUserNameAsync(userPro, usuarios[i].Email, CancellationToken.None);
                     await _emailStore.SetEmailAsync(userPro, usuarios[i].Email, CancellationToken.None);
 
-
-
                     //CREAR
                     var resultPropietarioCreate = await _userManager.CreateAsync(userPro, usuarios[i].Password);
                     //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
@@ -240,6 +238,16 @@ namespace Prueba.Controllers
                         //AGREGAR ROL DE Propietario
                         //AddToRoleAsync para añadir un rol (usuario, "Rol")
                         await _signInManager.UserManager.AddToRoleAsync(userPro, "Propietario");
+
+                        // ENVIAR CORREO DE NOTIFICACIÓN DE CREACIÓN DE LA CUENTA
+                        //var correo = new RegisterConfirm
+                        //{
+                        //    To = Input.Email,
+                        //    Subject = "Registro Condominio Password Technology",
+                        //    Body = "Bienvenido a nuestra aplicación para administrar sus condominios."
+                        //};
+
+                        //_serviceEmail.SendEmail(correo);
 
                         //agregar a Temp propietarios
                         //guardar en TempData la lista de propietarios
@@ -571,7 +579,5 @@ namespace Prueba.Controllers
             }
             return (IUserEmailStore<ApplicationUser>)_userStore;
         }
-
-
     }
 }

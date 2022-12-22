@@ -1,7 +1,7 @@
 ﻿@model NuevoCondominio
 @{
     ViewData["Title"] = "Registrar Propiedades";
-    var numProp = Convert.ToInt32(ViewBag.numPropInmueble);
+    var numProp = Convert.ToInt32(ViewBag.numPropInmueble) + 1;
     List<Propiedad> listapropiedades = new List<Propiedad>(numProp);
     for (int i = 0; i < numProp; i++)
     {

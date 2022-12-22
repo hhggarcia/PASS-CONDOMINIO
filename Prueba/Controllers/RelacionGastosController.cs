@@ -44,7 +44,11 @@ namespace Prueba.Controllers
         // GET: RelacionGastos
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.RelacionGastos.Include(r => r.IdCondominioNavigation);
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var pruebaContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
+
+            TempData.Keep();
             return View(await pruebaContext.ToListAsync());
         }
 
