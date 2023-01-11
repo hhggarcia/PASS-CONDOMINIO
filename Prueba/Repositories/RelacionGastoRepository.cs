@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Prueba.Context;
 using Prueba.Models;
 using SQLitePCL;
@@ -426,6 +427,41 @@ namespace Prueba.Repositories
 
                 foreach (var recibo in recibos)
                 {
+                    // buscar la propiedad 
+                    var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                    if (propiedad != null)
+                    {
+                        // verificar si es el recibo atual o uni viejo
+
+                        if (recibo.Fecha.Month == DateTime.Today.Month)
+                        {
+                            // si es actual eliminar saldo = 0
+                            propiedad.Saldo = 0;
+
+                            // verificar solvencia de la propiedad
+                            if (propiedad.Deuda == 0)
+                            {
+                                propiedad.Solvencia = true;
+                            }
+
+                            // actualizar propiedad
+                            _context.Propiedads.Update(propiedad);
+                        }
+                        else if (recibo.Fecha.Month != DateTime.Today.Month)
+                        {
+                            // si es viejo restar de la deuda -= Monto
+                            propiedad.Deuda -= recibo.Monto;
+
+                            // verificar solvencia de la propiedad
+                            if (propiedad.Deuda == 0 && propiedad.Saldo == 0)
+                            {
+                                propiedad.Solvencia = true;
+                            }
+
+                            // actualizar propiedad
+                            _context.Propiedads.Update(propiedad);
+                        }
+                    }
                     _context.ReciboCobros.Remove(recibo);
                 }
 

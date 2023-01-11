@@ -49,46 +49,64 @@
                     </tr>
                 }
 
-                if (Model.Provisiones != null && Model.Provisiones.Any())
+            }
+            else
+            {
+                <tr class="tr_s">
+                    <td class="text-bold-500">No</td>
+                    <td>hay</td>
+                    <td class="text-bold-500">Gastos</td>
+                    <td>:D</td>
+                </tr>
+            }
+
+            @if (Model.Provisiones != null && Model.Provisiones.Any())
+            {
+                @foreach (var provisiones in Model.Provisiones)
                 {
-                    foreach (var provisiones in Model.Provisiones)
-                    {
-                        var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
-                        <tr class="tr_s">
-                            <td>@subcuenta.First().Descricion</td>
-                            <td>$$$$$$$$$</td>
-                            <td>BCV</td>
-                            <td>@(provisiones.Monto.ToString("N"))</td>
-                        </tr>
-                    }
-
-                }
-
-                if (Model.Fondos != null && Model.Fondos.Any())
-                {
-                    foreach (var fondo in Model.Fondos)
-                    {
-                        var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
-                        <tr class="tr_s">
-                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
-                            <th>$$$$$$$$$</th>
-                            <th>BCV</th>
-                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N"))</th>
-                        </tr>
-                    }
-
+                    var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                    <tr class="tr_s">
+                        <td>@subcuenta.First().Descricion</td>
+                        <td>$$$$$$$$$</td>
+                        <td>BCV</td>
+                        <td>@(provisiones.Monto.ToString("N"))</td>
+                    </tr>
                 }
 
             }
             else
             {
                 <tr class="tr_s">
-                    <td class="text-bold-500">NO</td>
-                    <td>HAY</td>
-                    <td class="text-bold-500">GASTOS</td>
+                    <td class="text-bold-500">No</td>
+                    <td>hay</td>
+                    <td class="text-bold-500">Provisiones</td>
                     <td>:D</td>
                 </tr>
             }
+
+            @if (Model.Fondos != null && Model.Fondos.Any())
+            {
+                @foreach (var fondo in Model.Fondos)
+                {
+                    var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+                    <tr class="tr_s">
+                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+                        <th>$$$$$$$$$</th>
+                        <th>BCV</th>
+                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N"))</th>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="tr_s">
+                    <td class="text-bold-500">No</td>
+                    <td>hay</td>
+                    <td class="text-bold-500">Fondos</td>
+                    <td>:D</td>
+                </tr>
+            }
+
         </tbody>
     </table>
 </div>

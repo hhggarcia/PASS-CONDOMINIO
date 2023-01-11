@@ -49,13 +49,16 @@ namespace Prueba.Controllers
             var pruebaContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
 
             TempData.Keep();
+
             return View(await pruebaContext.ToListAsync());
         }
 
         /// <summary>
-        /// 
+        /// Muestra los gastos, fondos y porvisiones en el mes actual
+        /// al intentar crear nueva Relación de Gastos. Si ya existe 
+        /// una relación para el mes actual, no se creará.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Vista del detalle de la Relación de Gastos actual</returns>
         [HttpGet]
         public async Task<IActionResult> RelaciondeGastos()
         {
@@ -83,9 +86,10 @@ namespace Prueba.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Muestra los detalles de gastos, fondos y provisiones
+        /// de una Relación de Gastos específica
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id de la Relación de Gastos seleccionada</param>
         /// <returns></returns>
         // GET: RelacionGastos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -229,9 +233,9 @@ namespace Prueba.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Confirma la elimnación de una RG 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id de la Relación de Gastos</param>
         /// <returns></returns>
         // POST: RelacionGastos/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -261,7 +265,7 @@ namespace Prueba.Controllers
         }
         
         /// <summary>
-        /// 
+        /// Formulario para crear un Fondo
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -307,7 +311,7 @@ namespace Prueba.Controllers
         }
         
         /// <summary>
-        /// 
+        /// Crea en BBDD el fondo con el porcentaje ingresado
         /// </summary>
         /// <param name="modelo"></param>
         /// <returns></returns>
@@ -348,7 +352,8 @@ namespace Prueba.Controllers
         }
         
         /// <summary>
-        /// 
+        /// Formulario para la creación de una provisión
+        /// Muestra los gastos a los cuales se les puede crear una provisión
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -425,9 +430,10 @@ namespace Prueba.Controllers
         }
         
         /// <summary>
-        /// 
+        /// Crea la provisión y el asiento en el Libro Diario
+        /// Guarda en BBDD
         /// </summary>
-        /// <param name="modelo"></param>
+        /// <param name="modelo">Contiene el Id del gasto y de la provisión.</param>
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -484,7 +490,6 @@ namespace Prueba.Controllers
                     }
 
                     return RedirectToAction("RelaciondeGastos");
-
                 }
 
 
@@ -504,9 +509,11 @@ namespace Prueba.Controllers
 
 
         /// <summary>
-        /// 
+        /// Sino existe una Relación de Gastos,
+        /// generará un Recibo de Cobro por cada Propiedad
+        /// si la propiedad está solvente, se cambiará a deudor
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Index de Relaciones de Gastos</returns> 
         public async Task<IActionResult> GenerarReciboCobro()
         {
             try
@@ -619,11 +626,13 @@ namespace Prueba.Controllers
 
                         TempData.Keep();
 
-                        return View(nameof(Index));
+                        return RedirectToAction("Index");
                     }
                 }
                 else
                 {
+                    TempData.Keep();
+
                     var modeloError = new ErrorViewModel()
                     {
                         RequestId = "Ya existe una relación de gasto para este mes!"
@@ -641,7 +650,7 @@ namespace Prueba.Controllers
                 return View(aux);
             }
 
-            return View(nameof(Index));
+            return RedirectToAction("Index");
 
         }
 

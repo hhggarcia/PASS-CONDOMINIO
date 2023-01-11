@@ -18,7 +18,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Reporta aquí cada pago que realizes
+                        Reporte aquí los Pagos
                     </h6>
                 </div>
                 <div class="card-body">
@@ -58,7 +58,7 @@
                                             <div class="position-relative">
                                                 <input type="text"
                                                    class="form-control"
-                                                   placeholder="Name"
+                                                   placeholder="Monto"
                                                    id="first-name-icon"
                                                    asp-for="Monto" />
                                                 <div class="form-control-icon">
@@ -74,7 +74,7 @@
                                             <div class="position-relative">
                                                 <input type="date"
                                                    class="form-control"
-                                                   placeholder="Name"
+                                                   placeholder="Fecha"
                                                    id="first-name-icon"
                                                    required
                                                    value="@DateTime.Today"
@@ -222,7 +222,9 @@
                     }
                     else
                     {
-                        <h2>Error al cargar datos de base de datos!</h2>
+                        <h3>Error al cargar datos de base de datos!</h3>
+
+                        <p> Registre sub-cuentas en Bancos y Caja para registrar pagos </p>
                     }
 
 

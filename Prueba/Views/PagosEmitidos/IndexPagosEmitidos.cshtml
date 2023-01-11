@@ -8,7 +8,10 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
-        <a class="btn btn-light mb-3" asp-controller="Administrador" asp-action="RegistrarPagos">Registrar Pago</a>
+        <a class="btn btn-light mb-3" asp-controller="PagosEmitidos" 
+                                        asp-action="RegistrarPagos">
+                                        Registrar Pago
+        </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -45,17 +48,19 @@
                                     <th>Forma de pago</th>
                                     <th>Referencia</th>
                                     <th>Banco</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tfoot>
+@*                            <tfoot>
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Monto</th>
                                     <th>Forma de pago</th>
                                     <th>Referencia</th>
                                     <th>Banco</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            </tfoot>
+                            </tfoot>*@
                             <tbody>
                                 @if (@Model.PagosEmitidos.Count() > 0)
                                 {
@@ -73,6 +78,11 @@
                                                         <td>@FormaPago.Transferencia</td>
                                                         <td>@referencia.NumReferencia</td>
                                                         <td>@referencia.Banco</td>
+                                                        <td>
+                                                            <a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |
+                                                            <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                            <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
+                                                        </td>
                                                     </tr>
                                                 }
 
@@ -87,6 +97,11 @@
                                                 <td>@FormaPago.Efectivo</td>
                                                 <td>Sin referencia</td>
                                                 <td>Sin Banco</td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
+                                                </td>
                                             </tr>
                                         }
 

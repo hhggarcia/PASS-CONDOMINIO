@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
 using Prueba.Core;
@@ -90,5 +90,7 @@ void AddTransient()
     builder.Services.AddTransient<IManageExcel, ManageExcel>();
     builder.Services.AddTransient<IRelacionGastoRepository, RelacionGastoRepository>();
     builder.Services.AddTransient<IReportesRepository, ReportesRepository>();
+    builder.Services.AddTransient<IPagosEmitidosRepository, PagosEmitidosRepository>();
+    builder.Services.AddTransient<ILibroDiarioRepository, LibroDiarioRepository>();
 }
 

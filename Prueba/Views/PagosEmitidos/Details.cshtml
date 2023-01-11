@@ -1,0 +1,72 @@
+﻿@model Prueba.Models.PagoEmitido
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<!-- Content Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Default Card Example -->
+        <div class="card shadow mb-4 bg-content-bg">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Pagos Emitidos
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="form form-horizontal">
+                    <div class="form-body">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="card-body">
+                                    <div>
+                                        <dl class="row">
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.IdProveedor)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.IdProveedor)
+                                            </dd>
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.Fecha)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.Fecha)
+                                            </dd>
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.Monto)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.Monto)
+                                            </dd>
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.FormaPago)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.FormaPago)
+                                            </dd>
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.IdCondominioNavigation.IdCondominio)
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div>
+                                        <a asp-action="Edit" asp-route-id="@Model?.IdPagoEmitido">Editar</a> |
+                                        <a asp-action="IndexPagosEmitidos" class="btn btn-secondary">Volver</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

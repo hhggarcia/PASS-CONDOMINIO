@@ -66,6 +66,7 @@
                                                         <th>Concepto</th>
                                                         <th class="text-danger">Debe</th>
                                                         <th class="text-success">Haber</th>
+                                                        <th>Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tfoot>
@@ -77,6 +78,7 @@
                                                         <th>Diferencia: @(Model.Diferencia.ToString("N"))</th>
                                                         <th class="text-danger">Total Debe: @(Model.TotalDebe.ToString("N"))</th>
                                                         <th class="text-success">Total Haber: @(Model.TotalHaber.ToString("N"))</th>
+                                                        <th>Acciones</th>
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
@@ -106,6 +108,11 @@
                                                                     <td class="text-bold-500"></td>
                                                                     <td class="text-bold-500">@(asiento.Monto.ToString("N"))</td>
                                                                 }
+                                                                <td>
+                                                                    <a asp-action="Edit" asp-route-id="@asiento.IdAsiento">Editar</a> |
+                                                                    <a asp-action="Details" asp-route-id="@asiento.IdAsiento">Detalles</a> |
+                                                                    <a asp-action="Delete" asp-route-id="@asiento.IdAsiento">Eliminar</a>
+                                                                </td>
                                                             </tr>
                                                         }
                                                     }
