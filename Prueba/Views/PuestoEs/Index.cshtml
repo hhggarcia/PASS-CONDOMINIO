@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Prueba.Models.PuestoE>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Alicuota)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdEstacionamientoNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Alicuota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdEstacionamientoNavigation.IdEstacionamiento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.IdPropiedad)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdPuestoE">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdPuestoE">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdPuestoE">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -316,6 +316,11 @@ namespace Prueba.Repositories
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<InformacionDashboardVM> InformacionGeneral(int id)
         {
             var modelo = new InformacionDashboardVM();

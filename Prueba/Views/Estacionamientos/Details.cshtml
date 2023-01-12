@@ -1,4 +1,4 @@
-﻿@model Prueba.Models.SubCuenta
+﻿@model Prueba.Models.Estacionamiento
 
 @{
     ViewData["Title"] = "Details";
@@ -6,8 +6,8 @@
 }
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-light">Editar</a> 
-    <a asp-action="CuentasContables" class="btn btn-light">Volver</a>
+    <a asp-action="Edit" class="btn btn-light" asp-route-id="@Model?.IdEstacionamiento">Editar</a> 
+    <a asp-action="Index" class="btn btn-light">Volver</a>
 </div>
 
 <div class="row">
@@ -16,7 +16,7 @@
         <div class="card shadow mb-4 bg-content-bg">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    Cuentas Contables Global
+                    Estacionamientos
                 </h6>
             </div>
             <div class="card-body">
@@ -24,25 +24,24 @@
                     <div class="form-body">
                         <div class="row">
                             <div>
-
                                 <dl class="row">
                                     <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Descricion)
+                                        @Html.DisplayNameFor(model => model.Nombre)
                                     </dt>
                                     <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Descricion)
+                                        @Html.DisplayFor(model => model.Nombre)
                                     </dd>
                                     <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Codigo)
+                                        @Html.DisplayNameFor(model => model.NumPuestos)
                                     </dt>
                                     <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Codigo)
+                                        @Html.DisplayFor(model => model.NumPuestos)
                                     </dd>
                                     <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.IdCuentaNavigation)
+                                        @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
                                     </dt>
                                     <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.IdCuentaNavigation.Id)
+                                        @Html.DisplayFor(model => model.IdInmuebleNavigation.IdInmueble)
                                     </dd>
                                 </dl>
                             </div>

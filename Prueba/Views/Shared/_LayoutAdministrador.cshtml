@@ -136,17 +136,12 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Pagos:</h6>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="IndexPagosEmitidos">Pagos Emitidos</a>
+                            <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="IndexPagosEmitidos">Pagos Emitidos</a>
                             <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Pagos Recibidos</a>
 
                         </div>
                     </div>
                 </li>
-
-
-
-
-
 
                 <!-- gestion de contabilidad -->
                 <li class="nav-item">
@@ -165,18 +160,25 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Gestion Contable:</h6>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="CuentasContables">Plan de Cuentas</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="RelaciondeGastos">Relación de gastos</a>
+                            <a class="collapse-item" asp-controller="SubCuentas" asp-action="CuentasContables">Plan de Cuentas</a>
+                            <a class="collapse-item" asp-controller="RelacionGastos" asp-action="Index">Relación de gastos</a>
                             <a class="collapse-item" asp-controller="LdiarioGlobals" asp-action="LibroDiario">Libro Diario</a>
                             <a class="collapse-item" asp-controller="Administrador" asp-action="Deudores">Deudores</a>
                         </div>
                     </div>
                 </li>
 
+                <!-- Estacionamiento -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       asp-action="Index"
+                       asp-controller="Estacionamientos"
+                       aria-expanded="true">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Estacionamiento</span>
+                    </a>
+                </li>
                 <!-- reportes -->
-
-
-
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
@@ -224,191 +226,191 @@
 
                         <!-- Topbar Navbar -->
                         <ul class="navbar-nav ml-auto">
-                           @* <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                            @* <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                             <li class="nav-item dropdown no-arrow d-sm-none">
-                                <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="searchDropdown"
-                                   role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    <i class="fas fa-search fa-fw"></i>
-                                </a>
-                                <!-- Dropdown - Messages -->
-                                <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                     aria-labelledby="searchDropdown">
-                                    <form class="form-inline mr-auto w-100 navbar-search">
-                                        <div class="input-group">
-                                            <input type="text"
-                                                   class="form-control bg-light border-0 small"
-                                                   placeholder="Search for..."
-                                                   aria-label="Search"
-                                                   aria-describedby="basic-addon2" />
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="button">
-                                                    <i class="fas fa-search fa-sm"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
+                            <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="searchDropdown"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                            aria-labelledby="searchDropdown">
+                            <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                            <input type="text"
+                            class="form-control bg-light border-0 small"
+                            placeholder="Search for..."
+                            aria-label="Search"
+                            aria-describedby="basic-addon2" />
+                            <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                            </button>
+                            </div>
+                            </div>
+                            </form>
+                            </div>
                             </li>
 
                             <!-- Nav Item - Alerts -->
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="alertsDropdown"
-                                   role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    <i class="fas fa-bell fa-fw"></i>
-                                    <!-- Counter - Alerts -->
-                                    <span class="badge badge-danger badge-counter">3+</span>
-                                </a>
-                                <!-- Dropdown - Alerts -->
-                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                     aria-labelledby="alertsDropdown">
-                                    <h6 class="dropdown-header">Centro de Alertas</h6>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-primary">
-                                                <i class="fas fa-file-alt text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 12, 2019</div>
-                                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-success">
-                                                <i class="fas fa-donate text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 7, 2019</div>
-                                            $290.29 has been deposited into your account!
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-warning">
-                                                <i class="fas fa-exclamation-triangle text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 2, 2019</div>
-                                            Spending Alert: We've noticed unusually high spending
-                                            for your account.
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item text-center small text-gray-500"
-                                       href="#">Show All Alerts</a>
-                                </div>
+                            <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="alertsDropdown"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-bell fa-fw"></i>
+                            <!-- Counter - Alerts -->
+                            <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="alertsDropdown">
+                            <h6 class="dropdown-header">Centro de Alertas</h6>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-primary">
+                            <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 12, 2019</div>
+                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-success">
+                            <i class="fas fa-donate text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 7, 2019</div>
+                            $290.29 has been deposited into your account!
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-warning">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 2, 2019</div>
+                            Spending Alert: We've noticed unusually high spending
+                            for your account.
+                            </div>
+                            </a>
+                            <a class="dropdown-item text-center small text-gray-500"
+                            href="#">Show All Alerts</a>
+                            </div>
                             </li>
 
                             <!-- Nav Item - Messages -->
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="messagesDropdown"
-                                   role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    <i class="fas fa-envelope fa-fw"></i>
-                                    <!-- Counter - Messages -->
-                                    <span class="badge badge-danger badge-counter">7</span>
-                                </a>
-                                <!-- Dropdown - Messages -->
-                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                     aria-labelledby="messagesDropdown">
-                                    <h6 class="dropdown-header">Centro de Mensajes</h6>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/2.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-success"></div>
-                                        </div>
-                                        <div class="font-weight-bold">
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                                elit. Asperiores facere expedita optio perferendis,
-                                                voluptatem quae voluptas distinctio dolor consequuntur
-                                                repellat nobis dolores maiores eaque molestiae quaerat
-                                                eum? Totam, voluptas? Quod!
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Emily Fowler · 58m
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/3.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor, sit amet consectetur adipisicing
-                                                elit. Perspiciatis iusto voluptatum culpa blanditiis
-                                                voluptas fugiat nam architecto non, labore laudantium
-                                                quia inventore? Quibusdam, iusto ipsam est
-                                                exercitationem quam tempora asperiores?
-                                            </div>
-                                            <div class="small text-gray-500">Jae Chun · 1d</div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/4.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-warning"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                                elit. Ex at doloremque magni voluptate ab. Vel aliquid
-                                                non soluta corporis cupiditate, quaerat, dolores minus
-                                                dignissimos quisquam enim odio consequatur? Dolor,
-                                                nostrum.
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Morgan Alvarez · 2d
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/5.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-success"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur, adipisicing
-                                                elit. Quos distinctio consectetur, beatae nihil
-                                                voluptatem dolorem in corporis soluta iure ipsum
-                                                veniam incidunt! Nisi qui neque doloribus ad commodi
-                                                fuga. Cupiditate.
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Chicken the Dog · 2w
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item text-center small text-gray-500"
-                                       href="#">Leer Más Mensajes</a>
-                                </div>
+                            <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="messagesDropdown"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-envelope fa-fw"></i>
+                            <!-- Counter - Messages -->
+                            <span class="badge badge-danger badge-counter">7</span>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="messagesDropdown">
+                            <h6 class="dropdown-header">Centro de Mensajes</h6>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/2.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-bold">
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Asperiores facere expedita optio perferendis,
+                            voluptatem quae voluptas distinctio dolor consequuntur
+                            repellat nobis dolores maiores eaque molestiae quaerat
+                            eum? Totam, voluptas? Quod!
+                            </div>
+                            <div class="small text-gray-500">
+                            Emily Fowler · 58m
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/3.jpg"
+                            alt="..." />
+                            <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor, sit amet consectetur adipisicing
+                            elit. Perspiciatis iusto voluptatum culpa blanditiis
+                            voluptas fugiat nam architecto non, labore laudantium
+                            quia inventore? Quibusdam, iusto ipsam est
+                            exercitationem quam tempora asperiores?
+                            </div>
+                            <div class="small text-gray-500">Jae Chun · 1d</div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/4.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-warning"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Ex at doloremque magni voluptate ab. Vel aliquid
+                            non soluta corporis cupiditate, quaerat, dolores minus
+                            dignissimos quisquam enim odio consequatur? Dolor,
+                            nostrum.
+                            </div>
+                            <div class="small text-gray-500">
+                            Morgan Alvarez · 2d
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/5.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing
+                            elit. Quos distinctio consectetur, beatae nihil
+                            voluptatem dolorem in corporis soluta iure ipsum
+                            veniam incidunt! Nisi qui neque doloribus ad commodi
+                            fuga. Cupiditate.
+                            </div>
+                            <div class="small text-gray-500">
+                            Chicken the Dog · 2w
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item text-center small text-gray-500"
+                            href="#">Leer Más Mensajes</a>
+                            </div>
                             </li>*@
 
                             <div class="topbar-divider d-none d-sm-block"></div>

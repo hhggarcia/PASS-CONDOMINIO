@@ -9,7 +9,7 @@
     @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Plan de Cuentas</h1>
     </div>*@
-    <a class="btn btn-light mb-3" asp-controller="Administrador" asp-action="CrearSubCuenta">Crear Sub Cuenta</a>
+    <a class="btn btn-light mb-3" asp-controller="SubCuentas" asp-action="CrearSubCuenta">Crear Sub Cuenta</a>
 
     <!-- Content Row -->
     <div class="row">
@@ -32,12 +32,14 @@
                                 <tr>
                                     <th>Código</th>
                                     <th>Descripción</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
                                     <th>Código</th>
                                     <th>Descripción</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </tfoot>
                             <tbody>
@@ -72,6 +74,11 @@
                                                                 <tr>
                                                                     <td>@(Model.Clases[i].Codigo+"."+Model.Grupos[j].Codigo+"."+Model.Cuentas[k].Codigo+"."+Model.SubCuentas[z].Codigo)</td>
                                                                     <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentas[z].Descricion</td>
+                                                                    <td>
+                                                                        <a asp-action="Edit" asp-route-id="@Model.SubCuentas[z].Id">Editar</a> |
+                                                                        <a asp-action="Details" asp-route-id="@Model.SubCuentas[z].Id">Detalles</a> |
+                                                                        <a asp-action="Delete" asp-route-id="@Model.SubCuentas[z].Id">Eliminar</a>
+                                                                    </td>
                                                                 </tr>
 
                                                             }
