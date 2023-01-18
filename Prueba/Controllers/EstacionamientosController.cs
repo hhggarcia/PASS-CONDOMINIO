@@ -65,8 +65,7 @@ namespace Prueba.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(estacionamiento);
-                await _context.SaveChangesAsync();
+                var result = await _repoEstacionamiento.Crear(estacionamiento);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
@@ -106,12 +105,11 @@ namespace Prueba.Controllers
             {
                 try
                 {
-                    _context.Update(estacionamiento);
-                    await _context.SaveChangesAsync();
+                    var result = await _repoEstacionamiento.Editar(estacionamiento);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EstacionamientoExists(estacionamiento.IdEstacionamiento))
+                    if (!_repoEstacionamiento.EstacionamientoExists(estacionamiento.IdEstacionamiento))
                     {
                         return NotFound();
                     }
@@ -154,19 +152,11 @@ namespace Prueba.Controllers
             {
                 return Problem("Entity set 'PruebaContext.Estacionamientos'  is null.");
             }
-            var estacionamiento = await _context.Estacionamientos.FindAsync(id);
-            if (estacionamiento != null)
-            {
-                _context.Estacionamientos.Remove(estacionamiento);
-            }
+            var result = await _repoEstacionamiento.Eliminar(id);
             
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EstacionamientoExists(int id)
-        {
-          return (_context.Estacionamientos?.Any(e => e.IdEstacionamiento == id)).GetValueOrDefault();
-        }
+
     }
 }

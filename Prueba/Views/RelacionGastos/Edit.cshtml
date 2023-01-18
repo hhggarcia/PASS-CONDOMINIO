@@ -43,15 +43,17 @@
                                                 <input asp-for="Fecha" class="form-control" />
                                                 <span asp-validation-for="Fecha" class="text-danger"></span>
                                             </div>
-                                            <div class="form-group">
+                                           @* <div class="form-group">
                                                 <label asp-for="IdCondominio" class="control-label"></label>
                                                 <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
                                                 <span asp-validation-for="IdCondominio" class="text-danger"></span>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <input type="submit" value="Save" class="btn btn-primary" />
+                                            </div>*@
+                                            <input type="hidden" asp-for="IdCondominio" />
 
-                                                <a asp-action="Index">Volver</a>
+                                            <div class="col-md-12">
+                                                <input type="submit" value="Guardar" class="btn btn-primary" />
+
+                                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
                                             </div>
                                         </form>
                                     </div>

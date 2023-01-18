@@ -9,56 +9,58 @@
     <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
 </p>
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Cuentas Contables Global
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Descricion)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Codigo)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.IdCuentaNavigation)
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cuentas Contables Global
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Descricion)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Codigo)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdCuentaNavigation.Id)
-                                            </td>
-                                            <td>
-                                                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                                                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-                                            </td>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Descricion)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Codigo)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdCuentaNavigation)
+                                            </th>
+                                            <th></th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Descricion)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Codigo)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdCuentaNavigation.Id)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

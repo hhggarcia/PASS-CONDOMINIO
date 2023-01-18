@@ -7,23 +7,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
     public class PuestoEsController : Controller
     {
+        private readonly IEstacionamientoRepository _repoEstacionamiento;
         private readonly PruebaContext _context;
 
-        public PuestoEsController(PruebaContext context)
+        public PuestoEsController(IEstacionamientoRepository repoEstacionamiento,
+            PruebaContext context)
         {
+            _repoEstacionamiento = repoEstacionamiento;
             _context = context;
         }
 
         // GET: PuestoEs
         public async Task<IActionResult> Index(int id)
         {
-            var pruebaContext = _context.PuestoEs.Include(p => p.IdEstacionamientoNavigation).Include(p => p.IdPropiedadNavigation);
-            return View(await pruebaContext.ToListAsync());
+            //var pruebaContext = _context.PuestoEs.Include(p => p.IdEstacionamientoNavigation).Include(p => p.IdPropiedadNavigation);
+            var puestos = await _repoEstacionamiento.PuestosEsta(id);
+            return View(puestos);
         }
 
         // GET: PuestoEs/Details/5
@@ -63,8 +68,7 @@ namespace Prueba.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(puestoE);
-                await _context.SaveChangesAsync();
+                var result = await _repoEstacionamiento.CrearPuestoEst(puestoE);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
@@ -106,12 +110,11 @@ namespace Prueba.Controllers
             {
                 try
                 {
-                    _context.Update(puestoE);
-                    await _context.SaveChangesAsync();
+                    var result = await _repoEstacionamiento.EditarPuestoEst(puestoE);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PuestoEExists(puestoE.IdPuestoE))
+                    if (!_repoEstacionamiento.PuestoEExists(puestoE.IdPuestoE))
                     {
                         return NotFound();
                     }
@@ -156,19 +159,9 @@ namespace Prueba.Controllers
             {
                 return Problem("Entity set 'PruebaContext.PuestoEs'  is null.");
             }
-            var puestoE = await _context.PuestoEs.FindAsync(id);
-            if (puestoE != null)
-            {
-                _context.PuestoEs.Remove(puestoE);
-            }
-            
-            await _context.SaveChangesAsync();
+            var result = await _repoEstacionamiento.EliminarPuestoEst(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PuestoEExists(int id)
-        {
-          return (_context.PuestoEs?.Any(e => e.IdPuestoE == id)).GetValueOrDefault();
-        }
     }
 }
