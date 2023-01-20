@@ -567,29 +567,57 @@ namespace Prueba.Controllers
                         IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
                         foreach (var propiedad in listaPropiedadesCondominio)
                         {
+                            // BUSCAR PUESTOS DE ESTACIONAMIENTO EXTRAS
+                            var puestos = await _context.PuestoEs.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                             // VERIFICAR SOLVENCIA
                             // SI ES TRUE (ESTA SOLVENTE, AL DIA) NO SE BUSCA EN LA DEUDA
                             // SI ES FALSO PARA EL MONTO TOTAL A PAGAR DEBE MOSTRARSELE LA DEUDA
                             // Y EL TOTAL DEL MES MAS LA DEUDA
                             if (propiedad.Solvencia)
                             {
-                                propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                                propiedad.Solvencia = false;
+                                if (puestos != null && puestos.Any())
+                                {
+                                    propiedad.Saldo = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                    propiedad.Solvencia = false;
+                                }
+                                else
+                                {
+                                    propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                    propiedad.Solvencia = false;
+                                }
                             }
                             else
                             {
-                                propiedad.Deuda += propiedad.Saldo;
-                                propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                if (puestos != null && puestos.Any())
+                                {
+                                    
+                                    propiedad.Deuda += propiedad.Saldo;
+                                    propiedad.Saldo = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                }
+                                else
+                                {
+                                    propiedad.Deuda += propiedad.Saldo;
+                                    propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                }                                
                             }
-
                             // INFO DEL RECIBO
-                            var recibo = new ReciboCobro
+
+                            var recibo = new ReciboCobro();
+
+                            if (puestos != null && puestos.Any())
                             {
-                                IdPropiedad = propiedad.IdPropiedad,
-                                IdRgastos = relacionGasto.IdRgastos,
-                                Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100,
-                                Fecha = DateTime.Today
-                            };
+                                recibo.IdPropiedad = propiedad.IdPropiedad;
+                                recibo.IdRgastos = relacionGasto.IdRgastos;
+                                recibo.Monto = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                recibo.Fecha = DateTime.Today;
+                            }
+                            else
+                            {
+                                recibo.IdPropiedad = propiedad.IdPropiedad;
+                                recibo.IdRgastos = relacionGasto.IdRgastos;
+                                recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                recibo.Fecha = DateTime.Today;
+                            }
 
                             recibosCobroCond.Add(recibo);
                         }

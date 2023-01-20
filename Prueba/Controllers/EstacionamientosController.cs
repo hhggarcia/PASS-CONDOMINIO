@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class EstacionamientosController : Controller
     {
         private readonly IEstacionamientoRepository _repoEstacionamiento;
@@ -26,8 +29,33 @@ namespace Prueba.Controllers
         // GET: Estacionamientos
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
-            return View(await pruebaContext.ToListAsync());
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var inmuebles = await _context.Inmuebles.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (inmuebles != null && inmuebles.Any())
+            {
+                var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation)
+                    .Where(e => e.IdInmueble == inmuebles.First().IdInmueble);
+
+                TempData.Keep();
+
+                return View(await pruebaContext.ToListAsync());
+
+            }
+            else
+            {
+                var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+                TempData.Keep();
+
+                return View(await pruebaContext.ToListAsync());
+
+            }
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //TempData.Keep();
+
+            //return View(await pruebaContext.ToListAsync());
+
         }
 
         // GET: Estacionamientos/Details/5
@@ -52,7 +80,19 @@ namespace Prueba.Controllers
         // GET: Estacionamientos/Create
         public IActionResult Create()
         {
-            ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble");
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (inmuebles != null && inmuebles.Any())
+            {
+                ViewData["IdInmueble"] = new SelectList(inmuebles, "IdInmueble", "Nombre");
+            }
+            else
+            {
+                ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "Nombre");
+            }
+            TempData.Keep();
             return View();
         }
 
@@ -63,13 +103,26 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdEstacionamiento,IdInmueble,Nombre,NumPuestos")] Estacionamiento estacionamiento)
         {
-            if (ModelState.IsValid)
+            try
             {
                 var result = await _repoEstacionamiento.Crear(estacionamiento);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
-            return View(estacionamiento);
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+            //if (ModelState.IsValid)
+            //{
+                
+            //}
+            //ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
+            //return View(estacionamiento);
         }
 
         // GET: Estacionamientos/Edit/5
@@ -85,7 +138,17 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
+
+            var inmuebles = _context.Inmuebles.Where(c => c.IdInmueble == estacionamiento.IdInmueble);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (inmuebles != null && inmuebles.Any())
+            {
+                ViewData["IdInmueble"] = new SelectList(inmuebles, "IdInmueble", "Nombre", estacionamiento.IdInmueble);
+            }
+            else
+            {
+                ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "Nombre", estacionamiento.IdInmueble);
+            }
             return View(estacionamiento);
         }
 

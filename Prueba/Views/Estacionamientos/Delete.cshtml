@@ -5,49 +5,54 @@
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Estacionamientos
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <div>
-                                <h6>Seguro de eliminar este estacionamiento?</h6>
-                                <hr />
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Estacionamientos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
 
-                                <dl class="row">
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Nombre)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Nombre)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.NumPuestos)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.NumPuestos)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.IdInmuebleNavigation.IdInmueble)
-                                    </dd>
-                                </dl>
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <h6>Seguro de eliminar este estacionamiento?</h6>
+                                        <hr />
 
-                                <form asp-action="Delete">
-                                    <input type="hidden" asp-for="IdEstacionamiento" />
-                                    <input type="submit" value="Eliminar" class="btn btn-danger" />
-                                    <a asp-action="Index" class="btn btn-light">Volver</a>
-                                </form>
+                                        <dl class="row">
+                                            <dt class="col-sm-4">
+                                                @Html.DisplayNameFor(model => model.Nombre)
+                                            </dt>
+                                            <dd class="col-sm-8">
+                                                @Html.DisplayFor(model => model.Nombre)
+                                            </dd>
+                                            <dt class="col-sm-4">
+                                                @Html.DisplayNameFor(model => model.NumPuestos)
+                                            </dt>
+                                            <dd class="col-sm-8">
+                                                @Html.DisplayFor(model => model.NumPuestos)
+                                            </dd>
+                                            @*<dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.IdInmuebleNavigation.IdInmueble)
+                                            </dd>*@
+                                        </dl>
+
+                                        <form asp-action="Delete">
+                                            <input type="hidden" asp-for="IdEstacionamiento" />
+                                            <input type="submit" value="Eliminar" class="btn btn-danger" />
+                                            <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

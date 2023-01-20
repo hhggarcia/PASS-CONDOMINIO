@@ -5,51 +5,53 @@
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Puestos de estacionamientos
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <div>
-                                <dl class="row">
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Codigo)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Codigo)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Alicuota)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Alicuota)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.IdEstacionamientoNavigation)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.IdEstacionamientoNavigation.IdEstacionamiento)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.IdPropiedadNavigation.IdPropiedad)
-                                    </dd>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
 
-                                    <div>
-                                        <a asp-action="Edit" asp-route-id="@Model?.IdPuestoE" class="btn btn-light">Editar</a>
-                                        <a asp-action="Index" asp-route-id="@Model?.IdEstacionamiento" class="btn btn-light">Volver</a>
-                                    </div>
-                                </dl>
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Puestos de Estacionamientos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div>
+                                    <dl class="row">
+                                        <dt class="col-sm-6">
+                                            @Html.DisplayNameFor(model => model.Codigo)
+                                        </dt>
+                                        <dd class="col-sm-6">
+                                            @Html.DisplayFor(model => model.Codigo)
+                                        </dd>
+                                        <dt class="col-sm-6">
+                                            @Html.DisplayNameFor(model => model.Alicuota)
+                                        </dt>
+                                        <dd class="col-sm-6">
+                                            @Html.DisplayFor(model => model.Alicuota)
+                                        </dd>
+                                        @*<dt class="col-sm-2">
+                                            @Html.DisplayNameFor(model => model.IdEstacionamientoNavigation)
+                                        </dt>
+                                        <dd class="col-sm-10">
+                                            @Html.DisplayFor(model => model.IdEstacionamientoNavigation.IdEstacionamiento)
+                                        </dd>*@
+                                        <dt class="col-sm-6">
+                                            @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
+                                        </dt>
+                                        <dd class="col-sm-6">
+                                            @Html.DisplayFor(model => model.IdPropiedadNavigation.IdPropiedad)
+                                        </dd>
+
+                                        <div>
+                                            <a asp-action="Edit" asp-route-id="@Model?.IdPuestoE" class="btn btn-primary">Editar</a>
+                                            <a asp-action="Index" asp-route-id="@Model?.IdEstacionamiento" class="btn btn-secondary">Volver</a>
+                                        </div>
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -5,45 +5,49 @@
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<div>
-    <a asp-action="Edit" class="btn btn-light" asp-route-id="@Model?.IdEstacionamiento">Editar</a> 
-    <a asp-action="Index" class="btn btn-light">Volver</a>
-</div>
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Estacionamientos
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <div>
-                                <dl class="row">
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.Nombre)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.Nombre)
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        @Html.DisplayNameFor(model => model.NumPuestos)
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Html.DisplayFor(model => model.NumPuestos)
-                                    </dd>
-                                    <dt class="col-sm-2">
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Estacionamientos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div>
+                                    <dl class="row">
+                                        <dt class="col-sm-4">
+                                            @Html.DisplayNameFor(model => model.Nombre)
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.Nombre)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            @Html.DisplayNameFor(model => model.NumPuestos)
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.NumPuestos)
+                                        </dd>
+                                        @*<dt class="col-sm-2">
                                         @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
-                                    </dt>
-                                    <dd class="col-sm-10">
+                                        </dt>
+                                        <dd class="col-sm-10">
                                         @Html.DisplayFor(model => model.IdInmuebleNavigation.IdInmueble)
-                                    </dd>
-                                </dl>
+                                        </dd>*@
+                                    </dl>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <a asp-action="Edit" class="btn btn-primary" asp-route-id="@Model?.IdEstacionamiento">Editar</a>
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+
                             </div>
                         </div>
                     </div>

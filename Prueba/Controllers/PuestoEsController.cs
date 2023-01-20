@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class PuestoEsController : Controller
     {
         private readonly IEstacionamientoRepository _repoEstacionamiento;
@@ -54,8 +57,22 @@ namespace Prueba.Controllers
         // GET: PuestoEs/Create
         public IActionResult Create()
         {
-            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento");
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad");
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (inmuebles != null && inmuebles.Any())
+            {
+                var propiedades = _context.Propiedads.Where(c => c.IdInmueble == inmuebles.First().IdInmueble);
+                ViewData["IdPropiedad"] = new SelectList(propiedades, "IdPropiedad", "Codigo");
+            }
+            else
+            {
+                ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo");
+            }
+
+            TempData.Keep();
+            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "Nombre");
             return View();
         }
 
@@ -66,14 +83,30 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPuestoE,IdEstacionamiento,IdPropiedad,Codigo,Alicuota")] PuestoE puestoE)
         {
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+                
+            //}
+            //ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
+            //ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
+            //return View(puestoE);
+
+            try
             {
                 var result = await _repoEstacionamiento.CrearPuestoEst(puestoE);
-                return RedirectToAction(nameof(Index));
+
+                var puestos = await _repoEstacionamiento.PuestosEsta(puestoE.IdEstacionamiento);
+                return View(nameof(Index), puestos);
             }
-            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
-            return View(puestoE);
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
         }
 
         // GET: PuestoEs/Edit/5
@@ -89,8 +122,23 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (inmuebles != null && inmuebles.Any())
+            {
+                var propiedades = _context.Propiedads.Where(c => c.IdInmueble == inmuebles.First().IdInmueble);
+                ViewData["IdPropiedad"] = new SelectList(propiedades, "IdPropiedad", "Codigo", puestoE.IdPropiedad);
+            }
+            else
+            {
+                ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", puestoE.IdPropiedad);
+            }
+
+            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "Nombre", puestoE.IdEstacionamiento);
+            TempData.Keep();
+
             return View(puestoE);
         }
 

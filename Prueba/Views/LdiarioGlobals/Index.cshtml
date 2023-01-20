@@ -8,77 +8,78 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Crear Nuevo</a>
 </p>
+<div class="container-fluid">
 
-
-<!-- Content Row -->
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Libro Diario Global
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Fecha)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Concepto)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Monto)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.TipoOperacion)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.NumAsiento)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Libro Diario Global
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Fecha)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Concepto)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Monto)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.TipoOperacion)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.NumAsiento)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
-                                            </td>
-                                            <td>
-                                                <a asp-action="Edit" asp-route-id="@item.IdAsiento">Editar</a> |
-                                                <a asp-action="Details" asp-route-id="@item.IdAsiento">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.IdAsiento">Eliminar</a>
-                                            </td>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Fecha)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Concepto)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Monto)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.TipoOperacion)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.NumAsiento)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
+                                            </th>
+                                            <th></th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Fecha)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Concepto)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Monto)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TipoOperacion)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.NumAsiento)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.IdAsiento">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdAsiento">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdAsiento">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

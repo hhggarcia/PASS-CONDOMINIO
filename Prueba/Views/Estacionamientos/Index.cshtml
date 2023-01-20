@@ -5,62 +5,63 @@
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
-</p>
+<div class="container-fluid">
+    <p>
+        <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
+    </p>
 
-
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Default Card Example -->
-        <div class="card shadow mb-4 bg-content-bg">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    Estacionamientos
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="form form-horizontal">
-                    <div class="form-body">
-                        <div class="row">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Nombre)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.NumPuestos)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Estacionamientos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Nombre)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.NumPuestos)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdInmuebleNavigation.IdInmueble)
-                                            </td>
-                                            <td>
-                                                <a asp-action="Index" asp-controller="PuestoEs" asp-route-id="@item.IdEstacionamiento">Ver Puestos</a> |
-                                                <a asp-action="Edit" asp-route-id="@item.IdEstacionamiento">Editar</a> |
-                                                <a asp-action="Details" asp-route-id="@item.IdEstacionamiento">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.IdEstacionamiento">Eliminar</a>
-                                            </td>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Nombre)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.NumPuestos)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
+                                            </th>
+                                            <th></th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Nombre)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.NumPuestos)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdInmuebleNavigation.IdInmueble)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Index" asp-controller="PuestoEs" asp-route-id="@item.IdEstacionamiento">Ver Puestos</a> |
+                                                    <a asp-action="Edit" asp-route-id="@item.IdEstacionamiento">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdEstacionamiento">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdEstacionamiento">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

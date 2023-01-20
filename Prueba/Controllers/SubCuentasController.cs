@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class SubCuentasController : Controller
     {
         private readonly ICuentasContablesRepository _repoCuentasContables;
@@ -52,7 +55,30 @@ namespace Prueba.Controllers
         // GET: SubCuentas/Create
         public IActionResult Create()
         {
-            ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id");
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == idCondominio);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (subcuentas != null && subcuentas.Any())
+            {
+                var cuentas = from c in _context.SubCuenta
+                              join sc in subcuentas
+                              on c.Id equals sc.IdCodigo
+                              select c;
+
+                var modelListCuentas = from c in _context.Cuenta
+                                       join sc in cuentas
+                                       on c.Id equals sc.IdCuenta
+                                       select sc;
+
+                ViewData["IdCuenta"] = new SelectList(modelListCuentas, "Id", "Descripcion");
+            }
+            else
+            {
+                ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Descripcion");
+            }
+
+            TempData.Keep();
             return View();
         }
 
@@ -86,7 +112,30 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id", subCuenta.IdCuenta);
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == idCondominio);
+            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            if (subcuentas != null && subcuentas.Any())
+            {
+                var cuentas = from c in _context.SubCuenta
+                              join sc in subcuentas
+                              on c.Id equals sc.IdCodigo
+                              select c;
+
+                var modelListCuentas = (from c in _context.Cuenta
+                                       join sc in cuentas
+                                       on c.Id equals sc.IdCuenta
+                                       select c).Distinct();
+
+                ViewData["IdCuenta"] = new SelectList(modelListCuentas, "Id", "Descripcion", subCuenta.IdCuenta);
+            }
+            else
+            {
+                ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Descripcion", subCuenta.IdCuenta);
+            }
+
+            TempData.Keep();
             return View(subCuenta);
         }
 
