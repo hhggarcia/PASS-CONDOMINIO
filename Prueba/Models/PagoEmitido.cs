@@ -1,33 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class PagoEmitido
 {
-    public partial class PagoEmitido
-    {
-        public PagoEmitido()
-        {
-            ReferenciasPes = new HashSet<ReferenciasPe>();
-        }
+    public int IdPagoEmitido { get; set; }
 
-        [Display(Name = "# Pago Emitido")]
-        public int IdPagoEmitido { get; set; }
+    public int IdCondominio { get; set; }
 
-        [Display(Name = "Condominio")]
-        public int IdCondominio { get; set; }
+    public int? IdProveedor { get; set; }
 
-        [Display(Name = "Proveedor")]
-        public int? IdProveedor { get; set; }
+    public DateTime Fecha { get; set; }
 
-        public DateTime Fecha { get; set; }
-        public decimal Monto { get; set; }
+    public decimal Monto { get; set; }
 
-        [Display(Name = "Forma de Pago")]
-        public bool FormaPago { get; set; }
+    public bool FormaPago { get; set; }
 
-        [Display(Name = "# Condominio")]
-        public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-        public virtual ICollection<ReferenciasPe> ReferenciasPes { get; set; }
-    }
+    public int IdDolar { get; set; }
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
+
+    public virtual ICollection<ReferenciasPe> ReferenciasPes { get; } = new List<ReferenciasPe>();
 }
