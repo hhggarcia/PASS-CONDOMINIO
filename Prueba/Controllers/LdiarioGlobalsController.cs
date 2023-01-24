@@ -29,7 +29,8 @@ namespace Prueba.Controllers
         // GET: LdiarioGlobals
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
+            var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation)
+                .Include(l => l.IdDolarNavigation);
             return View(await pruebaContext.ToListAsync());
         }
 
@@ -43,6 +44,7 @@ namespace Prueba.Controllers
 
             var ldiarioGlobal = await _context.LdiarioGlobals
                 .Include(l => l.IdCodCuentaNavigation)
+                .Include(l => l.IdDolar)
                 .FirstOrDefaultAsync(m => m.IdAsiento == id);
             if (ldiarioGlobal == null)
             {
@@ -56,6 +58,7 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor");
             return View();
         }
 
@@ -64,7 +67,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdAsiento,IdCodCuenta,Fecha,Concepto,Monto,TipoOperacion,NumAsiento")] LdiarioGlobal ldiarioGlobal)
+        public async Task<IActionResult> Create([Bind("IdAsiento,IdCodCuenta,Fecha,Concepto,Monto,TipoOperacion,NumAsiento, IdDolar")] LdiarioGlobal ldiarioGlobal)
         {
             if (ModelState.IsValid)
             {
@@ -72,6 +75,8 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(LibroDiario));
             }
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
+
             return View(ldiarioGlobal);
         }
 
@@ -89,6 +94,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
             return View(ldiarioGlobal);
         }
 
@@ -97,34 +103,36 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdAsiento,IdCodCuenta,Fecha,Concepto,Monto,TipoOperacion,NumAsiento")] LdiarioGlobal ldiarioGlobal)
+        public async Task<IActionResult> Edit(int id, [Bind("IdAsiento,IdCodCuenta,Fecha,Concepto,Monto,TipoOperacion,NumAsiento,IdDolar")] LdiarioGlobal ldiarioGlobal)
         {
             if (id != ldiarioGlobal.IdAsiento)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    var result = await _repoLibroDiario.Editar(ldiarioGlobal);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repoLibroDiario.LdiarioGlobalExists(ldiarioGlobal.IdAsiento))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(LibroDiario));
+                var result = await _repoLibroDiario.Editar(ldiarioGlobal);
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
-            return View(ldiarioGlobal);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_repoLibroDiario.LdiarioGlobalExists(ldiarioGlobal.IdAsiento))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(LibroDiario));
+            //}
+            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
+            //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
+
+            //return View(ldiarioGlobal);
         }
 
         // GET: LdiarioGlobals/Delete/5
@@ -137,6 +145,7 @@ namespace Prueba.Controllers
 
             var ldiarioGlobal = await _context.LdiarioGlobals
                 .Include(l => l.IdCodCuentaNavigation)
+                .Include(l => l.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdAsiento == id);
             if (ldiarioGlobal == null)
             {

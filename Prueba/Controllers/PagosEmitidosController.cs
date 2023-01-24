@@ -41,7 +41,7 @@ namespace Prueba.Controllers
             var modelo = await _repoPagosEmitidos.GetPagosEmitidos(idCondominio);
 
             TempData.Keep();
-            
+
             return View(modelo);
         }
 
@@ -117,28 +117,28 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    _context.Update(pagoEmitido);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repoPagosEmitidos.PagoEmitidoExists(pagoEmitido.IdPagoEmitido))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(pagoEmitido);
+                await _context.SaveChangesAsync();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
-            return View(pagoEmitido);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_repoPagosEmitidos.PagoEmitidoExists(pagoEmitido.IdPagoEmitido))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+            //return View(pagoEmitido);
         }
 
         // GET: PagosEmitidos/Delete/5

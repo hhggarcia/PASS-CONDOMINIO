@@ -12,6 +12,9 @@
         </tbody>
     </table>
 </div>*@
+@{
+
+}
 
 <div class="table-responsive">
     <table class="table table-bordered form"
@@ -21,30 +24,51 @@
         <thead>
             <tr>
                 <th>Descripción</th>
-                <th>USD</th>
-                <th>Tasa</th>
-                <th>Bs</th>
+                <th>Tasa BCV</th>
+                <th>Monto $</th>
+                <th>Monto Bsf</th>
             </tr>
         </thead>
         <tfoot>
             <tr class="tr_s">
-                <th></th>
-                <th>Sub Total: @(Model.SubTotal.ToString("N"))</th>
-                <th>Total: @(Model.Total.ToString("N"))</th>
-                <th></th>
+                <th>Sub Total: @(Model.SubTotal.ToString("N")) Bsf</th>
+                <th>Total: @(Model.Total.ToString("N")) Bsf</th>
+
+                @if (Model.ReferenciasDolar != null && Model.ReferenciasDolar.Any())
+                {
+                    var referenciaActual = Model.ReferenciasDolar.Where(c => c.Fecha.Date == DateTime.Today.Date).ToList().FirstOrDefault();
+                    @if (referenciaActual != null)
+                    {
+                        <th>Sub Total $: @((Model.SubTotal / referenciaActual.Valor).ToString("N"))$</th>
+                        <th>Total: @((Model.Total / referenciaActual.Valor).ToString("N"))$</th>
+                    }
+                    else
+                    {
+                        <th>Actualizar tasa</th>
+                        <th></th>
+                    }
+
+                }
+                else
+                {
+                    <th></th>
+                    <th></th>
+                }
             </tr>
         </tfoot>
         <tbody>
             @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
-            && (Model.GastosDiario != null && Model.GastosDiario.Any()))
+            && (Model.GastosDiario != null && Model.GastosDiario.Any())
+            && (Model.ReferenciasDolar != null && Model.ReferenciasDolar.Any()))
             {
                 @foreach (var item in Model.GastosDiario)
                 {
                     var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
+                    var referencia = Model.ReferenciasDolar.Where(c => c.IdReferencia == item.IdDolar).ToList();
                     <tr class="tr_s">
                         <td>@subcuenta.First().Descricion</td>
-                        <td>$$$$$$$$$</td>
-                        <td>BCV</td>
+                        <td>@referencia.First().Valor.ToString("N")</td>
+                        <td>@((item.Monto / referencia.First().Valor).ToString("N"))</td>
                         <td>@(item.Monto.ToString("N"))</td>
                     </tr>
                 }
@@ -60,51 +84,83 @@
                 </tr>
             }
 
-            @if (Model.Provisiones != null && Model.Provisiones.Any())
+            @if (Model.Provisiones != null && Model.Provisiones.Any()
+            && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any()
+            && Model.ReferenciasDolar != null && Model.ReferenciasDolar.Any())
             {
                 @foreach (var provisiones in Model.Provisiones)
                 {
                     var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
-                    <tr class="tr_s">
-                        <td>@subcuenta.First().Descricion</td>
-                        <td>$$$$$$$$$</td>
-                        <td>BCV</td>
-                        <td>@(provisiones.Monto.ToString("N"))</td>
-                    </tr>
+                    var referenciaActual = Model.ReferenciasDolar.Where(c => c.Fecha.Date == DateTime.Today.Date).ToList().First();
+                    @if (referenciaActual != null)
+                    {
+                        <tr class="tr_s">
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@referenciaActual.Valor.ToString("N") Bsf</td>
+                            <td>@((provisiones.Monto / referenciaActual.Valor).ToString("N")) $</td>
+                            <td>@(provisiones.Monto.ToString("N")) Bsf</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="tr_s">
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>Actualizar Tasa $</td>
+                            <td>Actualizar Tasa $</td>
+                            <td>@(provisiones.Monto.ToString("N")) Bsf</td>
+                        </tr>
+                    }
                 }
 
             }
             else
             {
-                <tr class="tr_s">
-                    <td class="text-bold-500">No</td>
-                    <td>hay</td>
-                    <td class="text-bold-500">Provisiones</td>
-                    <td>:D</td>
-                </tr>
+            <tr class="tr_s">
+                <td class="text-bold-500">No</td>
+                <td>hay</td>
+                <td class="text-bold-500">Provisiones</td>
+                <td>:D</td>
+            </tr>
             }
 
-            @if (Model.Fondos != null && Model.Fondos.Any())
+            @if (Model.Fondos != null && Model.Fondos.Any()
+        && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any()
+        && Model.ReferenciasDolar != null && Model.ReferenciasDolar.Any())
             {
                 @foreach (var fondo in Model.Fondos)
                 {
                     var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
-                    <tr class="tr_s">
-                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
-                        <th>$$$$$$$$$</th>
-                        <th>BCV</th>
-                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N"))</th>
-                    </tr>
+                    var referenciaActual = Model.ReferenciasDolar.Where(c => c.Fecha.Date == DateTime.Today.Date).ToList().First();
+
+                    @if (referenciaActual != null)
+                    {
+                        <tr class="tr_s">
+                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+                            <th>@referenciaActual.Valor.ToString("N") Bsf</th>
+                            <th>@(((Model.SubTotal * fondo.Porcentaje / 100) / referenciaActual.Valor).ToString("N")) $</th>
+                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) Bsf</th>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr class="tr_s">
+                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+                            <th>Actualizar Tasa $</th>
+                            <th>Actualizar Tasa $</th>
+                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) Bsf</th>
+                        </tr>
+                    }
+                    
                 }
             }
             else
             {
-                <tr class="tr_s">
-                    <td class="text-bold-500">No</td>
-                    <td>hay</td>
-                    <td class="text-bold-500">Fondos</td>
-                    <td>:D</td>
-                </tr>
+            <tr class="tr_s">
+                <td class="text-bold-500">No</td>
+                <td>hay</td>
+                <td class="text-bold-500">Fondos</td>
+                <td>:D</td>
+            </tr>
             }
 
         </tbody>

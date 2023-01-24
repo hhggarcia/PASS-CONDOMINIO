@@ -114,7 +114,8 @@ namespace Prueba.Controllers
             }
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var subcuentas = _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == idCondominio);
+            var subcuentas = _context.CodigoCuentasGlobals.Include(e => e.IdCondominioNavigation)
+                .Where(c => c.IdCondominio == idCondominio);
             //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (subcuentas != null && subcuentas.Any())
             {
@@ -124,9 +125,9 @@ namespace Prueba.Controllers
                               select c;
 
                 var modelListCuentas = (from c in _context.Cuenta
-                                       join sc in cuentas
-                                       on c.Id equals sc.IdCuenta
-                                       select c).Distinct();
+                                        join sc in cuentas
+                                        on c.Id equals sc.IdCuenta
+                                        select c).Distinct();
 
                 ViewData["IdCuenta"] = new SelectList(modelListCuentas, "Id", "Descripcion", subCuenta.IdCuenta);
             }
@@ -151,28 +152,28 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    _context.Update(subCuenta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SubCuentaExists(subCuenta.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(subCuenta);
+                await _context.SaveChangesAsync();
             }
-            ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id", subCuenta.IdCuenta);
-            return View(subCuenta);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SubCuentaExists(subCuenta.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id", subCuenta.IdCuenta);
+            //return View(subCuenta);
         }
 
         // GET: SubCuentas/Delete/5
@@ -208,7 +209,7 @@ namespace Prueba.Controllers
             {
                 _context.SubCuenta.Remove(subCuenta);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -403,7 +404,7 @@ namespace Prueba.Controllers
 
         private bool SubCuentaExists(int id)
         {
-          return (_context.SubCuenta?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.SubCuenta?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

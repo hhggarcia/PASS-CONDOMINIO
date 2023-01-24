@@ -85,7 +85,7 @@ namespace Prueba.Controllers
         {
             //if (ModelState.IsValid)
             //{
-                
+
             //}
             //ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
             //ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
@@ -154,28 +154,28 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    var result = await _repoEstacionamiento.EditarPuestoEst(puestoE);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repoEstacionamiento.PuestoEExists(puestoE.IdPuestoE))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var result = await _repoEstacionamiento.EditarPuestoEst(puestoE);
             }
-            ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
-            return View(puestoE);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_repoEstacionamiento.PuestoEExists(puestoE.IdPuestoE))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["IdEstacionamiento"] = new SelectList(_context.Estacionamientos, "IdEstacionamiento", "IdEstacionamiento", puestoE.IdEstacionamiento);
+            //ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", puestoE.IdPropiedad);
+            //return View(puestoE);
         }
 
         // GET: PuestoEs/Delete/5

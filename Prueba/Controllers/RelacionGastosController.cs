@@ -46,7 +46,8 @@ namespace Prueba.Controllers
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var pruebaContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
+            var pruebaContext = _context.RelacionGastos.Include(p => p.IdDolarNavigation)
+                .Where(r => r.IdCondominio == idCondominio);
 
             TempData.Keep();
 
@@ -101,6 +102,7 @@ namespace Prueba.Controllers
 
             var relacionGasto = await _context.RelacionGastos
                 .Include(r => r.IdCondominioNavigation)
+                .Include(d => d.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdRgastos == id);
             if (relacionGasto == null)
             {
@@ -162,7 +164,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", relacionGasto.IdCondominio);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", relacionGasto.IdCondominio);
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", relacionGasto.IdDolar);
             return View(relacionGasto);
         }
 
@@ -177,35 +180,36 @@ namespace Prueba.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdRgastos,SubTotal,TotalMensual,Fecha,IdCondominio")] RelacionGasto relacionGasto)
+        public async Task<IActionResult> Edit(int id, [Bind("IdRgastos,SubTotal,TotalMensual,Fecha,IdCondominio,IdDolar")] RelacionGasto relacionGasto)
         {
             if (id != relacionGasto.IdRgastos)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    _context.Update(relacionGasto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repoRelacionGastos.RelacionGastoExists(relacionGasto.IdRgastos))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(relacionGasto);
+                await _context.SaveChangesAsync();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", relacionGasto.IdCondominio);
-            return View(relacionGasto);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_repoRelacionGastos.RelacionGastoExists(relacionGasto.IdRgastos))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", relacionGasto.IdCondominio);
+            //ViewData["IdDolar"] = new SelectList(_context.Condominios, "IdDolar", "Valor", relacionGasto.IdDolar);
+            //return View(relacionGasto);
         }
 
         /// <summary>
@@ -223,6 +227,7 @@ namespace Prueba.Controllers
 
             var relacionGasto = await _context.RelacionGastos
                 .Include(r => r.IdCondominioNavigation)
+                .Include(r => r.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdRgastos == id);
             if (relacionGasto == null)
             {
@@ -259,11 +264,11 @@ namespace Prueba.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        
+
         /// <summary>
         /// Formulario para crear un Fondo
         /// </summary>
@@ -309,7 +314,7 @@ namespace Prueba.Controllers
             }
 
         }
-        
+
         /// <summary>
         /// Crea en BBDD el fondo con el porcentaje ingresado
         /// </summary>
@@ -350,7 +355,7 @@ namespace Prueba.Controllers
             }
 
         }
-        
+
         /// <summary>
         /// Formulario para la creación de una provisión
         /// Muestra los gastos a los cuales se les puede crear una provisión
@@ -428,7 +433,7 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
-        
+
         /// <summary>
         /// Crea la provisión y el asiento en el Libro Diario
         /// Guarda en BBDD
@@ -537,13 +542,26 @@ namespace Prueba.Controllers
                     var propietarios = from c in _context.AspNetUsers
                                        select c;
 
+                    // REFERENCIA DOLAR
+                    var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
+
+                    if (!referencia.Any())
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
+                        };
+
+                        return View("Error", modeloError);
+                    }
                     // REGISTRAR EN BD LA RELACION DE GASTOS
                     var relacionGasto = new RelacionGasto
                     {
                         SubTotal = modelo.SubTotal,
                         TotalMensual = modelo.Total,
                         Fecha = DateTime.Today,
-                        IdCondominio = idCondominio
+                        IdCondominio = idCondominio,
+                        IdDolar = referencia.First().IdReferencia
                     };
 
                     using (var db_context = new PruebaContext())
@@ -590,7 +608,7 @@ namespace Prueba.Controllers
                             {
                                 if (puestos != null && puestos.Any())
                                 {
-                                    
+
                                     propiedad.Deuda += propiedad.Saldo;
                                     propiedad.Saldo = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 }
@@ -598,7 +616,7 @@ namespace Prueba.Controllers
                                 {
                                     propiedad.Deuda += propiedad.Saldo;
                                     propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                                }                                
+                                }
                             }
                             // INFO DEL RECIBO
 
@@ -610,6 +628,7 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 recibo.Fecha = DateTime.Today;
+                                recibo.IdDolar = referencia.First().IdReferencia;
                             }
                             else
                             {
@@ -617,6 +636,7 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                 recibo.Fecha = DateTime.Today;
+                                recibo.IdDolar = referencia.First().IdReferencia;
                             }
 
                             recibosCobroCond.Add(recibo);

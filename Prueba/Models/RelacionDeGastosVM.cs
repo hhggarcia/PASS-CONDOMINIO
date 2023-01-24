@@ -20,5 +20,7 @@
         public DateTime Fecha { get; set; }
         // INFO DE CONDOMINIO
         public Condominio? Condominio { get; set; }
+        public IList<ReferenciaDolar>? ReferenciasDolar { get; set; }
+
     }
 }

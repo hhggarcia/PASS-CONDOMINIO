@@ -260,13 +260,19 @@ namespace Prueba.Controllers
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
                         var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
+                        var referenciaDolar = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
 
+                        if (!referenciaDolar.Any())
+                        {
+                            referenciaDolar = await _context.ReferenciaDolars.ToListAsync();
+                        }
                         var comprobante = new ComprobanteVM()
                         {
                             Propiedad = propiedad,
                             Inmueble = inmueble,
                             Condominio = condominio,
                             FechaComprobante = DateTime.Today
+
                         };
 
                         if (modelo.Pagoforma == FormaPago.Transferencia)
@@ -277,7 +283,8 @@ namespace Prueba.Controllers
                                 Fecha = modelo.Fecha,
                                 IdSubCuenta = modelo.IdCodigoCuentaBanco,
                                 Concepto = modelo.Concepto,
-                                Confirmado = false
+                                Confirmado = false,
+                                IdDolar = referenciaDolar.First().IdReferencia
                             };
 
                             pago.FormaPago = true;
@@ -344,7 +351,9 @@ namespace Prueba.Controllers
                                 IdPropiedad = modelo.IdPropiedad,
                                 Fecha = modelo.Fecha,
                                 IdSubCuenta = modelo.IdCodigoCuentaCaja,
-                                Concepto = modelo.Concepto
+                                Concepto = modelo.Concepto,
+                                IdDolar = referenciaDolar.First().IdReferencia
+
                             };
 
                             pago.FormaPago = false;
@@ -454,6 +463,7 @@ namespace Prueba.Controllers
 
             var relacionGasto = await _context.RelacionGastos
                 .Include(r => r.IdCondominioNavigation)
+                .Include(r => r.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdRgastos == id);
             if (relacionGasto == null)
             {

@@ -45,6 +45,9 @@
                                                         <th>
                                                             @Html.DisplayNameFor(model => model.Fecha)
                                                         </th>
+                                                        <th>
+                                                            @Html.DisplayNameFor(model => model.IdDolar)
+                                                        </th>
                                                         @*<th>
                                                             @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                                         </th>*@
@@ -64,6 +67,9 @@
                                                             <td>
                                                                 @*@Html.DisplayFor(modelItem => item.Fecha)*@
                                                                 @(item.Fecha.ToString("dd/MM/yyyy"))
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.IdDolar)
                                                             </td>
                                                             @*<td>
                                                                 @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)

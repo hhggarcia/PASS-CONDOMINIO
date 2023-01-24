@@ -8,9 +8,9 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
-        <a class="btn btn-light mb-3" asp-controller="PagosEmitidos" 
-                                        asp-action="RegistrarPagos">
-                                        Registrar Pago
+        <a class="btn btn-light mb-3" asp-controller="PagosEmitidos"
+           asp-action="RegistrarPagos">
+            Registrar Pago
         </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
@@ -44,28 +44,31 @@
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
-                                    <th>Monto</th>
+                                    <th>Monto Bsf</th>
+                                    <th>Monto $</th>
+                                    <th>Tasa BCV</th>
                                     <th>Forma de pago</th>
                                     <th>Referencia</th>
                                     <th>Banco</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-@*                            <tfoot>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Monto</th>
-                                    <th>Forma de pago</th>
-                                    <th>Referencia</th>
-                                    <th>Banco</th>
-                                    <th>Acciones</th>
-                                </tr>
+                            @*                            <tfoot>
+                            <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Forma de pago</th>
+                            <th>Referencia</th>
+                            <th>Banco</th>
+                            <th>Acciones</th>
+                            </tr>
                             </tfoot>*@
                             <tbody>
-                                @if (@Model.PagosEmitidos.Count() > 0)
+                                @if (@Model.PagosEmitidos.Count() > 0 && Model.ReferenciasDolar.Any())
                                 {
                                     foreach (var item in @Model.PagosEmitidos)
                                     {
+                                        var referenciaDolar = Model.ReferenciasDolar.Where(c => c.IdReferencia == @item.IdDolar).First();
                                         if (item.FormaPago)
                                         {
                                             foreach (var referencia in @Model.Referencias)
@@ -74,7 +77,9 @@
                                                 {
                                                     <tr class="tr_s">
                                                         <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                        <td>@(item.Monto.ToString("N"))</td>
+                                                        <td>@(item.Monto.ToString("N")) Bsf</td>
+                                                        <td>@((item.Monto / referenciaDolar.Valor).ToString("N")) $</td>
+                                                        <td>@(referenciaDolar.Valor) Bsf</td>
                                                         <td>@FormaPago.Transferencia</td>
                                                         <td>@referencia.NumReferencia</td>
                                                         <td>@referencia.Banco</td>
@@ -93,7 +98,9 @@
                                         {
                                             <tr class="tr_s">
                                                 <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                <td>@(item.Monto.ToString("N"))</td>
+                                                <td>@(item.Monto.ToString("N")) Bsf</td>
+                                                <td>@((item.Monto / referenciaDolar.Valor).ToString("N")) $</td>
+                                                <td>@(referenciaDolar.Valor) Bsf</td>
                                                 <td>@FormaPago.Efectivo</td>
                                                 <td>Sin referencia</td>
                                                 <td>Sin Banco</td>
@@ -113,6 +120,8 @@
                                         <td>No</td>
                                         <td>Existen</td>
                                         <td>Datos</td>
+                                        <td></td>
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>

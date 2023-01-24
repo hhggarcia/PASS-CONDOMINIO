@@ -196,8 +196,10 @@ namespace Prueba.Controllers
                 IndexPagoRecibdioVM modelo = new IndexPagoRecibdioVM()
                 {
                     UsuariosPropiedad = propiedadesPorUsuario,
-                    PropiedadPagos = pagosPorPropiedad
+                    PropiedadPagos = pagosPorPropiedad,
+                    ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync()
                 };
+
                 return View(modelo);
             }
             catch (Exception ex)

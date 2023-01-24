@@ -119,7 +119,7 @@ namespace Prueba.Controllers
             }
             //if (ModelState.IsValid)
             //{
-                
+
             //}
             //ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
             //return View(estacionamiento);
@@ -164,27 +164,27 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    var result = await _repoEstacionamiento.Editar(estacionamiento);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repoEstacionamiento.EstacionamientoExists(estacionamiento.IdEstacionamiento))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var result = await _repoEstacionamiento.Editar(estacionamiento);
             }
-            ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
-            return View(estacionamiento);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_repoEstacionamiento.EstacionamientoExists(estacionamiento.IdEstacionamiento))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
+            //ViewData["IdInmueble"] = new SelectList(_context.Inmuebles, "IdInmueble", "IdInmueble", estacionamiento.IdInmueble);
+            //return View(estacionamiento);
         }
 
         // GET: Estacionamientos/Delete/5
@@ -216,7 +216,7 @@ namespace Prueba.Controllers
                 return Problem("Entity set 'PruebaContext.Estacionamientos'  is null.");
             }
             var result = await _repoEstacionamiento.Eliminar(id);
-            
+
             return RedirectToAction(nameof(Index));
         }
 
