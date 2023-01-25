@@ -438,7 +438,8 @@ namespace Prueba.Controllers
                                     Concepto = "Condominio Appt: " + propiedad.Codigo,
                                     Monto = pago.Monto,
                                     TipoOperacion = true,
-                                    NumAsiento = numAsiento + 1
+                                    NumAsiento = numAsiento + 1,
+                                    IdDolar = reciboActual.First().IdDolar
                                 };
 
                                 LdiarioGlobal asientoIngreso = new LdiarioGlobal
@@ -448,7 +449,8 @@ namespace Prueba.Controllers
                                     Concepto = "Condominio Appt: " + propiedad.Codigo,
                                     Monto = pago.Monto,
                                     TipoOperacion = false,
-                                    NumAsiento = numAsiento + 1
+                                    NumAsiento = numAsiento + 1,
+                                    IdDolar = reciboActual.First().IdDolar
                                 };
 
                                 dbContext.Add(asientoIngreso);
