@@ -456,6 +456,18 @@ namespace Prueba.Controllers
                         Monto = modelo.Monto
                     };
 
+                    // REFERENCIA DOLAR
+                    var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
+
+                    if (!referencia.Any())
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
+                        };
+
+                        return View("Error", modeloError);
+                    }
                     // CREAR ASIENTO SOBRE PREVISION
 
                     var diario = from l in _context.LdiarioGlobals
@@ -475,7 +487,8 @@ namespace Prueba.Controllers
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = false,
-                        NumAsiento = numAsiento
+                        NumAsiento = numAsiento,
+                        IdDolar = referencia.First().IdReferencia
                     };
                     LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
                     {
@@ -484,7 +497,9 @@ namespace Prueba.Controllers
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = true,
-                        NumAsiento = numAsiento
+                        NumAsiento = numAsiento,
+                        IdDolar = referencia.First().IdReferencia
+
                     };
                     using (var db_context = new PruebaContext())
                     {

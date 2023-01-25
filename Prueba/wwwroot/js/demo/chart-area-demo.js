@@ -42,6 +42,7 @@ var ingresoSeptiembre = $("#ingreso9").val();
 var ingresoOctubre = $("#ingreso10").val();
 var ingresoNoviembre = $("#ingreso11").val();
 var ingresoDiciembre = $("#ingreso12").val();
+
 var myLineChart = new Chart(ctx, {
   type: 'line',
   data: {
@@ -129,9 +130,10 @@ var myLineChart = new Chart(ctx, {
     }
   }
 });
+
 // Area Chart Egresos
 var ctx = document.getElementById("myAreaChartEgresos");
-//ingresos
+//egresos
 var eEnero = $("#egreso1").val();
 var eFebrero = $("#egreso2").val();
 var eMarzo = $("#egreso3").val();
@@ -161,7 +163,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-        data: [0, eFebrero, eMarzo, eAbril, eMayo, eJunio, eJulio, eAgosto, eSeptiembre, eOctubre, eNoviembre, eDiciembre],
+      data: [eEnero, eFebrero, eMarzo, eAbril, eMayo, eJunio, eJulio, eAgosto, eSeptiembre, eOctubre, eNoviembre, eDiciembre],
     }],
   },
   options: {
