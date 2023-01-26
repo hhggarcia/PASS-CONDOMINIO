@@ -30,7 +30,7 @@ namespace Prueba.Controllers
         public async Task<IActionResult> Index()
         {
             var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation)
-                .Include(l => l.IdDolarNavigation);
+                .Include(l => l.IdDolarNavigation).Include(l => l.IdDolarNavigation);
             return View(await pruebaContext.ToListAsync());
         }
 

@@ -30,7 +30,7 @@ namespace Prueba.Controllers
         // GET: PagosEmitidos
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation);
+            var pruebaContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation).Include(p => p.IdDolarNavigation);
             return View(await pruebaContext.ToListAsync());
         }
 
@@ -55,6 +55,7 @@ namespace Prueba.Controllers
 
             var pagoEmitido = await _context.PagoEmitidos
                 .Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdPagoEmitido == id);
             if (pagoEmitido == null)
             {
@@ -68,6 +69,8 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor");
+
             return View();
         }
 
@@ -76,7 +79,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago")] PagoEmitido pagoEmitido)
+        public async Task<IActionResult> Create([Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago,IdDolar")] PagoEmitido pagoEmitido)
         {
             if (ModelState.IsValid)
             {
@@ -85,6 +88,8 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", pagoEmitido.IdDolar);
+
             return View(pagoEmitido);
         }
 
@@ -102,6 +107,8 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", pagoEmitido.IdDolar);
+
             return View(pagoEmitido);
         }
 
@@ -110,7 +117,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago")] PagoEmitido pagoEmitido)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago,IdDolar")] PagoEmitido pagoEmitido)
         {
             if (id != pagoEmitido.IdPagoEmitido)
             {
@@ -135,7 +142,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(IndexPagosEmitidos));
             //}
             //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
             //return View(pagoEmitido);

@@ -170,7 +170,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(CuentasContables));
             //}
             //ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id", subCuenta.IdCuenta);
             //return View(subCuenta);
@@ -211,7 +211,7 @@ namespace Prueba.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(CuentasContables));
         }
 
         /// <summary>
