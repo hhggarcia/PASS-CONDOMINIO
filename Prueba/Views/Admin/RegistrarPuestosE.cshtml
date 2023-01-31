@@ -1,6 +1,7 @@
 ﻿@model NuevoCondominio
 @{
     ViewData["Title"] = "Registrar Puesto";
+    Layout = "~/Views/Shared/_LayoutSuperAdmin.cshtml";
     var numP = Convert.ToInt32(TempData.Peek("numPuestos"));
     List<PuestoE> listapuestos = new List<PuestoE>(numP);
     for (int i = 0; i < numP; i++)
