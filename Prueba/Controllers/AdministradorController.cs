@@ -137,7 +137,7 @@ namespace Prueba.Controllers
             {
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var modelo = await LoadDataDeudores(idCondominio);
+                var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
 
                 TempData.Keep();
 
@@ -591,70 +591,6 @@ namespace Prueba.Controllers
             
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="idCondominio"></param>
-        /// <returns></returns>
-        private async Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio)
-        {
-            // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
-            var inmueblesCondominio = from c in _context.Inmuebles
-                                      where c.IdCondominio == idCondominio
-                                      select c;
-            var propiedades = from c in _context.Propiedads
-                              where c.Solvencia == false
-                              select c;
-            var propietarios = from c in _context.AspNetUsers
-                               select c;
-            var relacionesGastos = from c in _context.RelacionGastos
-                                   where c.IdCondominio == idCondominio
-                                   select c;
-            var recibosCobro = from c in _context.ReciboCobros
-                               select c;
-
-            if (inmueblesCondominio != null && inmueblesCondominio.Any()
-                && propiedades != null && propiedades.Any()
-                && propietarios != null && propietarios.Any()
-                && relacionesGastos != null && relacionesGastos.Any())
-            {
-
-                IList<Propiedad> listaPropiedadesCondominio = new List<Propiedad>();
-                IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
-                // BUSCAR PROPIEADES DE LOS INMUEBLES
-
-                foreach (var item in inmueblesCondominio)
-                {
-                    var propiedadsCond = await propiedades.Where(c => c.IdInmueble == item.IdInmueble).ToListAsync();
-                    var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
-                    listaPropiedadesCondominio = aux2;
-                }
-
-                // BUSCAR SUS RECIBOS DE COBRO
-                // BUSCAR PROPIEDADES CON DEUDA
-                foreach (var propiedad in listaPropiedadesCondominio)
-                {
-                    var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad
-                                                            && c.EnProceso != true
-                                                            && c.Pagado != true)
-                                                    .ToListAsync();
-
-                    var aux = recibosCobroCond.Concat(recibo).ToList();
-                    recibosCobroCond = aux;
-                }
-
-                var modelo = new RecibosCreadosVM
-                {
-                    Propiedades = listaPropiedadesCondominio,
-                    Propietarios = await propietarios.ToListAsync(),
-                    Recibos = recibosCobroCond,
-                    Inmuebles = await inmueblesCondominio.ToListAsync()
-                };
-
-                return modelo;
-            }
-
-            return new RecibosCreadosVM();
-        }
+        
     }
 }

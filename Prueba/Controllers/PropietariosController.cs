@@ -474,6 +474,48 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Deudores()
+        {
+            try
+            {
+                string idPropietario = TempData.Peek("idUserLog").ToString();
 
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+
+                if (propiedades != null && propiedades.Any())
+                {
+                    var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
+                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == inmuebles.First().IdCondominio).ToListAsync();
+                    //var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
+                    int idCondominio = condominios.First().IdCondominio;
+
+                    var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
+
+                    TempData.Keep();
+
+                    return View(modelo);
+                }
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Este Usuario no tiene Propiedades en Condominios"
+                };
+
+                return View("Error", modeloError);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
     }
 }

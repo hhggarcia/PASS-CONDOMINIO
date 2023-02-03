@@ -25,78 +25,78 @@
 
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
-                    <div class="form">
-                            <div class="col-md-9 col-9">
-                                <div class="form-group has-icon-left">
-                                    <div class="position-relative">
+                    <div class="form row text-center">
 
-                                        <h3>Condominio</h3>
-                                        @if (Model.Condominio != null
-                                        && Model.Inmueble != null
-                                        && Model.Propiedad != null)
-                                        {
-                                            <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
-                                            <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
-                                            <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
-                                        }
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
 
-                                    </div>
-                                </div>
+                                <h3>Condominio</h3>
+                                @if (Model.Condominio != null
+                                && Model.Inmueble != null
+                                && Model.Propiedad != null)
+                                {
+                                    <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
+                                    <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
+                                    <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
+                                }
+
                             </div>
+                        </div>
 
 
-                            <div class="col-md-9 col-9">
-                                <div class="form-group has-icon-left">
-                                    <div class="position-relative">
-
-                                        @if (Model.PagoRecibido != null)
-                                        {
-
-                                            @if (Model.PagoRecibido.FormaPago
-                                           && Model.Referencias != null)
-                                            {
-                                                <h3>Transferencia</h3>
-                                                <p><strong>Fecha</strong>: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
-
-                                                <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
-                                                <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
-                                                <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
-                                                <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
-                                            }
-                                            else
-                                            {
-                                                <h3>Efectivo</h3>
-                                                <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
-                                                <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
-                                            }
-                                        }
 
 
-                                    </div>
-                                </div>
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+
+                                @if (Model.PagoRecibido != null)
+                                {
+
+                                    @if (Model.PagoRecibido.FormaPago
+                                   && Model.Referencias != null)
+                                    {
+                                        <h3>Transferencia</h3>
+                                        <p><strong>Fecha</strong>: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
+
+                                        <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
+                                        <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                        <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
+                                    }
+                                    else
+                                    {
+                                        <h3>Efectivo</h3>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                        <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
+                                    }
+                                }
+
+
                             </div>
-
-                </div>
-
-                        <div class="col-md-9 col-9">
-                            <h4 class="text-center">@Model.Mensaje</h4>
-
-                            <a asp-action="RegitrarPagos"
-                               class="btn btn-primary me-1 mb-1">
-                                Realizar otro pago
-                            </a>
-                            <a asp-action="DashboardUsuario"
-                               class="btn btn-primary me-1 mb-1">
-                                Finalizar
-                            </a>
                         </div>
 
                     </div>
 
                 </div>
+
+                <div class="text-center mb-4">
+                    <h4 class="text-center">@Model.Mensaje</h4>
+
+                    <a asp-action="RegitrarPagos"
+                       class="btn btn-primary me-1 mb-1">
+                        Realizar otro pago
+                    </a>
+                    <a asp-action="DashboardUsuario"
+                       class="btn btn-primary me-1 mb-1">
+                        Finalizar
+                    </a>
+                </div>
+
             </div>
+
         </div>
+    </div>
+</div>
     </div>
 </div>
 
