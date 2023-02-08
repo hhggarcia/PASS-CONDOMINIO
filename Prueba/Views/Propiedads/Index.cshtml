@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Prueba.Models.Propiedad>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutSuperAdmin.cshtml";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
+</p>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Propiedades
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Codigo)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Dimensiones)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Alicuota)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Solvencia)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Saldo)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Deuda)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdUsuarioNavigation)
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Codigo)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Dimensiones)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Alicuota)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Solvencia)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Saldo)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Deuda)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdInmuebleNavigation.Nombre)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdUsuarioNavigation.Email)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.IdPropiedad">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdPropiedad">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdPropiedad">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

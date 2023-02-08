@@ -1,0 +1,88 @@
+﻿@model NuevoCondominio
+
+@{
+    ViewData["Title"] = "Registro de Estacionamiento";
+    Layout = "~/Views/Shared/_LayoutSuperAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Registrar Estacionamiento</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Rellene todos los campos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal"
+                          asp-action="RegistrarEstacionamientoPost">
+                        <div class="form-body">
+                            <div class="row">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <!-- Nombre -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Nombre</label>
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Nombre"
+                                                   id="first-name-icon"
+                                                   asp-for="Estacionamiento.Nombre" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- Cantidad de Puestos -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Cantidad de Puestos</label>
+                                        <div class="position-relative">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   placeholder="Referencia"
+                                                   id="first-name-icon" 
+                                                   asp-for="Estacionamiento.NumPuestos"/>
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary me-1 mb-1">
+                                        Siguiente
+                                    </button>
+
+                                    <button class="btn btn-primary me-1 mb-1"
+                                            asp-controller="Admin"
+                                            asp-action="Condominio">
+                                        Omitir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Content Row -->
+</div>

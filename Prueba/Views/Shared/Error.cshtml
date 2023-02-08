@@ -1,0 +1,58 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Confirmar Pago</h1>
+    </div>*@
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Error
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                    
+                        <div>
+                            <div id="error">
+
+
+                                <div class="error-page container">
+                                    <div class="col-md-8 col-12 offset-md-2 text-center">
+                                        <img class="img-error" src="https://cdn1.iconfinder.com/data/icons/smart-seo-1/64/web_page_alert_page_error_error_warning-512.png" alt="Not Found">
+                                        <div class="text-center">
+
+                                            @if (Model.ShowRequestId)
+                                            {
+                                                    <h1 class="error-title">Request ID:</h1>
+                                                <p class="fs-5 text-gray-600">@Model.RequestId</p>
+                                                <a asp-controlller="Home" asp-action="Index" class="btn btn-outline-danger">Aceptar</a>
+
+                                            }
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

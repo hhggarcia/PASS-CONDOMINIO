@@ -1,0 +1,315 @@
+﻿@model InformacionDashboardVM
+
+@{
+    decimal ingresoActual = 0;
+    decimal egresoActual = 0;
+
+    if (Model.Ingresos != null && Model.Ingresos.Any()
+    && Model.Egresos != null && Model.Egresos.Any())
+    {
+        ingresoActual = Model.Ingresos.GetValueOrDefault(DateTime.Today.Month);
+        egresoActual = Model.Egresos.GetValueOrDefault(DateTime.Today.Month);
+    }
+
+}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Inicio</h1>
+        <a href="#"
+        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        Informe
+        </a>*@
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Ingresos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ingresoActual.ToString("N")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Cuentas por Cobrar
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.CuentasPorCobrar.ToString("N")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Egresos
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                        @egresoActual.ToString("N")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="far fa-clipboard fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                PAGOS PENDIENTES POR CONFIRMAR
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.RecibosPendientes
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+
+    <div class="row">
+
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4 bg-content-bg">
+
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Resumen de los Ingresos
+                    </h6>
+                    @*<div class="dropdown no-arrow">
+                        <a class="dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>*@
+                </div>
+
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4 bg-content-bg">
+
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Resumen de los Egresos
+                    </h6>
+                    @*<div class="dropdown no-arrow">
+                        <a class="dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>*@
+                </div>
+
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChartEgresos"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4 bg-content-bg">
+
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Estado de Propiedades
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle"
+                           href="#"
+                           role="button"
+                           id="dropdownMenuLink"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Dropdown Header:</div>
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Deudores
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Solventes
+                        </span>
+                        @*<span class="mr-2">
+                            <i class="fas fa-circle text-info"></i> Referral
+                        </span>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+
+<form>
+    <input value="@Model.Deudores" id="Deudores" type="hidden"/>
+    <input value="@Model.NoDeudores" id="NoDeudores" type="hidden"/>
+    @if (Model.Ingresos != null && Model.Ingresos.Any())
+    {
+        @foreach (var mesIngreso in Model.Ingresos)
+        {
+            var ingreso = (int)mesIngreso.Value;
+            <input value="@ingreso" id="@("ingreso"+mesIngreso.Key.ToString())" type="hidden"  />
+
+        }
+    }
+    @if (Model.Egresos != null && Model.Egresos.Any())
+    {
+        @foreach (var mesEgreso in Model.Egresos)
+        {
+            var egreso = (int)mesEgreso.Value;
+            <input value="@egreso" id="@("egreso"+mesEgreso.Key.ToString())" type="hidden" />
+
+        }
+    }
+
+</form>
+
+@*@section scripts{
+
+    <script>
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#000';
+
+        // Pie Chart Example
+        var ctx = document.getElementById("myPieChart");
+        var cantDeudores = $("#Deudores");
+        var cantDeudores = $("#NoDeudores");
+        var myPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ["Direct", "Referral", "Social"],
+                datasets: [{
+                    data: [cantDeudores, cantDeudores],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#000",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 80,
+            },
+        });
+    </script>
+
+}*@

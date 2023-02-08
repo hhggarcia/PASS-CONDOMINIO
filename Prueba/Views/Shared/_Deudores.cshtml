@@ -1,0 +1,187 @@
+﻿@model RecibosCreadosVM
+
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Deudores</h1>
+    </div>*@
+
+
+    <div class="row">
+
+        @if (Model.Inmuebles != null && Model.Inmuebles.Any()
+        && Model.Propiedades != null && Model.Propiedades.Any()
+        && Model.Propietarios != null && Model.Propietarios.Any()
+        && Model.Recibos != null && Model.Recibos.Any())
+        {
+
+            @foreach (var propiedad in Model.Propiedades)
+            {
+                var propietario = Model.Propietarios.Where(c => c.Id == propiedad.IdUsuario).ToList();
+                var inmueble = Model.Inmuebles.Where(c => c.IdInmueble == propiedad.IdInmueble).ToList();
+
+
+                <div class="col-xl-3 col-lg-3">
+                    <div class="card shadow mb-4 bg-content-bg">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                Propiedades
+                            </h6>
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <div class="card card-profile pt-4">
+                                <div class="row justify-content-center pt-5">
+                                    <div class="col-lg-3 order-lg-2">
+                                        <div class="card-profile-image">
+                                            <a href="#">
+                                                <img src="https://img.freepik.com/free-vector/building-concept-illustration_114360-4469.jpg?w=2000"
+                                             class="rounded-circle" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+                                    <div class="d-flex justify-content-sm-between">
+                                        <br /><br class="d-xl-none d-lg-none d-md-none" />
+                                    </div>
+                                </div>
+                                <div class="card-body pt-0">
+                                    <div class="text-center">
+                                        <h5 class="h3">
+                                            @propietario.FirstOrDefault().FirstName @propietario.FirstOrDefault().LastName
+                                        </h5>
+                                        <h5 class="font-weight-300">
+                                            @propiedad.Codigo - @inmueble.FirstOrDefault().Nombre
+                                        </h5>
+                                        <h5 class="h5 mt-4">
+                                            Alicuota: @propiedad.Alicuota
+                                        </h5>
+                                        <button type="button"
+                                        class="btn btn-outline-success"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#wholePost_@propiedad.IdPropiedad"
+                                        onclick="showContent(@propiedad.IdPropiedad);">
+                                            Ver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                var recibos = Model.Recibos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+
+
+                <!--scrolling content Modal -->
+                <div class="modal fade"
+             id="wholePost_@propiedad.IdPropiedad"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="exampleModalScrollableTitle"
+             aria-hidden="true">
+
+
+                    <div class="modal-dialog modal-dialog-scrollable"
+                 role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"
+                            id="exampleModalScrollableTitle">
+                                    Información de Deuda
+                                </h5>
+                                <button type="button"
+                                class="close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                                    <i data-feather="x"></i>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p>
+                                    <strong>
+                                        Deuda Actual
+                                    </strong> = @(propiedad.Saldo.ToString("N"))
+                                <p>
+                                    <strong>Deuda Vencida</strong> = @(propiedad.Deuda.ToString("N"))
+                                </p>
+                                <p>
+                                    <strong>Total</strong> = @((propiedad.Saldo + propiedad.Deuda).ToString("N"))
+                                </p>
+                                <div class="table-responsive text-center">
+                                    <table class="table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Monto</th>
+                                                <th>Fecha</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                                @if (recibos != null && recibos.Any())
+                                                {
+                                                    @foreach (var recibo in recibos)
+                                                    {
+                                                    <tr>
+                                                        <td class="text-bold-500">@(recibo.Monto.ToString("N"))</td>
+                                                        <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
+                                                    </tr>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                <tr>
+                                                    <td class="text-bold-500">Sin</td>
+                                                    <td>Recibos</td>
+                                                </tr>
+                                                }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button"
+                                class="btn btn-light-secondary"
+                                data-bs-dismiss="modal">
+                                    <i class="bx bx-x d-block d-sm-none"></i>
+                                    <span class="d-none d-sm-block">Close</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            }
+
+
+
+        }
+        else
+        {
+            <h2>No hay Deudores :D</h2>
+        }
+
+
+    </div>
+
+    <!-- Content Row -->
+</div>
+<!-- /.container-fluid -->
+@section Scripts{
+    <script>
+        function showContent(id) {
+            console.log(id);
+            $("#wholePost_" + id).show();
+        };
+    </script>
+}

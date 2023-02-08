@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Prueba.Models.Inmueble>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutSuperAdmin.cshtml";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
+</p>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Inmuebles
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdZona)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Nombre)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.TotalPropiedad)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.IdInmuebleNavigation)
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdZona)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Nombre)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TotalPropiedad)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.IdInmuebleNavigation.Zona1)
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Edit" asp-route-id="@item.IdInmueble">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdInmueble">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdInmueble">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

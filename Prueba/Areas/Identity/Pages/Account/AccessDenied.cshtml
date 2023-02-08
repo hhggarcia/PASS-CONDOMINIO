@@ -1,0 +1,26 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Acceso Denegado";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+
+}
+
+<div class="container-fluid">
+    <div id="error">
+        <div class="error-page container">
+            <div class="col-md-8 col-12 offset-md-2">
+                <div class="text-center">
+                    <img class="img-error" src="~/images/access.png" alt="Not Found">
+                    <h1 class="error-title">Acceso Denegado</h1>
+                    <p class="fs-5 text-gray-600">
+                        No tiene permiso para entrar estas funcionalidades.
+                    </p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-lg btn-outline-primary mt-3">Inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

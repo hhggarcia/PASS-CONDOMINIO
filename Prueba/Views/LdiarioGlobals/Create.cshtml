@@ -1,0 +1,77 @@
+﻿@model Prueba.Models.LdiarioGlobal
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div>
+    <a asp-action="LibroDiario" class="btn btn-light">Volver</a>
+</div>
+<!-- Content Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Default Card Example -->
+        <div class="card shadow mb-4 bg-content-bg">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Libro Diario Global
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="form form-horizontal">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <form asp-action="Create">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label asp-for="IdCodCuenta" class="control-label"></label>
+                                        <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="IdDolar" class="control-label"></label>
+                                        <select asp-for="IdDolar" class="form-control" asp-items="ViewBag.IdDolar"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Fecha" class="control-label"></label>
+                                        <input asp-for="Fecha" class="form-control" />
+                                        <span asp-validation-for="Fecha" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Concepto" class="control-label"></label>
+                                        <input asp-for="Concepto" class="form-control" />
+                                        <span asp-validation-for="Concepto" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Monto" class="control-label"></label>
+                                        <input asp-for="Monto" class="form-control" />
+                                        <span asp-validation-for="Monto" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" asp-for="TipoOperacion" /> @Html.DisplayNameFor(model => model.TipoOperacion)
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="NumAsiento" class="control-label"></label>
+                                        <input asp-for="NumAsiento" class="form-control" />
+                                        <span asp-validation-for="NumAsiento" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Create" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

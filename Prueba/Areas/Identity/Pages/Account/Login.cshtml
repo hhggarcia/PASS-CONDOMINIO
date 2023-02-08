@@ -1,0 +1,231 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="~/images/isotipo.png" type="image/x-icon" />
+
+
+    <link rel="stylesheet" href="~/css/bootstrap-icons/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" asp-append-version="true" />
+
+</head>
+<body>
+    <div class="preloader">
+        <div class="preloader-body">
+            <div class="loader">
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="door"></div>
+            </div>
+            <p>Cargando..</p>
+        </div>
+    </div>
+    <div class="page">
+        <div id="auth">
+            
+            <div class="row h-100">
+                <div class="col-lg-5 col-12">
+                    <div id="auth-left">
+
+                        
+                        <div class="auth-logo">
+                            <a asp-controller="Index" asp-action="Index">
+                                <img src="~/images/logo-1.png" alt="Logo" />
+                            </a>
+                        </div>
+                        @*<h1 class="auth-title">Entrar.</h1>*@
+
+ 
+                         
+
+                       
+                        <form id="account" method="post">
+
+                            @*<div class="input-group">
+                                <input type="password"
+                                       id="password"
+                                       name="current-password"
+                                       autocomplete="current-password"
+                                       class="form-control rounded"
+                                       spellcheck="false"
+                                       autocorrect="off"
+                                       autocapitalize="off"
+                                       required />
+                                <button id="toggle-password"
+                                        type="button"
+                                        class="d-none"
+                                        aria-label="Show password as plain text. Warning: this will display your password on the screen."></button>
+                            </div>*@
+
+                            <div asp-validation-summary="ModelOnly"></div>
+
+                            
+                            @*Mail*@
+                            <div class="form-group position-relative has-icon-left mb-4">
+                                <input asp-for="Input.Email"
+                                       class="form-control form-control-xl"
+                                       autocomplete="Usuario"
+                                       placeholder="Usuario"
+                                       aria-required="true" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+
+                            @*Contraseña*@
+                            @*<div class="input-group">
+                                <input asp-for="Input.Password"
+                                       type="password"
+                                       autocomplete="Contraseña"
+                                       placeholder="Contraseña"
+                                       class="form-control rounded"
+                                       spellcheck="false"
+                                       autocorrect="off"
+                                       autocapitalize="off"
+                                       required />
+
+                                <button id="toggle-password"
+                                        type="button"
+                                        class="d-none"
+                                        aria-label="Show password as plain text. Warning: this will display your password on the screen."></button>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+
+                            </div>*@
+
+                            <div class="form-group position-relative has-icon-left mb-4 input-group">
+
+                                <input asp-for="Input.Password"
+                                       type="password"
+                                       autocomplete="Contraseña"
+                                       placeholder="Contraseña"
+                                       class="form-control form-control-xl"
+                                       spellcheck="false"
+                                       autocorrect="off"
+                                       autocapitalize="off"
+                                       required />
+
+                                <button id="toggle-password"
+                                        type="button"
+                                        class="d-none"
+                                        aria-label="Show password as plain text. Warning: this will display your password on the screen."></button>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-shield-lock"></i>
+                                </div>
+                                
+                            </div>
+
+                            @*<div class="form-group position-relative has-icon-left mb-4">
+                                <input asp-for="Input.Password"
+                                       class="form-control form-control-xl"
+                                       autocomplete="Contraseña"
+                                       placeholder="Contraseña"
+                                       aria-required="true"
+                                       spellcheck="false" 
+                                       autocorrect="off" 
+                                       autocapitalize="off" 
+                                       required />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-shield-lock"></i>
+                                </div>
+                            </div>*@
+
+                            
+
+
+@*                            <div class="form-check form-check-lg d-flex align-items-end">
+                                <input class="form-check-input me-2"
+                                       type="checkbox"
+                                       value=""
+                                       asp-for="Input.RememberMe" />
+                                <label class="form-check-label text-gray-600"
+                                       for="flexCheckDefault">
+                                    Mantener mi sesión abierta
+                                </label>
+                            </div>*@
+
+                            
+
+
+
+                            <button id="login-submit" type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Iniciar Sesión</button>
+
+
+                            @*<div class="text-center mt-5 text-lg fs-4">
+                                <p>
+                                    <a id="forgot-password" asp-page="./ForgotPassword">¿Olvidaste tu contraseña?</a>
+                                </p>
+                                <p class="text-gray-600">
+                                    ¿No tienes una cuenta?
+                                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Regístrate</a>
+                                </p>
+                                <p>
+                                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Reenviar email de confirmación</a>
+                                </p>
+                            </div>*@
+                        </form>
+                    </div>
+
+                    
+
+
+                </div>
+                <div class="col-lg-7 d-none d-lg-block">
+                    <div id="auth-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="snackbars" id="form-output-global"></div>
+
+    <script src="~/js/core.min.js"></script>
+    <script src="~/js/script.js"></script>
+</body>
+
+
+
+</html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    }
