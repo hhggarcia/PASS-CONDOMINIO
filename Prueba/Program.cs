@@ -108,6 +108,5 @@ void AddTransient()
     builder.Services.AddTransient<ILibroDiarioRepository, LibroDiarioRepository>();
     builder.Services.AddTransient<ICuentasContablesRepository, CuentasContablesRepository>();
     builder.Services.AddTransient<IEstacionamientoRepository, EstacionamientoRepository>();
-    builder.Services.AddTransient<IReferenciaDolarRepository, ReferenciaDolarRepository>();
 }
 

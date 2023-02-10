@@ -1,29 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class Estacionamiento
 {
-    public partial class Estacionamiento
-    {
-        public Estacionamiento()
-        {
-            PuestoEs = new HashSet<PuestoE>();
-        }
+    public int IdEstacionamiento { get; set; }
 
-        [Display(Name = "Estacionamiento")]
-        public int IdEstacionamiento { get; set; }
-        
-        [Display(Name = "Inmueble")]
-        public int IdInmueble { get; set; }
-        public string Nombre { get; set; } = null!;
-        
-        [Display(Name = "Número de Puestos")]
-        public int NumPuestos { get; set; }
+    public int IdInmueble { get; set; }
 
-        [Display(Name = "# Inmueble")]
+    public string Nombre { get; set; } = null!;
 
-        public virtual Inmueble IdInmuebleNavigation { get; set; } = null!;
-        public virtual ICollection<PuestoE> PuestoEs { get; set; }
-    }
+    public int NumPuestos { get; set; }
+
+    public virtual Inmueble IdInmuebleNavigation { get; set; } = null!;
+
+    public virtual ICollection<PuestoE> PuestoEs { get; } = new List<PuestoE>();
 }

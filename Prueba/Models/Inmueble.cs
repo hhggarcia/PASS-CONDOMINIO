@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class Inmueble
 {
-    public partial class Inmueble
-    {
-        public Inmueble()
-        {
-            Estacionamientos = new HashSet<Estacionamiento>();
-            Propiedads = new HashSet<Propiedad>();
-        }
+    public int IdInmueble { get; set; }
 
-        public int IdInmueble { get; set; }
-        public int IdZona { get; set; }
-        public string Nombre { get; set; } = null!;
-        public int TotalPropiedad { get; set; }
-        public int IdCondominio { get; set; }
+    public int IdZona { get; set; }
 
-        public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-        public virtual Zona IdInmuebleNavigation { get; set; } = null!;
-        public virtual ICollection<Estacionamiento> Estacionamientos { get; set; }
-        public virtual ICollection<Propiedad> Propiedads { get; set; }
-    }
+    public string Nombre { get; set; } = null!;
+
+    public int TotalPropiedad { get; set; }
+
+    public int IdCondominio { get; set; }
+
+    public virtual ICollection<AreaComun> AreaComuns { get; } = new List<AreaComun>();
+
+    public virtual ICollection<Estacionamiento> Estacionamientos { get; } = new List<Estacionamiento>();
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual Zona IdInmuebleNavigation { get; set; } = null!;
+
+    public virtual ICollection<Propiedad> Propiedads { get; } = new List<Propiedad>();
 }

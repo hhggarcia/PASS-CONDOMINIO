@@ -213,7 +213,6 @@ namespace Prueba.Repositories
                 modelo.SubCuentasFondos = subcuentasFondosModel;
             }
 
-            modelo.ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync();
 
             return modelo;
         }
@@ -325,7 +324,6 @@ namespace Prueba.Repositories
                 modelo.SubTotal = subtotal;
                 modelo.Fecha = rg.Fecha;
                 modelo.Condominio = condominio;
-                modelo.ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync();
 
                 if (proviciones.Any() && fondos.Any())
                 {

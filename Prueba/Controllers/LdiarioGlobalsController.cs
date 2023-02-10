@@ -29,8 +29,7 @@ namespace Prueba.Controllers
         // GET: LdiarioGlobals
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation)
-                .Include(l => l.IdDolarNavigation).Include(l => l.IdDolarNavigation);
+            var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
             return View(await pruebaContext.ToListAsync());
         }
 
@@ -44,7 +43,6 @@ namespace Prueba.Controllers
 
             var ldiarioGlobal = await _context.LdiarioGlobals
                 .Include(l => l.IdCodCuentaNavigation)
-                .Include(l => l.IdDolar)
                 .FirstOrDefaultAsync(m => m.IdAsiento == id);
             if (ldiarioGlobal == null)
             {
@@ -58,7 +56,7 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
-            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor");
+            //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor");
             return View();
         }
 
@@ -75,7 +73,7 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(LibroDiario));
             }
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
-            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
+            //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
 
             return View(ldiarioGlobal);
         }
@@ -94,7 +92,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
-            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
+            //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
             return View(ldiarioGlobal);
         }
 
@@ -145,7 +143,6 @@ namespace Prueba.Controllers
 
             var ldiarioGlobal = await _context.LdiarioGlobals
                 .Include(l => l.IdCodCuentaNavigation)
-                .Include(l => l.IdDolarNavigation)
                 .FirstOrDefaultAsync(m => m.IdAsiento == id);
             if (ldiarioGlobal == null)
             {

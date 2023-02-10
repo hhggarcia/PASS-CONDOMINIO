@@ -21,11 +21,15 @@ public partial class PagoRecibido
 
     public bool Confirmado { get; set; }
 
-    public int IdDolar { get; set; }
+    public int IdMoneda { get; set; }
 
-    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
+    public virtual MonedaCond IdMonedaNavigation { get; set; } = null!;
 
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
+
+    public virtual PagoReserva? PagoReserva { get; set; }
+
+    public virtual ICollection<PagosRecibo> PagosRecibos { get; } = new List<PagosRecibo>();
 
     public virtual ICollection<ReferenciasPr> ReferenciasPrs { get; } = new List<ReferenciasPr>();
 }

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class AreaComun
 {
-    public partial class AreaComun
-    {
-        public int IdAcomun { get; set; }
-        public int IdInmueble { get; set; }
-        public string Nombre { get; set; } = null!;
-        public bool Disponible { get; set; }
-    }
+    public int IdArea { get; set; }
+
+    public int IdInmueble { get; set; }
+
+    public string Nombre { get; set; } = null!;
+
+    public virtual Inmueble IdInmuebleNavigation { get; set; } = null!;
+
+    public virtual ICollection<Reserva> Reservas { get; } = new List<Reserva>();
 }

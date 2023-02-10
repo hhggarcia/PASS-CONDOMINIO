@@ -45,8 +45,7 @@
                                     <th>Propiedad</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
-                                    <th>Monto $</th>
-                                    <th>Tasa BCV</th>
+                                    
                                     <th>Forma de Pago</th>
                                     <th></th>
                                 </tr>
@@ -56,9 +55,7 @@
                                 @if (Model.UsuariosPropiedad != null
                                 && Model.UsuariosPropiedad.Count() > 0
                                 && Model.PropiedadPagos != null
-                                && Model.PropiedadPagos.Count() > 0
-                                && Model.ReferenciasDolar != null
-                                && Model.ReferenciasDolar.Any())
+                                && Model.PropiedadPagos.Count() > 0)
                                 {
                                     @foreach (var diccUsuarioPropiedad in Model.UsuariosPropiedad)
                                     {
@@ -74,7 +71,6 @@
                                                     {
                                                         @foreach (var pago in propiedadPago.Value)
                                                         {
-                                                            var referencia = Model.ReferenciasDolar.Where(c => c.IdReferencia == pago.IdDolar).ToList().First();
                                                             <tr class="tr_s">
 
                                                                 <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
@@ -82,8 +78,7 @@
                                                                 <td>@propiedad.Codigo</td>
                                                                 <td>@pago.Concepto</td>
                                                                 <td>@(pago.Monto.ToString("N")) Bsf</td>
-                                                                <td>@((pago.Monto/referencia.Valor).ToString("N")) $</td>
-                                                                <td>@(referencia.Valor.ToString("N")) Bsf</td>
+                                                                
                                                                 @if (pago.FormaPago)
                                                                 {
                                                                     <td>Transferencia</td>
@@ -130,8 +125,7 @@
                                         <td>recibidos</td>
                                         <td>por</td>
                                         <td>confirmar</td>
-                                        <td></td>
-                                        <td></td>
+
                                     </tr>
                                 }
                             </tbody>

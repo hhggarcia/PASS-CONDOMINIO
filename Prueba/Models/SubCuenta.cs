@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class SubCuenta
 {
-    public partial class SubCuenta
-    {
-        public SubCuenta()
-        {
-            CodigoCuentasGlobals = new HashSet<CodigoCuentasGlobal>();
-        }
+    public int Id { get; set; }
 
-        [Display(Name ="# Sub Cuenta")]
-        public int Id { get; set; }
+    public short IdCuenta { get; set; }
 
-        [Display(Name = "Cuenta")]
-        public short IdCuenta { get; set; }
+    public string Descricion { get; set; } = null!;
 
-        [Display(Name = "Descripción")]
-        public string Descricion { get; set; } = null!;
+    public string Codigo { get; set; } = null!;
 
-        [Display(Name = "Código")]
-        public string Codigo { get; set; } = null!;
+    public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
 
-        [Display(Name = "# Cuenta")]
-        public virtual Cuenta IdCuentaNavigation { get; set; } = null!;
-        public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; }
-    }
+    public virtual Cuenta IdCuentaNavigation { get; set; } = null!;
 }

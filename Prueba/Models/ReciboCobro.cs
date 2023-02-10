@@ -19,11 +19,11 @@ public partial class ReciboCobro
 
     public bool EnProceso { get; set; }
 
-    public int IdDolar { get; set; }
-
-    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
+    public decimal Abonado { get; set; }
 
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;
+
+    public virtual ICollection<PagosRecibo> PagosRecibos { get; } = new List<PagosRecibo>();
 }

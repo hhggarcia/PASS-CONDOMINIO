@@ -19,15 +19,11 @@ public partial class LdiarioGlobal
 
     public int NumAsiento { get; set; }
 
-    public int IdDolar { get; set; }
-
     public virtual ICollection<Activo> Activos { get; } = new List<Activo>();
 
     public virtual ICollection<Gasto> Gastos { get; } = new List<Gasto>();
 
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
-
-    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
 
     public virtual ICollection<Ingreso> Ingresos { get; } = new List<Ingreso>();
 

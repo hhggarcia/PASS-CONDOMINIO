@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class Estado
 {
-    public partial class Estado
-    {
-        public Estado()
-        {
-            Municipios = new HashSet<Municipio>();
-        }
+    public int IdEstado { get; set; }
 
-        public int IdEstado { get; set; }
-        public int IdPais { get; set; }
-        public string Nombre { get; set; } = null!;
+    public int IdPais { get; set; }
 
-        public virtual Pais IdPaisNavigation { get; set; } = null!;
-        public virtual ICollection<Municipio> Municipios { get; set; }
-    }
+    public string Nombre { get; set; } = null!;
+
+    public virtual Pais IdPaisNavigation { get; set; } = null!;
+
+    public virtual ICollection<Municipio> Municipios { get; } = new List<Municipio>();
 }

@@ -15,11 +15,7 @@ public partial class RelacionGasto
 
     public int IdCondominio { get; set; }
 
-    public int IdDolar { get; set; }
-
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-
-    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
 
     public virtual ICollection<ReciboCobro> ReciboCobros { get; } = new List<ReciboCobro>();
 }

@@ -17,11 +17,11 @@ public partial class PagoEmitido
 
     public bool FormaPago { get; set; }
 
-    public int IdDolar { get; set; }
+    public int IdMoneda { get; set; }
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual ReferenciaDolar IdDolarNavigation { get; set; } = null!;
+    public virtual MonedaCond IdPagoEmitidoNavigation { get; set; } = null!;
 
     public virtual ICollection<ReferenciasPe> ReferenciasPes { get; } = new List<ReferenciasPe>();
 }

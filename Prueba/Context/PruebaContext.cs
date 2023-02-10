@@ -68,11 +68,19 @@ public partial class PruebaContext : DbContext
 
     public virtual DbSet<LdiarioGlobal> LdiarioGlobals { get; set; }
 
+    public virtual DbSet<MonedaCond> MonedaConds { get; set; }
+
+    public virtual DbSet<Moneda> Moneda { get; set; }
+
     public virtual DbSet<Municipio> Municipios { get; set; }
 
     public virtual DbSet<PagoEmitido> PagoEmitidos { get; set; }
 
     public virtual DbSet<PagoRecibido> PagoRecibidos { get; set; }
+
+    public virtual DbSet<PagoReserva> PagoReservas { get; set; }
+
+    public virtual DbSet<PagosRecibo> PagosRecibos { get; set; }
 
     public virtual DbSet<Pais> Pais { get; set; }
 
@@ -94,7 +102,7 @@ public partial class PruebaContext : DbContext
 
     public virtual DbSet<ReciboNomina> ReciboNominas { get; set; }
 
-    public virtual DbSet<ReferenciaDolar> ReferenciaDolars { get; set; }
+    public virtual DbSet<ReciboReserva> ReciboReservas { get; set; }
 
     public virtual DbSet<ReferenciasPe> ReferenciasPes { get; set; }
 
@@ -104,13 +112,15 @@ public partial class PruebaContext : DbContext
 
     public virtual DbSet<RelacionGasto> RelacionGastos { get; set; }
 
+    public virtual DbSet<Reserva> Reservas { get; set; }
+
     public virtual DbSet<SubCuenta> SubCuenta { get; set; }
 
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HYPERV-I\\PASSWORD;Database=Prueba;User Id=CondominioApp;Password=Pass123456;MultipleActiveResultSets=true;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;User Id=sa;Password=Pass123456;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -129,16 +139,20 @@ public partial class PruebaContext : DbContext
 
         modelBuilder.Entity<AreaComun>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Area_Comun");
+            entity.HasKey(e => e.IdArea);
 
-            entity.Property(e => e.Disponible).HasColumnName("disponible");
-            entity.Property(e => e.IdAcomun).HasColumnName("id_acomun");
+            entity.ToTable("Area_Comun");
+
+            entity.Property(e => e.IdArea).ValueGeneratedNever();
             entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(30)
                 .HasColumnName("nombre");
+
+            entity.HasOne(d => d.IdInmuebleNavigation).WithMany(p => p.AreaComuns)
+                .HasForeignKey(d => d.IdInmueble)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Area_Comun_Inmueble");
         });
 
         modelBuilder.Entity<AspNetRole>(entity =>
@@ -291,10 +305,10 @@ public partial class PruebaContext : DbContext
 
             entity.ToTable("Condominio");
 
-            entity.HasIndex(e => e.IdAdministrador, "IX_Condominio").IsUnique();
-
             entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
-            entity.Property(e => e.IdAdministrador).HasColumnName("id_administrador");
+            entity.Property(e => e.IdAdministrador)
+                .HasMaxLength(450)
+                .HasColumnName("id_administrador");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
@@ -305,8 +319,8 @@ public partial class PruebaContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("tipo");
 
-            entity.HasOne(d => d.IdAdministradorNavigation).WithOne(p => p.Condominio)
-                .HasForeignKey<Condominio>(d => d.IdAdministrador)
+            entity.HasOne(d => d.IdAdministradorNavigation).WithMany(p => p.Condominios)
+                .HasForeignKey(d => d.IdAdministrador)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Condominio_AspNetUsers");
         });
@@ -451,6 +465,8 @@ public partial class PruebaContext : DbContext
             entity.HasKey(e => e.IdFondo);
 
             entity.Property(e => e.IdFondo).HasColumnName("id_Fondo");
+            entity.Property(e => e.FechaFin).HasColumnType("date");
+            entity.Property(e => e.FechaInicio).HasColumnType("date");
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
             entity.Property(e => e.Porcentaje).HasColumnName("porcentaje");
 
@@ -550,11 +566,35 @@ public partial class PruebaContext : DbContext
                 .HasForeignKey(d => d.IdCodCuenta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LDiario_Global_CodigoCuentas_Global");
+        });
 
-            entity.HasOne(d => d.IdDolarNavigation).WithMany(p => p.LdiarioGlobals)
-                .HasForeignKey(d => d.IdDolar)
+        modelBuilder.Entity<MonedaCond>(entity =>
+        {
+            entity.HasKey(e => e.IdMonedaCond);
+
+            entity.ToTable("MonedaCond");
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.MonedaConds)
+                .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_LDiario_Global_Referencia_Dolar");
+                .HasConstraintName("FK_MonedaCond_Condominio");
+
+            entity.HasOne(d => d.IdMonedaNavigation).WithMany(p => p.MonedaConds)
+                .HasForeignKey(d => d.IdMoneda)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MonedaCond_Moneda");
+        });
+
+        modelBuilder.Entity<Moneda>(entity =>
+        {
+            entity.HasKey(e => e.IdMoneda);
+
+            entity.Property(e => e.Nombre).HasMaxLength(50);
+            entity.Property(e => e.Pais).HasMaxLength(150);
+            entity.Property(e => e.Simbolo).HasMaxLength(1);
+            entity.Property(e => e.ValorDolar)
+                .HasComment("Valor de la moneda respecto al dolar")
+                .HasColumnType("money");
         });
 
         modelBuilder.Entity<Municipio>(entity =>
@@ -580,7 +620,9 @@ public partial class PruebaContext : DbContext
 
             entity.ToTable("Pago_Emitido");
 
-            entity.Property(e => e.IdPagoEmitido).HasColumnName("id_pagoEmitido");
+            entity.Property(e => e.IdPagoEmitido)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id_pagoEmitido");
             entity.Property(e => e.Fecha)
                 .HasColumnType("date")
                 .HasColumnName("fecha");
@@ -596,10 +638,10 @@ public partial class PruebaContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Pago_Emitido_Condominio");
 
-            entity.HasOne(d => d.IdDolarNavigation).WithMany(p => p.PagoEmitidos)
-                .HasForeignKey(d => d.IdDolar)
+            entity.HasOne(d => d.IdPagoEmitidoNavigation).WithOne(p => p.PagoEmitido)
+                .HasForeignKey<PagoEmitido>(d => d.IdPagoEmitido)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Pago_Emitido_Referencia_Dolar");
+                .HasConstraintName("FK_Pago_Emitido_MonedaCond");
         });
 
         modelBuilder.Entity<PagoRecibido>(entity =>
@@ -624,15 +666,51 @@ public partial class PruebaContext : DbContext
                 .HasColumnType("money")
                 .HasColumnName("monto");
 
-            entity.HasOne(d => d.IdDolarNavigation).WithMany(p => p.PagoRecibidos)
-                .HasForeignKey(d => d.IdDolar)
+            entity.HasOne(d => d.IdMonedaNavigation).WithMany(p => p.PagoRecibidos)
+                .HasForeignKey(d => d.IdMoneda)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Pago_Recibido_Referencia_Dolar");
+                .HasConstraintName("FK_Pago_Recibido_MonedaCond");
 
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.PagoRecibidos)
                 .HasForeignKey(d => d.IdPropiedad)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Pago_Recibido_Propiedad");
+        });
+
+        modelBuilder.Entity<PagoReserva>(entity =>
+        {
+            entity.HasKey(e => e.IdPagoReserva);
+
+            entity.ToTable("PagoReserva");
+
+            entity.Property(e => e.IdPagoReserva).ValueGeneratedOnAdd();
+
+            entity.HasOne(d => d.IdPagoReservaNavigation).WithOne(p => p.PagoReserva)
+                .HasForeignKey<PagoReserva>(d => d.IdPagoReserva)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoReserva_Pago_Recibido");
+
+            entity.HasOne(d => d.IdReciboReservaNavigation).WithMany(p => p.PagoReservas)
+                .HasForeignKey(d => d.IdReciboReserva)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoReserva_Recibo_Reserva");
+        });
+
+        modelBuilder.Entity<PagosRecibo>(entity =>
+        {
+            entity.HasKey(e => e.IdPagoRecibo);
+
+            entity.ToTable("PagosRecibo");
+
+            entity.HasOne(d => d.IdPagoNavigation).WithMany(p => p.PagosRecibos)
+                .HasForeignKey(d => d.IdPago)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagosRecibo_Pago_Recibido");
+
+            entity.HasOne(d => d.IdReciboNavigation).WithMany(p => p.PagosRecibos)
+                .HasForeignKey(d => d.IdRecibo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagosRecibo_Recibo_Cobro");
         });
 
         modelBuilder.Entity<Pais>(entity =>
@@ -702,7 +780,7 @@ public partial class PruebaContext : DbContext
 
             entity.Property(e => e.IdPropiedad).HasColumnName("id_propiedad");
             entity.Property(e => e.Alicuota)
-                .HasColumnType("decimal(18, 2)")
+                .HasColumnType("decimal(18, 4)")
                 .HasColumnName("alicuota");
             entity.Property(e => e.Codigo)
                 .HasMaxLength(10)
@@ -757,6 +835,8 @@ public partial class PruebaContext : DbContext
             entity.HasKey(e => e.IdProvision);
 
             entity.Property(e => e.IdProvision).HasColumnName("id_provision");
+            entity.Property(e => e.FechaFin).HasColumnType("date");
+            entity.Property(e => e.FechaInicio).HasColumnType("date");
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
             entity.Property(e => e.IdCodGasto).HasColumnName("id_codGasto");
             entity.Property(e => e.Monto)
@@ -806,6 +886,7 @@ public partial class PruebaContext : DbContext
             entity.ToTable("Recibo_Cobro");
 
             entity.Property(e => e.IdReciboCobro).HasColumnName("id_reciboCobro");
+            entity.Property(e => e.Abonado).HasColumnType("money");
             entity.Property(e => e.EnProceso).HasColumnName("enProceso");
             entity.Property(e => e.Fecha)
                 .HasColumnType("datetime")
@@ -816,11 +897,6 @@ public partial class PruebaContext : DbContext
                 .HasColumnType("money")
                 .HasColumnName("monto");
             entity.Property(e => e.Pagado).HasColumnName("pagado");
-
-            entity.HasOne(d => d.IdDolarNavigation).WithMany(p => p.ReciboCobros)
-                .HasForeignKey(d => d.IdDolar)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Recibo_Cobro_Referencia_Dolar");
 
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.ReciboCobros)
                 .HasForeignKey(d => d.IdPropiedad)
@@ -847,14 +923,19 @@ public partial class PruebaContext : DbContext
             entity.Property(e => e.IdReciboNomina).HasColumnName("id_reciboNomina");
         });
 
-        modelBuilder.Entity<ReferenciaDolar>(entity =>
+        modelBuilder.Entity<ReciboReserva>(entity =>
         {
-            entity.HasKey(e => e.IdReferencia);
+            entity.HasKey(e => e.IdReciboReserva);
 
-            entity.ToTable("Referencia_Dolar");
+            entity.ToTable("Recibo_Reserva");
 
-            entity.Property(e => e.Fecha).HasColumnType("datetime");
-            entity.Property(e => e.Valor).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Abonado).HasColumnType("money");
+            entity.Property(e => e.Monto).HasColumnType("money");
+
+            entity.HasOne(d => d.IdReservaNavigation).WithMany(p => p.ReciboReservas)
+                .HasForeignKey(d => d.IdReserva)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Recibo_Reserva_Reserva");
         });
 
         modelBuilder.Entity<ReferenciasPe>(entity =>
@@ -939,11 +1020,26 @@ public partial class PruebaContext : DbContext
                 .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Relacion_Gastos_Condominio");
+        });
 
-            entity.HasOne(d => d.IdDolarNavigation).WithMany(p => p.RelacionGastos)
-                .HasForeignKey(d => d.IdDolar)
+        modelBuilder.Entity<Reserva>(entity =>
+        {
+            entity.HasKey(e => e.IdReserva);
+
+            entity.ToTable("Reserva");
+
+            entity.Property(e => e.IdReserva).ValueGeneratedNever();
+            entity.Property(e => e.TipoEvento).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdAreaNavigation).WithMany(p => p.Reservas)
+                .HasForeignKey(d => d.IdArea)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Relacion_Gastos_Referencia_Dolar");
+                .HasConstraintName("FK_Reserva_Area_Comun");
+
+            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.Reservas)
+                .HasForeignKey(d => d.IdPropiedad)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reserva_Propiedad");
         });
 
         modelBuilder.Entity<SubCuenta>(entity =>

@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Prueba.Models
+namespace Prueba.Models;
+
+public partial class CodigoCuentasGlobal
 {
-    public partial class CodigoCuentasGlobal
-    {
-        public CodigoCuentasGlobal()
-        {
-            Fondos = new HashSet<Fondo>();
-            LdiarioGlobals = new HashSet<LdiarioGlobal>();
-            ProvisioneIdCodCuentaNavigations = new HashSet<Provision>();
-            ProvisioneIdCodGastoNavigations = new HashSet<Provision>();
-        }
+    public int IdCodCuenta { get; set; }
 
-        public int IdCodCuenta { get; set; }
-        public int IdCondominio { get; set; }
-        public int IdCodigo { get; set; }
+    public int IdCondominio { get; set; }
 
-        public virtual SubCuenta IdCodigoNavigation { get; set; } = null!;
-        public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-        public virtual ICollection<Fondo> Fondos { get; set; }
-        public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; set; }
-        public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; set; }
-        public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; set; }
-    }
+    public int IdCodigo { get; set; }
+
+    public virtual ICollection<Fondo> Fondos { get; } = new List<Fondo>();
+
+    public virtual SubCuenta IdCodigoNavigation { get; set; } = null!;
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; } = new List<LdiarioGlobal>();
+
+    public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; } = new List<Provision>();
+
+    public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; } = new List<Provision>();
 }

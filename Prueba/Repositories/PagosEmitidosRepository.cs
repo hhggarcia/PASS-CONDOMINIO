@@ -46,12 +46,10 @@ namespace Prueba.Repositories
                               on p.IdPagoEmitido equals r.IdPagoEmitido
                               select r;
 
-            var referenciasDolar = from d in _context.ReferenciaDolars
-                                   select d;
+            
 
             modelo.PagosEmitidos = await listaPagos.ToListAsync();
             modelo.Referencias = await referencias.ToListAsync();
-            modelo.ReferenciasDolar = await referenciasDolar.ToListAsync();
 
             return modelo;
         }
@@ -169,7 +167,6 @@ namespace Prueba.Repositories
             modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-            modelo.ReferenciasDolar = _context.ReferenciaDolars.Select(c => new SelectListItem(c.Valor.ToString(), c.IdReferencia.ToString())).ToList();
             // ENVIAR MODELO
 
             return modelo;
@@ -190,8 +187,7 @@ namespace Prueba.Repositories
             {
                 IdCondominio = modelo.IdCondominio,
                 Fecha = modelo.Fecha,
-                Monto = modelo.Monto,
-                IdDolar = modelo.IdReferenciaDolar
+                Monto = modelo.Monto
             };
 
             var provisiones = from c in _context.Provisiones
@@ -230,8 +226,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = provisiones.First().Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
                         };
                         LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
                         {
@@ -240,8 +235,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
@@ -251,8 +245,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto - provisiones.First().Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         using (var _dbContext = new PruebaContext())
@@ -297,8 +290,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         LdiarioGlobal asientoCaja = new LdiarioGlobal
@@ -308,8 +300,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
 
@@ -380,8 +371,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = provisiones.First().Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
@@ -391,8 +381,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
@@ -402,8 +391,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto - provisiones.First().Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         using (var _dbContext = new PruebaContext())
@@ -452,8 +440,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
                         LdiarioGlobal asientoBanco = new LdiarioGlobal
@@ -463,8 +450,7 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1,
-                            IdDolar = modelo.IdReferenciaDolar
+                            NumAsiento = numAsiento + 1
 
                         };
 

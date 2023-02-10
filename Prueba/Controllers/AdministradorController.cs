@@ -69,17 +69,13 @@ namespace Prueba.Controllers
                 var idAdministrador = TempData.Peek("idUserLog").ToString();
 
                 //CARGAR LIST DE CONDOMINIOS
-                var condominios = from c in _context.Condominios
-                                  where c.IdAdministrador == idAdministrador
-                                  select c;
+                var condominios = _context.Condominios.Include(c => c.IdAdministradorNavigation)
+                    .Where(c => c.IdAdministrador == idAdministrador);
 
                 foreach (var item in condominios)
                 {
-                    var inmuebles = from i in _context.Inmuebles
-                                    where item.IdCondominio == i.IdCondominio
-                                    select i;
-
-                    item.Inmuebles = await inmuebles.ToListAsync();
+                    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
+                        .Where(c => c.IdInmueble == item.IdCondominio);
                 }
 
                 var condominiosModel = await condominios.ToListAsync();
@@ -197,7 +193,7 @@ namespace Prueba.Controllers
                 {
                     UsuariosPropiedad = propiedadesPorUsuario,
                     PropiedadPagos = pagosPorPropiedad,
-                    ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync()
+                    //ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync()
                 };
 
                 return View(modelo);
@@ -439,7 +435,7 @@ namespace Prueba.Controllers
                                     Monto = pago.Monto,
                                     TipoOperacion = true,
                                     NumAsiento = numAsiento + 1,
-                                    IdDolar = reciboActual.First().IdDolar
+                                    //IdDolar = reciboActual.First().IdDolar
                                 };
 
                                 LdiarioGlobal asientoIngreso = new LdiarioGlobal
@@ -450,7 +446,7 @@ namespace Prueba.Controllers
                                     Monto = pago.Monto,
                                     TipoOperacion = false,
                                     NumAsiento = numAsiento + 1,
-                                    IdDolar = reciboActual.First().IdDolar
+                                    //IdDolar = reciboActual.First().IdDolar
                                 };
 
                                 dbContext.Add(asientoIngreso);

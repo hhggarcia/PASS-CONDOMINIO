@@ -45,8 +45,7 @@
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Monto Bsf</th>
-                                    <th>Monto $</th>
-                                    <th>Tasa BCV</th>
+                                    
                                     <th>Forma de pago</th>
                                     <th>Referencia</th>
                                     <th>Banco</th>
@@ -64,11 +63,10 @@
                             </tr>
                             </tfoot>*@
                             <tbody>
-                                @if (@Model.PagosEmitidos.Count() > 0 && Model.ReferenciasDolar.Any())
+                                @if (@Model.PagosEmitidos.Count() > 0)
                                 {
                                     foreach (var item in @Model.PagosEmitidos)
                                     {
-                                        var referenciaDolar = Model.ReferenciasDolar.Where(c => c.IdReferencia == @item.IdDolar).First();
                                         if (item.FormaPago)
                                         {
                                             foreach (var referencia in @Model.Referencias)
@@ -78,8 +76,7 @@
                                                     <tr class="tr_s">
                                                         <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                                                         <td>@(item.Monto.ToString("N")) Bsf</td>
-                                                        <td>@((item.Monto / referenciaDolar.Valor).ToString("N")) $</td>
-                                                        <td>@(referenciaDolar.Valor) Bsf</td>
+                                                        
                                                         <td>@FormaPago.Transferencia</td>
                                                         <td>@referencia.NumReferencia</td>
                                                         <td>@referencia.Banco</td>
@@ -99,8 +96,7 @@
                                             <tr class="tr_s">
                                                 <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                                                 <td>@(item.Monto.ToString("N")) Bsf</td>
-                                                <td>@((item.Monto / referenciaDolar.Valor).ToString("N")) $</td>
-                                                <td>@(referenciaDolar.Valor) Bsf</td>
+                                                
                                                 <td>@FormaPago.Efectivo</td>
                                                 <td>Sin referencia</td>
                                                 <td>Sin Banco</td>
@@ -120,8 +116,7 @@
                                         <td>No</td>
                                         <td>Existen</td>
                                         <td>Datos</td>
-                                        <td></td>
-                                        <td></td>
+
                                         <td></td>
                                         <td></td>
                                         <td></td>

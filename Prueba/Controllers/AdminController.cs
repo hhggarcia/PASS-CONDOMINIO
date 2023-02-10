@@ -145,16 +145,13 @@ namespace Prueba.Controllers
         {
             try
             {
-                var condominios = from c in _context.Condominios
-                                  select c;
+                //CARGAR LIST DE CONDOMINIOS
+                var condominios = _context.Condominios.Include(c => c.IdAdministradorNavigation);
 
                 foreach (var item in condominios)
                 {
-                    var inmuebles = from i in _context.Inmuebles
-                                    where item.IdCondominio == i.IdCondominio
-                                    select i;
-
-                    item.Inmuebles = await inmuebles.ToListAsync();
+                    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
+                        .Where(c => c.IdInmueble == item.IdCondominio);
                 }
 
                 var condominiosModel = await condominios.ToListAsync();

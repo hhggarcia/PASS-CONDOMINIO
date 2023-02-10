@@ -46,8 +46,7 @@ namespace Prueba.Controllers
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var pruebaContext = _context.RelacionGastos.Include(p => p.IdDolarNavigation)
-                .Where(r => r.IdCondominio == idCondominio);
+            var pruebaContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
 
             TempData.Keep();
 
@@ -100,9 +99,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var relacionGasto = await _context.RelacionGastos
-                .Include(r => r.IdCondominioNavigation)
-                .Include(d => d.IdDolarNavigation)
+            var relacionGasto = await _context.RelacionGastos.Include(r => r.IdCondominioNavigation)
                 .FirstOrDefaultAsync(m => m.IdRgastos == id);
             if (relacionGasto == null)
             {
@@ -165,7 +162,6 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", relacionGasto.IdCondominio);
-            ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", relacionGasto.IdDolar);
             return View(relacionGasto);
         }
 
@@ -180,7 +176,7 @@ namespace Prueba.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdRgastos,SubTotal,TotalMensual,Fecha,IdCondominio,IdDolar")] RelacionGasto relacionGasto)
+        public async Task<IActionResult> Edit(int id, [Bind("IdRgastos,SubTotal,TotalMensual,Fecha,IdCondominio")] RelacionGasto relacionGasto)
         {
             if (id != relacionGasto.IdRgastos)
             {
@@ -225,9 +221,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var relacionGasto = await _context.RelacionGastos
-                .Include(r => r.IdCondominioNavigation)
-                .Include(r => r.IdDolarNavigation)
+            var relacionGasto = await _context.RelacionGastos.Include(r => r.IdCondominioNavigation)
                 .FirstOrDefaultAsync(m => m.IdRgastos == id);
             if (relacionGasto == null)
             {
@@ -457,17 +451,17 @@ namespace Prueba.Controllers
                     };
 
                     // REFERENCIA DOLAR
-                    var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
+                    //var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
 
-                    if (!referencia.Any())
-                    {
-                        var modeloError = new ErrorViewModel()
-                        {
-                            RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
-                        };
+                    //if (!referencia.Any())
+                    //{
+                    //    var modeloError = new ErrorViewModel()
+                    //    {
+                    //        RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
+                    //    };
 
-                        return View("Error", modeloError);
-                    }
+                    //    return View("Error", modeloError);
+                    //}
                     // CREAR ASIENTO SOBRE PREVISION
 
                     var diario = from l in _context.LdiarioGlobals
@@ -487,8 +481,7 @@ namespace Prueba.Controllers
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = false,
-                        NumAsiento = numAsiento,
-                        IdDolar = referencia.First().IdReferencia
+                        NumAsiento = numAsiento
                     };
                     LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
                     {
@@ -497,8 +490,7 @@ namespace Prueba.Controllers
                         Concepto = modelo.Concepto,
                         Monto = modelo.Monto,
                         TipoOperacion = true,
-                        NumAsiento = numAsiento,
-                        IdDolar = referencia.First().IdReferencia
+                        NumAsiento = numAsiento
 
                     };
                     using (var db_context = new PruebaContext())
@@ -557,26 +549,13 @@ namespace Prueba.Controllers
                     var propietarios = from c in _context.AspNetUsers
                                        select c;
 
-                    // REFERENCIA DOLAR
-                    var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
-
-                    if (!referencia.Any())
-                    {
-                        var modeloError = new ErrorViewModel()
-                        {
-                            RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
-                        };
-
-                        return View("Error", modeloError);
-                    }
                     // REGISTRAR EN BD LA RELACION DE GASTOS
                     var relacionGasto = new RelacionGasto
                     {
                         SubTotal = modelo.SubTotal,
                         TotalMensual = modelo.Total,
                         Fecha = DateTime.Today,
-                        IdCondominio = idCondominio,
-                        IdDolar = referencia.First().IdReferencia
+                        IdCondominio = idCondominio
                     };
 
                     using (var db_context = new PruebaContext())
@@ -643,7 +622,6 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 recibo.Fecha = DateTime.Today;
-                                recibo.IdDolar = referencia.First().IdReferencia;
                             }
                             else
                             {
@@ -651,7 +629,6 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                 recibo.Fecha = DateTime.Today;
-                                recibo.IdDolar = referencia.First().IdReferencia;
                             }
 
                             recibosCobroCond.Add(recibo);
