@@ -116,12 +116,12 @@ namespace Prueba.Repositories
 
             IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
                                                      join d in cuentasContablesCond
-                                                     on c.Id equals d.IdCodCuenta
+                                                     on c.Id equals d.IdCodigo
                                                      where c.IdCuenta == bancos.First().Id
                                                      select c;
             IQueryable<SubCuenta> subcuentasCaja = from c in _context.SubCuenta
                                                    join d in cuentasContablesCond
-                                                   on c.Id equals d.IdCodCuenta
+                                                   on c.Id equals d.IdCodigo
                                                    where c.IdCuenta == caja.First().Id
                                                    select c;
 

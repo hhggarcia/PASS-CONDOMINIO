@@ -162,14 +162,14 @@ namespace Prueba.Areas.Identity.Pages.Account
                     else
                     {
                         //await _signInManager.SignInAsync(user, isPersistent: false);
-                        var correo = new RegisterConfirm
-                        {
-                            To = Input.Email,
-                            Subject = "Registro Condominio Password Technology",
-                            Body = "Bienvenido a nuestra aplicación para administrar sus condominios."
-                        };
+                        //var correo = new RegisterConfirm
+                        //{
+                        //    To = Input.Email,
+                        //    Subject = "Registro Condominio Password Technology",
+                        //    Body = "Bienvenido a nuestra aplicación para administrar sus condominios."
+                        //};
 
-                        _serviceEmail.SendEmail(correo);
+                        //_serviceEmail.SendEmail(correo);
 
                         return RedirectToAction("Index", "User");
                     }

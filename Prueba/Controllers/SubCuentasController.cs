@@ -207,6 +207,8 @@ namespace Prueba.Controllers
             var subCuenta = await _context.SubCuenta.FindAsync(id);
             if (subCuenta != null)
             {
+                var cuentaGlobal = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == subCuenta.Id).ToListAsync();
+                _context.CodigoCuentasGlobals.Remove(cuentaGlobal.First());
                 _context.SubCuenta.Remove(subCuenta);
             }
 
