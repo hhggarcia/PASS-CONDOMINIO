@@ -180,52 +180,68 @@ namespace Prueba.Controllers
 
             if (valor > 0)
             {
-                var cuentas = from c in _context.Cuenta
-                              select c;
-
-                var subcuentas = from c in _context.SubCuenta
-                                 select c;
-
-                //CARGAR SELECT DE SUB CUENTAS DE BANCOS
-                var bancos = from c in _context.Cuenta
-                             where c.Descripcion.ToUpper().Trim() == "BANCO"
-                             select c;
-
-                var caja = from c in _context.Cuenta
-                           where c.Descripcion.ToUpper().Trim() == "CAJA"
-                           select c;
-
-                var subcuentasBancos = from c in _context.SubCuenta
-                                       where c.IdCuenta == bancos.First().Id
-                                       select c;
-
-                var subcuentasCaja = from c in _context.SubCuenta
-                                     where c.IdCuenta == caja.First().Id
-                                     select c;
-
                 var propiedad = await _context.Propiedads.FindAsync(valor);
 
-                var recibos = from c in _context.ReciboCobros
-                              where c.IdPropiedad == valor
-                              select c;
-
-                modelo.Saldo = propiedad.Saldo;
-
-                modelo.Deuda = propiedad.Deuda;
-
-                modelo.Recibos = await recibos.Where(c => c.EnProceso == false && c.Pagado == false).ToListAsync();
-
-                if (modelo.Recibos.Any())
+                if (propiedad != null)
                 {
-                    modelo.RecibosModel = await recibos.Where(c => c.EnProceso == false && c.Pagado == false)
-                        .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
-                        .ToListAsync();
-                    modelo.SubCuentasBancos = await subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                        .ToListAsync();
-                    modelo.SubCuentasCaja = await subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                        .ToListAsync();
+                    var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                    var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
 
+                    var cuentasCondominio = from c in _context.CodigoCuentasGlobals
+                                            where c.IdCondominio == condominio.IdCondominio
+                                            select c;
+
+                    var cuentas = from c in _context.Cuenta
+                                  select c;
+
+                    var subcuentas = from c in _context.SubCuenta
+                                     select c;
+
+                    //CARGAR SELECT DE SUB CUENTAS DE BANCOS
+                    var bancos = from c in _context.Cuenta
+                                 where c.Descripcion.ToUpper().Trim() == "BANCO"
+                                 select c;
+
+                    var caja = from c in _context.Cuenta
+                               where c.Descripcion.ToUpper().Trim() == "CAJA"
+                               select c;
+
+                    var subcuentasBancos = from c in _context.SubCuenta
+                                           join d in cuentasCondominio
+                                           on c.Id equals d.IdCodigo
+                                           where c.IdCuenta == bancos.First().Id
+                                           select c;
+
+                    var subcuentasCaja = from c in _context.SubCuenta
+                                         join d in cuentasCondominio
+                                          on c.Id equals d.IdCodigo
+                                         where c.IdCuenta == caja.First().Id
+                                         select c;
+
+
+                    var recibos = from c in _context.ReciboCobros
+                                  where c.IdPropiedad == valor
+                                  select c;
+
+                    modelo.Saldo = propiedad.Saldo;
+
+                    modelo.Deuda = propiedad.Deuda;
+
+                    modelo.Recibos = await recibos.Where(c => c.EnProceso == false && c.Pagado == false).ToListAsync();
+
+                    if (modelo.Recibos.Any())
+                    {
+                        modelo.RecibosModel = await recibos.Where(c => c.EnProceso == false && c.Pagado == false)
+                            .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
+                            .ToListAsync();
+                        modelo.SubCuentasBancos = await subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToListAsync();
+                        modelo.SubCuentasCaja = await subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToListAsync();
+
+                    }
                 }
+                
 
 
             }
