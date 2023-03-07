@@ -21,7 +21,13 @@ public partial class ReciboCobro
 
     public decimal Abonado { get; set; }
 
-    public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
+    public decimal MontoRef { get; set; }
+
+    public decimal ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;
 

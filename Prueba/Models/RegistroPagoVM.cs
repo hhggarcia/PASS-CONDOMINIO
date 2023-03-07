@@ -19,6 +19,7 @@ namespace Prueba.Models
         public int IdCodigoCuentaBanco { get; set; }
         public int IdCodigoCuentaCaja { get; set; }
         public int IdReferenciaDolar { get; set; }
+        public int IdMonedaCond { get; set; }
 
     }
 }

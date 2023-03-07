@@ -68,6 +68,18 @@
                                         </div>
                                     </div>
 
+                                    <!-- Moneda -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Tipo de Moneda</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select asp-for="IdMonedaCond" class="form-control" asp-items="ViewBag.IdMoneda"></select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Fecha -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left">

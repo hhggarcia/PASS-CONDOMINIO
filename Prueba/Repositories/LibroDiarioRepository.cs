@@ -63,11 +63,11 @@ namespace Prueba.Repositories
                         subCuentasModel.Add(aux.First());
                         if (asiento.TipoOperacion)
                         {
-                            totalDebe += asiento.Monto;
+                            totalDebe += asiento.MontoRef;
                         }
                         else
                         {
-                            totalHaber += asiento.Monto;
+                            totalHaber += asiento.MontoRef;
                         }
                     }
                     continue;

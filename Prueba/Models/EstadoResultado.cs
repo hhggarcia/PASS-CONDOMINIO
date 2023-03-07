@@ -12,4 +12,16 @@ public partial class EstadoResultado
     public decimal TotalGastos { get; set; }
 
     public DateTime Fecha { get; set; }
+
+    public int IdCondominio { get; set; }
+
+    public decimal? MontoRef { get; set; }
+
+    public decimal? ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 }

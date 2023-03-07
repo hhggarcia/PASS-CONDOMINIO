@@ -37,14 +37,18 @@
                                                 <thead>
                                                     <tr>
                                                         <th>
+                                                            @Html.DisplayNameFor(model => model.Fecha)
+                                                        </th>
+                                                        <th>
                                                             @Html.DisplayNameFor(model => model.SubTotal)
                                                         </th>
                                                         <th>
                                                             @Html.DisplayNameFor(model => model.TotalMensual)
                                                         </th>
                                                         <th>
-                                                            @Html.DisplayNameFor(model => model.Fecha)
+                                                            @Html.DisplayNameFor(model => model.MontoRef)
                                                         </th>
+                                                        
 
                                                         @*<th>
                                                             @Html.DisplayNameFor(model => model.IdCondominioNavigation)
@@ -57,15 +61,19 @@
                                                     {
                                                         <tr>
                                                             <td>
+                                                                @*@Html.DisplayFor(modelItem => item.Fecha)*@
+                                                                @(item.Fecha.ToString("dd/MM/yyyy"))
+                                                            </td>
+                                                            <td>
                                                                 @Html.DisplayFor(modelItem => item.SubTotal)
                                                             </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.TotalMensual)
                                                             </td>
                                                             <td>
-                                                                @*@Html.DisplayFor(modelItem => item.Fecha)*@
-                                                                @(item.Fecha.ToString("dd/MM/yyyy"))
+                                                                @Html.DisplayFor(modelItem => item.MontoRef)
                                                             </td>
+                                                            
                                                             
                                                             @*<td>
                                                                 @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)

@@ -21,9 +21,13 @@ public partial class PagoRecibido
 
     public bool Confirmado { get; set; }
 
-    public int IdMoneda { get; set; }
+    public decimal? ValorDolar { get; set; }
 
-    public virtual MonedaCond IdMonedaNavigation { get; set; } = null!;
+    public decimal MontoRef { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
 
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 

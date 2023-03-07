@@ -1,14 +1,15 @@
-﻿@model IEnumerable<Prueba.Models.LdiarioGlobal>
+﻿@model IEnumerable<Prueba.Models.MonedaCond>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<p>
-    <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
-</p>
+
 <div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Create" class="btn btn-light">Crear Nuevo</a>
+    </div>
 
     <!-- Content Row -->
     <div class="row">
@@ -17,7 +18,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Libro Diario Global
+                        Monedas
                     </h6>
                 </div>
                 <div class="card-body">
@@ -28,24 +29,20 @@
                                     <thead>
                                         <tr>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Fecha)
+                                                @Html.DisplayNameFor(model => model.Princinpal)
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Concepto)
+                                                @Html.DisplayNameFor(model => model.Simbolo)
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Monto)
+                                                @Html.DisplayNameFor(model => model.ValorDolar)
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.TipoOperacion)
+                                                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.NumAsiento)
+                                                @Html.DisplayNameFor(model => model.IdMonedaNavigation)
                                             </th>
-                                            <th>
-                                                @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
-                                            </th>
-                                            
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -54,28 +51,24 @@
                                         {
                                             <tr>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.Fecha)
+                                                    @Html.DisplayFor(modelItem => item.Princinpal)
                                                 </td>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.Concepto)
+                                                    @Html.DisplayFor(modelItem => item.Simbolo)
                                                 </td>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.Monto)
+                                                    @Html.DisplayFor(modelItem => item.ValorDolar)
                                                 </td>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.TipoOperacion)
+                                                    @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
                                                 </td>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.NumAsiento)
+                                                    @Html.DisplayFor(modelItem => item.IdMonedaNavigation.IdMoneda)
                                                 </td>
                                                 <td>
-                                                    @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
-                                                </td>
-                                                
-                                                <td>
-                                                    <a asp-action="Edit" asp-route-id="@item.IdAsiento">Editar</a> |
-                                                    <a asp-action="Details" asp-route-id="@item.IdAsiento">Detalles</a> |
-                                                    <a asp-action="Delete" asp-route-id="@item.IdAsiento">Eliminar</a>
+                                                    <a asp-action="Edit" asp-route-id="@item.IdMonedaCond">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@item.IdMonedaCond">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdMonedaCond">Eliminar</a>
                                                 </td>
                                             </tr>
                                         }

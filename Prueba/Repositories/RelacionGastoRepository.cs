@@ -16,10 +16,16 @@ namespace Prueba.Repositories
     }
     public class RelacionGastoRepository: IRelacionGastoRepository
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
+        private readonly IMonedaRepository _repoMoneda;
         private readonly PruebaContext _context;
 
-        public RelacionGastoRepository(PruebaContext context)
+        public RelacionGastoRepository(ICuentasContablesRepository repoCuentas,
+            IMonedaRepository repoMoneda,
+            PruebaContext context)
         {
+            _repoCuentas = repoCuentas;
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
@@ -49,8 +55,14 @@ namespace Prueba.Repositories
 
             var subcuentas = from c in _context.SubCuenta
                              select c;
+
             // BUSCAR PROVISIONES en los asientos del diario
+            DateTime fechaActual = DateTime.Now;
+
             var proviciones = from p in _context.Provisiones
+                              join c in _context.CodigoCuentasGlobals
+                              on p.IdCodCuenta equals c.IdCodCuenta
+                              where DateTime.Compare(fechaActual, p.FechaFin) < 0 && DateTime.Compare(fechaActual, p.FechaInicio) >= 0
                               select p;
             // BUSCAR FONDOS
             var fondos = from f in _context.Fondos
@@ -104,8 +116,8 @@ namespace Prueba.Repositories
                     {
                         if (aux.FirstOrDefault().IdCodCuenta == item.Id)
                         {
-                            subtotal += aux.First().Monto;
-                            total += aux.First().Monto;
+                            subtotal += aux.First().MontoRef;
+                            total += aux.First().MontoRef;
                             asientosGastosCondominio.Add(aux.First());
                             subcuentasModel.Add(item);
                         }
@@ -142,8 +154,8 @@ namespace Prueba.Repositories
                         SubCuenta aux = subcuentaProvision.First();
                         if (aux != null)
                         {
-                            modelo.SubTotal += provision.Monto;
-                            modelo.Total = modelo.SubTotal;
+                            modelo.SubTotal += provision.MontoRef;
+                            modelo.Total += provision.MontoRef;
                             subcuentasProvisionesModel.Add(aux);
                         }
                     }
@@ -182,7 +194,8 @@ namespace Prueba.Repositories
                         SubCuenta aux = subcuentaProvision.First();
                         if (aux != null)
                         {
-                            modelo.SubTotal += provision.Monto;
+                            modelo.SubTotal += provision.MontoRef;
+                            modelo.Total += provision.MontoRef;
                             subcuentasProvisionesModel.Add(aux);
                         }
                     }
@@ -212,7 +225,6 @@ namespace Prueba.Repositories
                 }
                 modelo.SubCuentasFondos = subcuentasFondosModel;
             }
-
 
             return modelo;
         }
@@ -436,7 +448,7 @@ namespace Prueba.Repositories
                     var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
                     if (propiedad != null)
                     {
-                        // verificar si es el recibo atual o uni viejo
+                        // verificar si es el recibo atual o uno viejo
 
                         if (recibo.Fecha.Month == DateTime.Today.Month)
                         {

@@ -137,7 +137,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Pagos:</h6>
                             <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="IndexPagosEmitidos">Pagos Emitidos</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Pagos Recibidos</a>
+                            <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Cobros</a>
 
                         </div>
                     </div>
@@ -176,6 +176,17 @@
                        aria-expanded="true">
                         <i class="fas fa-fw fa-folder"></i>
                         <span>Estacionamiento</span>
+                    </a>
+                </li>
+
+                <!-- Monedas -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       asp-action="Index"
+                       asp-controller="MonedaConds"
+                       aria-expanded="true">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Monedas</span>
                     </a>
                 </li>
 

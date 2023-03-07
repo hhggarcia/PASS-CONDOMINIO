@@ -23,7 +23,8 @@ namespace Prueba.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
-        private IRelacionGastoRepository _repoRelacionGastos;
+        private readonly IRelacionGastoRepository _repoRelacionGastos;
+        private readonly IMonedaRepository _repoMoneda;
         private readonly PruebaContext _context;
 
         public RelacionGastosController(IUnitOfWork unitOfWork,
@@ -31,6 +32,7 @@ namespace Prueba.Controllers
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             IRelacionGastoRepository repoRelacionGastos,
+            IMonedaRepository repoMoneda,
             PruebaContext context)
         {
             _context = context;
@@ -39,6 +41,7 @@ namespace Prueba.Controllers
             _userManager = userManager;
             _userStore = userStore;
             _repoRelacionGastos = repoRelacionGastos;
+            _repoMoneda = repoMoneda;
         }
 
         // GET: RelacionGastos
@@ -264,263 +267,6 @@ namespace Prueba.Controllers
         }
 
         /// <summary>
-        /// Formulario para crear un Fondo
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult CrearFondo()
-        {
-            try
-            {
-                var modelo = new CrearFondoVM();
-
-                // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
-                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                           where c.IdCondominio == idCondominio
-                                           select c;
-
-                IQueryable<Grupo> gruposPatrimonio = from c in _context.Grupos
-                                                     where c.IdClase == 3
-                                                     select c;
-                IQueryable<Cuenta> cuentas = from c in _context.Cuenta
-                                             where gruposPatrimonio.First().Id == c.IdGrupo
-                                             select c;
-                IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
-                                                   where cuentas.First().Id == c.IdCuenta
-                                                   select c;
-
-                // LLENAR SELECT CON LOS FONDOS REGISTRADOS
-                modelo.Fondos = subcuentas.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-
-                TempData.Keep();
-
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-
-        }
-
-        /// <summary>
-        /// Crea en BBDD el fondo con el porcentaje ingresado
-        /// </summary>
-        /// <param name="modelo"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearFondo(CrearFondoVM modelo)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var fondo = new Fondo
-                    {
-                        IdCodCuenta = modelo.IdFondo,
-                        Porcentaje = modelo.Porcentaje
-                    };
-
-                    using (var db_context = new PruebaContext())
-                    {
-                        await db_context.AddAsync(fondo);
-                        await db_context.SaveChangesAsync();
-                    }
-
-                    return RedirectToAction("RelaciondeGastos");
-                }
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-
-        }
-
-        /// <summary>
-        /// Formulario para la creación de una provisión
-        /// Muestra los gastos a los cuales se les puede crear una provisión
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult CrearProvision()
-        {
-            try
-            {
-                var modelo = new CrearProvisionVM();
-
-                // BUSCAR LAS CUENTAS CONTABLES DEL CONDOMINIO
-                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                           where c.IdCondominio == idCondominio
-                                           select c;
-                var gruposGastos = from c in _context.Grupos
-                                   where c.IdClase == 5
-                                   select c;
-
-                var cuentaProvision = from c in _context.Cuenta
-                                      where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
-                                      select c;
-
-                var subcuentasProvisiones = from c in _context.SubCuenta
-                                            where c.IdCuenta == cuentaProvision.FirstOrDefault().Id
-                                            select c;
-
-                var cuentas = from c in _context.Cuenta
-                              select c;
-
-                var subcuentas = from c in _context.SubCuenta
-                                 select c;
-
-                // CARGAR CUENTAS GASTOS DEL CONDOMINIO
-                IList<Cuenta> cuentasGastos = new List<Cuenta>();
-                foreach (var grupo in gruposGastos)
-                {
-                    foreach (var cuenta in cuentas)
-                    {
-                        if (cuenta.IdGrupo == grupo.Id)
-                        {
-                            cuentasGastos.Add(cuenta);
-                        }
-                        continue;
-                    }
-                }
-
-                IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-                foreach (var cuenta in cuentasGastos)
-                {
-                    foreach (var subcuenta in subcuentas)
-                    {
-                        if (subcuenta.IdCuenta == cuenta.Id)
-                        {
-                            subcuentasGastos.Add(subcuenta);
-                        }
-                        continue;
-                    }
-                }
-
-                modelo.Gastos = subcuentasGastos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-                modelo.Provisiones = subcuentasProvisiones.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
-
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-        }
-
-        /// <summary>
-        /// Crea la provisión y el asiento en el Libro Diario
-        /// Guarda en BBDD
-        /// </summary>
-        /// <param name="modelo">Contiene el Id del gasto y de la provisión.</param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearProvision(CrearProvisionVM modelo)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    // GUARDAR PREVISION EN BD
-                    var provision = new Provision
-                    {
-                        IdCodGasto = modelo.IdGasto,
-                        IdCodCuenta = modelo.IdcodCuenta,
-                        Monto = modelo.Monto
-                    };
-
-                    // REFERENCIA DOLAR
-                    //var referencia = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
-
-                    //if (!referencia.Any())
-                    //{
-                    //    var modeloError = new ErrorViewModel()
-                    //    {
-                    //        RequestId = "No existe una Tasa del Dólar para este día! Debe crear una antes de crear la  Relación de Gastos"
-                    //    };
-
-                    //    return View("Error", modeloError);
-                    //}
-                    // CREAR ASIENTO SOBRE PREVISION
-
-                    var diario = from l in _context.LdiarioGlobals
-                                 select l;
-
-                    int numAsiento = 1;
-
-                    if (diario.Count() > 0)
-                    {
-                        numAsiento = diario.ToList().LastOrDefault().NumAsiento + 1;
-                    }
-
-                    LdiarioGlobal asientoProvision = new LdiarioGlobal
-                    {
-                        IdCodCuenta = provision.IdCodCuenta,
-                        Fecha = DateTime.Today,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        TipoOperacion = false,
-                        NumAsiento = numAsiento
-                    };
-                    LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
-                    {
-                        IdCodCuenta = modelo.IdGasto,
-                        Fecha = DateTime.Today,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        TipoOperacion = true,
-                        NumAsiento = numAsiento
-
-                    };
-                    using (var db_context = new PruebaContext())
-                    {
-                        await db_context.AddAsync(provision);
-                        await db_context.AddAsync(asientoGastoProvisionado);
-                        await db_context.AddAsync(asientoProvision);
-                        await db_context.SaveChangesAsync();
-                    }
-
-                    return RedirectToAction("RelaciondeGastos");
-                }
-
-
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-
-        }
-
-
-        /// <summary>
         /// Sino existe una Relación de Gastos,
         /// generará un Recibo de Cobro por cada Propiedad
         /// si la propiedad está solvente, se cambiará a deudor
@@ -534,6 +280,7 @@ namespace Prueba.Controllers
 
                 var relacionesDeGasto = from c in _context.RelacionGastos
                                         select c;
+
                 var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month == DateTime.Today.Month).ToListAsync();
 
                 if (!existeActualRG.Any())
@@ -549,13 +296,20 @@ namespace Prueba.Controllers
                     var propietarios = from c in _context.AspNetUsers
                                        select c;
 
+                    // Moneda Principal para hacer la referencia de Monto respecto al dolar
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+
                     // REGISTRAR EN BD LA RELACION DE GASTOS
                     var relacionGasto = new RelacionGasto
                     {
                         SubTotal = modelo.SubTotal,
                         TotalMensual = modelo.Total,
                         Fecha = DateTime.Today,
-                        IdCondominio = idCondominio
+                        IdCondominio = idCondominio,
+                        MontoRef = modelo.Total,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = monedaPrincipal.First().Simbolo,
+                        SimboloRef = monedaPrincipal.First().Simbolo
                     };
 
                     using (var db_context = new PruebaContext())
@@ -622,6 +376,11 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 recibo.Fecha = DateTime.Today;
+                                recibo.Abonado = 0;
+                                recibo.MontoRef = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                recibo.SimboloRef = monedaPrincipal.First().Simbolo;
                             }
                             else
                             {
@@ -629,6 +388,11 @@ namespace Prueba.Controllers
                                 recibo.IdRgastos = relacionGasto.IdRgastos;
                                 recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                 recibo.Fecha = DateTime.Today;
+                                recibo.Abonado = 0;
+                                recibo.MontoRef = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                recibo.SimboloRef = monedaPrincipal.First().Simbolo;
                             }
 
                             recibosCobroCond.Add(recibo);
@@ -675,7 +439,7 @@ namespace Prueba.Controllers
 
                     var modeloError = new ErrorViewModel()
                     {
-                        RequestId = "Ya existe una relación de gasto para este mes!"
+                        RequestId = "Ya existe una Relación de Gastos para este mes!"
                     };
 
                     return View("Error", modeloError);

@@ -14,14 +14,17 @@ namespace Prueba.Repositories
         RegistroPagoVM FormRegistrarPago(int id);
         Task<IndexPagosVM> GetPagosEmitidos(int id);
         bool PagoEmitidoExists(int id);
-        bool RegistrarPago(RegistroPagoVM modelo);
+        Task<bool> RegistrarPago(RegistroPagoVM modelo);
     }
     public class PagosEmitidosRepository: IPagosEmitidosRepository
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly PruebaContext _context;
 
-        public PagosEmitidosRepository(PruebaContext context)
+        public PagosEmitidosRepository(IMonedaRepository repoMoneda,
+            PruebaContext context)
         {
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
@@ -36,9 +39,10 @@ namespace Prueba.Repositories
 
             var modelo = new IndexPagosVM();
 
-            var listaPagos = from c in _context.PagoEmitidos
+            var listaPagos = (from c in _context.PagoEmitidos
                              where c.IdCondominio == idCondominio
-                             select c;
+                             select c)
+                             .Include(c => c.IdCondominioNavigation);
 
             var referencias = from p in _context.PagoEmitidos
                               where p.IdCondominio == idCondominio
@@ -177,9 +181,31 @@ namespace Prueba.Repositories
         /// </summary>
         /// <param name="modelo"></param>
         /// <returns></returns>
-        public bool RegistrarPago(RegistroPagoVM modelo)
+        public async Task<bool> RegistrarPago(RegistroPagoVM modelo)
         {
             bool resultado = false;
+            decimal montoReferencia = 0;
+
+            // moneda del pago
+            var moneda = await _context.MonedaConds.FindAsync(modelo.IdMonedaCond);
+
+            // Moneda Principal para hacer la referencia de Monto respecto al dolar
+            var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
+            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any()) 
+            {
+                return resultado;
+            }
+            else if (moneda.Equals(monedaPrincipal.First()))
+            {
+                montoReferencia = modelo.Monto;
+            }
+            else if (!moneda.Equals(monedaPrincipal.First()))
+            {
+                var montoDolares = modelo.Monto * moneda.ValorDolar;
+
+                montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+            }
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -187,7 +213,11 @@ namespace Prueba.Repositories
             {
                 IdCondominio = modelo.IdCondominio,
                 Fecha = modelo.Fecha,
-                Monto = modelo.Monto
+                Monto = modelo.Monto,
+                MontoRef = montoReferencia,
+                ValorDolar = moneda.ValorDolar,
+                SimboloMoneda = moneda.Simbolo,
+                SimboloRef = monedaPrincipal.First().Simbolo
             };
 
             var provisiones = from c in _context.Provisiones
@@ -225,8 +255,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = provisiones.First().Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
                         };
                         LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
                         {
@@ -234,8 +268,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
@@ -244,8 +282,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto - provisiones.First().Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         using (var _dbContext = new PruebaContext())
@@ -289,8 +331,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         LdiarioGlobal asientoCaja = new LdiarioGlobal
@@ -299,8 +345,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
 
@@ -370,8 +420,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = provisiones.First().Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
@@ -380,8 +434,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
@@ -390,8 +448,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto - provisiones.First().Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         using (var _dbContext = new PruebaContext())
@@ -439,8 +501,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = true,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
                         LdiarioGlobal asientoBanco = new LdiarioGlobal
@@ -449,8 +515,12 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
+                            MontoRef = montoReferencia,
                             TipoOperacion = false,
-                            NumAsiento = numAsiento + 1
+                            NumAsiento = numAsiento + 1,
+                            ValorDolar = moneda.ValorDolar,
+                            SimboloMoneda = moneda.Simbolo,
+                            SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
 

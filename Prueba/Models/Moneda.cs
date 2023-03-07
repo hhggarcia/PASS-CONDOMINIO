@@ -11,12 +11,5 @@ public partial class Moneda
 
     public string Pais { get; set; } = null!;
 
-    public string Simbolo { get; set; } = null!;
-
-    /// <summary>
-    /// Valor de la moneda respecto al dolar
-    /// </summary>
-    public decimal ValorDolar { get; set; }
-
     public virtual ICollection<MonedaCond> MonedaConds { get; } = new List<MonedaCond>();
 }

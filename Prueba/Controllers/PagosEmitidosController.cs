@@ -16,13 +16,15 @@ namespace Prueba.Controllers
 
     public class PagosEmitidosController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly PruebaContext _context;
 
-        public PagosEmitidosController(IPagosEmitidosRepository repoPagosEmitidos,
+        public PagosEmitidosController(IMonedaRepository repoMoneda,
+            IPagosEmitidosRepository repoPagosEmitidos,
             PruebaContext context)
         {
-
+            _repoMoneda = repoMoneda;
             _repoPagosEmitidos = repoPagosEmitidos;
             _context = context;
         }
@@ -78,7 +80,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago")] PagoEmitido pagoEmitido)
+        public async Task<IActionResult> Create([Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,MontoRef,IdMoneda,FormaPago")] PagoEmitido pagoEmitido)
         {
             if (ModelState.IsValid)
             {
@@ -105,6 +107,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+            ViewData["IdMoneda"] = new SelectList(_context.MonedaConds, "Simbolo", "Simbolo");
 
             return View(pagoEmitido);
         }
@@ -114,7 +117,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,FormaPago")] PagoEmitido pagoEmitido)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,MontoRef,FormaPago,ValorDolar,SimboloMoneda,SimboloRef")] PagoEmitido pagoEmitido)
         {
             if (id != pagoEmitido.IdPagoEmitido)
             {
@@ -125,6 +128,44 @@ namespace Prueba.Controllers
             //{
             try
             {
+                // cambiar montoRef, simbolo ref, valor dolar si cambiaron el tipo de moneda
+                // buscar moneda
+                //var moneda = await _context.MonedaConds.Where(c => c.Simbolo == pagoEmitido.SimboloMoneda).ToListAsync();
+                decimal montoReferencia = 0;
+
+                var moneda = from c in _context.MonedaConds
+                             where c.Simbolo == pagoEmitido.SimboloMoneda
+                             select c;
+
+                // buscar principal
+                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(pagoEmitido.IdCondominio);
+
+                if (!monedaPrincipal.Any())
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Debe existir por lo menos una moneda principal!"
+                    };
+
+                    return View("Error", modeloError);
+                }
+
+                // cambiar montos
+                if (moneda.First().Equals(monedaPrincipal.First()))
+                {
+                    montoReferencia = pagoEmitido.Monto;
+                    
+                }
+                else if (!moneda.First().Equals(monedaPrincipal.First()))
+                {
+                    var montoDolares = pagoEmitido.Monto * moneda.First().ValorDolar;
+
+                    montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                }
+
+                pagoEmitido.MontoRef = montoReferencia;
+                pagoEmitido.SimboloRef = monedaPrincipal.First().Simbolo;
+
                 _context.Update(pagoEmitido);
                 await _context.SaveChangesAsync();
             }
@@ -148,20 +189,32 @@ namespace Prueba.Controllers
         // GET: PagosEmitidos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.PagoEmitidos == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null || _context.PagoEmitidos == null)
+                {
+                    return NotFound();
+                }
 
-            var pagoEmitido = await _context.PagoEmitidos
-                .Include(p => p.IdCondominioNavigation)
-                .FirstOrDefaultAsync(m => m.IdPagoEmitido == id);
-            if (pagoEmitido == null)
+                var pagoEmitido = await _context.PagoEmitidos
+                    .Include(p => p.IdCondominioNavigation)
+                    .FirstOrDefaultAsync(m => m.IdPagoEmitido == id);
+                if (pagoEmitido == null)
+                {
+                    return NotFound();
+                }
+
+                return View(pagoEmitido);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
-            }
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
 
-            return View(pagoEmitido);
+                return View("Error", modeloError);
+            }            
         }
 
         // POST: PagosEmitidos/Delete/5
@@ -209,6 +262,14 @@ namespace Prueba.Controllers
 
                 var modelo = _repoPagosEmitidos.FormRegistrarPago(idCondominio);
 
+                var condominioMonedas = from m in _context.MonedaConds
+                                        join c in _context.Moneda
+                                        on m.IdMoneda equals c.IdMoneda
+                                        where m.IdCondominio == idCondominio
+                                        select m;               
+
+
+                ViewData["IdMoneda"] = new SelectList(condominioMonedas, "IdMonedaCond", "Simbolo");
                 TempData.Keep();
 
                 return View(modelo);
@@ -232,7 +293,7 @@ namespace Prueba.Controllers
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult RegistrarPagosPost(RegistroPagoVM modelo)
+        public async Task<IActionResult> RegistrarPagosPost(RegistroPagoVM modelo)
         {
             try
             {
@@ -240,14 +301,19 @@ namespace Prueba.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var resultado = _repoPagosEmitidos.RegistrarPago(modelo);
+                    var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
                     if (resultado)
                     {
+                        TempData.Keep();
+
                         return RedirectToAction("IndexPagosEmitidos");
                     }
 
                 }
+
+                TempData.Keep();
+
                 return RedirectToAction("RegistrarPagos");
             }
             catch (Exception ex)

@@ -17,6 +17,8 @@ public partial class Condominio
 
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
 
+    public virtual ICollection<EstadoResultado> EstadoResultados { get; } = new List<EstadoResultado>();
+
     public virtual AspNetUser IdAdministradorNavigation { get; set; } = null!;
 
     public virtual ICollection<Inmueble> Inmuebles { get; } = new List<Inmueble>();

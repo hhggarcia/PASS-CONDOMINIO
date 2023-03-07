@@ -17,6 +17,14 @@ public partial class ReciboReserva
 
     public decimal Abonado { get; set; }
 
+    public decimal MontoRef { get; set; }
+
+    public decimal? ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
+
     public virtual Reserva IdReservaNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoReserva> PagoReservas { get; } = new List<PagoReserva>();

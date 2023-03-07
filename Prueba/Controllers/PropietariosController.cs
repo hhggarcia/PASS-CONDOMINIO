@@ -26,6 +26,7 @@ namespace Prueba.Controllers
         private readonly IManageExcel _manageExcel;
         private readonly IRelacionGastoRepository _repoRelacionGasto;
         private readonly IReportesRepository _repoReportes;
+        private readonly IMonedaRepository _repoMoneda;
         private readonly PruebaContext _context;
 
         public PropietariosController(IUnitOfWork unitOfWork,
@@ -36,6 +37,7 @@ namespace Prueba.Controllers
             IManageExcel manageExcel,
             IRelacionGastoRepository repoRelacionGasto,
             IReportesRepository repoReportes,
+            IMonedaRepository repoMoneda,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -46,6 +48,7 @@ namespace Prueba.Controllers
             _manageExcel = manageExcel;
             _repoRelacionGasto = repoRelacionGasto;
             _repoReportes = repoReportes;
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
@@ -260,12 +263,9 @@ namespace Prueba.Controllers
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
                         var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
-                        //var referenciaDolar = await _context.ReferenciaDolars.Where(c => c.Fecha.Date == DateTime.Today.Date).ToListAsync();
 
-                        //if (!referenciaDolar.Any())
-                        //{
-                        //    referenciaDolar = await _context.ReferenciaDolars.ToListAsync();
-                        //}
+                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
+
                         var comprobante = new ComprobanteVM()
                         {
                             Propiedad = propiedad,
@@ -296,6 +296,11 @@ namespace Prueba.Controllers
                                 if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
                                 {
                                     pago.Monto = monto;
+                                    pago.MontoRef = monto;
+                                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                    pago.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
+                                    
                                 }
                                 else
                                 {
@@ -327,11 +332,24 @@ namespace Prueba.Controllers
                                 // cambiar a -en proceso = true- el recibo mas actual 
                                 var reciboActual = recibo;
                                 reciboActual.EnProceso = true;
+                                reciboActual.Abonado = monto;
 
                                 using (var dbcontext = new PruebaContext())
                                 {
                                     dbcontext.ReciboCobros.Update(reciboActual);
                                     dbcontext.SaveChanges();
+                                }
+
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    var relacion = new PagosRecibo
+                                    {
+                                        IdPago = pago.IdPagoRecibido,
+                                        IdRecibo = reciboActual.IdReciboCobro
+                                    };
+
+                                    dbcontext.Add(relacion);
+                                    await dbcontext.SaveChangesAsync();
                                 }
 
                                 comprobante.PagoRecibido = pago;
@@ -362,6 +380,10 @@ namespace Prueba.Controllers
                                 if (monto > 0)
                                 {
                                     pago.Monto = monto;
+                                    pago.MontoRef = monto;
+                                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                    pago.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
                                 }
                                 else
                                 {
@@ -377,11 +399,24 @@ namespace Prueba.Controllers
                                 // cambiar a -en proceso = true- el recibo mas actual 
                                 var reciboActual = recibo;
                                 reciboActual.EnProceso = true;
+                                reciboActual.Abonado = monto;
 
                                 using (var dbcontext = new PruebaContext())
                                 {
                                     dbcontext.ReciboCobros.Update(reciboActual);
                                     dbcontext.SaveChanges();
+                                }
+
+                                using (var dbcontext = new PruebaContext())
+                                {
+                                    var relacion = new PagosRecibo
+                                    {
+                                        IdPago = pago.IdPagoRecibido,
+                                        IdRecibo = reciboActual.IdReciboCobro
+                                    };
+
+                                    dbcontext.Add(relacion);
+                                    await dbcontext.SaveChangesAsync();
                                 }
 
                                 comprobante.PagoRecibido = pago;

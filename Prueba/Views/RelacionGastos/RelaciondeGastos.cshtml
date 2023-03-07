@@ -7,21 +7,21 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
-        && (Model.GastosDiario != null && Model.GastosDiario.Any()))
+    && (Model.GastosDiario != null && Model.GastosDiario.Any()))
     {
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <a class="btn btn-light mb-3" asp-action="Index">Volver</a>
+            <a class="btn btn-light mb-3" asp-action="Index">Volver</a>
 
             <a asp-action="GenerarReciboCobro"
            class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
                 Generar
                 Recibo de Cobro
             </a>
-            <a asp-action="CrearFondo"
+            <a asp-action="Create" asp-controller="Fondos"
            class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
                 Agregar Fondo
             </a>
-            <a asp-action="CrearProvision"
+            <a asp-action="Create" asp-controller="Provisiones"
            class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
                 Agregar Provisión
             </a>
@@ -40,7 +40,7 @@
     }
     else
     {
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Al realizar pagos se podrá generar la Relación de Gastos y los Recibos de Cobro</h1>
         </div>
     }

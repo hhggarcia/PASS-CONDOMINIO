@@ -17,6 +17,14 @@ public partial class Provision
 
     public DateTime FechaFin { get; set; }
 
+    public decimal MontoRef { get; set; }
+
+    public decimal ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual CodigoCuentasGlobal IdCodGastoNavigation { get; set; } = null!;

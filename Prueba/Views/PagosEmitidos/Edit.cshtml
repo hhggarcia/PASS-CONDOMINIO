@@ -27,14 +27,18 @@
                                 <div class="form-group">
                                     @*<label asp-for="IdCondominio" class="control-label"></label>*@
                                     <input asp-for="IdCondominio" type="hidden" />
+                                    <input asp-for="IdCondominioNavigation" type="hidden" />
+                                    <input asp-for="ValorDolar" type="hidden" />
+                                    <input asp-for="MontoRef" type="hidden" />
+                                    <input asp-for="SimboloRef" type="hidden" />
+                                    <input asp-for="SimboloMoneda" type="hidden" />
                                     @*<span asp-validation-for="IdCondominio" class="text-danger"></span>*@
                                 </div>
                                 <div class="form-group">
                                     @*<label asp-for="IdProveedor" class="control-label"></label>*@
                                     <input type="hidden" asp-for="IdProveedor" class="form-control" />
                                     @*<span asp-validation-for="IdProveedor" class="text-danger"></span>*@
-                                </div>
-                                
+                                </div>                               
 
                                 <div class="form-group">
                                     <label asp-for="Fecha" class="control-label"></label>
@@ -46,6 +50,11 @@
                                     <input asp-for="Monto" class="form-control" />
                                     <span asp-validation-for="Monto" class="text-danger"></span>
                                 </div>
+                                @*<div class="form-group">
+                                    <label asp-for="SimboloMoneda" class="control-label"></label>
+                                    <select asp-for="SimboloMoneda" class="form-control" asp-items="ViewBag.IdMoneda"></select>
+                                </div>*@
+
                                 <div class="form-group form-check">
                                     <label class="form-check-label">
                                         <input class="form-check-input" asp-for="FormaPago" /> @Html.DisplayNameFor(model => model.FormaPago)
@@ -54,7 +63,6 @@
                                 <div class="form-group pt-2">
                                     <input type="submit" value="Guardar" class="btn btn-primary" />
                                     <a asp-action="IndexPagosEmitidos" class="btn btn-secondary">Volver</a>
-
                                 </div>
 
                             </form>

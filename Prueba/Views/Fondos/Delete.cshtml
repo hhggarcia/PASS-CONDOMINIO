@@ -1,0 +1,72 @@
+﻿@model Prueba.Models.Fondo
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Content Row -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Fondos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <h6>Seguro que desea eliminar este Fondo?</h6>
+                                        <div>
+                                            <hr />
+                                            <dl class="row">
+                                                <dt class="col-sm-5">
+                                                    @Html.DisplayNameFor(model => model.Porcentaje)
+                                                </dt>
+                                                <dd class="col-sm-5">
+                                                    @Html.DisplayFor(model => model.Porcentaje)
+                                                </dd>
+                                                <dt class="col-sm-5">
+                                                    @Html.DisplayNameFor(model => model.FechaInicio)
+                                                </dt>
+                                                <dd class="col-sm-5">
+                                                    @Html.DisplayFor(model => model.FechaInicio)
+                                                </dd>
+                                                <dt class="col-sm-5">
+                                                    @Html.DisplayNameFor(model => model.FechaFin)
+                                                </dt>
+                                                <dd class="col-sm-5">
+                                                    @Html.DisplayFor(model => model.FechaFin)
+                                                </dd>
+                                                <dt class="col-sm-5">
+                                                    @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
+                                                </dt>
+                                                <dd class="col-sm-5">
+                                                    @Html.DisplayFor(model => model.IdCodCuentaNavigation.IdCodCuenta)
+                                                </dd>
+                                            </dl>
+
+                                            <form asp-action="Delete">
+                                                <input type="hidden" asp-for="IdFondo" />
+                                                <input type="submit" value="Eliminar" class="btn btn-danger" />
+                                                <a asp-controller="RelacionGastos" asp-action="RelaciondeGastos" class="btn btn-secondary">Volver</a>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

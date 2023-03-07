@@ -19,6 +19,14 @@ public partial class LdiarioGlobal
 
     public int NumAsiento { get; set; }
 
+    public decimal MontoRef { get; set; }
+
+    public decimal ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
+
     public virtual ICollection<Activo> Activos { get; } = new List<Activo>();
 
     public virtual ICollection<Gasto> Gastos { get; } = new List<Gasto>();

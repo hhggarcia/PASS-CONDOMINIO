@@ -58,7 +58,7 @@
                                             @propiedad.Codigo - @inmueble.FirstOrDefault().Nombre
                                         </h5>
                                         <h5 class="h5 mt-4">
-                                            Alicuota: @propiedad.Alicuota
+                                            Alicuota: @propiedad.Alicuota.ToString("N")
                                         </h5>
                                         <button type="button"
                                         class="btn btn-outline-success"
@@ -118,8 +118,10 @@
                                     <table class="table mb-0">
                                         <thead>
                                             <tr>
-                                                <th>Monto</th>
                                                 <th>Fecha</th>
+                                                <th>Monto</th>
+                                                <th>Tasa de Cambio $</th>
+                                                <th>Monto Ref</th>
                                             </tr>
                                         </thead>
 
@@ -129,8 +131,10 @@
                                                     @foreach (var recibo in recibos)
                                                     {
                                                     <tr>
-                                                        <td class="text-bold-500">@(recibo.Monto.ToString("N"))</td>
                                                         <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
+                                                        <td class="text-bold-500">@recibo.Monto.ToString("N") @recibo.SimboloMoneda</td>
+                                                        <td>@recibo.ValorDolar.ToString("N")</td>
+                                                        <td class="text-bold-500">@recibo.MontoRef.ToString("N") @recibo.SimboloRef</td>
                                                     </tr>
                                                     }
 
@@ -140,6 +144,8 @@
                                                 <tr>
                                                     <td class="text-bold-500">Sin</td>
                                                     <td>Recibos</td>
+                                                    <td>pendientes</td>
+                                                    <td></td>
                                                 </tr>
                                                 }
 
@@ -152,7 +158,7 @@
                                 class="btn btn-light-secondary"
                                 data-bs-dismiss="modal">
                                     <i class="bx bx-x d-block d-sm-none"></i>
-                                    <span class="d-none d-sm-block">Close</span>
+                                    <span class="d-none d-sm-block">Cerrar</span>
                                 </button>
                             </div>
                         </div>

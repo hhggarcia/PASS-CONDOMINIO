@@ -1,0 +1,76 @@
+﻿@model Prueba.Models.MonedaCond
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Content Row -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Monedas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <form asp-action="Edit">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            <input type="hidden" asp-for="IdMonedaCond" />
+                                            <div class="form-group">
+                                                <label asp-for="IdCondominio" class="control-label"></label>
+                                                <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                                                <span asp-validation-for="IdCondominio" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="IdMoneda" class="control-label"></label>
+                                                <select asp-for="IdMoneda" class="form-control" asp-items="ViewBag.IdMoneda"></select>
+                                                <span asp-validation-for="IdMoneda" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group form-check">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" asp-for="Princinpal" /> @Html.DisplayNameFor(model => model.Princinpal)
+                                                </label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Simbolo" class="control-label"></label>
+                                                <input asp-for="Simbolo" class="form-control" />
+                                                <span asp-validation-for="Simbolo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ValorDolar" class="control-label"></label>
+                                                <input asp-for="ValorDolar" class="form-control" />
+                                                <span asp-validation-for="ValorDolar" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="submit" value="Guardar" class="btn btn-primary" />
+                                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

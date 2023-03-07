@@ -15,6 +15,14 @@ public partial class RelacionGasto
 
     public int IdCondominio { get; set; }
 
+    public decimal MontoRef { get; set; }
+
+    public decimal? ValorDolar { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<ReciboCobro> ReciboCobros { get; } = new List<ReciboCobro>();

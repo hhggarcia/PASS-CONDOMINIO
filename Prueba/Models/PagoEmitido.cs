@@ -17,11 +17,15 @@ public partial class PagoEmitido
 
     public bool FormaPago { get; set; }
 
-    public int IdMoneda { get; set; }
+    public decimal ValorDolar { get; set; }
+
+    public decimal MontoRef { get; set; }
+
+    public string? SimboloMoneda { get; set; }
+
+    public string? SimboloRef { get; set; }
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-
-    public virtual MonedaCond IdPagoEmitidoNavigation { get; set; } = null!;
 
     public virtual ICollection<ReferenciasPe> ReferenciasPes { get; } = new List<ReferenciasPe>();
 }

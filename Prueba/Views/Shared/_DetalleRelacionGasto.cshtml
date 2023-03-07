@@ -24,16 +24,20 @@
         <thead>
             <tr>
                 <th>Descripción</th>
-
-                <th>Monto Bsf</th>
-                <th></th>
-                <th></th>
+                <th>Monto</th>
+                <th>Tasa de Cambio $</th>
+                <th>Monto Referencia</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tfoot>
             <tr class="tr_s">
-                <th>Sub Total: @(Model.SubTotal.ToString("N")) Bsf</th>
-                <th>Total: @(Model.Total.ToString("N")) Bsf</th>
+                <th></th>
+                <th>Sub Total: @Model.SubTotal.ToString("N") </th>
+                <th>Total: @Model.Total.ToString("N") </th>
+                <th></th>
+                <th></th>
+
             </tr>
         </tfoot>
         <tbody>
@@ -45,11 +49,10 @@
                     var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
                     <tr class="tr_s">
                         <td>@subcuenta.First().Descricion</td>
-
-                        <td>@(item.Monto.ToString("N"))</td>
+                        <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
+                        <td>@item.ValorDolar.ToString("N")</td>
+                        <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
                         <td></td>
-                        <td></td>
-
                     </tr>
                 }
 
@@ -61,6 +64,7 @@
                     <td>hay</td>
                     <td class="text-bold-500">Gastos</td>
                     <td>:D</td>
+                    <td></td>
                 </tr>
             }
 
@@ -73,23 +77,17 @@
 
                     <tr class="tr_s">
                         <td>@subcuenta.First().Descricion</td>
-
-                        <td>@(provisiones.Monto.ToString("N")) Bsf</td>
-                        <td></td>
-                        <td></td>
+                        <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
+                        <td>@provisiones.ValorDolar.ToString("N")</td>
+                        <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
+                        <td>
+                            <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                            <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
+                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
+                        </td>
                     </tr>
-
                 }
 
-            }
-            else
-            {
-                <tr class="tr_s">
-                    <td class="text-bold-500">No</td>
-                    <td>hay</td>
-                    <td class="text-bold-500">Provisiones</td>
-                    <td>:D</td>
-                </tr>
             }
 
             @if (Model.Fondos != null && Model.Fondos.Any()
@@ -99,26 +97,21 @@
                 {
                     var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
 
-                   
-                        <tr class="tr_s">
-                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
-                           
-                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) Bsf</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    
+
+                    <tr class="tr_s">
+                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+
+                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                            <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
+                        </th>
+                    </tr>
 
                 }
-            }
-            else
-            {
-                <tr class="tr_s">
-                    <td class="text-bold-500">No</td>
-                    <td>hay</td>
-                    <td class="text-bold-500">Fondos</td>
-                    <td>:D</td>
-                </tr>
             }
 
         </tbody>
