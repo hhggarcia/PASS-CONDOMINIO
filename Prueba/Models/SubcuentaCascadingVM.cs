@@ -2,7 +2,7 @@
 
 namespace Prueba.Models
 {
-    public class SubcuentaCascadingVM
+    public class SubcuentaCascadingVM:SubCuenta
     {
         public SubcuentaCascadingVM()
         {
@@ -14,10 +14,8 @@ namespace Prueba.Models
         public List<SelectListItem>? Grupos { get; set; }
         public List<SelectListItem>? Cuentas { get; set; }
 
-        public string Descripcion { get; set; }
-        public string Codigo { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
         public short IdClase { get; set; }
         public short IdGrupo { get; set; }
-        public short IdCuenta { get; set; }
     }
 }

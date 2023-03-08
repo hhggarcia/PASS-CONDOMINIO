@@ -16,7 +16,7 @@ namespace Prueba.Models
         public IList<SelectListItem>? Propiedades { get; set; }
         public IList<SelectListItem>? RecibosModel { get; set; }
         public decimal Saldo { get; set; }
-        public decimal Deuda { get; set; } 
+        public decimal Deuda { get; set; }
         public IList<ReciboCobro>? Recibos { get; set; }
         public int IdPropiedad { get; set; }
         public int IdRecibo { get; set; }

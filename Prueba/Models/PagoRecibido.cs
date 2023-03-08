@@ -1,23 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Prueba.Models;
 
 public partial class PagoRecibido
 {
+    [Required]
     public int IdPagoRecibido { get; set; }
 
+    [Required]
     public int IdPropiedad { get; set; }
 
+    [Required]
     public bool FormaPago { get; set; }
+
+    [Required]
+    [Range(1, maximum: 1000000, ErrorMessage = "El monto no puede ser superior a {2}")]
 
     public decimal Monto { get; set; }
 
+    [Required]
+    [DataType(DataType.DateTime)]
+    [Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
     public DateTime Fecha { get; set; }
 
+    [Required]
     public int IdSubCuenta { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    [Required]
+    [StringLength(maximumLength: 50, ErrorMessage = "No puede ser mayor a {1} caracteres")]
+    public string Concepto { get; set; } = string.Empty;
 
     public bool Confirmado { get; set; }
 

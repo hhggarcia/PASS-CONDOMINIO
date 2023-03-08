@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -42,16 +41,17 @@
                                     </div>
                                     <div class="form-group">
                                         @Html.DisplayFor(model => model.Monto)
+                                        @Html.DisplayFor(model => model.SimboloMoneda)
+
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                @*<div class="col-md-6">
                                     <div class="form-group">
                                         @Html.DisplayNameFor(model => model.SimboloMoneda)
                                     </div>
                                     <div class="form-group">
-                                        @Html.DisplayFor(model => model.SimboloMoneda)
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         @Html.DisplayNameFor(model => model.ValorDolar)
@@ -65,17 +65,18 @@
                                         @Html.DisplayNameFor(model => model.MontoRef)
                                     </div>
                                     <div class="form-group">
-                                        @Html.DisplayFor(model => model.MontoRef)
+                                        @Html.DisplayFor(model => model.MontoRef) 
+                                        @Html.DisplayFor(model => model.SimboloRef)
+
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                @*<div class="col-md-6">
                                     <div class="form-group">
                                         @Html.DisplayNameFor(model => model.SimboloRef)
                                     </div>
                                     <div class="form-group">
-                                        @Html.DisplayFor(model => model.SimboloRef)
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         @Html.DisplayNameFor(model => model.FormaPago)
