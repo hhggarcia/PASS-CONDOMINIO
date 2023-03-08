@@ -91,11 +91,21 @@ namespace Prueba.Controllers
             try
             {
                 var existMoneda = _context.MonedaConds.Select(c => c.Simbolo == monedaCond.Simbolo);
+                var existPrincipal = _context.MonedaConds.Select(c => c.Princinpal);
                 if (existMoneda != null)
                 {
                     var modeloError = new ErrorViewModel()
                     {
                         RequestId = "Ya existe una moneda con este símbolo!"
+                    };
+
+                    return View("Error", modeloError);
+                }
+                else if (existPrincipal != null)
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Ya existe una moneda Principal!"
                     };
 
                     return View("Error", modeloError);
