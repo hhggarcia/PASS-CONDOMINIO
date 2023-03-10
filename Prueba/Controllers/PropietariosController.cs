@@ -181,7 +181,7 @@ namespace Prueba.Controllers
         {
             PagoRecibidoVM modelo = new PagoRecibidoVM();
 
-            if (valor > 0)
+            if (valor > 0)      
             {
                 var propiedad = await _context.Propiedads.FindAsync(valor);
 

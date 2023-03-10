@@ -90,8 +90,8 @@ namespace Prueba.Controllers
         {
             try
             {
-                var existMoneda = _context.MonedaConds.Select(c => c.Simbolo == monedaCond.Simbolo);
-                var existPrincipal = _context.MonedaConds.Select(c => c.Princinpal);
+                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo);
+                var existPrincipal = _context.MonedaConds.Where(c => c.Princinpal);
                 if (existMoneda != null)
                 {
                     var modeloError = new ErrorViewModel()
