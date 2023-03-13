@@ -223,7 +223,8 @@ namespace Prueba.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("RelaciondeGastos", "RelacionGastos");
+
         }
 
         private bool FondoExists(int id)
