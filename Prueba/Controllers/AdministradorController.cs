@@ -70,12 +70,13 @@ namespace Prueba.Controllers
 
                 //CARGAR LIST DE CONDOMINIOS
                 var condominios = _context.Condominios.Include(c => c.IdAdministradorNavigation)
+                    .Include(c => c.Inmuebles)
                     .Where(c => c.IdAdministrador == idAdministrador);
 
                 foreach (var item in condominios)
                 {
                     var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
-                        .Where(c => c.IdInmueble == item.IdCondominio);
+                        .Where(c => c.IdCondominio == item.IdCondominio);
                 }
 
                 var condominiosModel = await condominios.ToListAsync();

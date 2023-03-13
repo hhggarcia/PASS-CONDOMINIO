@@ -117,7 +117,7 @@ namespace Prueba.Repositories
                 {
                     return resultado;
                 }
-                else if (moneda.Equals(monedaPrincipal))
+                else if (moneda.First().Equals(monedaPrincipal.First()))
                 {
                     montoReferencia = provision.Monto;
                 }
@@ -130,7 +130,7 @@ namespace Prueba.Repositories
 
                 provision.SimboloRef = monedaPrincipal.First().Simbolo;
                 provision.MontoRef = montoReferencia;
-                provision.ValorDolar = moneda.First().ValorDolar;
+                provision.ValorDolar = monedaPrincipal.First().ValorDolar;
 
                 int numAsiento = 1;
 
@@ -150,7 +150,7 @@ namespace Prueba.Repositories
                     MontoRef = montoReferencia,
                     SimboloRef = monedaPrincipal.First().Simbolo,
                     SimboloMoneda = moneda.First().Simbolo,
-                    ValorDolar = moneda.First().ValorDolar
+                    ValorDolar = monedaPrincipal.First().ValorDolar
                 };
                 LdiarioGlobal asientoGastoProvisionado = new LdiarioGlobal
                 {
@@ -163,7 +163,7 @@ namespace Prueba.Repositories
                     MontoRef = montoReferencia,
                     SimboloRef = monedaPrincipal.First().Simbolo,
                     SimboloMoneda = moneda.First().Simbolo,
-                    ValorDolar = moneda.First().ValorDolar
+                    ValorDolar = monedaPrincipal.First().ValorDolar
 
                 };
                 using (var db_context = new PruebaContext())

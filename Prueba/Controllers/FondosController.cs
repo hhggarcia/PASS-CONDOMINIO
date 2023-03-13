@@ -47,7 +47,8 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            return View(fondo);
+            return RedirectToAction("RelaciondeGastos", "RelacionGastos");
+
         }
 
         // GET: Fondos/Create

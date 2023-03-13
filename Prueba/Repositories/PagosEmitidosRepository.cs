@@ -105,7 +105,7 @@ namespace Prueba.Repositories
 
             IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
                                                join d in cuentasContablesCond
-                                                on c.Id equals d.IdCodCuenta
+                                               on c.Id equals d.IdCodigo
                                                select c;
 
             //CARGAR SELECT DE SUB CUENTAS DE BANCOS
@@ -118,12 +118,13 @@ namespace Prueba.Repositories
 
             IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
                                                      join d in cuentasContablesCond
-                                                     on c.Id equals d.IdCodCuenta
+                                                     on c.Id equals d.IdCodigo
                                                      where c.IdCuenta == bancos.First().Id
                                                      select c;
+
             IQueryable<SubCuenta> subcuentasCaja = from c in _context.SubCuenta
                                                    join d in cuentasContablesCond
-                                                   on c.Id equals d.IdCodCuenta
+                                                   on c.Id equals d.IdCodigo    
                                                    where c.IdCuenta == caja.First().Id
                                                    select c;
 
@@ -215,7 +216,7 @@ namespace Prueba.Repositories
                 Fecha = modelo.Fecha,
                 Monto = modelo.Monto,
                 MontoRef = montoReferencia,
-                ValorDolar = moneda.ValorDolar,
+                ValorDolar = monedaPrincipal.First().ValorDolar,
                 SimboloMoneda = moneda.Simbolo,
                 SimboloRef = monedaPrincipal.First().Simbolo
             };
@@ -258,7 +259,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
                         };
@@ -271,7 +272,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -285,7 +286,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -334,7 +335,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -348,7 +349,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -423,7 +424,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -437,7 +438,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -451,7 +452,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -504,7 +505,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
@@ -518,7 +519,7 @@ namespace Prueba.Repositories
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
-                            ValorDolar = moneda.ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = moneda.Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 

@@ -23,14 +23,14 @@ public partial class Provision
     public decimal Monto { get; set; }
     
     [DataType(DataType.DateTime)]
-    [Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
+    //[Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
 
     [Display(Name = "Desde")]
     [Required]
     public DateTime FechaInicio { get; set; }
 
     [DataType(DataType.DateTime)]
-    [Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
+    //[Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
 
     [Display(Name = "Hasta")]
     [Required]

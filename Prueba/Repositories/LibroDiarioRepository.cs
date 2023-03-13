@@ -59,7 +59,7 @@ namespace Prueba.Repositories
                     if (asiento.IdCodCuenta == ccCondominio.IdCodCuenta)
                     {
                         asientosCondominio.Add(asiento);
-                        var aux = subcuentas.Where(c => c.Id == asiento.IdCodCuenta).ToList();
+                        var aux = subcuentas.Where(c => c.Id == ccCondominio.IdCodigo).ToList();
                         subCuentasModel.Add(aux.First());
                         if (asiento.TipoOperacion)
                         {
@@ -83,6 +83,7 @@ namespace Prueba.Repositories
             {
                 AsientosCondominio = asientosCondominio,
                 CuentasDiarioCondominio = subCuentasModel,
+                CuentasCondominio = cuentasContablesCond.ToList(),
                 Clases = clases.ToList(),
                 Grupos = grupos.ToList(),
                 Cuentas = cuentas.ToList(),

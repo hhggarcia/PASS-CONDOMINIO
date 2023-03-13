@@ -4,6 +4,7 @@
     {
         public IList<LdiarioGlobal>? AsientosCondominio { get; set; }
         public IList<SubCuenta>? CuentasDiarioCondominio { get; set; }
+        public IList<CodigoCuentasGlobal>? CuentasCondominio { get; set; }
         public IList<Clase>? Clases { get; set; }
         public IList<Grupo>? Grupos { get; set; }
         public IList<Cuenta>? Cuentas { get; set; }

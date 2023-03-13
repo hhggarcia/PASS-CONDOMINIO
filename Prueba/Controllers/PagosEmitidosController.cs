@@ -154,7 +154,7 @@ namespace Prueba.Controllers
                 if (moneda.First().Equals(monedaPrincipal.First()))
                 {
                     montoReferencia = pagoEmitido.Monto;
-                    
+
                 }
                 else if (!moneda.First().Equals(monedaPrincipal.First()))
                 {
@@ -214,7 +214,7 @@ namespace Prueba.Controllers
                 };
 
                 return View("Error", modeloError);
-            }            
+            }
         }
 
         // POST: PagosEmitidos/Delete/5
@@ -266,7 +266,7 @@ namespace Prueba.Controllers
                                         join c in _context.Moneda
                                         on m.IdMoneda equals c.IdMoneda
                                         where m.IdCondominio == idCondominio
-                                        select m;               
+                                        select m;
 
 
                 ViewData["IdMoneda"] = new SelectList(condominioMonedas, "IdMonedaCond", "Simbolo");
@@ -299,18 +299,18 @@ namespace Prueba.Controllers
             {
                 modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                if (ModelState.IsValid)
+                //if (ModelState.IsValid)
+                //{
+                var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
+
+                if (resultado)
                 {
-                    var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
+                    TempData.Keep();
 
-                    if (resultado)
-                    {
-                        TempData.Keep();
-
-                        return RedirectToAction("IndexPagosEmitidos");
-                    }
-
+                    return RedirectToAction("IndexPagosEmitidos");
                 }
+
+                //}
 
                 TempData.Keep();
 

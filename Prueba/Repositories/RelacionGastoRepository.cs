@@ -62,10 +62,15 @@ namespace Prueba.Repositories
             var proviciones = from p in _context.Provisiones
                               join c in _context.CodigoCuentasGlobals
                               on p.IdCodCuenta equals c.IdCodCuenta
+                              where c.IdCondominio == id
                               where DateTime.Compare(fechaActual, p.FechaFin) < 0 && DateTime.Compare(fechaActual, p.FechaInicio) >= 0
                               select p;
             // BUSCAR FONDOS
             var fondos = from f in _context.Fondos
+                         join c in _context.CodigoCuentasGlobals
+                         on f.IdCodCuenta equals c.IdCodCuenta
+                         where c.IdCondominio == id
+                         where DateTime.Compare(fechaActual, f.FechaFin) < 0 && DateTime.Compare(fechaActual, f.FechaInicio) >= 0
                          select f;
 
             // CARGAR DIARIO COMPLETO
@@ -73,6 +78,7 @@ namespace Prueba.Repositories
                          join c in cuentasContablesCond
                          on d.IdCodCuenta equals c.IdCodCuenta
                          where d.Fecha.Month == DateTime.Today.Month
+                         where c.IdCondominio == id
                          select d;
 
             // CARGAR CUENTAS GASTOS DEL CONDOMINIO

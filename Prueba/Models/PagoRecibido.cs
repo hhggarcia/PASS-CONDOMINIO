@@ -22,7 +22,7 @@ public partial class PagoRecibido
 
     [Required]
     [DataType(DataType.DateTime)]
-    [Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
+    //[Range(typeof(DateTime), "1/1/2023", "12/31/2023", ErrorMessage = "la fecha debe estar entre {1} and {2}")]
     public DateTime Fecha { get; set; }
 
     [Required]

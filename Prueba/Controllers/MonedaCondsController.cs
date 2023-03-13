@@ -90,27 +90,33 @@ namespace Prueba.Controllers
         {
             try
             {
-                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo);
-                var existPrincipal = _context.MonedaConds.Where(c => c.Princinpal);
-                if (existMoneda != null)
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo && c.IdCondominio == idCondominio);
+                var existPrincipal = _context.MonedaConds.Where(c => c.Princinpal && c.IdCondominio == idCondominio);
+                if (existMoneda != null && existMoneda.Any())
                 {
                     var modeloError = new ErrorViewModel()
                     {
                         RequestId = "Ya existe una moneda con este símbolo!"
                     };
-
+                    TempData.Keep();
                     return View("Error", modeloError);
                 }
-                else if (existPrincipal != null)
+                else if (existPrincipal != null && existPrincipal.Any() && monedaCond.Princinpal)
                 {
                     var modeloError = new ErrorViewModel()
                     {
                         RequestId = "Ya existe una moneda Principal!"
                     };
+                    TempData.Keep();
 
                     return View("Error", modeloError);
                 }
                 var result = await _repoMoneda.Crear(monedaCond);
+
+                TempData.Keep();
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -119,6 +125,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }

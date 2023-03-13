@@ -352,43 +352,43 @@ namespace Prueba.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                //if (ModelState.IsValid)
+                //{
+                // REGISTRAR SUB CUENTA CON IDCUENTA, DESCRIP Y CODIGO
+
+                var nuevaSubCuenta = new SubCuenta
                 {
-                    // REGISTRAR SUB CUENTA CON IDCUENTA, DESCRIP Y CODIGO
+                    IdCuenta = modelo.IdCuenta,
+                    Descricion = modelo.Descripcion,
+                    Codigo = modelo.Codigo
+                };
 
-                    var nuevaSubCuenta = new SubCuenta
-                    {
-                        IdCuenta = modelo.IdCuenta,
-                        Descricion = modelo.Descripcion,
-                        Codigo = modelo.Codigo
-                    };
-
-                    using (var _dbContext = new PruebaContext())
-                    {
-                        _dbContext.Add(nuevaSubCuenta);
-                        _dbContext.SaveChanges();
-                    }
-
-                    // REGISTRAR EN CUENTAS CONTABLES GLOBAL ID CONDOMINIO Y ID SUB CUENTA
-                    //recuperar el id del condominio
-                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                    var nuevoCC = new CodigoCuentasGlobal
-                    {
-                        IdCodigo = nuevaSubCuenta.Id,
-                        IdCondominio = idCondominio
-                    };
-
-                    using (var _dContext = new PruebaContext())
-                    {
-                        _dContext.Add(nuevoCC);
-                        _dContext.SaveChanges();
-                    }
-
-                    return RedirectToAction("CuentasContables");
-
+                using (var _dbContext = new PruebaContext())
+                {
+                    _dbContext.Add(nuevaSubCuenta);
+                    _dbContext.SaveChanges();
                 }
 
-                return View(modelo);
+                // REGISTRAR EN CUENTAS CONTABLES GLOBAL ID CONDOMINIO Y ID SUB CUENTA
+                //recuperar el id del condominio
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var nuevoCC = new CodigoCuentasGlobal
+                {
+                    IdCodigo = nuevaSubCuenta.Id,
+                    IdCondominio = idCondominio
+                };
+
+                using (var _dContext = new PruebaContext())
+                {
+                    _dContext.Add(nuevoCC);
+                    _dContext.SaveChanges();
+                }
+
+                return RedirectToAction("CuentasContables");
+
+                //}
+
+                //return View(modelo);
 
             }
             catch (Exception ex)

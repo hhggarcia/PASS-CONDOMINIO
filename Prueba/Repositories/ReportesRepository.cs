@@ -58,7 +58,7 @@ namespace Prueba.Repositories
                     var recibos = _context.ReciboCobros
                         .Where(c => c.IdPropiedad == propiedad.IdPropiedad
                         && c.Pagado == false)
-                        .Sum(c => c.Monto);
+                        .Sum(c => c.MontoRef);
 
                     totalPorCobrar += recibos;
                 }
@@ -287,7 +287,7 @@ namespace Prueba.Repositories
                         .Where(c => c.IdPropiedad == propiedad.IdPropiedad
                         && c.Fecha.Month == mes
                         && c.Confirmado == true)
-                        .Sum(c => c.Monto);
+                        .Sum(c => c.MontoRef);
 
                     ingresoMes += pagosMes;
                 }
@@ -309,7 +309,7 @@ namespace Prueba.Repositories
                 var pagosEmitidosMes = _context.PagoEmitidos
                     .Where(c => c.IdCondominio == condominio.IdCondominio 
                     && c.Fecha.Month == mes)
-                    .Sum(c => c.Monto);
+                    .Sum(c => c.MontoRef);
 
                 egresoMes += pagosEmitidosMes;
             }

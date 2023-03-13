@@ -279,6 +279,7 @@ namespace Prueba.Controllers
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var relacionesDeGasto = from c in _context.RelacionGastos
+                                        where c.IdCondominio == idCondominio
                                         select c;
 
                 var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month == DateTime.Today.Month).ToListAsync();
