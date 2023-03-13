@@ -34,7 +34,7 @@ public partial class PagoRecibido
 
     public bool Confirmado { get; set; }
 
-    public decimal? ValorDolar { get; set; }
+    public decimal ValorDolar { get; set; }
 
     public decimal MontoRef { get; set; }
 

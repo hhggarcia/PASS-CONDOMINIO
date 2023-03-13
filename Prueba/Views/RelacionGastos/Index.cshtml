@@ -46,8 +46,12 @@
                                                             @Html.DisplayNameFor(model => model.TotalMensual)
                                                         </th>
                                                         <th>
+                                                            @Html.DisplayNameFor(model => model.ValorDolar)
+                                                        </th>
+                                                        <th>
                                                             @Html.DisplayNameFor(model => model.MontoRef)
                                                         </th>
+                                                        
                                                         
 
                                                         @*<th>
@@ -66,13 +70,22 @@
                                                             </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.SubTotal)
+                                                                @Html.DisplayFor(modelItem => item.SimboloMoneda)
+
                                                             </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.TotalMensual)
+                                                                @Html.DisplayFor(modelItem => item.SimboloMoneda)
+
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.ValorDolar)
                                                             </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.MontoRef)
+                                                                @Html.DisplayFor(modelItem => item.SimboloRef)
                                                             </td>
+                                                            
                                                             
                                                             
                                                             @*<td>

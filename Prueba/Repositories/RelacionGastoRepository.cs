@@ -452,6 +452,9 @@ namespace Prueba.Repositories
                 {
                     // buscar la propiedad 
                     var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+
+                    var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdRecibo == recibo.IdReciboCobro).ToListAsync();
+
                     if (propiedad != null)
                     {
                         // verificar si es el recibo atual o uno viejo
@@ -486,6 +489,15 @@ namespace Prueba.Repositories
                         }
                     }
                     _context.ReciboCobros.Remove(recibo);
+
+                    if (pagosRecibos.Any())
+                    {
+                        foreach (var item in pagosRecibos)
+                        {
+                            _context.PagosRecibos.Remove(item);
+                        }
+                    }
+                    
                 }
 
                 await _context.SaveChangesAsync();

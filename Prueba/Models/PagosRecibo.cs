@@ -5,9 +5,9 @@ namespace Prueba.Models;
 
 public partial class PagosRecibo
 {
-    public int IdPago { get; set; }
+    public int? IdPago { get; set; }
 
-    public int IdRecibo { get; set; }
+    public int? IdRecibo { get; set; }
 
     public int IdPagoRecibo { get; set; }
 

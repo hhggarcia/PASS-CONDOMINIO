@@ -307,10 +307,10 @@ namespace Prueba.Controllers
                         TotalMensual = modelo.Total,
                         Fecha = DateTime.Today,
                         IdCondominio = idCondominio,
-                        MontoRef = modelo.Total,
+                        MontoRef = modelo.Total / monedaPrincipal.First().ValorDolar,
                         ValorDolar = monedaPrincipal.First().ValorDolar,
                         SimboloMoneda = monedaPrincipal.First().Simbolo,
-                        SimboloRef = monedaPrincipal.First().Simbolo
+                        SimboloRef = "$"
                     };
 
                     using (var db_context = new PruebaContext())
@@ -378,10 +378,10 @@ namespace Prueba.Controllers
                                 recibo.Monto = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 recibo.Fecha = DateTime.Today;
                                 recibo.Abonado = 0;
-                                recibo.MontoRef = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                recibo.MontoRef = (relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100)/ monedaPrincipal.First().ValorDolar;
                                 recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
                                 recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
-                                recibo.SimboloRef = monedaPrincipal.First().Simbolo;
+                                recibo.SimboloRef = "$";
                             }
                             else
                             {
@@ -390,10 +390,10 @@ namespace Prueba.Controllers
                                 recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                 recibo.Fecha = DateTime.Today;
                                 recibo.Abonado = 0;
-                                recibo.MontoRef = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                recibo.MontoRef = (relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100) / monedaPrincipal.First().ValorDolar;
                                 recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
                                 recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
-                                recibo.SimboloRef = monedaPrincipal.First().Simbolo;
+                                recibo.SimboloRef = "$";
                             }
 
                             recibosCobroCond.Add(recibo);

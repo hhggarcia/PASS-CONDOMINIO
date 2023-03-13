@@ -267,7 +267,10 @@ namespace Prueba.Controllers
                         if (pago.FormaPago)
                         {
                             var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
-                            _context.ReferenciasPrs.Remove(referencia.First());
+                            var pagosRecibo = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+
+                            _context.ReferenciasPrs.RemoveRange(referencia);
+                            _context.RemoveRange(pagosRecibo);
                             _context.PagoRecibidos.Remove(pago);                            
                         }
                         else
@@ -336,6 +339,8 @@ namespace Prueba.Controllers
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
 
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
                 // buscar pago
                 var pago = await _context.PagoRecibidos.FindAsync(id);
 
@@ -354,7 +359,14 @@ namespace Prueba.Controllers
                             .ToListAsync();
 
                         // buscar subcuenta contable donde esta el pago del condominio
-                        var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
+                        //var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
+
+                        var cuentaCondominio = from s in _context.SubCuenta
+                                               join cc in _context.CodigoCuentasGlobals
+                                               on s.Id equals cc.IdCodigo
+                                               where cc.IdCondominio == idCondominio
+                                               where s.IdCuenta == 15 && s.Codigo == "01"
+                                               select s;
 
                         // buscar referencia si tiene
                         var referencias = new List<ReferenciasPr>();
@@ -436,6 +448,10 @@ namespace Prueba.Controllers
                                     Monto = pago.Monto,
                                     TipoOperacion = true,
                                     NumAsiento = numAsiento + 1,
+                                    MontoRef = pago.MontoRef,
+                                    ValorDolar = pago.ValorDolar,
+                                    SimboloMoneda = pago.SimboloMoneda,
+                                    SimboloRef = pago.SimboloRef
                                     //IdDolar = reciboActual.First().IdDolar
                                 };
 
@@ -447,6 +463,10 @@ namespace Prueba.Controllers
                                     Monto = pago.Monto,
                                     TipoOperacion = false,
                                     NumAsiento = numAsiento + 1,
+                                    MontoRef = pago.MontoRef,
+                                    ValorDolar = pago.ValorDolar,
+                                    SimboloMoneda = pago.SimboloMoneda,
+                                    SimboloRef = pago.SimboloRef
                                     //IdDolar = reciboActual.First().IdDolar
                                 };
 

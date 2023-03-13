@@ -58,7 +58,7 @@ namespace Prueba.Repositories
                     var recibos = _context.ReciboCobros
                         .Where(c => c.IdPropiedad == propiedad.IdPropiedad
                         && c.Pagado == false)
-                        .Sum(c => c.MontoRef);
+                        .Sum(c => c.Monto);
 
                     totalPorCobrar += recibos;
                 }
