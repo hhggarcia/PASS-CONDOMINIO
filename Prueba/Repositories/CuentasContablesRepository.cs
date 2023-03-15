@@ -9,6 +9,7 @@ namespace Prueba.Repositories
         Task<int> CrearFondo(Fondo fondo);
         Task<bool> CrearProvision(Provision provision, int idCondominio);
         Task<int> EditarProvision(Provision provision, int idCondominio);
+        Task<int> EliminarSubCuenta(int id);
         Task<ICollection<CodigoCuentasGlobal>> ObtenerCuentasCond(int id);
         Task<ICollection<SubCuenta>> ObtenerFondos(int id);
         Task<ICollection<SubCuenta>> ObtenerGastos(int id);
@@ -27,6 +28,11 @@ namespace Prueba.Repositories
             _context = context;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ICollection<CodigoCuentasGlobal>> ObtenerCuentasCond(int id)
         {
             var cuentasContables = await _context.CodigoCuentasGlobals
@@ -37,6 +43,12 @@ namespace Prueba.Repositories
 
             return cuentasContables;
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ICollection<SubCuenta>> ObtenerSubcuentas(int id)
         {
             var subcuentas = from subcuenta in _context.SubCuenta
@@ -47,6 +59,12 @@ namespace Prueba.Repositories
 
             return await subcuentas.ToListAsync();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ICollection<SubCuenta>> ObtenerGastos(int id)
         {
             var cuentasCond = await ObtenerCuentasCond(id);
@@ -70,6 +88,12 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ICollection<SubCuenta>> ObtenerProvisiones(int id)
         {
             var cuentasCond = await ObtenerCuentasCond(id);
@@ -90,6 +114,13 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="provision"></param>
+        /// <param name="idCondominio"></param>
+        /// <returns></returns>
         public async Task<bool> CrearProvision(Provision provision, int idCondominio)
         {
             var resultado = false;
@@ -134,9 +165,15 @@ namespace Prueba.Repositories
 
                 int numAsiento = 1;
 
-                if (_context.LdiarioGlobals.Count() > 0)
+                var diarioCondominio = from a in _context.LdiarioGlobals
+                                       join c in _context.CodigoCuentasGlobals
+                                       on a.IdCodCuenta equals c.IdCodCuenta
+                                       where c.IdCondominio == idCondominio
+                                       select a;
+
+                if (diarioCondominio.Count() > 0)
                 {
-                    numAsiento = _context.LdiarioGlobals.ToList().Last().NumAsiento + 1;
+                    numAsiento = diarioCondominio.ToList().Last().NumAsiento + 1;
                 }
 
                 LdiarioGlobal asientoProvision = new LdiarioGlobal
@@ -183,6 +220,13 @@ namespace Prueba.Repositories
                 return resultado;
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="provision"></param>
+        /// <param name="idCondominio"></param>
+        /// <returns></returns>
         public async Task<int> EditarProvision(Provision provision, int idCondominio)
         {
             var idProvision = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == provision.IdCodCuenta).FirstAsync();
@@ -222,6 +266,12 @@ namespace Prueba.Repositories
             _context.Update(provision);
             return await _context.SaveChangesAsync();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ICollection<SubCuenta>> ObtenerFondos(int id)
         {
             var cuentasCond = await ObtenerCuentasCond(id);
@@ -247,6 +297,12 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fondo"></param>
+        /// <returns></returns>
         public async Task<int> CrearFondo(Fondo fondo)
         {
             var idFondo = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == fondo.IdCodCuenta).FirstAsync();
@@ -256,6 +312,44 @@ namespace Prueba.Repositories
             _context.Add(fondo);
 
             return await _context.SaveChangesAsync();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<int> EliminarSubCuenta(int id)
+        {
+            var subCuenta = await _context.SubCuenta.FindAsync(id);
+
+            if (subCuenta != null)
+            {
+                // buscar codigo cuentas -> codigo
+                var codigosCuentas = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == subCuenta.Id).ToListAsync();
+                // eliminar del condominio
+                if (codigosCuentas != null && codigosCuentas.Any())
+                {
+                    foreach (var cuenta in codigosCuentas)
+                    {
+                        var asientos = await _context.LdiarioGlobals.Where(c => c.IdCodCuenta == cuenta.IdCodCuenta).ToListAsync();
+
+                        if (asientos.Any())
+                        {
+                            return 0;
+                        }
+                        //foreach (var asiento in asientos)
+                        //{
+                        //    _context.LdiarioGlobals.Remove(asiento);
+                        //}
+                        _context.CodigoCuentasGlobals.Remove(cuenta);
+                    }
+                }
+                // eliminar subcuenta
+                _context.SubCuenta.Remove(subCuenta);
+            }
+
+            return await _context.SaveChangesAsync();            
         }
         public void ObtenerBancos(int id)
         {

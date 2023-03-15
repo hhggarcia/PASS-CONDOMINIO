@@ -432,9 +432,15 @@ namespace Prueba.Controllers
 
                                 int numAsiento = 1;
 
-                                if (dbContext.LdiarioGlobals.Count() > 0)
+                                var diarioCondominio = from a in _context.LdiarioGlobals
+                                                       join c in _context.CodigoCuentasGlobals
+                                                       on a.IdCodCuenta equals c.IdCodCuenta
+                                                       where c.IdCondominio == idCondominio
+                                                       select a;
+
+                                if (diarioCondominio.Count() > 0)
                                 {
-                                    numAsiento = dbContext.LdiarioGlobals.ToList().Last().NumAsiento;
+                                    numAsiento = diarioCondominio.ToList().Last().NumAsiento + 1;
                                 }
 
                                 // libro diario cuenta afecada

@@ -27,11 +27,11 @@ namespace Prueba.Controllers
         }
 
         // GET: LdiarioGlobals
-        public async Task<IActionResult> Index()
-        {
-            var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
-            return View(await pruebaContext.ToListAsync());
-        }
+        //public async Task<IActionResult> Index()
+        //{
+        //    var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
+        //    return View(await pruebaContext.ToListAsync());
+        //}
 
         // GET: LdiarioGlobals/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -70,7 +70,7 @@ namespace Prueba.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _repoLibroDiario.Crear(ldiarioGlobal);
-                return RedirectToAction(nameof(LibroDiario));
+                return RedirectToAction(nameof(Index));
             }
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
             //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
@@ -125,7 +125,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(LibroDiario));
+            return RedirectToAction(nameof(Index));
             //}
             //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", ldiarioGlobal.IdCodCuenta);
             //ViewData["IdDolar"] = new SelectList(_context.ReferenciaDolars, "IdReferencia", "Valor", ldiarioGlobal.IdDolar);
@@ -164,14 +164,14 @@ namespace Prueba.Controllers
 
             var result = await _repoLibroDiario.Eliminar(id);
 
-            return RedirectToAction(nameof(LibroDiario));
+            return RedirectToAction(nameof(Index));
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public IActionResult LibroDiario()
+        public IActionResult Index()
         {
             try
             {

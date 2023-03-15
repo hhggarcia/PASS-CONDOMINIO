@@ -22,6 +22,7 @@
                         <div class="form-body">
                             <div class="row">
                                 <h6>Seguro que desea eliminar esta Sub Cuenta?</h6>
+                                @*<h6>Se eliminarán los asientos del Libro Diario con esta Sub Cuenta!</h6>*@
                                 <div>
                                     <hr />
 
@@ -49,7 +50,7 @@
                                     <form asp-action="Delete">
                                         <input type="hidden" asp-for="Id" />
                                         <input type="submit" value="Eliminar" class="btn btn-danger" />
-                                        <a asp-action="CuentasContables" class="btn btn-secondary">Volver</a>
+                                        <a asp-action="Index" class="btn btn-secondary">Volver</a>
 
                                     </form>
                                 </div>

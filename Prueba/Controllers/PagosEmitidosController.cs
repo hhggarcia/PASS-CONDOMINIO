@@ -297,22 +297,34 @@ namespace Prueba.Controllers
         {
             try
             {
-                modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-                //if (ModelState.IsValid)
-                //{
-                var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
-
-                if (resultado)
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
+                    modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    //if (ModelState.IsValid)
+                    //{
+                    var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
+
+                    if (resultado)
+                    {
+
+                        TempData.Keep();
+
+                        return RedirectToAction("IndexPagosEmitidos");
+                    }
+
+                    //}
+                    ViewBag.FormaPago = "fallido";
+
                     TempData.Keep();
 
-                    return RedirectToAction("IndexPagosEmitidos");
+                    return RedirectToAction("RegistrarPagos");
+
                 }
 
-                //}
-
                 TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
 
                 return RedirectToAction("RegistrarPagos");
             }

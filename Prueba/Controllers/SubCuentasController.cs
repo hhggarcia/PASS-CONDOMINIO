@@ -27,11 +27,11 @@ namespace Prueba.Controllers
         }
 
         // GET: SubCuentas
-        public async Task<IActionResult> Index()
-        {
-            var pruebaContext = _context.SubCuenta.Include(s => s.IdCuentaNavigation);
-            return View(await pruebaContext.ToListAsync());
-        }
+        //public async Task<IActionResult> Index()
+        //{
+        //    var pruebaContext = _context.SubCuenta.Include(s => s.IdCuentaNavigation);
+        //    return View(await pruebaContext.ToListAsync());
+        //}
 
         // GET: SubCuentas/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -170,7 +170,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(CuentasContables));
+            return RedirectToAction(nameof(Index));
             //}
             //ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Id", subCuenta.IdCuenta);
             //return View(subCuenta);
@@ -204,21 +204,26 @@ namespace Prueba.Controllers
             {
                 return Problem("Entity set 'PruebaContext.SubCuenta'  is null.");
             }
-            var subCuenta = await _context.SubCuenta.FindAsync(id);
-            if (subCuenta != null)
-            {
-                _context.SubCuenta.Remove(subCuenta);
-            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(CuentasContables));
+            var result = await _repoCuentasContables.EliminarSubCuenta(id);
+
+            if (result == 0)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "para eliminar esta Sub Cuenta debe eliminar antes los asientos del Libro Diario afectados!"
+                };
+
+                return View("Error", modeloError);
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         /// <summary>
         /// Busca las cuentas contables de un condominio
         /// </summary>
         /// <returns>Vista del Plan de Cuentas</returns>
-        public IActionResult CuentasContables()
+        public IActionResult Index()
         {
             try
             {

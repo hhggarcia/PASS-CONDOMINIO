@@ -187,6 +187,11 @@ namespace Prueba.Repositories
             bool resultado = false;
             decimal montoReferencia = 0;
 
+            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == modelo.IdSubcuenta).ToListAsync();
+            var idCodCuenta = from c in _context.CodigoCuentasGlobals
+                              where c.IdCodigo == modelo.IdSubcuenta
+                              select c;
+
             // moneda del pago
             var moneda = await _context.MonedaConds.FindAsync(modelo.IdMonedaCond);
 
@@ -228,17 +233,27 @@ namespace Prueba.Repositories
             var diario = from l in _context.LdiarioGlobals
                          select l;
 
-            int numAsiento = 1;
+            int numAsiento = 0;
 
-            if (diario.Count() > 0)
+            var diarioCondominio = from a in _context.LdiarioGlobals
+                                   join c in _context.CodigoCuentasGlobals
+                                   on a.IdCodCuenta equals c.IdCodCuenta
+                                   where c.IdCondominio == modelo.IdCondominio
+                                   select a;
+
+            if (diarioCondominio.Count() > 0)
             {
-                numAsiento = diario.ToList().Last().NumAsiento;
+                numAsiento = diarioCondominio.ToList().Last().NumAsiento;
             }
 
             if (modelo.Pagoforma == FormaPago.Efectivo)
             {
                 try
                 {
+                    var idCaja = (from c in _context.CodigoCuentasGlobals
+                                 where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                 select c).First();
+
                     pago.FormaPago = false;
 
                     using (var _dbContext = new PruebaContext())
@@ -265,7 +280,7 @@ namespace Prueba.Repositories
                         };
                         LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdCodigoCuentaCaja,
+                            IdCodCuenta = idCaja.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -328,7 +343,7 @@ namespace Prueba.Repositories
                     {
                         LdiarioGlobal asientoGasto = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdSubcuenta,
+                            IdCodCuenta = idCodCuenta.First().IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -342,7 +357,7 @@ namespace Prueba.Repositories
                         };
                         LdiarioGlobal asientoCaja = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdCodigoCuentaCaja,
+                            IdCodCuenta = idCaja.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -395,6 +410,10 @@ namespace Prueba.Repositories
                 {
                     pago.FormaPago = true;
 
+                    var idBanco = (from c in _context.CodigoCuentasGlobals
+                                  where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                  select c).First();
+
                     using (var _dbContext = new PruebaContext())
                     {
                         _dbContext.Add(pago);
@@ -431,7 +450,7 @@ namespace Prueba.Repositories
                         };
                         LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdCodigoCuentaBanco,
+                            IdCodCuenta = idBanco.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -498,7 +517,7 @@ namespace Prueba.Repositories
 
                         LdiarioGlobal asientoGasto = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdSubcuenta,
+                            IdCodCuenta = idCodCuenta.First().IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -512,7 +531,7 @@ namespace Prueba.Repositories
                         };
                         LdiarioGlobal asientoBanco = new LdiarioGlobal
                         {
-                            IdCodCuenta = modelo.IdCodigoCuentaBanco,
+                            IdCodCuenta = idBanco.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
