@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Prueba.Models;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
     public class NuevoCondominio
     {
@@ -10,7 +11,7 @@ namespace Prueba.Models
          * con multiples Administradores
          * multiples inmuebles
          * multiples estacionamientos 
-         */ 
+         */
         public Usuario? Administrador { get; set; }
         public IFormFile? ExcelPropietarios { get; set; }
         public IEnumerable<SelectListItem>? Propietarios { get; set; }

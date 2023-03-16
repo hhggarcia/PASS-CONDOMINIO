@@ -1,6 +1,7 @@
 ﻿using Prueba.Areas.Identity.Data;
+using Prueba.Models;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
     public class IndexPagoRecibdioVM
     {

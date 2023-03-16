@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Prueba.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
-    public class RegistroPagoVM: PagoEmitido
+    public class RegistroPagoVM : PagoEmitido
     {
         public string? Descripcion { get; set; }
         public string? Concepto { get; set; }

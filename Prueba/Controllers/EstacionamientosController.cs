@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.ViewModels;
+
 
 namespace Prueba.Controllers
 {

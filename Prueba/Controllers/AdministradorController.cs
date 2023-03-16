@@ -12,6 +12,7 @@ using Prueba.Models;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {

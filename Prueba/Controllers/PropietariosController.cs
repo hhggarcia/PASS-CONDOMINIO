@@ -11,6 +11,7 @@ using Prueba.Models;
 using Prueba.Services;
 using Prueba.Utils;
 using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {

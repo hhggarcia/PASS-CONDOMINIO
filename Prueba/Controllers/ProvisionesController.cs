@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.ViewModels;
+
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Prueba.Controllers

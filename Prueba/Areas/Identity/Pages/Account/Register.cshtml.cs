@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Prueba.Areas.Identity.Data;
 using Prueba.Models;
 using Prueba.Services;
+using Prueba.ViewModels;
 
 namespace Prueba.Areas.Identity.Pages.Account
 {

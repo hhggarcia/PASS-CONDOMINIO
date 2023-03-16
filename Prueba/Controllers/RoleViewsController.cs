@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Prueba.Core;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {

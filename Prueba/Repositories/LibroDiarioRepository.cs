@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.ViewModels;
 
 namespace Prueba.Repositories
 {

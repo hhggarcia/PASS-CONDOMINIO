@@ -4,7 +4,7 @@ using Prueba.Context;
 using Prueba.Models;
 using SQLitePCL;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using Prueba.ViewModels;
 
 namespace Prueba.Repositories
 {

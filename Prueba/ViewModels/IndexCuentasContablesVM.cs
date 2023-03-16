@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Prueba.Models;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
     public class IndexCuentasContablesVM
     {

@@ -4,6 +4,7 @@ using Prueba.Areas.Identity.Data;
 using Prueba.Models;
 using System.Diagnostics;
 using System.Security.Claims;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {

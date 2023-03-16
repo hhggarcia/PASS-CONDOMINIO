@@ -1,4 +1,4 @@
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
     public class ErrorViewModel
     {

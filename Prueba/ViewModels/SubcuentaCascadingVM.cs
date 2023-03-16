@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Prueba.Models;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
-    public class SubcuentaCascadingVM:SubCuenta
+    public class SubcuentaCascadingVM : SubCuenta
     {
         public SubcuentaCascadingVM()
         {
-            this.Clases = new List<SelectListItem>();
-            this.Grupos = new List<SelectListItem>();
-            this.Cuentas = new List<SelectListItem>();
+            Clases = new List<SelectListItem>();
+            Grupos = new List<SelectListItem>();
+            Cuentas = new List<SelectListItem>();
         }
         public List<SelectListItem>? Clases { get; set; }
         public List<SelectListItem>? Grupos { get; set; }

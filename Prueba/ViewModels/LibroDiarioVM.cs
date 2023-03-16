@@ -1,4 +1,6 @@
-﻿namespace Prueba.Models
+﻿using Prueba.Models;
+
+namespace Prueba.ViewModels
 {
     public class LibroDiarioVM
     {

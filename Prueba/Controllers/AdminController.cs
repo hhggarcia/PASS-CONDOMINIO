@@ -10,6 +10,7 @@ using Prueba.Core.ViewModels;
 using Prueba.Models;
 using Prueba.Services;
 using Prueba.Utils;
+using Prueba.ViewModels;
 using System.Collections;
 using System.Web;
 

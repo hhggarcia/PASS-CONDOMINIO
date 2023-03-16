@@ -2,7 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
-using Prueba.Models;
+using Prueba.ViewModels;
 
 namespace Prueba.Services
 {

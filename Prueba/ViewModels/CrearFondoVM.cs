@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Prueba.Models
+namespace Prueba.ViewModels
 {
     public class CrearFondoVM
     {

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.ViewModels;
 using SQLitePCL;
 using System.Runtime.InteropServices;
 
