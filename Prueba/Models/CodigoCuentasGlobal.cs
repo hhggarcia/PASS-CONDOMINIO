@@ -19,6 +19,8 @@ public partial class CodigoCuentasGlobal
 
     public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; } = new List<LdiarioGlobal>();
 
+    public virtual ICollection<MonedaCuenta> MonedaCuenta { get; } = new List<MonedaCuenta>();
+
     public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; } = new List<Provision>();
 
     public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; } = new List<Provision>();

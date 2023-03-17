@@ -11,7 +11,7 @@ public partial class PagosRecibo
 
     public int IdPagoRecibo { get; set; }
 
-    public virtual PagoRecibido IdPagoNavigation { get; set; } = null!;
+    public virtual PagoRecibido? IdPagoNavigation { get; set; }
 
-    public virtual ReciboCobro IdReciboNavigation { get; set; } = null!;
+    public virtual ReciboCobro? IdReciboNavigation { get; set; }
 }

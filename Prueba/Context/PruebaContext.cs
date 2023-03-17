@@ -70,6 +70,8 @@ public partial class PruebaContext : DbContext
 
     public virtual DbSet<MonedaCond> MonedaConds { get; set; }
 
+    public virtual DbSet<MonedaCuenta> MonedaCuenta { get; set; }
+
     public virtual DbSet<Moneda> Moneda { get; set; }
 
     public virtual DbSet<Municipio> Municipios { get; set; }
@@ -602,6 +604,23 @@ public partial class PruebaContext : DbContext
                 .HasConstraintName("FK_MonedaCond_Moneda");
         });
 
+        modelBuilder.Entity<MonedaCuenta>(entity =>
+        {
+            entity.Property(e => e.IdCodCuenta).HasComment("Codigo Sub cuenta del condominio");
+            entity.Property(e => e.IdMoneda).HasComment("Moneda asignada");
+            entity.Property(e => e.RecibePagos).HasComment("Mostrar cuenta en pago del propietario");
+
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.MonedaCuenta)
+                .HasForeignKey(d => d.IdCodCuenta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MonedaCuenta_CodigoCuentas_Global");
+
+            entity.HasOne(d => d.IdMonedaNavigation).WithMany(p => p.MonedaCuenta)
+                .HasForeignKey(d => d.IdMoneda)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_MonedaCuenta_Moneda");
+        });
+
         modelBuilder.Entity<Moneda>(entity =>
         {
             entity.HasKey(e => e.IdMoneda);
@@ -645,9 +664,7 @@ public partial class PruebaContext : DbContext
                 .HasColumnName("monto");
             entity.Property(e => e.MontoRef).HasColumnType("money");
             entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
-            entity.Property(e => e.SimboloRef)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.SimboloRef).HasMaxLength(2);
             entity.Property(e => e.ValorDolar).HasColumnType("money");
 
             entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.PagoEmitidos)
@@ -715,12 +732,10 @@ public partial class PruebaContext : DbContext
 
             entity.HasOne(d => d.IdPagoNavigation).WithMany(p => p.PagosRecibos)
                 .HasForeignKey(d => d.IdPago)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PagosRecibo_Pago_Recibido");
 
             entity.HasOne(d => d.IdReciboNavigation).WithMany(p => p.PagosRecibos)
                 .HasForeignKey(d => d.IdRecibo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PagosRecibo_Recibo_Cobro");
         });
 
@@ -916,6 +931,11 @@ public partial class PruebaContext : DbContext
             entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
             entity.Property(e => e.SimboloRef).HasMaxLength(2);
             entity.Property(e => e.ValorDolar).HasColumnType("money");
+
+            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.ReciboCobros)
+                .HasForeignKey(d => d.IdPropiedad)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Recibo_Cobro_Propiedad");
 
             entity.HasOne(d => d.IdRgastosNavigation).WithMany(p => p.ReciboCobros)
                 .HasForeignKey(d => d.IdRgastos)

@@ -119,29 +119,7 @@
                 </a>
                 </li>*@
 
-                <!-- pagos -->
-                @*<li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapsePagos"
-                       aria-expanded="true"
-                       aria-controls="collapsePagos">
-                        <i class="fas fa-fw fa-folder"></i>
-                        <span>Pagos</span>
-                    </a>
-                    <div id="collapsePagos"
-                         class="collapse"
-                         aria-labelledby="headingPages"
-                         data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Pagos:</h6>
-                            <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="IndexPagosEmitidos">Pagos Emitidos</a>
-                            <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Cobros</a>
-
-                        </div>
-                    </div>
-                </li>*@
+               
                 <!-- Pagos -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
@@ -187,7 +165,7 @@
                 </li>
 
                 <!-- Estacionamiento -->
-                <li class="nav-item">
+               @* <li class="nav-item">
                     <a class="nav-link collapsed"
                        asp-action="Index"
                        asp-controller="Estacionamientos"
@@ -195,10 +173,10 @@
                         <i class="fas fa-fw fa-folder"></i>
                         <span>Estacionamiento</span>
                     </a>
-                </li>
+                </li>*@
 
                 <!-- Monedas -->
-                <li class="nav-item">
+               @* <li class="nav-item">
                     <a class="nav-link collapsed"
                        asp-action="Index"
                        asp-controller="MonedaConds"
@@ -206,7 +184,7 @@
                         <i class="fas fa-fw fa-folder"></i>
                         <span>Monedas</span>
                     </a>
-                </li>
+                </li>*@
 
                 <!-- reportes -->
                 <li class="nav-item">
@@ -231,7 +209,31 @@
                         </div>
                     </div>
                 </li>
+                <!-- pagos -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       href="#"
+                       data-toggle="collapse"
+                       data-target="#collapsePagos"
+                       aria-expanded="true"
+                       aria-controls="collapsePagos">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <div id="collapsePagos"
+                         class="collapse"
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Configuración</h6>
+                            <a class="collapse-item" asp-action="Index"
+                               asp-controller="MonedaConds">Monedas</a>
+                            <a class="collapse-item" asp-action="Index"
+                               asp-controller="Estacionamientos">Estacionamiento</a>
 
+                        </div>
+                    </div>
+                </li>
 
                 <!-- Divider -->
                 <hr class="sidebar-divider d-none d-md-block" />

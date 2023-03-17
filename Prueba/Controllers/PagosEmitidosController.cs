@@ -304,7 +304,7 @@ namespace Prueba.Controllers
 
                     //if (ModelState.IsValid)
                     //{
-                    if (modelo.FormaPago)
+                    if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
                                                      join referencia in _context.ReferenciasPes
@@ -323,6 +323,7 @@ namespace Prueba.Controllers
                             return View("Error", modeloError);
                         }
                     }
+
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
                     if (resultado)

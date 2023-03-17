@@ -19,11 +19,11 @@ public partial class ReciboReserva
 
     public decimal MontoRef { get; set; }
 
-    public decimal? ValorDolar { get; set; }
+    public decimal ValorDolar { get; set; }
 
-    public string? SimboloMoneda { get; set; }
+    public string SimboloMoneda { get; set; } = null!;
 
-    public string? SimboloRef { get; set; }
+    public string SimboloRef { get; set; } = null!;
 
     public virtual Reserva IdReservaNavigation { get; set; } = null!;
 

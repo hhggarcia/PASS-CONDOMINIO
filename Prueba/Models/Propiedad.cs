@@ -31,5 +31,7 @@ public partial class Propiedad
 
     public virtual ICollection<PuestoE> PuestoEs { get; } = new List<PuestoE>();
 
+    public virtual ICollection<ReciboCobro> ReciboCobros { get; } = new List<ReciboCobro>();
+
     public virtual ICollection<Reserva> Reservas { get; } = new List<Reserva>();
 }
