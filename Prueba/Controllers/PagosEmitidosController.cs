@@ -31,13 +31,13 @@ namespace Prueba.Controllers
         }
 
         // GET: PagosEmitidos
-        public async Task<IActionResult> Index()
-        {
-            var pruebaContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation);
-            return View(await pruebaContext.ToListAsync());
-        }
+        //public async Task<IActionResult> Index()
+        //{
+        //    var pruebaContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation);
+        //    return View(await pruebaContext.ToListAsync());
+        //}
 
-        public async Task<IActionResult> IndexPagosEmitidos()
+        public async Task<IActionResult> Index()
         {
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
@@ -181,7 +181,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(IndexPagosEmitidos));
+            return RedirectToAction(nameof(Index));
             //}
             //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
             //return View(pagoEmitido);
@@ -236,7 +236,7 @@ namespace Prueba.Controllers
                 }
                 var result = await _repoPagosEmitidos.Delete(id);
 
-                return RedirectToAction(nameof(IndexPagosEmitidos));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -331,7 +331,7 @@ namespace Prueba.Controllers
 
                         TempData.Keep();
 
-                        return RedirectToAction("IndexPagosEmitidos");
+                        return RedirectToAction("Index");
                     }
 
                     //}
