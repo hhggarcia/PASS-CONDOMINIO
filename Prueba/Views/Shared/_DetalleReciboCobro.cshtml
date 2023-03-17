@@ -19,20 +19,20 @@
         <tfoot>
             <tr class="tr_s">
                 <th></th>
-                <th>Sub Total: @Model.SubTotal.ToString("N") </th>
-                <th>Total: @Model.Total.ToString("N") </th>
+                <th>Sub Total: @Model.RelacionGastos.SubTotal.ToString("N") </th>
+                <th>Total: @Model.RelacionGastos.Total.ToString("N") </th>
                 <th></th>
                 <th></th>
 
             </tr>
         </tfoot>
         <tbody>
-            @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
-            && (Model.GastosDiario != null && Model.GastosDiario.Any()))
+            @if ((Model.RelacionGastos.SubcuentasGastos != null && Model.RelacionGastos.SubcuentasGastos.Any())
+            && (Model.RelacionGastos.GastosDiario != null && Model.RelacionGastos.GastosDiario.Any()))
             {
-                @foreach (var item in Model.GastosDiario)
+                @foreach (var item in Model.RelacionGastos.GastosDiario)
                 {
-                    var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
+                    var subcuenta = Model.RelacionGastos.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
                     <tr class="tr_s">
                         <td>@subcuenta.First().Descricion</td>
                         <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
@@ -54,12 +54,12 @@
                 </tr>
             }
 
-            @if (Model.Provisiones != null && Model.Provisiones.Any()
-            && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any())
+            @if (Model.RelacionGastos.Provisiones != null && Model.RelacionGastos.Provisiones.Any()
+            && Model.RelacionGastos.SubCuentasProvisiones != null && Model.RelacionGastos.SubCuentasProvisiones.Any())
             {
-                @foreach (var provisiones in Model.Provisiones)
+                @foreach (var provisiones in Model.RelacionGastos.Provisiones)
                 {
-                    var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                    var subcuenta = Model.RelacionGastos.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
 
                     <tr class="tr_s">
                         <td>@subcuenta.First().Descricion</td>
@@ -67,33 +67,33 @@
                         <td>@provisiones.ValorDolar.ToString("N")</td>
                         <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
                         <td>
-                            <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                            @*<a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
                             <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
+                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>*@
                         </td>
                     </tr>
                 }
 
             }
 
-            @if (Model.Fondos != null && Model.Fondos.Any()
-            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any())
+            @if (Model.RelacionGastos.Fondos != null && Model.RelacionGastos.Fondos.Any()
+            && Model.RelacionGastos.SubCuentasFondos != null && Model.RelacionGastos.SubCuentasFondos.Any())
             {
-                @foreach (var fondo in Model.Fondos)
+                @foreach (var fondo in Model.RelacionGastos.Fondos)
                 {
-                    var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+                    var subcuenta = Model.RelacionGastos.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
 
 
                     <tr class="tr_s">
                         <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
 
-                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                        <th>@((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
                         <th></th>
                         <th></th>
                         <th>
-                            <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                            @*<a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
                             <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
+                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>*@
                         </th>
                     </tr>
 
