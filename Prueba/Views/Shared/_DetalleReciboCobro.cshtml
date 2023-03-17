@@ -1,5 +1,105 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using Prueba.ViewModels
+
+@model DetalleReciboVM
+
+<div class="table-responsive">
+    <table class="table table-bordered form"
+           id="dataTable"
+           width="100%"
+           cellspacing="0">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Tasa de Cambio</th>
+                <th>Monto Referencia</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr class="tr_s">
+                <th></th>
+                <th>Sub Total: @Model.SubTotal.ToString("N") </th>
+                <th>Total: @Model.Total.ToString("N") </th>
+                <th></th>
+                <th></th>
+
+            </tr>
+        </tfoot>
+        <tbody>
+            @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
+            && (Model.GastosDiario != null && Model.GastosDiario.Any()))
+            {
+                @foreach (var item in Model.GastosDiario)
+                {
+                    var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
+                    <tr class="tr_s">
+                        <td>@subcuenta.First().Descricion</td>
+                        <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
+                        <td>@item.ValorDolar.ToString("N")</td>
+                        <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
+                        <td></td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr class="tr_s">
+                    <td class="text-bold-500">No</td>
+                    <td>hay</td>
+                    <td class="text-bold-500">Gastos</td>
+                    <td>:D</td>
+                    <td></td>
+                </tr>
+            }
+
+            @if (Model.Provisiones != null && Model.Provisiones.Any()
+            && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any())
+            {
+                @foreach (var provisiones in Model.Provisiones)
+                {
+                    var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+
+                    <tr class="tr_s">
+                        <td>@subcuenta.First().Descricion</td>
+                        <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
+                        <td>@provisiones.ValorDolar.ToString("N")</td>
+                        <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
+                        <td>
+                            <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                            <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
+                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+
+            }
+
+            @if (Model.Fondos != null && Model.Fondos.Any()
+            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any())
+            {
+                @foreach (var fondo in Model.Fondos)
+                {
+                    var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+
+
+                    <tr class="tr_s">
+                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+
+                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                            <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
+                        </th>
+                    </tr>
+
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
