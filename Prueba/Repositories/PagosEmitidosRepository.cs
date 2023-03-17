@@ -411,7 +411,7 @@ namespace Prueba.Repositories
                     pago.FormaPago = true;
 
                     var idBanco = (from c in _context.CodigoCuentasGlobals
-                                  where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                  where c.IdCodigo == modelo.IdCodigoCuentaBanco
                                   select c).First();
 
                     using (var _dbContext = new PruebaContext())
