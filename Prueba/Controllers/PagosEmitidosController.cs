@@ -304,6 +304,25 @@ namespace Prueba.Controllers
 
                     //if (ModelState.IsValid)
                     //{
+                    if (modelo.FormaPago)
+                    {
+                        var existPagoTransferencia = from pago in _context.PagoEmitidos
+                                                     join referencia in _context.ReferenciasPes
+                                                     on pago.IdPagoEmitido equals referencia.IdPagoEmitido
+                                                     where pago.IdCondominio == modelo.IdCondominio
+                                                     where referencia.NumReferencia == modelo.NumReferencia
+                                                     select new {  pago, referencia };
+
+                        if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = "Ya existe un pago registrado con este número de referencia!"
+                            };
+
+                            return View("Error", modeloError);
+                        }
+                    }
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
                     if (resultado)

@@ -274,9 +274,30 @@ namespace Prueba.Controllers
             {
                 try
                 {
+
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
                     if (propiedad != null)
                     {
+                        if (modelo.Pagoforma == FormaPago.Transferencia)
+                        {
+                            var existPagoTransferencia = from pago in _context.PagoRecibidos
+                                                         join referencia in _context.ReferenciasPrs
+                                                         on pago.IdPagoRecibido equals referencia.IdPagoRecibido
+                                                         where pago.IdPropiedad == propiedad.IdPropiedad
+                                                         where referencia.NumReferencia == modelo.NumReferencia
+                                                         select new { pago, referencia };
+
+                            if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                            {
+                                var modeloError = new ErrorViewModel()
+                                {
+                                    RequestId = "Ya existe un pago registrado con este número de Referencia!"
+                                };
+
+                                return View("Error", modeloError);
+                            }
+                        }
+
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
                         var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
