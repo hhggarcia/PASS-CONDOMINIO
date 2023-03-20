@@ -11,6 +11,7 @@ namespace Prueba.Repositories
     public interface IRelacionGastoRepository
     {
         Task<bool> DeleteRecibosCobroRG(int idRG);
+        Task<DetalleReciboVM> DetalleRecibo(int id);
         Task<RelacionDeGastosVM> LoadDataRelacionGastos(int id);
         Task<RelacionDeGastosVM> LoadDataRelacionGastosMes(int? idRG);
         bool RelacionGastoExists(int id);
@@ -38,6 +39,8 @@ namespace Prueba.Repositories
         /// <returns>modelo RelacionDeGastosVM</returns>
         public async Task<RelacionDeGastosVM> LoadDataRelacionGastos(int id)
         {
+            var modelo = new RelacionDeGastosVM();
+
             var condominio = await _context.Condominios.FindAsync(id);
 
             var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
@@ -83,31 +86,7 @@ namespace Prueba.Repositories
                          select d;
 
             // CARGAR CUENTAS GASTOS DEL CONDOMINIO
-            IList<Cuenta> cuentasGastos = new List<Cuenta>();
-            foreach (var grupo in gruposGastos)
-            {
-                foreach (var cuenta in cuentas)
-                {
-                    if (cuenta.IdGrupo == grupo.Id)
-                    {
-                        cuentasGastos.Add(cuenta);
-                    }
-                    continue;
-                }
-            }
-
-            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-            foreach (var cuenta in cuentasGastos)
-            {
-                foreach (var subcuenta in subcuentas)
-                {
-                    if (subcuenta.IdCuenta == cuenta.Id)
-                    {
-                        subcuentasGastos.Add(subcuenta);
-                    }
-                    continue;
-                }
-            }
+            var subcuentasGastos = await _repoCuentas.ObtenerGastos(condominio.IdCondominio);
 
             // BUSCAR ASIENTOS EN EL DIARIO CORRESPONDIENTES A LAS CUENTAS GASTOS DEL CONDOMINIO
             IList<LdiarioGlobal> asientosGastosCondominio = new List<LdiarioGlobal>();
@@ -119,14 +98,17 @@ namespace Prueba.Repositories
                 var aux = diario.Where(c => c.IdAsiento == gasto.IdAsiento).ToList();
                 if (aux.Any())
                 {
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(aux.First().IdCodCuenta);
+
                     foreach (var item in subcuentasGastos)
                     {
-                        if (aux.FirstOrDefault().IdCodCuenta == item.Id)
+                        if (idcc.IdCodigo == item.Id)
                         {
                             subtotal += aux.First().MontoRef;
                             total += aux.First().MontoRef;
                             asientosGastosCondominio.Add(aux.First());
                             subcuentasModel.Add(item);
+                            modelo.CCGastos.Add(idcc);
                         }
                         continue;
                     }
@@ -135,15 +117,14 @@ namespace Prueba.Repositories
             }
 
             // CREAR MODELO PARA LOS TOTALES DE LA RELACION DE GASTOS Y CARGAR VISTA
-            var modelo = new RelacionDeGastosVM
-            {
-                GastosDiario = asientosGastosCondominio,
-                SubcuentasGastos = subcuentasModel,
-                Total = total,
-                SubTotal = subtotal,
-                Fecha = DateTime.Today,
-                Condominio = condominio
-            };
+
+            modelo.GastosDiario = asientosGastosCondominio;
+            modelo.SubcuentasGastos = subcuentasModel;
+            modelo.Total = total;
+            modelo.SubTotal = subtotal;
+            modelo.Fecha = DateTime.Today;
+            modelo.Condominio = condominio;
+
 
             if (proviciones.Any() && fondos.Any())
             {
@@ -154,7 +135,11 @@ namespace Prueba.Repositories
                 IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
                 foreach (var provision in modelo.Provisiones)
                 {
-                    var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+
+                    modelo.CCProvisiones.Add(idcc);
 
                     if (subcuentaProvision.Any())
                     {
@@ -171,7 +156,11 @@ namespace Prueba.Repositories
                 IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
                 foreach (var fondo in modelo.Fondos)
                 {
-                    var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+
+                    modelo.CCFondos.Add(idcc);
 
                     if (subcuentaFondo.Any())
                     {
@@ -194,7 +183,9 @@ namespace Prueba.Repositories
                 IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
                 foreach (var provision in modelo.Provisiones)
                 {
-                    var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    modelo.CCProvisiones.Add(idcc);
 
                     if (subcuentaProvision.Any())
                     {
@@ -218,7 +209,9 @@ namespace Prueba.Repositories
 
                 foreach (var fondo in modelo.Fondos)
                 {
-                    var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    modelo.CCFondos.Add(idcc);
 
                     if (subcuentaFondo.Any())
                     {
@@ -273,63 +266,58 @@ namespace Prueba.Repositories
 
                 var subcuentas = from c in _context.SubCuenta
                                  select c;
+
                 // BUSCAR PROVISIONES en los asientos del diario
+                DateTime fechaActual = rg.Fecha;
+
                 var proviciones = from p in _context.Provisiones
+                                  join c in _context.CodigoCuentasGlobals
+                                  on p.IdCodCuenta equals c.IdCodCuenta
+                                  where c.IdCondominio == condominio.IdCondominio
+                                  where DateTime.Compare(fechaActual, p.FechaFin) < 0 && DateTime.Compare(fechaActual, p.FechaInicio) >= 0
                                   select p;
                 // BUSCAR FONDOS
                 var fondos = from f in _context.Fondos
+                             join c in _context.CodigoCuentasGlobals
+                             on f.IdCodCuenta equals c.IdCodCuenta
+                             where c.IdCondominio == condominio.IdCondominio
+                             where DateTime.Compare(fechaActual, f.FechaFin) < 0 && DateTime.Compare(fechaActual, f.FechaInicio) >= 0
                              select f;
 
                 // CARGAR DIARIO COMPLETO
                 var diario = from d in _context.LdiarioGlobals
-                             where d.Fecha.Month == rg.Fecha.Month
+                             join c in cuentasContablesCond
+                             on d.IdCodCuenta equals c.IdCodCuenta
+                             where d.Fecha.Month == DateTime.Today.Month
+                             where c.IdCondominio == condominio.IdCondominio
                              select d;
 
                 // CARGAR CUENTAS GASTOS DEL CONDOMINIO
-                IList<Cuenta> cuentasGastos = new List<Cuenta>();
-                foreach (var grupo in gruposGastos)
-                {
-                    foreach (var cuenta in cuentas)
-                    {
-                        if (cuenta.IdGrupo == grupo.Id)
-                        {
-                            cuentasGastos.Add(cuenta);
-                        }
-                        continue;
-                    }
-                }
-
-                IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-                foreach (var cuenta in cuentasGastos)
-                {
-                    foreach (var subcuenta in subcuentas)
-                    {
-                        if (subcuenta.IdCuenta == cuenta.Id)
-                        {
-                            subcuentasGastos.Add(subcuenta);
-                        }
-                        continue;
-                    }
-                }
+                var subcuentasGastos = await _repoCuentas.ObtenerGastos(condominio.IdCondominio);
 
                 // BUSCAR ASIENTOS EN EL DIARIO CORRESPONDIENTES A LAS CUENTAS GASTOS DEL CONDOMINIO
                 IList<LdiarioGlobal> asientosGastosCondominio = new List<LdiarioGlobal>();
                 IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
                 decimal subtotal = 0;
                 decimal total = 0;
+
                 foreach (var gasto in gastos)
                 {
                     var aux = diario.Where(c => c.IdAsiento == gasto.IdAsiento).ToList();
+
                     if (aux.Any())
                     {
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(aux.First().IdCodCuenta);
+
                         foreach (var item in subcuentasGastos)
                         {
-                            if (aux.First().IdCodCuenta == item.Id)
+                            if (idcc.IdCodigo == item.Id)
                             {
-                                subtotal += aux.First().Monto;
-                                total += aux.First().Monto;
+                                subtotal += aux.First().MontoRef;
+                                total += aux.First().MontoRef;
                                 asientosGastosCondominio.Add(aux.First());
                                 subcuentasModel.Add(item);
+                                modelo.CCGastos.Add(idcc);
                             }
                             continue;
                         }
@@ -353,14 +341,18 @@ namespace Prueba.Repositories
                     IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
                     foreach (var provision in modelo.Provisiones)
                     {
-                        var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+
+                        modelo.CCProvisiones.Add(idcc);
 
                         if (subcuentaProvision.Any())
                         {
                             SubCuenta aux = subcuentaProvision.First();
                             if (aux != null)
                             {
-                                modelo.SubTotal += provision.Monto;
+                                modelo.SubTotal += provision.MontoRef;
                                 modelo.Total = modelo.SubTotal;
                                 subcuentasProvisionesModel.Add(aux);
                             }
@@ -369,7 +361,11 @@ namespace Prueba.Repositories
                     IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
                     foreach (var fondo in modelo.Fondos)
                     {
-                        var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+
+                        modelo.CCFondos.Add(idcc);
 
                         if (subcuentaFondo.Any())
                         {
@@ -391,14 +387,16 @@ namespace Prueba.Repositories
                     IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
                     foreach (var provision in modelo.Provisiones)
                     {
-                        var subcuentaProvision = subcuentas.Where(c => provision.IdCodCuenta == c.Id);
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        modelo.CCProvisiones.Add(idcc);
 
                         if (subcuentaProvision.Any())
                         {
                             SubCuenta aux = subcuentaProvision.First();
                             if (aux != null)
                             {
-                                modelo.SubTotal += provision.Monto;
+                                modelo.SubTotal += provision.MontoRef;
                                 subcuentasProvisionesModel.Add(aux);
                             }
                         }
@@ -414,7 +412,10 @@ namespace Prueba.Repositories
 
                     foreach (var fondo in modelo.Fondos)
                     {
-                        var subcuentaFondo = subcuentas.Where(c => fondo.IdCodCuenta == c.Id);
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        modelo.CCFondos.Add(idcc);
 
                         if (subcuentaFondo.Any())
                         {
@@ -517,6 +518,36 @@ namespace Prueba.Repositories
         public bool RelacionGastoExists(int id)
         {
             return (_context.RelacionGastos?.Any(e => e.IdRgastos == id)).GetValueOrDefault();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del Recibo</param>
+        /// <returns></returns>
+        public async Task<DetalleReciboVM> DetalleRecibo(int id)
+        {
+            var modelo = new DetalleReciboVM();
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                if (propiedad != null)
+                {
+                    var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                    if (usuario != null) 
+                    {
+                        modelo.Recibo = recibo;
+                        modelo.Propiedad = propiedad;
+                        modelo.Propietario = usuario;
+                        modelo.RelacionGastos = await LoadDataRelacionGastosMes(recibo.IdRgastos);
+                    }
+                    
+                }
+
+            }
+
+            return modelo;
         }
     }
 }

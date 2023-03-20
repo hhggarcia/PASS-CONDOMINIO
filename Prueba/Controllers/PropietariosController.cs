@@ -531,14 +531,14 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var relacionGasto = await _context.RelacionGastos
-                .Include(r => r.IdCondominioNavigation)
-                .FirstOrDefaultAsync(m => m.IdRgastos == id);
-            if (relacionGasto == null)
-            {
-                return NotFound();
-            }
-            var modelo = await _repoRelacionGasto.LoadDataRelacionGastosMes(id);
+            //var relacionGasto = await _context.RelacionGastos
+            //    .Include(r => r.IdCondominioNavigation)
+            //    .FirstOrDefaultAsync(m => m.IdRgastos == id);
+            //if (relacionGasto == null)
+            //{
+            //    return NotFound();
+            //}
+            var modelo = await _repoRelacionGasto.DetalleRecibo(id);
             //return View(relacionGasto);
             return View(modelo);
         }

@@ -3,20 +3,20 @@
 @model DetalleReciboVM
 
 <div class="table-responsive">
-    <table class="table table-bordered form"
-           id="dataTable"
+    <table class="table text-center"
            width="100%"
            cellspacing="0">
         <thead>
             <tr>
+                <th>Fecha</th>
                 <th>Descripción</th>
                 <th>Monto</th>
                 <th>Tasa de Cambio</th>
                 <th>Monto Referencia</th>
-                <th>Acciones</th>
+                <th>Monto a Pagar</th>
             </tr>
         </thead>
-        <tfoot>
+        @*<tfoot>
             <tr class="tr_s">
                 <th></th>
                 <th>Sub Total: @Model.RelacionGastos.SubTotal.ToString("N") </th>
@@ -25,21 +25,29 @@
                 <th></th>
 
             </tr>
-        </tfoot>
+        </tfoot>*@
         <tbody>
-            @if ((Model.RelacionGastos.SubcuentasGastos != null && Model.RelacionGastos.SubcuentasGastos.Any())
-            && (Model.RelacionGastos.GastosDiario != null && Model.RelacionGastos.GastosDiario.Any()))
+            @if (Model.RelacionGastos.SubcuentasGastos != null && Model.RelacionGastos.SubcuentasGastos.Any()
+            && Model.RelacionGastos.GastosDiario != null && Model.RelacionGastos.GastosDiario.Any()
+            && Model.RelacionGastos.CCGastos != null && Model.RelacionGastos.CCGastos.Any())
             {
                 @foreach (var item in Model.RelacionGastos.GastosDiario)
                 {
-                    var subcuenta = Model.RelacionGastos.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
-                    <tr class="tr_s">
-                        <td>@subcuenta.First().Descricion</td>
-                        <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
-                        <td>@item.ValorDolar.ToString("N")</td>
-                        <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
-                        <td></td>
-                    </tr>
+                    var idcc = Model.RelacionGastos.CCGastos.Where(c => c.IdCodCuenta == item.IdCodCuenta);
+
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.RelacionGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        <tr class="tr_s">
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
+                            <td>@item.ValorDolar.ToString("N")</td>
+                            <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
+                            <td>@((item.MontoRef * (Model.Propiedad.Alicuota / 100)).ToString("N"))</td>
+                        </tr>
+                    }
+                    
                 }
 
             }
@@ -55,50 +63,84 @@
             }
 
             @if (Model.RelacionGastos.Provisiones != null && Model.RelacionGastos.Provisiones.Any()
-            && Model.RelacionGastos.SubCuentasProvisiones != null && Model.RelacionGastos.SubCuentasProvisiones.Any())
+            && Model.RelacionGastos.SubCuentasProvisiones != null && Model.RelacionGastos.SubCuentasProvisiones.Any()
+            && Model.RelacionGastos.CCProvisiones != null && Model.RelacionGastos.CCProvisiones.Any())
             {
                 @foreach (var provisiones in Model.RelacionGastos.Provisiones)
                 {
-                    var subcuenta = Model.RelacionGastos.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                    var idcc = Model.RelacionGastos.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.RelacionGastos.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
 
-                    <tr class="tr_s">
-                        <td>@subcuenta.First().Descricion</td>
-                        <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
-                        <td>@provisiones.ValorDolar.ToString("N")</td>
-                        <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
-                        <td>
-                            @*<a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
-                            <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>*@
-                        </td>
-                    </tr>
+                        <tr class="tr_s">
+                            <td></td>
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
+                            <td>@provisiones.ValorDolar.ToString("N")</td>
+                            <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
+                            <td>
+                                @((provisiones.MontoRef * (Model.Propiedad.Alicuota / 100)).ToString("N"))
+                                @*<a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                    <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
+                    <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>*@
+                            </td>
+                        </tr>
+                    }
+                    
                 }
 
             }
+            <tr>
+                <th></th>
+                <th>Sub Total </th>
+                <th></th>
+                <th></th>
+                <th>@Model.RelacionGastos.SubTotal.ToString("N")</th>
+                <th>@((Model.RelacionGastos.SubTotal * (Model.Propiedad.Alicuota / 100)).ToString("N"))</th>
+            </tr>
 
             @if (Model.RelacionGastos.Fondos != null && Model.RelacionGastos.Fondos.Any()
-            && Model.RelacionGastos.SubCuentasFondos != null && Model.RelacionGastos.SubCuentasFondos.Any())
+            && Model.RelacionGastos.SubCuentasFondos != null && Model.RelacionGastos.SubCuentasFondos.Any()
+            && Model.RelacionGastos.CCFondos != null && Model.RelacionGastos.CCFondos.Any())
             {
                 @foreach (var fondo in Model.RelacionGastos.Fondos)
                 {
-                    var subcuenta = Model.RelacionGastos.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+                    var idcc = Model.RelacionGastos.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
 
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.RelacionGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
 
-                    <tr class="tr_s">
-                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+                        <tr class="tr_s">
+                            <td></td>
 
-                        <th>@((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
-                        <th></th>
-                        <th></th>
-                        <th>
-                            @*<a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
-                            <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>*@
-                        </th>
-                    </tr>
+                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+
+                            <th> </th>
+                            <th></th>
+                            <th>@((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100).ToString("N"))</th>
+                            <th>
+                                @(((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100) * (Model.Propiedad.Alicuota / 100)).ToString("N"))
+                                @*<a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                                    <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                                    <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>*@
+                            </th>
+                        </tr>
+                    }                    
 
                 }
             }
+
+            
+            <tr>
+                <th></th>
+                <th>Total gasto del mes </th>
+                <th></th>
+                <th></th>
+                <th>@Model.RelacionGastos.Total.ToString("N")</th>
+                <th> @((Model.RelacionGastos.Total * (Model.Propiedad.Alicuota / 100)).ToString("N")) </th>
+            </tr>
 
         </tbody>
     </table>

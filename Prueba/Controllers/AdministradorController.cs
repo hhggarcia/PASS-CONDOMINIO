@@ -262,7 +262,18 @@ namespace Prueba.Controllers
 
                         var reciboActual = recibosPropiedad.Where(c => c.Monto == pago.Monto).ToList();
 
+                        if (reciboActual == null || !reciboActual.Any())
+                        {
+                            _context.PagoRecibidos.Remove(pago);
+                            await _context.SaveChangesAsync();
 
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = "El Recibo asignado a este Pago fue eliminado! Este pago será eliminado"
+                            };
+
+                            return View("Error", modeloError);
+                        }
                         // buscar referencia si tiene y eliminar pago
 
                         if (pago.FormaPago)
@@ -386,6 +397,20 @@ namespace Prueba.Controllers
 
                         //var reciboActual = recibosPropiedad.Where(c => c.Fecha.Month == DateTime.Now.Month).ToList();
                         var reciboActual = recibosPropiedad.Where(c => c.Monto == pago.Monto).ToList();
+
+                        if (reciboActual == null || !reciboActual.Any())
+                        {
+                            _context.PagoRecibidos.Remove(pago);
+                            await _context.SaveChangesAsync();
+
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = "El Recibo asignado a este Pago fue eliminado! Este pago será eliminado"
+                            };
+
+                            return View("Error", modeloError);
+                        }
+
                         try
                         {
                             // se pago solo el recibo del mes actual

@@ -418,14 +418,6 @@ namespace Prueba.Repositories
             return new RecibosCreadosVM();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id">id del Recibo</param>
-        /// <returns></returns>
-        public async Task<DetalleReciboVM> DetalleRecibo(int id)
-        {
-            return new DetalleReciboVM();
-        }
+        
     }
 }

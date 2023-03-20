@@ -48,7 +48,7 @@
                                         <th>Monto</th>
                                         <th>Numero Relación de Gastos</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -58,7 +58,7 @@
                                         <th>Monto</th>
                                         <th>Numero Relación de Gastos</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th></th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -88,22 +88,10 @@
                                                     <td><a
                                                         asp-controller="Propietarios"
                                                         asp-action="DetalleRecibo" 
-                                                        asp-route-id="@recibo.IdRgastos" class="btn btn-primary">Detalles</a></td>
+                                                        asp-route-id="@recibo.IdReciboCobro" class="btn btn-primary">Detalles</a></td>
                                                 </tr>
 
                                             }
-
-                                        }
-                                        else
-                                        {
-                                            <tr>
-                                                <td>No</td>
-                                                <td>Hay</td>
-                                                <td>Recibos</td>
-                                                <td>En esta propiedad</td>
-                                                <td>:D</td>
-                                                <td>:D</td>
-                                            </tr>
 
                                         }
 

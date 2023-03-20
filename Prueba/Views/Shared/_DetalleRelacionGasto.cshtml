@@ -19,12 +19,12 @@
 }
 
 <div class="table-responsive">
-    <table class="table table-bordered form"
-           id="dataTable"
+    <table class="table text-center"
            width="100%"
            cellspacing="0">
         <thead>
             <tr>
+                <th>Fecha</th>
                 <th>Descripción</th>
                 <th>Monto</th>
                 <th>Tasa de Cambio</th>
@@ -32,30 +32,37 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr class="tr_s">
-                <th></th>
-                <th>Sub Total: @Model.SubTotal.ToString("N") </th>
-                <th>Total: @Model.Total.ToString("N") </th>
-                <th></th>
-                <th></th>
+        @*<tfoot>
+        <tr class="tr_s">
+        <th></th>
+        <th>Sub Total: @Model.SubTotal.ToString("N") </th>
+        <th>Total: @Model.Total.ToString("N") </th>
+        <th></th>
+        <th></th>
 
-            </tr>
-        </tfoot>
+        </tr>
+        </tfoot>*@
         <tbody>
             @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
-            && (Model.GastosDiario != null && Model.GastosDiario.Any()))
+            && (Model.GastosDiario != null && Model.GastosDiario.Any())
+            && Model.CCGastos != null && Model.CCGastos.Any())
             {
                 @foreach (var item in Model.GastosDiario)
                 {
-                    var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == item.IdCodCuenta).ToList();
-                    <tr class="tr_s">
-                        <td>@subcuenta.First().Descricion</td>
-                        <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
-                        <td>@item.ValorDolar.ToString("N")</td>
-                        <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
-                        <td></td>
-                    </tr>
+                    var idcc = Model.CCGastos.Where(c => c.IdCodCuenta == item.IdCodCuenta);
+
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        <tr class="tr_s">
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@item.Monto.ToString("N") @item.SimboloMoneda</td>
+                            <td>@item.ValorDolar.ToString("N")</td>
+                            <td>@item.MontoRef.ToString("N") @item.SimboloRef</td>
+                            <td></td>
+                        </tr>
+                    }
                 }
 
             }
@@ -67,55 +74,86 @@
                     <td class="text-bold-500">Gastos</td>
                     <td>:D</td>
                     <td></td>
+                    <td></td>
                 </tr>
             }
 
+            
+
             @if (Model.Provisiones != null && Model.Provisiones.Any()
-            && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any())
+            && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any()
+            && Model.CCProvisiones != null && Model.CCProvisiones.Any())
             {
                 @foreach (var provisiones in Model.Provisiones)
                 {
-                    var subcuenta = Model.SubCuentasProvisiones.Where(c => provisiones.IdCodCuenta == c.Id).ToList();
+                    var idcc = Model.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
 
-                    <tr class="tr_s">
-                        <td>@subcuenta.First().Descricion</td>
-                        <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
-                        <td>@provisiones.ValorDolar.ToString("N")</td>
-                        <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
-                        <td>
-                            <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
-                            <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
-                        </td>
-                    </tr>
+                        <tr class="tr_s">
+                            <td></td>
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
+                            <td>@provisiones.ValorDolar.ToString("N")</td>
+                            <td>@provisiones.MontoRef.ToString("N") @provisiones.SimboloRef</td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                                <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
+                                <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
                 }
 
             }
 
+            <tr>
+                <th></th>
+                <th>Sub Total </th>
+                <th></th>
+                <th></th>
+                <th>@Model.SubTotal.ToString("N")</th>
+                <th></th>
+            </tr>
+
             @if (Model.Fondos != null && Model.Fondos.Any()
-            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any())
+            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any()
+            && Model.CCFondos != null && Model.CCFondos.Any())
             {
                 @foreach (var fondo in Model.Fondos)
                 {
-                    var subcuenta = Model.SubCuentasFondos.Where(c => fondo.IdCodCuenta == c.Id).ToList();
+                    var idcc = Model.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
 
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
 
-                    <tr class="tr_s">
-                        <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
+                        <tr class="tr_s">
+                            <th></th>
+                            <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
 
-                        <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
-                        <th></th>
-                        <th></th>
-                        <th>
-                            <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
-                            <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
-                            <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
-                        </th>
-                    </tr>
+                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                            <th></th>
+                            <th></th>
+                            <th>
+                                <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                                <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                                <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
+                            </th>
+                        </tr>
+                    }
 
                 }
             }
-
+            <tr>
+                <th></th>
+                <th>Total gasto del mes </th>
+                <th></th>
+                <th></th>
+                <th>@Model.Total.ToString("N")</th>
+                <th></th>
+            </tr>
         </tbody>
     </table>
 </div>
