@@ -28,13 +28,24 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <h6 class="m-0 font-weight-bold text-primary">
-                            Seguro que quiere confirmar este pago?
+                            Seguro que quiere realizar este pago?
                         </h6>
                         <div>
-                            <form asp-action="ConfirmarPagoRecibidoPost">
+
+                            <form asp-action="RegistrarPagosPost">
+                                <input type="hidden" asp-for="IdCodigoCuentaBanco" />
+                                <input type="hidden" asp-for="NumReferencia" />
+                                <input type="hidden" asp-for="IdCodigoCuentaCaja" />
+                                <input type="hidden" asp-for="Pagoforma" />
+                                <input type="hidden" asp-for="Concepto" />
+                                <input type="hidden" asp-for="Fecha" />
+                                <input type="hidden" asp-for="IdMonedaCond" />
+                                <input type="hidden" asp-for="Monto" />
+                                <input type="hidden" asp-for="IdSubcuenta" />
+
                                 <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
                                 <button class="btn btn-primary" type="submit">Si</button>
-                                <a asp-action="Index" class="btn">No</a>
+                                <a asp-action="RegistrarPagos" class="btn">No</a>
                             </form>
                         </div>
 
