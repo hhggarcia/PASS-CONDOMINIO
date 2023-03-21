@@ -287,6 +287,11 @@ namespace Prueba.Controllers
 
         }
 
+        public IActionResult ConfirmarPago(RegistroPagoVM modelo)
+        {
+            return View(modelo);
+        }
+
         /// <summary>
         /// 
         /// </summary>
