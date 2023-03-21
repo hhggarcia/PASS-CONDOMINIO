@@ -25,6 +25,7 @@ namespace Prueba.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IEmailService _serviceEmail;
+        private readonly IPDFServices _servicePDF;
         private readonly IManageExcel _manageExcel;
         private readonly IReportesRepository _repoReportes;
         private readonly PruebaContext _context;
@@ -44,6 +45,7 @@ namespace Prueba.Controllers
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail,
+            IPDFServices PDFService,
             IManageExcel manageExcel,
             IReportesRepository repoReportes,
             PruebaContext context)
@@ -53,9 +55,17 @@ namespace Prueba.Controllers
             _userManager = userManager;
             _userStore = userStore;
             _serviceEmail = serviceEmail;
+            _servicePDF = PDFService;
             _manageExcel = manageExcel;
             _repoReportes = repoReportes;
             _context = context;
+        }
+
+        public IActionResult PruebaPDF()
+        {
+            var data = _servicePDF.ExamplePDF();
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "detalleventa.pdf");
         }
 
         /// <summary>

@@ -96,7 +96,7 @@ void AddScoped()
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IEmailService, EmailService>();
-
+    builder.Services.AddScoped<IPDFServices, PDFServices>();
 }
 
 void AddTransient()
@@ -109,5 +109,6 @@ void AddTransient()
     builder.Services.AddTransient<ICuentasContablesRepository, CuentasContablesRepository>();
     builder.Services.AddTransient<IEstacionamientoRepository, EstacionamientoRepository>();
     builder.Services.AddTransient<IMonedaRepository, MonedaRepository>();
+
 }
 
