@@ -254,14 +254,14 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public IActionResult RegistrarPagos()
+        public async Task<IActionResult> RegistrarPagos()
         {
             try
             {
                 //traer subcuentas del condominio
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var modelo = _repoPagosEmitidos.FormRegistrarPago(idCondominio);
+                var modelo = await _repoPagosEmitidos.FormRegistrarPago(idCondominio);
 
                 var condominioMonedas = from m in _context.MonedaConds
                                         join c in _context.Moneda
@@ -288,6 +288,11 @@ namespace Prueba.Controllers
         }
 
         public IActionResult ConfirmarPago(RegistroPagoVM modelo)
+        {
+            return View(modelo);
+        }
+
+        public IActionResult Comprobante(ComprobantePEVM modelo)
         {
             return View(modelo);
         }
@@ -333,10 +338,51 @@ namespace Prueba.Controllers
 
                     if (resultado)
                     {
+                        var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
+
+                        var gasto = from c in _context.SubCuenta
+                                    where c.Id == modelo.IdSubcuenta
+                                    select c;                       
+
+                        var comprobante = new ComprobantePEVM()
+                        {
+                            Condominio = condominio,
+                            Concepto = modelo.Concepto,
+                            Pagoforma = modelo.Pagoforma,
+                            Mensaje = "Gracias por su pago!",
+                            Gasto = gasto.First()
+                        };
+
+                        if (modelo.Pagoforma == FormaPago.Transferencia)
+                        {
+                            var banco = from c in _context.SubCuenta
+                                        where c.Id == modelo.IdCodigoCuentaBanco
+                                        select c;
+
+                            comprobante.Banco = banco.First();
+                            comprobante.NumReferencia = modelo.NumReferencia;
+
+                        }
+                        else
+                        {
+                            var caja = from c in _context.SubCuenta
+                                       where c.Id == modelo.IdCodigoCuentaCaja
+                                       select c;
+
+                            comprobante.Caja = caja.First();
+                        }
+
+                        comprobante.Pago.Monto = modelo.Monto;
+                        comprobante.Pago.Fecha = modelo.Fecha;
+                        //comprobante.Pago.ValorDolar = modelo.ValorDolar;
+                        //comprobante.Pago.MontoRef = modelo.MontoRef;
+                        //comprobante.Pago.SimboloRef = modelo.SimboloRef;
+                        //comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
+
 
                         TempData.Keep();
 
-                        return RedirectToAction("Index");
+                        return View("Comprobante", comprobante);
                     }
 
                     //}

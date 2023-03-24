@@ -66,16 +66,18 @@
                             </tr>
                             </tfoot>*@
                             <tbody>
-                                @if (@Model.PagosEmitidos.Count() > 0)
+                                @if (Model.PagosEmitidos != null && Model.PagosEmitidos.Count() > 0)
                                 {
                                     foreach (var item in @Model.PagosEmitidos)
                                     {
                                         if (item.FormaPago)
                                         {
-                                            foreach (var referencia in @Model.Referencias)
+                                            foreach (var referencia in Model.Referencias)
                                             {
                                                 if (item.IdPagoEmitido == referencia.IdPagoEmitido)
                                                 {
+                                                    var idBanco = Convert.ToInt32(referencia.Banco);
+                                                    var banco = Model.BancosCondominio.Where(c => c.Id == idBanco).First();
                                                     <tr class="tr_s">
                                                         <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                                                         <td>@(item.Monto.ToString("N")) @item.SimboloMoneda </td>
@@ -83,7 +85,7 @@
                                                         <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
                                                         <td>@FormaPago.Transferencia</td>
                                                         <td>@referencia.NumReferencia</td>
-                                                        <td>@referencia.Banco</td>
+                                                        <td>@banco.Descricion</td>
                                                         <td>
                                                             @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
                                                             <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
@@ -103,8 +105,8 @@
                                                 <td>@item.ValorDolar.ToString("N")</td>
                                                 <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
                                                 <td>@FormaPago.Efectivo</td>
-                                                <td>Sin referencia</td>
-                                                <td>Sin Banco</td>
+                                                <td></td>
+                                                <td></td>
                                                 <td>
                                                     @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
                                                     <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |

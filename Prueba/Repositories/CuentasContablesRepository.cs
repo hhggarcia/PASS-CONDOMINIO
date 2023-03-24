@@ -10,6 +10,8 @@ namespace Prueba.Repositories
         Task<bool> CrearProvision(Provision provision, int idCondominio);
         Task<int> EditarProvision(Provision provision, int idCondominio);
         Task<int> EliminarSubCuenta(int id);
+        Task<ICollection<SubCuenta>> ObtenerBancos(int id);
+        Task<ICollection<SubCuenta>> ObtenerCaja(int id);
         Task<ICollection<CodigoCuentasGlobal>> ObtenerCuentasCond(int id);
         Task<ICollection<SubCuenta>> ObtenerFondos(int id);
         Task<ICollection<SubCuenta>> ObtenerGastos(int id);
@@ -43,7 +45,7 @@ namespace Prueba.Repositories
 
             return cuentasContables;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,7 +61,7 @@ namespace Prueba.Repositories
 
             return await subcuentas.ToListAsync();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -88,7 +90,7 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -114,7 +116,7 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -220,7 +222,7 @@ namespace Prueba.Repositories
                 return resultado;
             }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -266,7 +268,7 @@ namespace Prueba.Repositories
             _context.Update(provision);
             return await _context.SaveChangesAsync();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -297,7 +299,7 @@ namespace Prueba.Repositories
 
             return model.ToList();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -313,7 +315,7 @@ namespace Prueba.Repositories
 
             return await _context.SaveChangesAsync();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -349,15 +351,48 @@ namespace Prueba.Repositories
                 _context.SubCuenta.Remove(subCuenta);
             }
 
-            return await _context.SaveChangesAsync();            
+            return await _context.SaveChangesAsync();
         }
-        public void ObtenerBancos(int id)
-        {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        public async Task<ICollection<SubCuenta>> ObtenerBancos(int id)
+        {
+            var bancos = from c in _context.Cuenta
+                         where c.Descripcion.ToUpper().Trim() == "BANCO"
+                         select c;
+
+            var subcuentasBancos = from c in _context.SubCuenta
+                                   join d in _context.CodigoCuentasGlobals
+                                   on c.Id equals d.IdCodigo
+                                   where d.IdCondominio == id
+                                   where c.IdCuenta == bancos.First().Id
+                                   select c;
+
+            return await subcuentasBancos.ToListAsync();
         }
-        public void ObtenerCaja(int id)
-        {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        public async Task<ICollection<SubCuenta>> ObtenerCaja(int id)
+        {
+            var caja = from c in _context.Cuenta
+                       where c.Descripcion.ToUpper().Trim() == "CAJA"
+                       select c;
+
+            var subcuentasCaja = from c in _context.SubCuenta
+                                 join d in _context.CodigoCuentasGlobals
+                                 on c.Id equals d.IdCodigo
+                                 where d.IdCondominio == id
+
+                                 where c.IdCuenta == caja.First().Id
+                                 select c;
+
+            return await subcuentasCaja.ToListAsync();
         }
     }
 }

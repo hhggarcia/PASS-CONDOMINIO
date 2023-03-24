@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prueba.Validates;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,16 +9,14 @@ public partial class PagoEmitido
 {
     public int IdPagoEmitido { get; set; }
 
-    [Required]
     [Display(Name = "# Condominio")]
     public int IdCondominio { get; set; }
 
-    [Required]
     [Display(Name = "# Proveedor")]
     public int? IdProveedor { get; set; }
 
     [Required]
-    [DataType(DataType.DateTime)]
+    [FechaPagoEmitido]
     public DateTime Fecha { get; set; }
 
     [Required]

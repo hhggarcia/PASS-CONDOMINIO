@@ -9,7 +9,6 @@ public partial class ReferenciasPe
     public int IdReferencia { get; set; }
 
     [Display(Name ="# Pago")]
-    [Required]
     public int IdPagoEmitido { get; set; }
 
     [Display(Name = "# Referencia")]

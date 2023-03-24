@@ -11,19 +11,22 @@ namespace Prueba.Repositories
     public interface IPagosEmitidosRepository
     {
         Task<int> Delete(int id);
-        RegistroPagoVM FormRegistrarPago(int id);
+        Task<RegistroPagoVM> FormRegistrarPago(int id);
         Task<IndexPagosVM> GetPagosEmitidos(int id);
         bool PagoEmitidoExists(int id);
         Task<bool> RegistrarPago(RegistroPagoVM modelo);
     }
     public class PagosEmitidosRepository: IPagosEmitidosRepository
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
         private readonly PruebaContext _context;
 
-        public PagosEmitidosRepository(IMonedaRepository repoMoneda,
+        public PagosEmitidosRepository(ICuentasContablesRepository repoCuentas,
+            IMonedaRepository repoMoneda,
             PruebaContext context)
         {
+            _repoCuentas = repoCuentas;
             _repoMoneda = repoMoneda;
             _context = context;
         }
@@ -41,8 +44,7 @@ namespace Prueba.Repositories
 
             var listaPagos = (from c in _context.PagoEmitidos
                              where c.IdCondominio == idCondominio
-                             select c)
-                             .Include(c => c.IdCondominioNavigation);
+                             select c).Include(c => c.IdCondominioNavigation);
 
             var referencias = from p in _context.PagoEmitidos
                               where p.IdCondominio == idCondominio
@@ -50,10 +52,12 @@ namespace Prueba.Repositories
                               on p.IdPagoEmitido equals r.IdPagoEmitido
                               select r;
 
-            
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(idCondominio);
+
 
             modelo.PagosEmitidos = await listaPagos.ToListAsync();
             modelo.Referencias = await referencias.ToListAsync();
+            modelo.BancosCondominio = subcuentasBancos.ToList();
 
             return modelo;
         }
@@ -84,90 +88,13 @@ namespace Prueba.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public RegistroPagoVM FormRegistrarPago(int id)
+        public async Task<RegistroPagoVM> FormRegistrarPago(int id)
         {
             var modelo = new RegistroPagoVM();
-            //LLENAR SELECT DE SUBCUENTAS DE GASTOS
 
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == id
-                                       select c;
-
-            //CONSULTAS A BD SOBRE CLASE - GRUPO - CUENTA - SUB CUENTA
-
-            //CARGAR SELECT DE SUB CUENTAS DE GASTOS
-            IQueryable<Grupo> gruposGastos = from c in _context.Grupos
-                                             where c.IdClase == 5
-                                             select c;
-
-            IQueryable<Cuenta> cuentas = from c in _context.Cuenta                                         
-                                         select c;
-
-            IQueryable<SubCuenta> subcuentas = from c in _context.SubCuenta
-                                               join d in cuentasContablesCond
-                                               on c.Id equals d.IdCodigo
-                                               select c;
-
-            //CARGAR SELECT DE SUB CUENTAS DE BANCOS
-            IQueryable<Cuenta> bancos = from c in _context.Cuenta
-                                        where c.Descripcion.ToUpper().Trim() == "BANCO"
-                                        select c;
-            IQueryable<Cuenta> caja = from c in _context.Cuenta
-                                      where c.Descripcion.ToUpper().Trim() == "CAJA"
-                                      select c;
-
-            IQueryable<SubCuenta> subcuentasBancos = from c in _context.SubCuenta
-                                                     join d in cuentasContablesCond
-                                                     on c.Id equals d.IdCodigo
-                                                     where c.IdCuenta == bancos.First().Id
-                                                     select c;
-
-            IQueryable<SubCuenta> subcuentasCaja = from c in _context.SubCuenta
-                                                   join d in cuentasContablesCond
-                                                   on c.Id equals d.IdCodigo    
-                                                   where c.IdCuenta == caja.First().Id
-                                                   select c;
-
-             
-            IList < Cuenta > cuentasGastos = new List<Cuenta>();
-            foreach (var grupo in gruposGastos)
-            {
-                foreach (var cuenta in cuentas)
-                {
-                    if (cuenta.IdGrupo == grupo.Id)
-                    {
-                        cuentasGastos.Add(cuenta);
-                    }
-                    continue;
-                }
-            }
-
-            IList<SubCuenta> subcuentasGastos = new List<SubCuenta>();
-            foreach (var cuenta in cuentasGastos)
-            {
-                foreach (var subcuenta in subcuentas)
-                {
-                    if (subcuenta.IdCuenta == cuenta.Id)
-                    {
-                        subcuentasGastos.Add(subcuenta);
-                    }
-                    continue;
-                }
-            }
-
-            IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
-            foreach (var condominioCC in cuentasContablesCond)
-            {
-                foreach (var subcuenta in subcuentasGastos)
-                {
-                    if (condominioCC.IdCodigo == subcuenta.Id)
-                    {
-                        subcuentasModel.Add(subcuenta);
-                    }
-                    continue;
-                }
-            }
-
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
+            var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
+            var subcuentasModel = await _repoCuentas.ObtenerGastos(id);
 
             modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
