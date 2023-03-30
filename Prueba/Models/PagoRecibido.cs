@@ -24,7 +24,7 @@ public partial class PagoRecibido
     [DataType(DataType.DateTime)]
     public DateTime Fecha { get; set; }
 
-    [Required]
+    //[Required]
     [Display(Name = "Cuenta")]
     public int IdSubCuenta { get; set; }
 
