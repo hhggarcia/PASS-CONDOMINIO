@@ -176,13 +176,13 @@ namespace Prueba.Services
                             col1.Item().Padding(10)
                             .Column(column =>
                             {
-                                column.Item().Background(Transparent).AlignCenter().Text("Elaborado por Junta de Condominio Res Parque Humboldt\r\nRealizar los pagos por Transferencias a la cuenta\r\nBANCO MERCANTIL\r\nJunta de Condominio Residencias Parque Humboldt\r\nRif J-30720421-4\r\nCta. Cte. 0105-0021-46802103-9647\r\nEnviar al correo : adm.parque.humboldt@gmail.com\r\nFavor indicar número de Apartamento ").FontSize(8);
+                                column.Item().Background("Transparent").AlignCenter().Text("Elaborado por Junta de Condominio Res Parque Humboldt\r\nRealizar los pagos por Transferencias a la cuenta\r\nBANCO MERCANTIL\r\nJunta de Condominio Residencias Parque Humboldt\r\nRif J-30720421-4\r\nCta. Cte. 0105-0021-46802103-9647\r\nEnviar al correo : adm.parque.humboldt@gmail.com\r\nFavor indicar número de Apartamento ").FontSize(8);
                             });
 
                         });
 
                         if (1 == 1)
-                            col1.Item().Background(Transparent).Padding(10)
+                            col1.Item().Background("Transparent").Padding(10)
                             .Column(column =>
                             {
                                 column.Item().Text("Observaciones").FontSize(14);
