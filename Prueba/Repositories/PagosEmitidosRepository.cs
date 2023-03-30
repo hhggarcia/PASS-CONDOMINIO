@@ -5,6 +5,7 @@ using Prueba.Models;
 using SQLitePCL;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Prueba.ViewModels;
+using NPOI.POIFS.Crypt.Dsig;
 
 namespace Prueba.Repositories
 {
@@ -119,38 +120,13 @@ namespace Prueba.Repositories
                               where c.IdCodigo == modelo.IdSubcuenta
                               select c;
 
-            // moneda del pago
-            var moneda = await _context.MonedaConds.FindAsync(modelo.IdMonedaCond);
-
-            // Moneda Principal para hacer la referencia de Monto respecto al dolar
-            var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
-
-            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any()) 
-            {
-                return resultado;
-            }
-            else if (moneda.Equals(monedaPrincipal.First()))
-            {
-                montoReferencia = modelo.Monto;
-            }
-            else if (!moneda.Equals(monedaPrincipal.First()))
-            {
-                var montoDolares = modelo.Monto * moneda.ValorDolar;
-
-                montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
-            }
-
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
             PagoEmitido pago = new PagoEmitido
             {
                 IdCondominio = modelo.IdCondominio,
                 Fecha = modelo.Fecha,
-                Monto = modelo.Monto,
-                MontoRef = montoReferencia,
-                ValorDolar = monedaPrincipal.First().ValorDolar,
-                SimboloMoneda = moneda.Simbolo,
-                SimboloRef = monedaPrincipal.First().Simbolo
+                Monto = modelo.Monto
             };
 
             var provisiones = from c in _context.Provisiones
@@ -181,11 +157,50 @@ namespace Prueba.Repositories
                                  where c.IdCodigo == modelo.IdCodigoCuentaCaja
                                  select c).First();
 
+                    // buscar moneda asigna a la subcuenta
+                    var moneda = from m in _context.MonedaConds
+                                 join mc in _context.MonedaCuenta
+                                 on m.IdMonedaCond equals mc.IdMoneda
+                                 where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                 select m;
+
+                    // si no es principal hacer el cambio
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+                    // calcular monto referencia
+                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                    {
+                        return resultado;
+                    }
+                    else if (moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto;
+                    }
+                    else if (!moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                        montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                        //montoReferencia = montoDolares;
+                    }
+
+                    // disminuir saldo de la cuenta de CAJA
+                    var monedaCuenta = (from m in _context.MonedaCuenta
+                                       where m.IdCodCuenta == idCaja.IdCodCuenta
+                                       select m).First();
+
+                    monedaCuenta.SaldoFinal -= modelo.Monto;
+                    // añadir al pago
+
                     pago.FormaPago = false;
+                    pago.SimboloMoneda = moneda.First().Simbolo;
+                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    pago.MontoRef = montoReferencia;
+                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
                     using (var _dbContext = new PruebaContext())
                     {
                         _dbContext.Add(pago);
+                        _dbContext.Update(monedaCuenta);
                         _dbContext.SaveChanges();
                     }
 
@@ -202,7 +217,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
                         };
                         LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
@@ -215,7 +230,7 @@ namespace Prueba.Repositories
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -229,7 +244,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -278,7 +293,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -292,7 +307,7 @@ namespace Prueba.Repositories
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -335,15 +350,55 @@ namespace Prueba.Repositories
             {
                 try
                 {
-                    pago.FormaPago = true;
 
                     var idBanco = (from c in _context.CodigoCuentasGlobals
                                   where c.IdCodigo == modelo.IdCodigoCuentaBanco
                                   select c).First();
 
+                    // buscar moneda asigna a la subcuenta
+                    var moneda = from m in _context.MonedaConds
+                                 join mc in _context.MonedaCuenta
+                                 on m.IdMonedaCond equals mc.IdMoneda
+                                 where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                 select m;
+
+                    // si no es principal hacer el cambio
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+                    // calcular monto referencia
+                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                    {
+                        return resultado;
+                    }
+                    else if (moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto;
+                    }
+                    else if (!moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                        montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                    }
+
+                    // disminuir saldo de la cuenta de CAJA
+                    var monedaCuenta = (from m in _context.MonedaCuenta
+                                        where m.IdCodCuenta == idBanco.IdCodCuenta
+                                        select m).First();
+
+                    monedaCuenta.SaldoFinal -= modelo.Monto;
+
+                    // añadir al pago
+
+                    pago.FormaPago = true;
+                    pago.SimboloMoneda = moneda.First().Simbolo;
+                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    pago.MontoRef = montoReferencia;
+                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
+
                     using (var _dbContext = new PruebaContext())
                     {
                         _dbContext.Add(pago);
+                        _dbContext.Update(monedaCuenta);
                         _dbContext.SaveChanges();
                     }
 
@@ -371,7 +426,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -385,7 +440,7 @@ namespace Prueba.Repositories
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -399,7 +454,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -452,7 +507,7 @@ namespace Prueba.Repositories
                             TipoOperacion = true,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
@@ -466,7 +521,7 @@ namespace Prueba.Repositories
                             TipoOperacion = false,
                             NumAsiento = numAsiento + 1,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
-                            SimboloMoneda = moneda.Simbolo,
+                            SimboloMoneda = moneda.First().Simbolo,
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };

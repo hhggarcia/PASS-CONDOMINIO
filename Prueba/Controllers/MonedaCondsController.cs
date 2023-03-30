@@ -233,6 +233,17 @@ namespace Prueba.Controllers
             {
                 return Problem("Entity set 'PruebaContext.MonedaConds'  is null.");
             }
+            var usada = await _context.MonedaCuenta.Where(c => c.IdMoneda == id).ToListAsync();
+
+            if (usada.Any())
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Esta moneda es usada en Configuración > Cuentas. Elimine antes la configuración!"
+                };
+
+                return View("Error", modeloError);
+            }
             var result = await _repoMoneda.Eliminar(id);
 
             return RedirectToAction(nameof(Index));

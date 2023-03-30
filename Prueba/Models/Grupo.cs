@@ -9,11 +9,11 @@ public partial class Grupo
 
     public short IdClase { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
-    public string Codigo { get; set; } = null!;
+    public string Codigo { get; set; } = string.Empty;
 
     public virtual ICollection<Cuenta> Cuenta { get; } = new List<Cuenta>();
 
-    public virtual Clase IdClaseNavigation { get; set; } = null!;
+    public virtual Clase IdClaseNavigation { get; set; } = new Clase();
 }

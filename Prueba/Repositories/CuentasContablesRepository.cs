@@ -371,7 +371,18 @@ namespace Prueba.Repositories
                                    where c.IdCuenta == bancos.First().Id
                                    select c;
 
-            return await subcuentasBancos.ToListAsync();
+            var cuentasdePagos = from m in _context.MonedaCuenta
+                                 join cc in _context.CodigoCuentasGlobals
+                                 on m.IdCodCuenta equals cc.IdCodCuenta
+                                 where m.RecibePagos
+                                 select cc;
+
+            var bancosActivos = from p in cuentasdePagos
+                               join sc in subcuentasBancos
+                               on p.IdCodigo equals sc.Id
+                               select sc;
+
+            return await bancosActivos.ToListAsync();
         }
 
         /// <summary>
@@ -388,11 +399,21 @@ namespace Prueba.Repositories
                                  join d in _context.CodigoCuentasGlobals
                                  on c.Id equals d.IdCodigo
                                  where d.IdCondominio == id
-
                                  where c.IdCuenta == caja.First().Id
                                  select c;
 
-            return await subcuentasCaja.ToListAsync();
+            var cuentasdePagos = from m in _context.MonedaCuenta
+                                 join cc in _context.CodigoCuentasGlobals
+                                 on m.IdCodCuenta equals cc.IdCodCuenta
+                                 where m.RecibePagos
+                                 select cc;
+
+            var cajasActivas = from p in cuentasdePagos
+                               join sc in subcuentasCaja
+                               on p.IdCodigo equals sc.Id
+                               select sc;
+
+            return await cajasActivas.ToListAsync();
         }
     }
 }

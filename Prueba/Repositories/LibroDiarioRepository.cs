@@ -121,6 +121,7 @@ namespace Prueba.Repositories
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id">ID del asiento</param>
         /// <returns></returns>
         public async Task<int> Eliminar(int id)
         {
@@ -133,6 +134,7 @@ namespace Prueba.Repositories
                 var patrimonios = await _context.Patrimonios.Where(c => c.IdAsiento == asiento.IdAsiento).ToListAsync();
                 var ingresos = await _context.Ingresos.Where(c => c.IdAsiento == asiento.IdAsiento).ToListAsync();
                 var egresos = await _context.Gastos.Where(c => c.IdAsiento == asiento.IdAsiento).ToListAsync();
+                var cuentaSaldo = await _context.MonedaCuenta.Where(c => c.IdCodCuenta == asiento.IdCodCuenta).ToListAsync();
 
                 // eliminar si existen activos relacionados 
                 if (activos != null && activos.Any())
@@ -182,6 +184,25 @@ namespace Prueba.Repositories
                     }
                 }
 
+                // restar del saldo de la cuenta el monto de este pago
+                if (cuentaSaldo != null && cuentaSaldo.Any())
+                {
+                    //var monedaPrincipal = await _context.MonedaConds.Where(c => c.Simbolo == asiento.SimboloMoneda && c.Princinpal).ToListAsync();
+                    //var monedaCuenta = await _context.MonedaConds.Where(c => c.IdMonedaCond == cuentaSaldo.First().IdMoneda).ToListAsync();
+
+                    // si tipo de operacion del asiento es True -> se resta
+                    if (asiento.TipoOperacion)
+                    {
+                        cuentaSaldo.First().SaldoFinal -= asiento.Monto;
+                    }
+                    else
+                    {
+                        // si tipo de operacion del asiento es False -> se suma
+                        cuentaSaldo.First().SaldoFinal += asiento.Monto;
+
+                    }
+
+                }
                 // eliminar asiento
                 _context.LdiarioGlobals.Remove(asiento);
             }

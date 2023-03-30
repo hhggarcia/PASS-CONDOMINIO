@@ -12,7 +12,7 @@
         @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
         <a class="btn btn-light mb-3" asp-controller="PagosEmitidos"
            asp-action="RegistrarPagos">
-            Registrar Pago
+            Registrar
         </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
@@ -66,7 +66,9 @@
                             </tr>
                             </tfoot>*@
                             <tbody>
-                                @if (Model.PagosEmitidos != null && Model.PagosEmitidos.Count() > 0)
+                                @if (Model.PagosEmitidos != null && Model.PagosEmitidos.Count() > 0
+                                && Model.BancosCondominio != null && Model.BancosCondominio.Any()
+                                && Model.Referencias != null && Model.Referencias.Any())
                                 {
                                     foreach (var item in @Model.PagosEmitidos)
                                     {

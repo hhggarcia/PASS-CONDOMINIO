@@ -122,7 +122,7 @@ public partial class PruebaContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;User Id=sa;Password=Pass123456;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-NF5DL1U\\SQLEXPRESS01;Database=Prueba;User Id=sa;Password=Pass123456;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -479,6 +479,7 @@ public partial class PruebaContext : DbContext
             entity.Property(e => e.FechaInicio).HasColumnType("date");
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
             entity.Property(e => e.Porcentaje).HasColumnName("porcentaje");
+            entity.Property(e => e.Saldo).HasColumnType("money");
 
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Fondos)
                 .HasForeignKey(d => d.IdCodCuenta)
@@ -609,6 +610,8 @@ public partial class PruebaContext : DbContext
             entity.Property(e => e.IdCodCuenta).HasComment("Codigo Sub cuenta del condominio");
             entity.Property(e => e.IdMoneda).HasComment("Moneda asignada");
             entity.Property(e => e.RecibePagos).HasComment("Mostrar cuenta en pago del propietario");
+            entity.Property(e => e.SaldoFinal).HasColumnType("money");
+            entity.Property(e => e.SaldoInicial).HasColumnType("money");
 
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.MonedaCuenta)
                 .HasForeignKey(d => d.IdCodCuenta)
@@ -1088,6 +1091,7 @@ public partial class PruebaContext : DbContext
         {
             entity.Property(e => e.Codigo).HasMaxLength(2);
             entity.Property(e => e.Descricion).HasMaxLength(70);
+            entity.Property(e => e.Saldo).HasColumnType("money");
 
             entity.HasOne(d => d.IdCuentaNavigation).WithMany(p => p.SubCuenta)
                 .HasForeignKey(d => d.IdCuenta)

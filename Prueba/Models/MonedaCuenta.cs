@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Prueba.Models;
 
@@ -11,15 +10,11 @@ public partial class MonedaCuenta
     /// <summary>
     /// Codigo Sub cuenta del condominio
     /// </summary>
-    [Display(Name=" # Cuenta")]
-    [Required]
     public int IdCodCuenta { get; set; }
 
     /// <summary>
     /// Moneda asignada
     /// </summary>
-    [Display(Name="# Moneda")]
-    [Required]
     public int IdMoneda { get; set; }
 
     /// <summary>
@@ -27,9 +22,11 @@ public partial class MonedaCuenta
     /// </summary>
     public bool RecibePagos { get; set; }
 
-    [Display(Name ="Cuenta")]
+    public decimal SaldoInicial { get; set; }
+
+    public decimal SaldoFinal { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
-    [Display(Name ="Moneda")]
-    public virtual Moneda IdMonedaNavigation { get; set; } = null!;
+    public virtual MonedaCond IdMonedaNavigation { get; set; } = null!;
 }

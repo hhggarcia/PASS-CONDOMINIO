@@ -1,4 +1,4 @@
-﻿@model Prueba.Models.MonedaCond
+﻿@model Prueba.Models.MonedaCuenta
 
 @{
     ViewData["Title"] = "Delete";
@@ -15,7 +15,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Monedas
+                        Monedas - cuentas
                     </h6>
                 </div>
                 <div class="card-body">
@@ -24,44 +24,44 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="card-body">
-                                        <h6>Seguro que desea eliminar esta moneda?</h6>
+                                        <h6>Seguro que desea eliminar esto?</h6>
                                         <div>
                                             <hr />
                                             <dl class="row">
                                                 <dt class="col-sm-5">
-                                                    @Html.DisplayNameFor(model => model.Princinpal)
+                                                    @Html.DisplayNameFor(model => model.RecibePagos)
                                                 </dt>
                                                 <dd class="col-sm-5">
-                                                    @Html.DisplayFor(model => model.Princinpal)
+                                                    @Html.DisplayFor(model => model.RecibePagos)
                                                 </dd>
                                                 <dt class="col-sm-5">
-                                                    @Html.DisplayNameFor(model => model.Simbolo)
+                                                    @Html.DisplayNameFor(model => model.SaldoInicial)
                                                 </dt>
                                                 <dd class="col-sm-5">
-                                                    @Html.DisplayFor(model => model.Simbolo)
+                                                    @Html.DisplayFor(model => model.SaldoInicial)
                                                 </dd>
                                                 <dt class="col-sm-5">
-                                                    @Html.DisplayNameFor(model => model.ValorDolar)
+                                                    @Html.DisplayNameFor(model => model.SaldoFinal)
                                                 </dt>
                                                 <dd class="col-sm-5">
-                                                    @Html.DisplayFor(model => model.ValorDolar)
+                                                    @Html.DisplayFor(model => model.SaldoFinal)
                                                 </dd>
                                                 <dt class="col-sm-5">
-                                                    @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+                                                    @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
                                                 </dt>
                                                 <dd class="col-sm-5">
-                                                    @Html.DisplayFor(model => model.IdCondominioNavigation.IdCondominio)
+                                                    @Html.DisplayFor(model => model.IdCodCuentaNavigation.IdCodCuenta)
                                                 </dd>
                                                 <dt class="col-sm-5">
                                                     @Html.DisplayNameFor(model => model.IdMonedaNavigation)
                                                 </dt>
                                                 <dd class="col-sm-5">
-                                                    @Html.DisplayFor(model => model.IdMonedaNavigation.IdMoneda)
+                                                    @Html.DisplayFor(model => model.IdMonedaNavigation.Simbolo)
                                                 </dd>
                                             </dl>
 
                                             <form asp-action="Delete">
-                                                <input type="hidden" asp-for="IdMonedaCond" />
+                                                <input type="hidden" asp-for="Id" />
                                                 <input type="submit" value="Eliminar" class="btn btn-danger" /> 
                                                 <a asp-action="Index" class="btn btn-secondary">Volver</a>
                                             </form>
