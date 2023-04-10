@@ -31,7 +31,11 @@
                             <!-- Inicio -->
                             <form class="form form-horizontal" asp-action="RegistrarPagos">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+                                @if (@ViewBag.FormaPago == "fallido")
+                                {
+                                    <h6>Debe seleccionar una cuenta de Efectivo o transferencia!</h6>
+                                    <hr />
+                                }
                                 <div class="form-body">
                                     <div class="row">
                                         <!-- Select Propiedades -->
@@ -96,7 +100,7 @@
                                                         <div id="Deuda"></div>
 
                                                         <p>
-                                                            <strong>Total</strong> = 0
+                                                            <div id="Total"></div>
                                                         </p>
                                                         <div class="table-responsive text-center">
                                                             <table class="table mb-0">
@@ -145,7 +149,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                         
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
@@ -389,6 +393,7 @@
 
                         var aux1 = String(response.deuda);
                         var aux2 = String(response.saldo);
+                        var aux3 = response.deuda + response.saldo;
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
                         // LLENAR BANCOS
@@ -407,6 +412,10 @@
                         // LLENAR SALDO
                         //$("#Saldo").innerText(response.saldo);
                         $("#Saldo").html("<p> <strong> Deuda Actual </strong> = " + aux2 + "</p>");
+                        
+                        // LLENAR total
+                        //$("#Total").innerText(response.saldo);
+                        $("#Total").html("<p> <strong> Total </strong> = " + aux3 + "</p>");
 
 
 
@@ -438,7 +447,7 @@
         function LoadTable(tableId, list) {
             CLearTable(tableId);
             $.each(list, function (idex, value) {
-                $(tableId).append("<tr><td>" + value.monto + value.simbolomoneda + "</td><td>" + value.fecha + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.monto + "</td><td>" + value.fecha + "</td><tr>");
             });
         }
 

@@ -33,9 +33,15 @@ namespace Prueba.Controllers
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var pruebaContext = _context.MonedaCuenta.Include(m => m.IdCodCuentaNavigation).Include(m => m.IdMonedaNavigation);
+            var aux = _context.MonedaCuenta.Include(m => m.IdCodCuentaNavigation).Include(m => m.IdMonedaNavigation);
             var codigos = await _repoCuentas.ObtenerCuentasCond(idCondominio);
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+            
+            var pruebaContext = from mc in aux
+                                join cc in _context.CodigoCuentasGlobals
+                                on mc.IdCodCuenta equals cc.IdCodCuenta
+                                where cc.IdCondominio == idCondominio
+                                select mc;
 
             var modelo = new MonedaCuentasVM()
             {
@@ -114,6 +120,8 @@ namespace Prueba.Controllers
                 }
                 // cambiar idCodCuenta
                 monedaCuenta.IdCodCuenta = cc.First().IdCodCuenta;
+
+                monedaCuenta.SaldoFinal = monedaCuenta.SaldoInicial;
 
                 _context.Add(monedaCuenta);
                 await _context.SaveChangesAsync();

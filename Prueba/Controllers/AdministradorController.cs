@@ -293,7 +293,7 @@ namespace Prueba.Controllers
 
                             _context.ReferenciasPrs.RemoveRange(referencia);
                             _context.RemoveRange(pagosRecibo);
-                            _context.PagoRecibidos.Remove(pago);                            
+                            _context.PagoRecibidos.Remove(pago);
                         }
                         else
                         {
@@ -373,16 +373,15 @@ namespace Prueba.Controllers
 
                     if (propiedad != null)
                     {
-                        // buscar recibos de la propiedad
-                        var recibosPropiedad = await _context.ReciboCobros.Where(
-                            c => c.IdPropiedad == propiedad.IdPropiedad
-                            && c.EnProceso == true
-                            && c.Pagado == false)
-                            .ToListAsync();
+                        var relacion = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+                       
+                        var reciboActual = (from r in relacion
+                                            join rc in _context.ReciboCobros
+                                            on r.IdRecibo equals rc.IdReciboCobro
+                                            where r.IdPago == pago.IdPagoRecibido
+                                            select rc).FirstOrDefault();
 
                         // buscar subcuenta contable donde esta el pago del condominio
-                        //var cuentaCondominio = await _context.SubCuenta.Where(c => c.IdCuenta == 15 && c.Codigo == "01").ToListAsync();
-
                         var cuentaCondominio = from s in _context.SubCuenta
                                                join cc in _context.CodigoCuentasGlobals
                                                on s.Id equals cc.IdCodigo
@@ -392,23 +391,13 @@ namespace Prueba.Controllers
 
                         // buscar referencia si tiene
                         var referencias = new List<ReferenciasPr>();
-                        var cuentaAfectada = new List<SubCuenta>();
+
                         if (pago.FormaPago)
                         {
                             referencias = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
-                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.IdSubCuenta).ToListAsync();
-                        }
-                        else
-                        {
-                            cuentaAfectada = await _context.SubCuenta.Where(c => c.Id == pago.IdSubCuenta).ToListAsync();
                         }
 
-                        // buscar la manera de hacer match (por el monto ??)
-
-                        //var reciboActual = recibosPropiedad.Where(c => c.Fecha.Month == DateTime.Now.Month).ToList();
-                        var reciboActual = recibosPropiedad.Where(c => c.Monto == pago.Monto).ToList();
-
-                        if (reciboActual == null || !reciboActual.Any())
+                        if (reciboActual == null)
                         {
                             _context.PagoRecibidos.Remove(pago);
                             await _context.SaveChangesAsync();
@@ -426,7 +415,32 @@ namespace Prueba.Controllers
                             // se pago solo el recibo del mes actual
                             using (var dbContext = new PruebaContext())
                             {
-                                if (propiedad.Saldo == reciboActual.First().Monto
+
+                                //// ADD PAGOS ABONADOS SOBRE LOS RECIBOS
+                                //if (pago.MontoRef == reciboActual.Monto)
+                                //{
+                                //    // SI EL MONTO PAGADO ES IGUAL AL DEL RECIBO 
+                                //}
+                                //else if (pago.MontoRef < reciboActual.Monto)
+                                //{
+                                //    // SI EL MONTO PAGADO ES MENOR AL DEL RECIBO 
+                                    
+                                //    // VERIFICAR SI HAY OTROS PAGOS ABONADOS
+
+                                //    // SI YA SE PAGA EL RECIBO, SI AUN QUEDA EN DEUDA, SI EL PAGO EXCEDE EL RECIBO
+                                //}
+                                //else if (pago.MontoRef > reciboActual.Monto)
+                                //{
+                                //    // SI EL MONTO PAGADO ES MAYOR AL DEL RECIBO
+
+                                //    // PAGAR EL RECIBO
+
+                                //    // SI NO HAY DEUDA RESTAR EXCEDENTE AL SALDO
+
+                                //    // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
+                                //}
+
+                                if (propiedad.Saldo == reciboActual.Monto
                                     && propiedad.Deuda == 0)
                                 {
                                     // hacer saldo = 0
@@ -436,10 +450,10 @@ namespace Prueba.Controllers
 
                                 }
                                 else if (propiedad.Saldo == 0
-                                    && propiedad.Deuda >= reciboActual.First().Monto)
+                                    && propiedad.Deuda >= reciboActual.Monto)
                                 {
                                     // restar de Deuda -Monto
-                                    propiedad.Deuda -= reciboActual.First().Monto;
+                                    propiedad.Deuda -= reciboActual.Monto;
                                     // si deuda y saldo == 0 -> solvencia = true
                                     if (propiedad.Deuda == 0)
                                     {
@@ -447,23 +461,23 @@ namespace Prueba.Controllers
                                     }
                                 }
                                 else if (propiedad.Saldo > 0
-                                    && propiedad.Saldo != reciboActual.First().Monto
-                                    && propiedad.Deuda >= reciboActual.First().Monto)
+                                    && propiedad.Saldo != reciboActual.Monto
+                                    && propiedad.Deuda >= reciboActual.Monto)
                                 {
                                     // restar de Deuda -Monto
-                                    propiedad.Deuda -= reciboActual.First().Monto;
+                                    propiedad.Deuda -= reciboActual.Monto;
 
                                 }
 
                                 // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-                                reciboActual.First().EnProceso = false;
-                                reciboActual.First().Pagado = true;
+                                reciboActual.EnProceso = false;
+                                reciboActual.Pagado = true;
 
                                 // cambiar pago.Confirmado a True
                                 pago.Confirmado = true;
 
                                 dbContext.Update(propiedad);
-                                dbContext.Update(reciboActual.First());
+                                dbContext.Update(reciboActual);
                                 dbContext.Update(pago);
 
                                 int numAsiento = 1;
@@ -484,7 +498,7 @@ namespace Prueba.Controllers
                                 // -> contra subcuenta  banco o caja por el debe
                                 LdiarioGlobal asientoBanco = new LdiarioGlobal
                                 {
-                                    IdCodCuenta = cuentaAfectada.First().Id,
+                                    IdCodCuenta = pago.IdSubCuenta,
                                     Fecha = DateTime.Today,
                                     Concepto = "Condominio Appt: " + propiedad.Codigo,
                                     Monto = pago.Monto,
@@ -647,9 +661,9 @@ namespace Prueba.Controllers
 
                 return View("Error", error);
             }
-            
+
         }
 
-        
+
     }
 }

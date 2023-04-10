@@ -28,6 +28,7 @@ namespace Prueba.Controllers
         private readonly IRelacionGastoRepository _repoRelacionGasto;
         private readonly IReportesRepository _repoReportes;
         private readonly IMonedaRepository _repoMoneda;
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly PruebaContext _context;
 
         public PropietariosController(IUnitOfWork unitOfWork,
@@ -39,6 +40,7 @@ namespace Prueba.Controllers
             IRelacionGastoRepository repoRelacionGasto,
             IReportesRepository repoReportes,
             IMonedaRepository repoMoneda,
+            ICuentasContablesRepository repoCuentas,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -50,6 +52,7 @@ namespace Prueba.Controllers
             _repoRelacionGasto = repoRelacionGasto;
             _repoReportes = repoReportes;
             _repoMoneda = repoMoneda;
+            _repoCuentas = repoCuentas;
             _context = context;
         }
 
@@ -182,7 +185,7 @@ namespace Prueba.Controllers
         {
             PagoRecibidoVM modelo = new PagoRecibidoVM();
 
-            if (valor > 0)      
+            if (valor > 0)
             {
                 var propiedad = await _context.Propiedads.FindAsync(valor);
 
@@ -202,25 +205,8 @@ namespace Prueba.Controllers
                                      select c;
 
                     //CARGAR SELECT DE SUB CUENTAS DE BANCOS
-                    var bancos = from c in _context.Cuenta
-                                 where c.Descripcion.ToUpper().Trim() == "BANCO"
-                                 select c;
-
-                    var caja = from c in _context.Cuenta
-                               where c.Descripcion.ToUpper().Trim() == "CAJA"
-                               select c;
-
-                    var subcuentasBancos = from c in _context.SubCuenta
-                                           join d in cuentasCondominio
-                                           on c.Id equals d.IdCodigo
-                                           where c.IdCuenta == bancos.First().Id
-                                           select c;
-
-                    var subcuentasCaja = from c in _context.SubCuenta
-                                         join d in cuentasCondominio
-                                          on c.Id equals d.IdCodigo
-                                         where c.IdCuenta == caja.First().Id
-                                         select c;
+                    var subcuentasBancos = await _repoCuentas.ObtenerBancos(condominio.IdCondominio);
+                    var subcuentasCaja = await _repoCuentas.ObtenerCaja(condominio.IdCondominio);
 
 
                     var recibos = from c in _context.ReciboCobros
@@ -238,10 +224,10 @@ namespace Prueba.Controllers
                         modelo.RecibosModel = await recibos.Where(c => c.EnProceso == false && c.Pagado == false)
                             .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
                             .ToListAsync();
-                        modelo.SubCuentasBancos = await subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                            .ToListAsync();
-                        modelo.SubCuentasCaja = await subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                            .ToListAsync();
+                        modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToList();
+                        modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToList();
 
                     }
                 }
@@ -270,34 +256,16 @@ namespace Prueba.Controllers
         [HttpPost]
         public async Task<IActionResult> RegistrarPagos(PagoRecibidoVM modelo)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
-
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
                     if (propiedad != null)
                     {
-                        if (modelo.Pagoforma == FormaPago.Transferencia)
-                        {
-                            var existPagoTransferencia = from pago in _context.PagoRecibidos
-                                                         join referencia in _context.ReferenciasPrs
-                                                         on pago.IdPagoRecibido equals referencia.IdPagoRecibido
-                                                         where pago.IdPropiedad == propiedad.IdPropiedad
-                                                         where referencia.NumReferencia == modelo.NumReferencia
-                                                         select new { pago, referencia };
+                        // validar num referencia repetido
 
-                            if (existPagoTransferencia != null && existPagoTransferencia.Any())
-                            {
-                                var modeloError = new ErrorViewModel()
-                                {
-                                    RequestId = "Ya existe un pago registrado con este número de Referencia!"
-                                };
-
-                                return View("Error", modeloError);
-                            }
-                        }
-
+                        decimal montoReferencia = 0;
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
                         var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
@@ -315,30 +283,71 @@ namespace Prueba.Controllers
 
                         if (modelo.Pagoforma == FormaPago.Transferencia)
                         {
+                            var existPagoTransferencia = from p in _context.PagoRecibidos
+                                                         join referencia in _context.ReferenciasPrs
+                                                         on p.IdPagoRecibido equals referencia.IdPagoRecibido
+                                                         where p.IdPropiedad == propiedad.IdPropiedad
+                                                         where referencia.NumReferencia == modelo.NumReferencia
+                                                         select new { p, referencia };
+
+                            if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                            {
+                                var modeloError = new ErrorViewModel()
+                                {
+                                    RequestId = "Ya existe un pago registrado con este número de Referencia!"
+                                };
+
+                                return View("Error", modeloError);
+                            }
+
+                            var idBanco = (from c in _context.CodigoCuentasGlobals
+                                           where c.IdCodigo == modelo.IdCodigoCuentaBanco
+                                           select c).First();
+
+                            // buscar moneda asigna a la subcuenta
+                            var moneda = from m in _context.MonedaConds
+                                         join mc in _context.MonedaCuenta
+                                         on m.IdMonedaCond equals mc.IdMoneda
+                                         where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                         select m;
+
                             var pago = new PagoRecibido()
                             {
                                 IdPropiedad = modelo.IdPropiedad,
                                 Fecha = modelo.Fecha,
-                                IdSubCuenta = modelo.IdCodigoCuentaBanco,
+                                IdSubCuenta = idBanco.IdCodCuenta,
                                 Concepto = modelo.Concepto,
                                 Confirmado = false,
                             };
+
+                            if (moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto;
+                            }
+                            else if (!moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                                montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                                //montoReferencia = montoDolares;
+                            }
 
                             pago.FormaPago = true;
 
                             var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
                             if (recibo != null)
-                            {
+                            {                                
+
                                 var monto = recibo.Monto;
 
                                 if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
                                 {
-                                    pago.Monto = monto;
-                                    pago.MontoRef = monto;
+                                    pago.Monto = modelo.Monto;
+                                    pago.SimboloMoneda = moneda.First().Simbolo;
                                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                                    pago.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                    pago.MontoRef = montoReferencia;
                                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
-                                    
+
                                 }
                                 else
                                 {
@@ -370,7 +379,7 @@ namespace Prueba.Controllers
                                 // cambiar a -en proceso = true- el recibo mas actual 
                                 var reciboActual = recibo;
                                 reciboActual.EnProceso = true;
-                                reciboActual.Abonado = monto;
+                                reciboActual.Abonado += montoReferencia;
 
                                 using (var dbcontext = new PruebaContext())
                                 {
@@ -401,13 +410,36 @@ namespace Prueba.Controllers
                         }
                         else
                         {
+                            var idCaja = (from c in _context.CodigoCuentasGlobals
+                                          where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                          select c).First();
+
+                            // buscar moneda asigna a la subcuenta
+                            var moneda = from m in _context.MonedaConds
+                                         join mc in _context.MonedaCuenta
+                                         on m.IdMonedaCond equals mc.IdMoneda
+                                         where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                         select m;
+
                             var pago = new PagoRecibido()
                             {
                                 IdPropiedad = modelo.IdPropiedad,
                                 Fecha = modelo.Fecha,
-                                IdSubCuenta = modelo.IdCodigoCuentaCaja,
+                                IdSubCuenta = idCaja.IdCodCuenta,
                                 Concepto = modelo.Concepto
                             };
+
+                            if (moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto;
+                            }
+                            else if (!moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                                montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                                //montoReferencia = montoDolares;
+                            }
 
                             pago.FormaPago = false;
 
@@ -417,10 +449,10 @@ namespace Prueba.Controllers
 
                                 if (monto > 0)
                                 {
-                                    pago.Monto = monto;
-                                    pago.MontoRef = monto;
+                                    pago.Monto = modelo.Monto;
+                                    pago.SimboloMoneda = moneda.First().Simbolo;
                                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                                    pago.SimboloMoneda = monedaPrincipal.First().Simbolo;
+                                    pago.MontoRef = montoReferencia;
                                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
                                 }
                                 else
@@ -437,7 +469,7 @@ namespace Prueba.Controllers
                                 // cambiar a -en proceso = true- el recibo mas actual 
                                 var reciboActual = recibo;
                                 reciboActual.EnProceso = true;
-                                reciboActual.Abonado = monto;
+                                reciboActual.Abonado += montoReferencia;
 
                                 using (var dbcontext = new PruebaContext())
                                 {
@@ -460,25 +492,39 @@ namespace Prueba.Controllers
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Mensaje = "Gracias por su pago!";
                             }
-                            
+
 
                             return View("Comprobante", comprobante);
                         }
                     }
                 }
-                catch (Exception ex)
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+
+                //return RedirectToAction("RegistrarPagos");
+
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                var propiedades = from c in _context.Propiedads
+                                  where c.IdUsuario == idPropietario
+                                  select c;
+
+                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
+
+                return View("RegistrarPagos", modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
                 {
-                    var modeloError = new ErrorViewModel()
-                    {
-                        RequestId = ex.Message
-                    };
+                    RequestId = ex.Message
+                };
 
-                    return View("Error", modeloError);
-                }
-
+                return View("Error", modeloError);
             }
 
-            return RedirectToAction("RegistrarPagos");
         }
 
         /// <summary>

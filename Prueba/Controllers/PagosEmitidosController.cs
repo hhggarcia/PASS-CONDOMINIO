@@ -263,14 +263,6 @@ namespace Prueba.Controllers
 
                 var modelo = await _repoPagosEmitidos.FormRegistrarPago(idCondominio);
 
-                var condominioMonedas = from m in _context.MonedaConds
-                                        join c in _context.Moneda
-                                        on m.IdMoneda equals c.IdMoneda
-                                        where m.IdCondominio == idCondominio
-                                        select m;
-
-
-                ViewData["IdMoneda"] = new SelectList(condominioMonedas, "IdMonedaCond", "Simbolo");
                 TempData.Keep();
 
                 return View(modelo);
@@ -387,18 +379,27 @@ namespace Prueba.Controllers
 
                     //}
                     ViewBag.FormaPago = "fallido";
+                    //traer subcuentas del condominio
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+                    modelo = await _repoPagosEmitidos.FormRegistrarPago(idCondominio);
+                    
                     TempData.Keep();
 
-                    return RedirectToAction("RegistrarPagos");
+                    return View("RegistrarPagos", modelo);
 
                 }
+                //traer subcuentas del condominio
+                var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormRegistrarPago(id);
 
                 TempData.Keep();
 
                 ViewBag.FormaPago = "fallido";
 
-                return RedirectToAction("RegistrarPagos");
+                return View("RegistrarPagos", modelo);
+
             }
             catch (Exception ex)
             {
