@@ -66,37 +66,39 @@
                             </tr>
                             </tfoot>*@
                             <tbody>
-                                @if (Model.PagosEmitidos != null && Model.PagosEmitidos.Count() > 0
-                                && Model.BancosCondominio != null && Model.BancosCondominio.Any()
-                                && Model.Referencias != null && Model.Referencias.Any())
+                                @if (Model.PagosEmitidos != null && Model.PagosEmitidos.Count() > 0)
                                 {
                                     foreach (var item in @Model.PagosEmitidos)
                                     {
                                         if (item.FormaPago)
                                         {
-                                            foreach (var referencia in Model.Referencias)
+                                            if (Model.BancosCondominio != null && Model.BancosCondominio.Any()
+                                            && Model.Referencias != null && Model.Referencias.Any())
                                             {
-                                                if (item.IdPagoEmitido == referencia.IdPagoEmitido)
+                                                foreach (var referencia in Model.Referencias)
                                                 {
-                                                    var idBanco = Convert.ToInt32(referencia.Banco);
-                                                    var banco = Model.BancosCondominio.Where(c => c.Id == idBanco).First();
-                                                    <tr class="tr_s">
-                                                        <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-                                                        <td>@(item.Monto.ToString("N")) @item.SimboloMoneda </td>
-                                                        <td>@item.ValorDolar.ToString("N")</td>
-                                                        <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
-                                                        <td>@FormaPago.Transferencia</td>
-                                                        <td>@referencia.NumReferencia</td>
-                                                        <td>@banco.Descricion</td>
-                                                        <td>
-                                                            @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
-                                                            <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
-                                                            <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
-                                                        </td>
-                                                    </tr>
-                                                }
+                                                    if (item.IdPagoEmitido == referencia.IdPagoEmitido)
+                                                    {
+                                                        var idBanco = Convert.ToInt32(referencia.Banco);
+                                                        var banco = Model.BancosCondominio.Where(c => c.Id == idBanco).First();
+                                                        <tr class="tr_s">
+                                                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                                            <td>@(item.Monto.ToString("N")) @item.SimboloMoneda </td>
+                                                            <td>@item.ValorDolar.ToString("N")</td>
+                                                            <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
+                                                            <td>@FormaPago.Transferencia</td>
+                                                            <td>@referencia.NumReferencia</td>
+                                                            <td>@banco.Descricion</td>
+                                                            <td>
+                                                                @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
+                                                                <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                                <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
 
-                                            }
+                                                }
+                                            }                                            
 
                                         }
                                         else
