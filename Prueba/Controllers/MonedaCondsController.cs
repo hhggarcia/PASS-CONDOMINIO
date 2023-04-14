@@ -173,7 +173,9 @@ namespace Prueba.Controllers
             //{
             try
             {
-                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo && c.IdCondominio == monedaCond.IdCondominio);
+                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo 
+                && c.IdMonedaCond != monedaCond.IdMonedaCond 
+                && c.IdCondominio == monedaCond.IdCondominio);
 
                 var principalExist = _context.MonedaConds.Where(c => c.Princinpal && c.IdCondominio == monedaCond.IdCondominio);
 
