@@ -173,8 +173,19 @@ namespace Prueba.Controllers
             //{
             try
             {
+                var existMoneda = _context.MonedaConds.Where(c => c.Simbolo == monedaCond.Simbolo && c.IdCondominio == monedaCond.IdCondominio);
+
                 var principalExist = _context.MonedaConds.Where(c => c.Princinpal && c.IdCondominio == monedaCond.IdCondominio);
 
+                if (existMoneda != null && existMoneda.Any())
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Ya existe una moneda con este símbolo!"
+                    };
+                    TempData.Keep();
+                    return View("Error", modeloError);
+                }
                 //if (principalExist.Any() && !monedaCond.Princinpal)
                 //{
                 //    var modeloError = new ErrorViewModel()
@@ -248,7 +259,6 @@ namespace Prueba.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
     }
 }
