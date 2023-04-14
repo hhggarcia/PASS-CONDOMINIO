@@ -175,15 +175,15 @@ namespace Prueba.Controllers
             {
                 var principalExist = _context.MonedaConds.Where(c => c.Princinpal && c.IdCondominio == monedaCond.IdCondominio);
 
-                if (principalExist.Any() && !monedaCond.Princinpal)
-                {
-                    var modeloError = new ErrorViewModel()
-                    {
-                        RequestId = "Ya existe una moneda Principal!"
-                    };
+                //if (principalExist.Any() && !monedaCond.Princinpal)
+                //{
+                //    var modeloError = new ErrorViewModel()
+                //    {
+                //        RequestId = "Ya existe una moneda Principal!"
+                //    };
 
-                    return View("Error", modeloError);
-                }
+                //    return View("Error", modeloError);
+                //}
                 var result = await _repoMoneda.Editar(monedaCond);
             }
             catch (DbUpdateConcurrencyException)
