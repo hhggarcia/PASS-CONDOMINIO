@@ -345,12 +345,12 @@ namespace Prueba.Controllers
                             {
                                 if (puestos != null && puestos.Any())
                                 {
-                                    propiedad.Saldo = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                    propiedad.Saldo += relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                     propiedad.Solvencia = false;
                                 }
                                 else
                                 {
-                                    propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                    propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                     propiedad.Solvencia = false;
                                 }
                             }
@@ -360,12 +360,12 @@ namespace Prueba.Controllers
                                 {
 
                                     propiedad.Deuda += propiedad.Saldo;
-                                    propiedad.Saldo = relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
+                                    propiedad.Saldo += relacionGasto.TotalMensual * (propiedad.Alicuota + puestos.Sum(c => c.Alicuota)) / 100;
                                 }
                                 else
                                 {
                                     propiedad.Deuda += propiedad.Saldo;
-                                    propiedad.Saldo = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+                                    propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
                                 }
                             }
                             // INFO DEL RECIBO

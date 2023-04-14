@@ -288,8 +288,7 @@ namespace Prueba.Repositories
                 var diario = from d in _context.LdiarioGlobals
                              join c in cuentasContablesCond
                              on d.IdCodCuenta equals c.IdCodCuenta
-                             where d.Fecha.Month == DateTime.Today.Month
-                             where c.IdCondominio == condominio.IdCondominio
+                             where d.Fecha.Month == fechaActual.Month && c.IdCondominio == condominio.IdCondominio
                              select d;
 
                 // CARGAR CUENTAS GASTOS DEL CONDOMINIO

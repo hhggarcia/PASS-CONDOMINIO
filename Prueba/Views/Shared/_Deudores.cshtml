@@ -124,6 +124,7 @@
                                                 <th>Monto</th>
                                                 <th>Tasa de Cambio $</th>
                                                 <th>Monto Ref</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
 
@@ -137,6 +138,11 @@
                                                         <td class="text-bold-500">@recibo.Monto.ToString("N") @recibo.SimboloMoneda</td>
                                                         <td>@recibo.ValorDolar.ToString("N")</td>
                                                         <td class="text-bold-500">@recibo.MontoRef.ToString("N") @recibo.SimboloRef</td>
+                                                        <td>
+                                                            <a asp-controller="Administrador"
+                                                            asp-action="DetalleRecibo"
+                                                            asp-route-id="@recibo.IdReciboCobro">Detalles</a>
+                                                        </td>
                                                     </tr>
                                                     }
 
@@ -147,6 +153,7 @@
                                                     <td class="text-bold-500">Sin</td>
                                                     <td>Recibos</td>
                                                     <td>pendientes</td>
+                                                    <td></td>
                                                     <td></td>
                                                 </tr>
                                                 }

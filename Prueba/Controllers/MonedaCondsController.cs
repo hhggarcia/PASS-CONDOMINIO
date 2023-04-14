@@ -173,9 +173,9 @@ namespace Prueba.Controllers
             //{
             try
             {
-                var principalExist = _context.MonedaConds.Where(c => c.Princinpal).ToList();
+                var principalExist = _context.MonedaConds.Where(c => c.Princinpal && c.IdCondominio == monedaCond.IdCondominio);
 
-                if (principalExist.Any() && monedaCond.Princinpal)
+                if (principalExist.Any() && !monedaCond.Princinpal)
                 {
                     var modeloError = new ErrorViewModel()
                     {

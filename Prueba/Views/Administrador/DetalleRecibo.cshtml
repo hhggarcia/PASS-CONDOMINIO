@@ -1,15 +1,11 @@
-﻿@model Dictionary<Propiedad, List<ReciboCobro>>
+﻿@using Prueba.ViewModels
 
+@model DetalleReciboVM
 @{
-    ViewData["Title"] = "Historial";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
-
-<!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Page Heading -->
-@*    <div class="d-sm-flex align-items-center justify-content-start">
-        <h1 class="h3 mb-0 text-gray-800">Recibos</h1>
-    </div>*@
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
@@ -20,102 +16,27 @@
             Excel
         </a>
     </div>
-
     <!-- Content Row -->
     <div class="row">
-        <div class="col-lg-12 mb-4">
-            <!-- Illustrations -->
-            <!-- DataTales Example -->
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Verifique el estado de sus recibos
+                        Detalles de Recibo
                     </h6>
-
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        @if (Model.Count() > 0)
-                        {
-                            <table class="table table-bordered form"
-                               id="dataTable"
-                               width="100%"
-                               cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Propiedad</th>
-                                        <th>Fecha</th>
-                                        <th>Monto</th>
-                                        <th>Abonado</th>
-                                        <th>Numero Relación de Gastos</th>
-                                        <th>Estado</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Propiedad</th>
-                                        <th>Fecha</th>
-                                        <th>Monto</th>
-                                        <th>Abonado</th>
-                                        <th>Numero Relación de Gastos</th>
-                                        <th>Estado</th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
-                                        @if (item.Value.Count() > 0)
-                                        {
-                                            @foreach (var recibo in item.Value)
-                                            {
-                                                <tr class="tr_s">
-                                                    <th>@item.Key.Codigo</th>
-                                                    <td>@recibo.Fecha.ToString("dd/MM/yyyy")</td>
-                                                    <td>@recibo.Monto.ToString("N")</td>
-                                                    <td>@recibo.Abonado.ToString("N")</td>
-                                                    <td>@recibo.IdRgastos</td>
-                                                    @if (@recibo.EnProceso)
-                                                    {
-                                                        <td>En proceso</td>
-                                                    }
-                                                    else if (recibo.Pagado)
-                                                    {
-                                                        <td>Pagado</td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td>En deuda</td>
-                                                    }
-                                                    <td><a
-                                                        asp-controller="Propietarios"
-                                                        asp-action="DetalleRecibo" 
-                                                        asp-route-id="@recibo.IdReciboCobro" class="btn btn-primary">Detalles</a>
-                                                    </td>
-                                                </tr>
-
-                                            }
-
-                                        }
-
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                        else
-                        {
-                            <h3>Pero qué ha pasao :O</h3>
-                        }
-
-                    </div>
+                    @*<div class="form form-horizontal">
+                        <div class="form-body">*@
+                            <partial name="_DetalleReciboCobro" model="Model" />
+                        @*</div>
+                    </div>*@
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 
 
 @*PDF Configuración*@
@@ -146,13 +67,14 @@
                     });
 
                 doc.setFontSize(22)
-                doc.text(20, 40, 'Recibos')
+                doc.text(20, 40, 'Detalles Relación de Gastos')
                 doc.setLineWidth(0.7)
                 doc.line(20, 45, 80, 45)
 
+
                 doc.addImage(img, 'JPEG', 20, 60); // xx Margen left, xx Margen Top
                 // Nombre documento
-                doc.save('Recibos.pdf');
+                doc.save('Recibo-Detalle.pdf');
                 form.width(cache_width);
             });
         }

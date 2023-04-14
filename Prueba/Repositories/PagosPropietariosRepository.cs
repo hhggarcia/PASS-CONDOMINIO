@@ -16,6 +16,14 @@ namespace Prueba.Repositories
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public void ConfirmarPago()
+        {
+
+        }
+
+        /// <summary>
         /// Busca todos los condominios a los cuales pertenece un usuario
         /// </summary>
         /// <param name="IdUsuario">Id del usuario</param>

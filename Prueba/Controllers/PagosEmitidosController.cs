@@ -39,7 +39,7 @@ namespace Prueba.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString()); 
 
             var modelo = await _repoPagosEmitidos.GetPagosEmitidos(idCondominio);
 

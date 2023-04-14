@@ -28,6 +28,7 @@ namespace Prueba.Controllers
         private readonly IPDFServices _servicePDF;
         private readonly IManageExcel _manageExcel;
         private readonly IReportesRepository _repoReportes;
+        private readonly IRelacionGastoRepository _repoRelacionGasto;
         private readonly PruebaContext _context;
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace Prueba.Controllers
             IPDFServices PDFService,
             IManageExcel manageExcel,
             IReportesRepository repoReportes,
+            IRelacionGastoRepository repoRelacionGasto,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -58,6 +60,7 @@ namespace Prueba.Controllers
             _servicePDF = PDFService;
             _manageExcel = manageExcel;
             _repoReportes = repoReportes;
+            _repoRelacionGasto = repoRelacionGasto;
             _context = context;
         }
 
@@ -416,29 +419,29 @@ namespace Prueba.Controllers
                             using (var dbContext = new PruebaContext())
                             {
 
-                                //// ADD PAGOS ABONADOS SOBRE LOS RECIBOS
-                                //if (pago.MontoRef == reciboActual.Monto)
-                                //{
-                                //    // SI EL MONTO PAGADO ES IGUAL AL DEL RECIBO 
-                                //}
-                                //else if (pago.MontoRef < reciboActual.Monto)
-                                //{
-                                //    // SI EL MONTO PAGADO ES MENOR AL DEL RECIBO 
-                                    
-                                //    // VERIFICAR SI HAY OTROS PAGOS ABONADOS
+                                // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
+                                if (pago.MontoRef == reciboActual.Monto)
+                                {
+                                    // SI EL MONTO PAGADO ES IGUAL AL DEL RECIBO 
+                                }
+                                else if (pago.MontoRef < reciboActual.Monto)
+                                {
+                                    // SI EL MONTO PAGADO ES MENOR AL DEL RECIBO 
 
-                                //    // SI YA SE PAGA EL RECIBO, SI AUN QUEDA EN DEUDA, SI EL PAGO EXCEDE EL RECIBO
-                                //}
-                                //else if (pago.MontoRef > reciboActual.Monto)
-                                //{
-                                //    // SI EL MONTO PAGADO ES MAYOR AL DEL RECIBO
+                                    // VERIFICAR SI HAY OTROS PAGOS ABONADOS
 
-                                //    // PAGAR EL RECIBO
+                                    // SI YA SE PAGA EL RECIBO, SI AUN QUEDA EN DEUDA, SI EL PAGO EXCEDE EL RECIBO
+                                }
+                                else if (pago.MontoRef > reciboActual.Monto)
+                                {
+                                    // SI EL MONTO PAGADO ES MAYOR AL DEL RECIBO
 
-                                //    // SI NO HAY DEUDA RESTAR EXCEDENTE AL SALDO
+                                    // PAGAR EL RECIBO
 
-                                //    // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
-                                //}
+                                    // SI NO HAY DEUDA RESTAR EXCEDENTE AL SALDO
+
+                                    // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
+                                }
 
                                 if (propiedad.Saldo == reciboActual.Monto
                                     && propiedad.Deuda == 0)
@@ -664,6 +667,30 @@ namespace Prueba.Controllers
 
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DetalleRecibo(int id)
+        {
+            if (_context.RelacionGastos == null)
+            {
+                return NotFound();
+            }
+
+            //var relacionGasto = await _context.RelacionGastos
+            //    .Include(r => r.IdCondominioNavigation)
+            //    .FirstOrDefaultAsync(m => m.IdRgastos == id);
+            //if (relacionGasto == null)
+            //{
+            //    return NotFound();
+            //}
+            var modelo = await _repoRelacionGasto.DetalleRecibo(id);
+            //return View(relacionGasto);
+            return View(modelo);
+        }
 
     }
 }
