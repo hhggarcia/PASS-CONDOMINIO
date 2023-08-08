@@ -5,10 +5,12 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+@*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
-        </a>
+        </a> *@
+        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="DetalleRecibo">Crear pdf</button>
+
         <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Excel
@@ -25,8 +27,9 @@
                     </h6>
                 </div>
                 <div class="card-body">
+                    
                     @*<div class="form form-horizontal">
-                        <div class="form-body">*@
+                        <div class="form-body">*@        
                             <partial name="_DetalleReciboCobro" model="Model" />
                         @*</div>
                     </div>*@
@@ -40,6 +43,8 @@
 @*PDF Configuración*@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script src="~/js/ApiPDF.js"></script>
+
 <script>
     (function () {
         var
@@ -153,8 +158,53 @@
 
 </script>
 
+@* @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        // await Html.RenderPartialAsync("_ValidationScriptsPDF");
+    }
+}
+ *@
+<script>
+    $(document).ready(function () {
+        $("#DetalleRecibo").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/Propietarios/DetalleReciboPdf',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
 
-@section scripts{
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'DetalleRecibo.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                },
+                error: function (result) {
+                    alert('Error al descargar detalle del recibo');
+                    console.log(result);
+                }
+            });
+        });
+    });
+
+</script>
+
+ @section scripts{
     <script>
         function fnExcelReport() {
             var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";

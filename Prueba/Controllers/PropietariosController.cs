@@ -12,6 +12,13 @@ using Prueba.Services;
 using Prueba.Utils;
 using Prueba.Repositories;
 using Prueba.ViewModels;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QuestPDF.Fluent;
+using System.Web.Razor.Parser.SyntaxTree;
+using NetTopologySuite.Index.HPRtree;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Net;
 
 namespace Prueba.Controllers
 {
@@ -30,6 +37,7 @@ namespace Prueba.Controllers
         private readonly IMonedaRepository _repoMoneda;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly PruebaContext _context;
+        private readonly IPDFServices _servicePDF;
 
         public PropietariosController(IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
@@ -40,7 +48,8 @@ namespace Prueba.Controllers
             IRelacionGastoRepository repoRelacionGasto,
             IReportesRepository repoReportes,
             IMonedaRepository repoMoneda,
-            ICuentasContablesRepository repoCuentas,
+            ICuentasContablesRepository repoCuentas, 
+            IPDFServices PDFService,
             PruebaContext context)
         {
             _unitOfWork = unitOfWork;
@@ -53,6 +62,7 @@ namespace Prueba.Controllers
             _repoReportes = repoReportes;
             _repoMoneda = repoMoneda;
             _repoCuentas = repoCuentas;
+            _servicePDF = PDFService;
             _context = context;
         }
 
@@ -62,6 +72,7 @@ namespace Prueba.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
+            
             return View();
         }
 
@@ -261,6 +272,7 @@ namespace Prueba.Controllers
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+
                     if (propiedad != null)
                     {
                         // validar num referencia repetido
@@ -268,6 +280,7 @@ namespace Prueba.Controllers
                         decimal montoReferencia = 0;
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
+
                         var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
 
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
@@ -632,5 +645,144 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ReciboPdf()
+        {
+            string idPropietario = TempData.Peek("idUserLog").ToString();
+
+            var modelo = new Dictionary<Propiedad, List<ReciboCobro>>();
+            var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            if (propiedades != null && propiedades.Count() > 0)
+            {
+                foreach (var item in propiedades)
+                {
+                    var listaRecibosPorPropiedad = await _context.ReciboCobros.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+                    modelo.Add(item, listaRecibosPorPropiedad);
+                }
+            }
+            var data = _servicePDF.ReciboPDF(modelo);
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "Recibo.pdf");
+        }
+        [HttpGet]
+        public async Task<IActionResult> HistorialPdf()
+        {
+            string idPropietario = TempData.Peek("idUserLog").ToString();
+
+            var modelo = new Dictionary<Propiedad, List<PagoRecibido>>();
+            var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            if (propiedades != null && propiedades.Count() > 0)
+            {
+                foreach (var item in propiedades)
+                {
+                    var listaPagosPorPropiedad = await _context.PagoRecibidos.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+                    modelo.Add(item, listaPagosPorPropiedad);
+                }
+            }
+            var data = _servicePDF.HistorialPDF(modelo);
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "Historial.pdf");
+        }
+        //[HttpPost]
+        //public IActionResult ComprobantePdf(ComprobanteVM comprobante)
+        //{
+        //    var data = Document.Create(container =>
+        //    {
+        //        container.Page(page =>
+        //        {
+        //            page.Size(PageSizes.A4);
+        //            page.Margin(1, Unit.Centimetre);
+        //            page.Header().ShowOnce().Row(row =>
+        //            {
+        //                row.RelativeItem().Column(col =>
+        //                {
+        //                    col.Item().Text("Comprobante").Bold().FontSize(20).FontColor("#004581").Bold();
+        //                });
+        //                row.RelativeItem().Column(col =>
+        //                {
+        //                    col.Item().Image("wwwroot/images/logo-1.png");
+        //                });
+        //            });
+
+        //            page.Content()
+        //                .PaddingVertical(1, Unit.Centimetre)
+        //                .Column(x =>
+        //                {
+        //                    x.Spacing(20);
+        //                    if(comprobante.Condominio != null && comprobante.Inmueble !=null && comprobante.Propiedad !=null)
+        //                    {
+        //                        x.Item().Text("Condominio:" + comprobante.Condominio.Nombre);
+        //                        x.Item().Text("Inmueble:" + comprobante.Inmueble.Nombre);
+        //                        x.Item().Text("Propiedad:" + comprobante.Propiedad.Codigo);
+        //                    }
+        //                    if(comprobante.PagoRecibido != null)
+        //                    {
+        //                        if(comprobante.PagoRecibido.FormaPago && comprobante.Referencias != null)
+        //                        {
+        //                            x.Item().Text("Transferencia");
+        //                            x.Item().Text("Fecha:" + comprobante.PagoRecibido.Fecha.ToString("dd/MM/yyyy"));
+        //                            x.Item().Text("Referencia:" + comprobante.Referencias.NumReferencia);
+        //                            x.Item().Text("Monto:" + comprobante.PagoRecibido.Monto.ToString("N"));
+        //                            x.Item().Text("Fecha de comprobante:" + DateTime.Today.ToString("dd/MM/yyyy"));
+        //                        }
+        //                        else
+        //                        {
+        //                            x.Item().Text("Efectivo");
+        //                            x.Item().Text("Monto:" + comprobante.PagoRecibido.Monto.ToString("N"));
+        //                            x.Item().Text("Fecha de comprobante:" + DateTime.Today.ToString("dd/MM/yyyy"));
+        //                        }
+        //                    }
+        //                });
+
+        //            page.Footer()
+        //                .AlignCenter()
+        //                .Text(x =>
+        //                {
+        //                    x.Span("Page ");
+        //                    x.CurrentPageNumber();
+        //                });
+        //        });
+        //    })
+        //   .GeneratePdf();
+        //    Stream stream = new MemoryStream(data);
+        //    return File(stream, "application/pdf", "Comprobante.pdf");
+        //}
+
+        [HttpPost]
+        public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
+        {
+            try
+            {
+                var data = _servicePDF.DetalleReciboPDF(detalleReciboVM);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        [HttpPost]
+        public ContentResult ComprobantePDF([FromBody] ComprobanteVM comprobanteVM)
+        {
+            try
+            {
+                var data = _servicePDF.ComprobantePDF(comprobanteVM);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
     }
 }

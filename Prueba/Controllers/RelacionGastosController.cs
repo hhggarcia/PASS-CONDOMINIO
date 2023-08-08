@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -26,6 +28,7 @@ namespace Prueba.Controllers
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IMonedaRepository _repoMoneda;
+        private readonly IPDFServices _servicePDF;
         private readonly PruebaContext _context;
 
         public RelacionGastosController(IUnitOfWork unitOfWork,
@@ -34,6 +37,7 @@ namespace Prueba.Controllers
             IUserStore<ApplicationUser> userStore,
             IRelacionGastoRepository repoRelacionGastos,
             IMonedaRepository repoMoneda,
+            IPDFServices PDFService,
             PruebaContext context)
         {
             _context = context;
@@ -43,6 +47,7 @@ namespace Prueba.Controllers
             _userStore = userStore;
             _repoRelacionGastos = repoRelacionGastos;
             _repoMoneda = repoMoneda;
+            _servicePDF = PDFService;
         }
 
         // GET: RelacionGastos
@@ -459,6 +464,23 @@ namespace Prueba.Controllers
             return RedirectToAction("Index");
 
         }
+        
+        [HttpPost]
+        public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
+        {
+            try
+            {
+                var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
     }
 }

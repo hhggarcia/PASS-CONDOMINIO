@@ -13,6 +13,7 @@ using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
 using Prueba.ViewModels;
+using System.Net;
 
 namespace Prueba.Controllers
 {
@@ -636,7 +637,7 @@ namespace Prueba.Controllers
                 var diferencia = totalIngreso - totalEgreso;
                 //llenar modelo
                 // inicializar modelo
-                var modelo = new EstadoResultadoVM
+                EstadoResultadoVM modelo = new EstadoResultadoVM
                 {
                     Egresos = await egresos.ToListAsync(),
                     Ingresos = await ingresos.ToListAsync(),
@@ -690,6 +691,82 @@ namespace Prueba.Controllers
             var modelo = await _repoRelacionGasto.DetalleRecibo(id);
             //return View(relacionGasto);
             return View(modelo);
+        }
+       
+      
+        [HttpPost]
+        public ContentResult ComprobantePagosRecibidosPDF([FromBody] IndexPagoRecibdioVM indexPagoRecibdio)
+        {
+            try
+            {
+                var data = _servicePDF.ComprobantePagosRecibidosPDF(indexPagoRecibdio);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> PagosRecibidosPDF()
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            IList<ApplicationUser> listaPropietarios = await _signInManager.UserManager.Users.ToListAsync();
+            
+            var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
+            var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
+
+            foreach (var user in listaPropietarios)
+            {
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
+                if (propiedades != null && propiedades.Count() > 0)
+                {
+                    propiedadesPorUsuario.Add(user, propiedades);
+                    foreach (var propiedad in propiedades)
+                    {
+                        var pagos = await _context.PagoRecibidos.Where(
+                            c => c.IdPropiedad == propiedad.IdPropiedad
+                            && c.Confirmado == false)
+                            .ToListAsync();
+
+                        if (pagos != null && pagos.Count() > 0)
+                        {
+                            pagosPorPropiedad.Add(propiedad, pagos);
+                        }
+                        continue;
+                    }
+                }
+                continue;
+            }
+            IndexPagoRecibdioVM modelo = new IndexPagoRecibdioVM()
+            {
+                UsuariosPropiedad = propiedadesPorUsuario,
+                PropiedadPagos = pagosPorPropiedad,
+            };
+            var data = _servicePDF.ComprobantePagosRecibidosPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "PagosRecibidos.pdf");
+         }
+        [HttpPost]
+        public ContentResult EstadoResultadoPDF([FromBody] EstadoResultadoVM estadoResultado)
+        {
+            try
+            {
+                var data = _servicePDF.EstadoDeResultadoPDF(estadoResultado);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
 
     }

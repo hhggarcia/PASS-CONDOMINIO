@@ -11,10 +11,12 @@
         @*<h1 class="h3 mb-0 text-gray-800">Comprobante</h1>*@
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+@*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
-        </a>
+        </a> *@
+        <button id="ComprobantePEVMPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button>
+
     </div>
 
     <div class="row justify-content-center">
@@ -33,16 +35,19 @@
 
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
+                                 <form method="post">
 
                                 <h6>Condominio</h6>
                                 @if (Model.Condominio != null)
                                 {
+                                    <input type="hidden" asp-for="@Model.Condominio.Nombre" />
+
                                     <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
                                     <p><strong>RIF</strong>: @Model.Condominio.Rif</p>
                                    @* <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>*@
                                 }
-
+                                </form>
                             </div>
                         </div>
 
@@ -60,7 +65,7 @@
                                         <h6>Transferencia</h6>
                                         <p><strong>Fecha</strong>: @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
 
-                                        <p><strong>Cuenta</strong>: @Model.Banco.Descricion</p>
+                                        <p><strong>Cuenta</strong>: @Model.Banco.Descricion.ToString()</p>
                                         <p><strong>Referencia</strong>: @Model.NumReferencia</p>
                                         <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
                                         <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
@@ -218,3 +223,43 @@
     })(jQuery);
 
 </script>
+
+<script>
+    $(document).ready(function () {
+        $("#ComprobantePEVMPDF").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/PagosEmitidos/ComprobantePDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobante.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+    });
+</script>
+
+
