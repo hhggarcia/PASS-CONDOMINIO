@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace Prueba.Controllers
 {
@@ -19,14 +24,17 @@ namespace Prueba.Controllers
     {
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPagosEmitidosRepository _repoPagosEmitidos;
+        private readonly IPDFServices _servicePDF;
         private readonly PruebaContext _context;
 
         public PagosEmitidosController(IMonedaRepository repoMoneda,
             IPagosEmitidosRepository repoPagosEmitidos,
+            IPDFServices servicePDF,
             PruebaContext context)
         {
             _repoMoneda = repoMoneda;
             _repoPagosEmitidos = repoPagosEmitidos;
+            _servicePDF = servicePDF;
             _context = context;
         }
 
@@ -366,10 +374,10 @@ namespace Prueba.Controllers
 
                         comprobante.Pago.Monto = modelo.Monto;
                         comprobante.Pago.Fecha = modelo.Fecha;
-                        //comprobante.Pago.ValorDolar = modelo.ValorDolar;
-                        //comprobante.Pago.MontoRef = modelo.MontoRef;
-                        //comprobante.Pago.SimboloRef = modelo.SimboloRef;
-                        //comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
+                        comprobante.Pago.ValorDolar = modelo.ValorDolar;
+                        comprobante.Pago.MontoRef = modelo.MontoRef;
+                        comprobante.Pago.SimboloRef = modelo.SimboloRef;
+                        comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
 
 
                         TempData.Keep();
@@ -411,5 +419,51 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+        [HttpPost]
+        public IActionResult ComprobantePdf2(ComprobantePEVM comprobante)
+        {
+            if (comprobante.Condominio.Nombre != null)
+            {
+
+            }
+            return Json(new { mensaje = "Operación exitosa" });
+        }
+        //[ValidateAntiForgeryToken]
+        //public IActionResult ComprobantePdf(ComprobantePEVM comprobante)
+        [HttpPost]
+        public ContentResult ComprobantePDF([FromBody] ComprobantePEVM comprobanteVM)
+        {
+            try
+            {
+                var data = _servicePDF.ComprobantePEVMPDF(comprobanteVM);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        [HttpPost]
+        public ContentResult PagosEmitidosPDF([FromBody] IndexPagosVM comprobanteVM)
+        {
+            try
+            {
+                var data = _servicePDF.PagosEmitidosPDF(comprobanteVM);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
     }
 }

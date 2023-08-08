@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -19,11 +21,14 @@ namespace Prueba.Controllers
     {
         private readonly ILibroDiarioRepository _repoLibroDiario;
         private readonly PruebaContext _context;
+        private readonly IPDFServices _servicePDF;
 
         public LdiarioGlobalsController(ILibroDiarioRepository repoLibroDiario,
+          IPDFServices PDFService,
             PruebaContext context)
         {
             _repoLibroDiario = repoLibroDiario;
+            _servicePDF = PDFService;
             _context = context;
         }
 
@@ -179,7 +184,7 @@ namespace Prueba.Controllers
                 //traer subcuentas del condominio
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var modelo = _repoLibroDiario.LibroDiario(idCondominio);
+                LibroDiarioVM modelo = _repoLibroDiario.LibroDiario(idCondominio);
 
                 TempData.Keep();
 
@@ -195,7 +200,37 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+       
+        [HttpPost]
+        public ContentResult LibroDiarioPDF([FromBody] LibroDiarioVM ldiarioGlobal)
+        {
+            try
+            {
+                if(ldiarioGlobal== null)
+                {
 
+                }
+                var data = _servicePDF.LibroDiarioPDF(ldiarioGlobal);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        //[HttpGet]
+        //public async Task<IActionResult> LibroDiarioPDF2()
+        //{
+        //    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    LibroDiarioVM modelo = _repoLibroDiario.LibroDiario(idCondominio);
+        //    var data = _servicePDF.LibroDiarioPDF(modelo);
+        //    Stream stream = new MemoryStream(data);
+        //    return File(stream, "application/pdf", "LibroDiario.pdf");
+        //}
     }
 }

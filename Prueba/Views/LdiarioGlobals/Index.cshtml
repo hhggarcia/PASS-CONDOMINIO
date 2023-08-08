@@ -13,10 +13,14 @@
 
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*<a asp-action="PruebaPDF" asp-controller="Administrador">PDF Quest</a>*@
-        <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+ @*        <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
-        </a>
+        </a> *@
+        <button id="LibroDiarioPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button>
+@*         <a type="button" class="btn btn-primary" asp-action="LibroDiarioPDF2" 
+        asp-controller="LdiarioGlobals">Crear pdf</a> *@
+
         <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Excel
@@ -30,7 +34,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Libro Diario.
+                        Libro Diarios.
                     </h6>
                 </div>
                 <div class="card-body">
@@ -85,7 +89,8 @@
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
-
+                                                    
+                                                    
                                                     @foreach (var asiento in Model.AsientosCondominio)
                                                     {
                                                         var cc = Model.CuentasCondominio.Where(c => c.IdCodCuenta == asiento.IdCodCuenta).ToList();
@@ -255,7 +260,44 @@
 
 </script>
 
+<script>
+    $(document).ready(function () {
+        $("#LibroDiarioPDF").click(function () {
+            console.log( "Model");
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/LdiarioGlobals/LibroDiarioPDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
 
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'LibroDiaio.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+    });
+</script>
 @section scripts{
     <script>
         function fnExcelReport() {
