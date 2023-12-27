@@ -228,7 +228,9 @@ namespace Prueba.Controllers
 
                     modelo.Deuda = propiedad.Deuda;
 
-                    modelo.Recibos = await recibos.Where(c => c.EnProceso == false && c.Pagado == false).ToListAsync();
+                    //modelo.Recibos = await recibos.ToListAsync();
+                    modelo.Recibos = await recibos.Where(c => (c.EnProceso == false && c.Pagado == false)|| (c.EnProceso == true && c.Pagado ==false)).ToListAsync();
+                    //modelo.Recibos = await _context.ReciboCobros.FindAsync(valor);
 
                     if (modelo.Recibos.Any())
                     {
@@ -271,17 +273,23 @@ namespace Prueba.Controllers
             {
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
-                    var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+                    //*Inicio a como estaba antes*-------------------------------------------------------
 
+                    var idRecibo = _context.ReciboCobros
+                          .Where(c => c.IdPropiedad == modelo.IdPropiedad)
+                          .Select(c => c.IdReciboCobro)
+                           .FirstOrDefault();
+                    //var ejemplo = await _context.Propiedads.FindAsync()
+                    var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+                    
                     if (propiedad != null)
                     {
                         // validar num referencia repetido
-
                         decimal montoReferencia = 0;
                         var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                         var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
 
-                        var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
+                        var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
 
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
 
@@ -291,7 +299,6 @@ namespace Prueba.Controllers
                             Inmueble = inmueble,
                             Condominio = condominio,
                             FechaComprobante = DateTime.Today
-
                         };
 
                         if (modelo.Pagoforma == FormaPago.Transferencia)
@@ -356,6 +363,14 @@ namespace Prueba.Controllers
                                 if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
                                 {
                                     pago.Monto = modelo.Monto;
+                                    if (pago.Monto < recibo.Monto)
+                                    {
+                                        comprobante.Restante = recibo.Monto - (recibo.Abonado + pago.Monto);
+                                    }
+                                    else if (pago.Monto > recibo.Monto)
+                                    {
+                                        comprobante.Abonado = pago.Monto - recibo.Monto;
+                                    }
                                     pago.SimboloMoneda = moneda.First().Simbolo;
                                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                                     pago.MontoRef = montoReferencia;
@@ -463,6 +478,14 @@ namespace Prueba.Controllers
                                 if (monto > 0)
                                 {
                                     pago.Monto = modelo.Monto;
+                                    if(pago.Monto < recibo.Monto)
+                                    {
+                                        comprobante.Restante = recibo.Monto - (recibo.Abonado + pago.Monto);
+                                    }
+                                    else if(pago.Monto > recibo.Monto)
+                                    {
+                                        comprobante.Abonado = pago.Monto - recibo.Monto;
+                                    }
                                     pago.SimboloMoneda = moneda.First().Simbolo;
                                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                                     pago.MontoRef = montoReferencia;
@@ -489,7 +512,6 @@ namespace Prueba.Controllers
                                     dbcontext.ReciboCobros.Update(reciboActual);
                                     dbcontext.SaveChanges();
                                 }
-
                                 using (var dbcontext = new PruebaContext())
                                 {
                                     var relacion = new PagosRecibo
@@ -501,12 +523,9 @@ namespace Prueba.Controllers
                                     dbcontext.Add(relacion);
                                     await dbcontext.SaveChangesAsync();
                                 }
-
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Mensaje = "Gracias por su pago!";
                             }
-
-
                             return View("Comprobante", comprobante);
                         }
                     }

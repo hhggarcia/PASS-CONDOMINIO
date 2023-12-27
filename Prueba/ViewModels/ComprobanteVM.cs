@@ -10,6 +10,8 @@ namespace Prueba.ViewModels
         public PagoRecibido? PagoRecibido { get; set; }
         public ReferenciasPr? Referencias { get; set; }
         public DateTime FechaComprobante { get; set; }
+        public decimal Restante { get; set; }
+        public decimal Abonado { get; set; }
         public string? Mensaje { get; set; }
     }
 }
