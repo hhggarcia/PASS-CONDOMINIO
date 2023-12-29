@@ -1,0 +1,77 @@
+﻿@model Prueba.Models.CuotasEspeciale
+
+@{
+    ViewData["Title"] = "Editar Cuota Especial";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Editar relación de Gastos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <form asp-action="Editar">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            <input type="hidden" asp-for="IdCuotaEspecial" /> 
+                                            <div class="form-group">
+                                                <label asp-for="Descripcion" class="control-label"></label>
+                                            </div> 
+                                            <div class="form-group">
+                                                <label asp-for="CantidadCuotas" class="control-label"></label>
+                                                <input asp-for="CantidadCuotas" class="form-control" />
+                                                <span asp-validation-for="CantidadCuotas" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="MontoTotal" class="control-label"></label>
+                                                <input asp-for="MontoTotal" class="form-control" />
+                                                <span asp-validation-for="MontoTotal" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="FechaInicio" class="control-label"></label>
+                                                <input asp-for="FechaInicio" class="form-control" />
+                                                <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="last-name-column">¿Desea activar la cuota?</label>
+                                                <select asp-for="Activa" id='mySelect' class="form-select nav-tabs-selector">
+                                                    <option value="true">
+                                                        Si
+                                                    </option>
+                                                    <option value="false">
+                                                        No
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" asp-for="IdCondominio" />
+                                            <div class="col-md-12">
+                                                <input type="submit" value="Guardar" class="btn btn-primary" />
+
+                                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                            </div>
+                                        </form>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

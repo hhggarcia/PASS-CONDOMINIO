@@ -1,0 +1,73 @@
+﻿@model Prueba.ViewModels.DetalleCuotasVM
+
+@{
+    ViewData["Title"] = "Detalle Cuota Especial";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Detalles de Cuotas Especiales
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <dt>Nombre de la cuota especial</dt>
+                                    <dd> @Model.CuotasEspeciale.Descripcion</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Fecha de creación</dt>
+                                    <dd>@Model.CuotasEspeciale.FechaInicio?.ToString("dd/MM/yyyy")   </dd>
+                                </div>        
+                                <div class="col-6">
+                                    <dt>Fecha de finalización</dt>
+                                    <dd>@Model.CuotasEspeciale.FechaFin?.ToString("dd/MM/yyyy") </dd>
+                                </div>   
+                                <div class="col-6">
+                                    <dt>Cantidad de Cuotas</dt>
+                                    <dd>@Model.CuotasEspeciale.CantidadCuotas</dd>
+                                </div> 
+                                <div class="col-6">
+                                    <dt>Monto mensual por propiedad</dt>
+                                    <dd> @string.Format("{0:N2}", Model.TotalPropiedadesMensual) @Model.CuotasEspeciale.SimboloMoneda </dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Monto Total por propiedad</dt>
+                                    <dd>@string.Format("{0:N2}", Model.CuotasEspeciale.SubCuotas) @Model.CuotasEspeciale.SimboloMoneda</dd>
+                                </div>
+                                  <div class="col-6">
+                                    <dt>Monto mensual Total</dt>
+                                    <dd>@string.Format("{0:N2}", Model.CuotasEspeciale.MontoMensual) @Model.CuotasEspeciale.SimboloMoneda </dd>
+                                </div>        
+                                <div class="col-6">
+                                    <dt>Monto Total</dt>
+                                    <dd>@string.Format("{0:N2}", Model.CuotasEspeciale.MontoTotal) @Model.CuotasEspeciale.SimboloMoneda </dd>
+                                </div> 
+                                <div class="col-12">
+                                    <dt>Estatus</dt>
+                                    @if(Model.CuotasEspeciale.Activa == true)
+                                    {
+                                        <dd>Activa </dd>
+                                    }else{
+
+                                        <dd>Inactiva </dd>
+                                    }
+                                </div>
+                                <div class="col-3" >
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>

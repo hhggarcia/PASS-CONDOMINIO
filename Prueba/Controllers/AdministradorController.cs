@@ -421,6 +421,7 @@ namespace Prueba.Controllers
                             {
 
                                 // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
+    
                                 if (pago.MontoRef == reciboActual.Monto || propiedad.Saldo == pago.MontoRef || (pago.MontoRef ==(propiedad.Saldo + propiedad.Deuda))) //|| reciboActual.Abonado > reciboActual.Monto
                                 {
                                     // SI EL MONTO PAGADO ES IGUAL AL DEL RECIBO 
@@ -830,6 +831,30 @@ namespace Prueba.Controllers
                 Console.WriteLine($"Error generando PDF: {e.Message}");
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        public async Task<IActionResult> CuotasEspeciales()
+        {
+            try
+            {
+                var idAdministrador = TempData.Peek("idUserLog").ToString();
+                var idCondominio = _context.Condominios.Where(c=> c.IdAdministrador == idAdministrador).Select(c=>c.IdCondominio).FirstOrDefault();
+                var cuotasCondominio = _context.CuotasEspeciales.Where(c=>c.IdCondominio == idCondominio);
+                var condominiosModel = await cuotasCondominio.ToListAsync();
+
+                TempData.Keep();
+
+                return View(cuotasCondominio);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
             }
         }
 
