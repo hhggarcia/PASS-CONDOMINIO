@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
@@ -14,6 +15,7 @@ using Prueba.Utils;
 using Prueba.Validates;
 using Prueba.ViewModels;
 using SkiaSharp;
+using System.Linq;
 
 namespace Prueba.Controllers
 {
@@ -321,6 +323,32 @@ namespace Prueba.Controllers
                     RequestId = ex.Message
                 };
 
+                return View("Error", modeloError);
+            }
+        }
+
+        public async Task<IActionResult> Recibos()
+        {
+            try
+            {
+              var recibosDelAdmin = from recibo in _context.ReciboCuotas
+                                      join cuota in _context.CuotasEspeciales
+                                      on recibo.IdCuotaEspecial equals cuota.IdCuotaEspecial
+                                      where cuota.IdCuotaEspecial == recibo.IdCuotaEspecial
+                                      select new ReciboCuotaVM
+                                      {
+                                          Nombre = cuota.Descripcion,
+                                          ReciboCuota = recibo
+                                      }; ;
+                List<ReciboCuotaVM> listaRecibosDelAdmin = recibosDelAdmin.ToList();
+                return View(listaRecibosDelAdmin);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
                 return View("Error", modeloError);
             }
         }

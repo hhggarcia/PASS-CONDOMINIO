@@ -32,7 +32,7 @@
                                     <dt>Monto Total</dt>
                                     <dd>@string.Format("{0:N2}", Model.MontoTotal) @Model.SimboloMoneda </dd>
                                 </div>
-                                <form asp-action="Borrar" class="col-4">
+                                <form asp-action="Borrar" class="col-12">
                                     <input type="hidden" asp-for="IdCuotaEspecial" />
                                     <input type="submit" value="Eliminar" class="btn btn-danger" />
                                     <a asp-action="Index" class="btn btn-secondary">Volver</a>
