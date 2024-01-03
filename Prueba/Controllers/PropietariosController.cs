@@ -19,6 +19,8 @@ using System.Web.Razor.Parser.SyntaxTree;
 using NetTopologySuite.Index.HPRtree;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Net;
+using System.Reflection.Metadata;
+using System.Linq;
 
 namespace Prueba.Controllers
 {
@@ -703,71 +705,6 @@ namespace Prueba.Controllers
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Historial.pdf");
         }
-        //[HttpPost]
-        //public IActionResult ComprobantePdf(ComprobanteVM comprobante)
-        //{
-        //    var data = Document.Create(container =>
-        //    {
-        //        container.Page(page =>
-        //        {
-        //            page.Size(PageSizes.A4);
-        //            page.Margin(1, Unit.Centimetre);
-        //            page.Header().ShowOnce().Row(row =>
-        //            {
-        //                row.RelativeItem().Column(col =>
-        //                {
-        //                    col.Item().Text("Comprobante").Bold().FontSize(20).FontColor("#004581").Bold();
-        //                });
-        //                row.RelativeItem().Column(col =>
-        //                {
-        //                    col.Item().Image("wwwroot/images/logo-1.png");
-        //                });
-        //            });
-
-        //            page.Content()
-        //                .PaddingVertical(1, Unit.Centimetre)
-        //                .Column(x =>
-        //                {
-        //                    x.Spacing(20);
-        //                    if(comprobante.Condominio != null && comprobante.Inmueble !=null && comprobante.Propiedad !=null)
-        //                    {
-        //                        x.Item().Text("Condominio:" + comprobante.Condominio.Nombre);
-        //                        x.Item().Text("Inmueble:" + comprobante.Inmueble.Nombre);
-        //                        x.Item().Text("Propiedad:" + comprobante.Propiedad.Codigo);
-        //                    }
-        //                    if(comprobante.PagoRecibido != null)
-        //                    {
-        //                        if(comprobante.PagoRecibido.FormaPago && comprobante.Referencias != null)
-        //                        {
-        //                            x.Item().Text("Transferencia");
-        //                            x.Item().Text("Fecha:" + comprobante.PagoRecibido.Fecha.ToString("dd/MM/yyyy"));
-        //                            x.Item().Text("Referencia:" + comprobante.Referencias.NumReferencia);
-        //                            x.Item().Text("Monto:" + comprobante.PagoRecibido.Monto.ToString("N"));
-        //                            x.Item().Text("Fecha de comprobante:" + DateTime.Today.ToString("dd/MM/yyyy"));
-        //                        }
-        //                        else
-        //                        {
-        //                            x.Item().Text("Efectivo");
-        //                            x.Item().Text("Monto:" + comprobante.PagoRecibido.Monto.ToString("N"));
-        //                            x.Item().Text("Fecha de comprobante:" + DateTime.Today.ToString("dd/MM/yyyy"));
-        //                        }
-        //                    }
-        //                });
-
-        //            page.Footer()
-        //                .AlignCenter()
-        //                .Text(x =>
-        //                {
-        //                    x.Span("Page ");
-        //                    x.CurrentPageNumber();
-        //                });
-        //        });
-        //    })
-        //   .GeneratePdf();
-        //    Stream stream = new MemoryStream(data);
-        //    return File(stream, "application/pdf", "Comprobante.pdf");
-        //}
-
         [HttpPost]
         public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
         {
@@ -802,6 +739,383 @@ namespace Prueba.Controllers
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
+        public async Task<IActionResult> PagarCuotaEspeciales(int? id)
+        {
+            try
+            {
+                var reciboCuota = await _context.ReciboCuotas.Where(c => c.IdReciboCuotas == id).FirstAsync();
 
+                var condominio = await _context.CuotasEspeciales
+                    .Where(c => c.IdCuotaEspecial == reciboCuota.IdCuotaEspecial)
+                    .Select(c => c.IdCondominio)
+                    .FirstAsync();
+
+                //CARGAR SELECT DE SUB CUENTAS DE BANCOS
+                var subcuentasBancos = await _repoCuentas.ObtenerBancos((int)condominio);
+                var subcuentasCaja = await _repoCuentas.ObtenerCaja((int)condominio);
+
+                PagoRecibidoCuotaVM pagoRecibidoCuotaVM = new PagoRecibidoCuotaVM
+                {
+                    idRecibo= reciboCuota.IdReciboCuotas,
+                    ReciboCuotas = reciboCuota,
+                    SubCuentasBancos = (IList<SelectListItem>)subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToList(),
+                    SubCuentasCaja = (IList<SelectListItem>)subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToList()
+                };
+
+                TempData.Keep();
+                return View(pagoRecibidoCuotaVM);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+       
+        [HttpPost]
+        public async Task<IActionResult> PagarCuotaEspeciales(PagoRecibidoCuotaVM modelo)
+        {
+            try
+            {
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                {
+                    decimal montoReferencia = 0;
+                    var idRecibo = modelo.idRecibo;
+                    var reciboCuota = await _context.ReciboCuotas.Where(c=>c.IdReciboCuotas == idRecibo).FirstOrDefaultAsync();
+                    var cuotaEspecial = await _context.CuotasEspeciales.Where(c=>c.IdCuotaEspecial == reciboCuota.IdCuotaEspecial).FirstOrDefaultAsync();
+                    var propiedad = await _context.Propiedads.FindAsync(reciboCuota.IdPropiedad);
+                    var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                    var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
+
+                    var comprobante = new ComprobanteCEVM()
+                    {
+                        Propiedad = propiedad,
+                        Condominio = condominio,
+                        FechaComprobante = DateTime.Today,
+                        CuotasEspeciale = cuotaEspecial
+                    };
+                    if (modelo.Pagoforma == FormaPago.Transferencia)
+                    {
+                        var existPagoTransferencia = from p in _context.PagoRecibidos
+                                                     join referencia in _context.ReferenciasPrs
+                                                     on p.IdPagoRecibido equals referencia.IdPagoRecibido
+                                                     where p.IdPropiedad == propiedad.IdPropiedad
+                                                     where referencia.NumReferencia == modelo.NumReferencia
+                                                     select new { p, referencia };
+
+                        if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = "Ya existe un pago registrado con este número de Referencia!"
+                            };
+
+                            return View("Error", modeloError);
+                        }
+
+                        var idBanco = (from c in _context.CodigoCuentasGlobals
+                                       where c.IdCodigo == modelo.IdCodigoCuentaBanco
+                                       select c).First();
+
+                        // buscar moneda asigna a la subcuenta
+                        var moneda = from m in _context.MonedaConds
+                                     join mc in _context.MonedaCuenta
+                                     on m.IdMonedaCond equals mc.IdMoneda
+                                     where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                     select m;
+
+                        var pago = new PagoReciboCuota()
+                        {
+                            IdPropiedad = reciboCuota.IdPropiedad,
+                            Fecha = modelo.Fecha,
+                            IdSubCuenta = idBanco.IdCodCuenta,
+                            Concepto = modelo.Concepto,
+                            Confirmado = false,
+                            IdCuota = reciboCuota.IdCuotaEspecial
+                        };
+
+                        if (moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = (decimal)modelo.Monto;
+                        }
+                        else if (!moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                            montoReferencia = (decimal)(montoDolares * monedaPrincipal.First().ValorDolar);
+                            //montoReferencia = montoDolares;
+                        }
+
+                        pago.FormaPago = true;
+
+                        var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
+                        if (reciboCuota != null)
+                        {
+
+                            var monto = reciboCuota.SubCuotas;
+
+                            if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
+                            {
+                                pago.Monto = modelo.Monto;
+                                if (pago.Monto < reciboCuota.SubCuotas)
+                                {
+                                    comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.SubCuotas + pago.Monto));
+                                }
+                                else if (pago.Monto > reciboCuota.SubCuotas)
+                                {
+                                    comprobante.Abonado = (decimal)(pago.Monto - reciboCuota.SubCuotas);
+                                }
+                                pago.SimboloMoneda = moneda.First().Simbolo;
+                                pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                pago.MontoRef = montoReferencia;
+                                pago.SimboloRef = monedaPrincipal.First().Simbolo;
+                            }
+                            else
+                            {
+                                comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                return View("ComprobanteCE", comprobante);
+                            }
+
+                            // regitrar en bd el pago
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                dbcontext.PagoReciboCuota.Add(pago);
+                                dbcontext.SaveChanges();
+                            }
+
+                            var referencia = new ReferenciasPr()
+                            {
+                                IdPagoRecibido = pago.IdPagoRecibido,
+                                NumReferencia = modelo.NumReferencia,
+                                Banco = banco.Descricion
+                            };
+
+                            // regitrar en bd la referencia del pago
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                dbcontext.ReferenciasPrs.Add(referencia);
+                                dbcontext.SaveChanges();
+                            }
+
+                            // cambiar a -en proceso = true- el recibo mas actual 
+                            var reciboActual = reciboCuota;
+                            reciboActual.EnProceso = true;
+                            reciboActual.Abonado += montoReferencia;
+
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                dbcontext.ReciboCuotas.Update(reciboActual);
+                                dbcontext.SaveChanges();
+                            }
+
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                var relacion = new PagosCuotasRecibido
+                                {
+                                    IdPago = pago.IdPagoRecibido,
+                                    IdRecibido = reciboActual.IdReciboCuotas,
+                                    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                };
+                                
+                                dbcontext.Add(relacion);
+                                await dbcontext.SaveChangesAsync();
+                            }
+
+                            comprobante.PagoReciboCuota = pago;
+                            comprobante.Referencias = referencia;
+                            comprobante.Mensaje = "Gracias por su pago!";
+
+                        }
+
+                        return View("ComprobanteCE", comprobante);
+
+                    }
+                    else
+                    {
+                        var idCaja = (from c in _context.CodigoCuentasGlobals
+                                      where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                      select c).First();
+
+                        // buscar moneda asigna a la subcuenta
+                        var moneda = from m in _context.MonedaConds
+                                     join mc in _context.MonedaCuenta
+                                     on m.IdMonedaCond equals mc.IdMoneda
+                                     where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                     select m;
+
+                        var pago = new PagoReciboCuota()
+                        {
+                            IdSubCuenta = idCaja.IdCodCuenta,
+                            Concepto = modelo.Concepto,
+                            IdPropiedad = reciboCuota.IdPropiedad,
+                            Fecha = modelo.Fecha,
+                            Confirmado = false,
+                            IdCuota = reciboCuota.IdCuotaEspecial
+                        };
+
+                        if (moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = (decimal)modelo.Monto;
+                        }
+                        else if (!moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+
+                            montoReferencia = (decimal)(montoDolares * monedaPrincipal.First().ValorDolar);
+                            //montoReferencia = montoDolares;
+                        }
+
+                        pago.FormaPago = false;
+
+                        if (reciboCuota != null)
+                        {
+                            var monto = reciboCuota.SubCuotas;
+
+                            if (monto > 0)
+                            {
+                                pago.Monto = modelo.Monto;
+                                if (pago.Monto < reciboCuota.SubCuotas)
+                                {
+                                    comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.Abonado + pago.Monto));
+                                }
+                                else if (pago.Monto > reciboCuota.SubCuotas)
+                                {
+                                    comprobante.Abonado = (decimal)(pago.Monto - reciboCuota.SubCuotas);
+                                }
+                                pago.SimboloMoneda = moneda.First().Simbolo;
+                                pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                                pago.MontoRef = montoReferencia;
+                                pago.SimboloRef = monedaPrincipal.First().Simbolo;
+                            }
+                            else
+                            {
+                                comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                return View("ComprobanteCE", comprobante);
+                            }
+
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                dbcontext.PagoReciboCuota.Add(pago);
+                                dbcontext.SaveChanges();
+                            }
+                            // cambiar a -en proceso = true- el recibo mas actual 
+                            var reciboActual = reciboCuota;
+                            reciboActual.EnProceso = true;
+                            reciboActual.Abonado += montoReferencia;
+
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                dbcontext.ReciboCuotas.Update(reciboActual);
+                                dbcontext.SaveChanges();
+                            }
+                            using (var dbcontext = new PruebaContext())
+                            {
+                                var relacion = new PagosCuotasRecibido
+                                {
+                                    IdPago = pago.IdPagoRecibido,
+                                    IdRecibido = reciboActual.IdReciboCuotas,
+                                    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                };
+
+                                dbcontext.Add(relacion);
+                                await dbcontext.SaveChangesAsync();
+                            }
+                            comprobante.PagoReciboCuota = pago;
+                            comprobante.Mensaje = "Gracias por su pago!";
+                        }
+                        return View("ComprobanteCE", comprobante);
+                    }
+                }
+                else
+                {
+                    TempData.Keep();
+
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Este usuario presenta problemas al pagar."
+                    };
+
+                    return View("Error", modeloError);
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+        public async Task<IActionResult> ReciboCuotasEspeciales()
+        {
+            try
+            {
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).Select(c=>c.IdPropiedad).ToListAsync();
+
+                    if (idPropietario != null)
+                    {
+                        var listaRecibosCuotas = await _context.ReciboCuotas.Where(c => propiedades.Contains(c.IdPropiedad)).ToListAsync();
+
+                        TempData.Keep();
+
+                        return View(listaRecibosCuotas);
+                    }
+                
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Este Usuario no tiene Propiedades en Condominios"
+                };
+
+                return View("Error", modeloError);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+        public async Task<IActionResult> DetalleReciboCuotasEspeciales(int? id)
+        {
+            if(id != null)
+            {
+              
+                var modelo = await _context.ReciboCuotas.Where(c => c.IdReciboCuotas == id).FirstOrDefaultAsync();
+                var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == modelo.IdCuotaEspecial).FirstOrDefaultAsync();
+                var detalleReciboCuotasVM = new DetalleReciboCuotasVM
+                {
+                    reciboCuota = modelo,
+                    cuotasEspeciale = cuotaEspecial,
+                    
+                };
+
+
+                return View(detalleReciboCuotasVM);
+            }
+            else
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Este Usuario no tiene Propiedades en Condominios"
+                };
+
+                return View("Error", modeloError);
+            }
+        } 
     }
 }

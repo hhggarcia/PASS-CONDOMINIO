@@ -1,0 +1,81 @@
+﻿@model Prueba.ViewModels.DetalleReciboCuotasVM
+
+@{
+    ViewData["Title"] = "Detalle del recibo de la cuota especial";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Detalles de Cuotas Especiales
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <dt>Nombre de la cuota especial</dt>
+                                    <dd> @Model.cuotasEspeciale.Descripcion</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Fecha de creación de la cuota</dt>
+                                    <dd> @Model.cuotasEspeciale.FechaInicio?.ToString("dd/MM/yyyy")</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Fecha tope de pago</dt>
+                                    <dd>@Model.cuotasEspeciale.FechaFin?.ToString("dd/MM/yyyy") </dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Cantidad de Cuotas</dt>
+                                    <dd>@Model.cuotasEspeciale.CantidadCuotas</dd>
+                                </div> 
+                                <div class="col-6">
+                                    <dt>Cuotas Pagadas</dt>
+                                    <dd>@Model.reciboCuota.CuotasPagadas</dd>
+                                </div>   
+                                <div class="col-6">
+                                    <dt>Cuotas por Pagar</dt>
+                                    <dd>@Model.reciboCuota.CuotasFaltantes</dd>
+                                </div>
+                                 <div class="col-6">
+                                    <dt>Abonado</dt>
+                                    <dd>@Model.reciboCuota.Abonado?.ToString("N2")</dd>
+                                </div> 
+                                <div class="col-6">
+                                    <dt>Deuda</dt>
+                                    <dd>@Model.reciboCuota.SubCuotas?.ToString("N2")</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Monto mensual</dt>
+                                    <dd> @string.Format("{0:N2}", (Model.reciboCuota.SubCuotas / Model.cuotasEspeciale.CantidadCuotas)) @Model.reciboCuota.SimboloMoneda</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Monto Total de la Cuota</dt>
+                                    <dd>@string.Format("{0:N2}", Model.reciboCuota.SubCuotas) @Model.reciboCuota.SimboloMoneda</dd>
+                                </div>
+                                <div class="col-6">
+                                    <dt>Estatus</dt>
+                                    @if (Model.cuotasEspeciale.Activa == true)
+                                    {
+                                        <dd>Activa </dd>
+                                    }
+                                    else
+                                    {
+                                        <dd>Inactiva </dd>
+                                    }
+                                </div>
+                                <div class="col-3">
+                                    <a asp-action="ReciboCuotasEspeciales" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

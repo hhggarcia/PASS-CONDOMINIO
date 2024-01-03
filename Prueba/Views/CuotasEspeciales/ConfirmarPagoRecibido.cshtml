@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Pagos Cuotas Especiales";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Confirmar Pago</h1>
+    </div>*@
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-4 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            Seguro que quiere confirmar este pago?
+                        </h6>
+                        <div>
+                            <form asp-action="ConfirmarPagoRecibidoPost">
+                                <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
+                                <button class="btn btn-primary" type="submit">Si</button>
+                                <a asp-action="Cobrar" class="btn">No</a>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

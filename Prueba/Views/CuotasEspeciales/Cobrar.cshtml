@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Prueba.ViewModels.CobrarCuotasVM>
+@{
+    ViewData["Title"] = "Pagos Recibidos Cuotas Especiales";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+    @*      <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="PagosRecibidosPDF" asp-controller="Administrador"> Generar pdf</a>
+
+        <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a> *@
+    </div>
+
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Verifique los Pagos Recibidos
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered form"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Cuota Especial</th>
+                                    <th>Propiedad</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Forma de Pago</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <th>@item.NombreUsuario</th>
+                                        <th>@item.CuotasEspeciale.Descripcion</th>
+                                        <th>@item.CodigoPropiedad</th>
+                                        <th>@item.PagoReciboCuota.Concepto</th>
+                                        <th>@item.PagoReciboCuota.Monto?.ToString("N2")</th>
+                                        @if (item.PagoReciboCuota.FormaPago ==true)
+                                        {
+                                        <td>Transferencia</td>
+                                        }
+                                          else
+                                        {
+                                        <td>Efectivo</td>
+                                        }
+                                    <th>
+                                        <a class="btn btn-outline-success"
+                                           asp-controller="CuotasEspeciales"
+                                           asp-action="ConfirmarPagoRecibido"
+                                           asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
+                                            Confirmar Pago
+                                        </a>
+                                        <a class="btn btn-outline-danger"
+                                           asp-controller="CuotasEspeciales"
+                                           asp-action="RectificarPago"
+                                           asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
+                                            Rectificar Pago
+                                        </a>
+                                    </th>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr class="tr_s">
+                                        <td>No</td>
+                                        <td>hay</td>
+                                        <td>pagos</td>
+                                        <td>recibidos</td>
+                                        <td>por</td>
+                                        <td>confirmar</td>
+                                    </tr>
+                                }
+                         </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

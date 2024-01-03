@@ -7,7 +7,7 @@ public partial class ReciboCuota
 {
     public int IdReciboCuotas { get; set; }
 
-    public int? IdPropiedad { get; set; }
+    public int IdPropiedad { get; set; }
 
     public int? IdCuotaEspecial { get; set; }
 

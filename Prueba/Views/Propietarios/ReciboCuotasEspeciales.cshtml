@@ -1,0 +1,106 @@
+﻿@model IEnumerable<Prueba.Models.ReciboCuota>
+
+    @{
+        ViewData["Title"] = "Recibo Cuotas Especiales";
+    }
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+
+    @*     <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="ReciboPdf" asp-controller="Propietarios">Crear pdf</a>
+        <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a> *@
+    </div>
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Verifique el estado de sus recibos
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+                            <table class="table table-bordered form"
+                                   id="dataTable"
+                                   width="100%"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Número de recibo</th>
+                                        <th>Propiedad</th>
+                                        <th>Fecha</th>
+                                        <th>Monto Mensual</th>
+                                        <th>Monto Total Cuota</th>
+                                        <th>Abonado</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Número de recibo</th>
+                                        <th>Propiedad</th>
+                                        <th>Fecha</th>
+                                        <th>Monto Mensual</th>
+                                        <th>Monto Total Cuota</th>
+                                        <th>Abonado</th>
+                                        <th>Estado</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="tr_s">
+                                            <td>@item.IdReciboCuotas</td>
+                                            <td>@item.IdPropiedad</td>
+                                            <td>@item.Fecha?.ToString("dd/MM/yyyy")</td>
+                                            <td>@string.Format("{0:N2}", item.SubCuotas / (item.CuotasPagadas + item.CuotasFaltantes)) @item.SimboloMoneda</td>
+                                            <td>@item.SubCuotas?.ToString("N2") @item.SimboloMoneda</td>
+                                            <td>@item.Abonado?.ToString("N2") @item.SimboloMoneda</td>
+                                            @if ((bool)@item.EnProceso)
+                                            {
+                                                <td>En proceso</td>
+                                            }
+                                            else if ((bool)@item.Confirmado)
+                                            {
+                                                <td>Pagado</td>
+                                            }
+                                            else
+                                            {
+                                                <td>En deuda</td>
+                                            }
+                                            <td>
+                                                <a asp-controller="Propietarios"
+                                                   asp-action="DetalleReciboCuotasEspeciales"
+                                                   asp-route-id="@item.IdReciboCuotas" class="btn btn-primary">Detalles</a>    
+                                                   <a asp-controller="Propietarios"
+                                                   asp-action="PagarCuotaEspeciales"
+                                                   asp-route-id="@item.IdReciboCuotas" class="btn btn-success">Pagar</a>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h3>Pero qué ha pasao :O</h3>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

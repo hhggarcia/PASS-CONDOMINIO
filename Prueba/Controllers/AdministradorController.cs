@@ -635,9 +635,7 @@ namespace Prueba.Controllers
                             return View("Error", error);
                         }
                     }
-
                 }
-
                 TempData.Keep();
                 return RedirectToAction("PagosRecibidos");
             }
