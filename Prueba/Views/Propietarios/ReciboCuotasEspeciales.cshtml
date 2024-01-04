@@ -64,7 +64,7 @@
                                             <td>@item.IdReciboCuotas</td>
                                             <td>@item.IdPropiedad</td>
                                             <td>@item.Fecha?.ToString("dd/MM/yyyy")</td>
-                                            <td>@string.Format("{0:N2}", item.SubCuotas / (item.CuotasPagadas + item.CuotasFaltantes)) @item.SimboloMoneda</td>
+                                            <td>@string.Format("{0:N2}", ((item.SubCuotas * (item.CuotasFaltantes + item.CuotasPagadas)) / item.CuotasFaltantes) / (item.CuotasPagadas + item.CuotasFaltantes)) @item.SimboloMoneda</td>
                                             <td>@item.SubCuotas?.ToString("N2") @item.SimboloMoneda</td>
                                             <td>@item.Abonado?.ToString("N2") @item.SimboloMoneda</td>
                                             @if ((bool)@item.EnProceso)

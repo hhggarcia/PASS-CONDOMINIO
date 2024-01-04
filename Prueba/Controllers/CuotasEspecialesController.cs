@@ -295,7 +295,6 @@ namespace Prueba.Controllers
             }
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Borrar(int? id, CuotasEspeciale modelo)
         {
             try
@@ -304,19 +303,27 @@ namespace Prueba.Controllers
                 {
                     return NotFound();
                 }
-                     var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(id);
-                    if (cuotaEspecial == null)
-                    {
-                        return NotFound();
-                    }
+                var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(id);
+                if (cuotaEspecial == null)
+                {
+                    return NotFound();
+                }
 
-                    _context.Remove(cuotaEspecial);
+                _context.Remove(cuotaEspecial);
 
-                    var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
-                    _context.RemoveRange(recibos);
+                var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                _context.RemoveRange(recibos);
 
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+
+                 var pagoRecibido = await _context.PagoReciboCuota.Where(c => c.IdCuota == id).ToListAsync();
+                 _context.RemoveRange(pagoRecibido);
+
+                 var pagosRecibidos = await _context.PagosCuotasRecibidos.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                 _context.RemoveRange(pagosRecibidos); 
+                
+
+                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
                
             }
             catch (Exception ex)
@@ -498,7 +505,7 @@ namespace Prueba.Controllers
                                 reciboActual.SubCuotas = reciboActual.SubCuotas - pagoMensual;
                                 reciboActual.CuotasPagadas = reciboActual.CuotasPagadas + 1;
                                 reciboActual.CuotasFaltantes = reciboActual.CuotasFaltantes - 1;
-                                reciboActual.Abonado = reciboActual.Abonado +(pago.MontoRef- pagoMensual);
+                                reciboActual.Abonado = (reciboActual.Abonado - pagoMensual) + (pago.MontoRef - pagoMensual);
                             }
                             pago.Confirmado = true;
                             dbContext.Update(reciboActual);

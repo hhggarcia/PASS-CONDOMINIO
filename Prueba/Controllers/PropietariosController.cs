@@ -865,7 +865,7 @@ namespace Prueba.Controllers
                                 pago.Monto = modelo.Monto;
                                 if (pago.Monto < reciboCuota.SubCuotas)
                                 {
-                                    comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.SubCuotas + pago.Monto));
+                                    comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.Abonado + pago.Monto));
                                 }
                                 else if (pago.Monto > reciboCuota.SubCuotas)
                                 {
@@ -1116,6 +1116,24 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-        } 
+        }
+
+        [HttpPost]
+        public ContentResult ComprobanteCEVMPDF([FromBody] ComprobanteCEVM comprobanteCEVM)
+        {
+            try
+            {
+                var data = _servicePDF.ComprobanteCEVMPDF(comprobanteCEVM);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
     }
 }

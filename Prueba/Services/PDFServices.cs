@@ -23,6 +23,7 @@ namespace Prueba.Services
         byte[] DetalleReciboPDF(DetalleReciboVM detalleReciboVM);
         byte[] ComprobantePEVMPDF(ComprobantePEVM comprobanteVM);
         byte[] ComprobantePDF(ComprobanteVM comprobanteVM);
+        byte[] ComprobanteCEVMPDF(ComprobanteCEVM comprobanteCEVM);
         byte[] ComprobantePagosRecibidosPDF(IndexPagoRecibdioVM indexPagoRecibdio);
         byte[] LibroDiarioPDF(LibroDiarioVM ldiarioGlobals);
         byte[] EstadoDeResultadoPDF(EstadoResultadoVM estadoResultado);
@@ -783,6 +784,88 @@ namespace Prueba.Services
 
                         });
 
+                    page.Footer()
+                        .AlignCenter()
+                        .Text(x =>
+                        {
+                            x.Span("Page ");
+                            x.CurrentPageNumber();
+                        });
+                });
+            })
+            .GeneratePdf();
+            return data;
+        }
+        public byte[] ComprobanteCEVMPDF(ComprobanteCEVM comprobanteCEVM)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Padding(15).Column(col =>
+                        {
+                            col.Item().Image("wwwroot/images/logo-1.png");
+                        });
+                        row.RelativeItem().Padding(15).Column(col =>
+                        {
+                            col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Spacing(20);
+
+                            x.Item().AlignCenter().Text("DATOS DEL PAGO");
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("FECHA DEL PAGO").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("DINERO RECIBIDO").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("TASA DE CAMBIO").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
+                                });
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text(comprobanteCEVM.PagoReciboCuota.Monto?.ToString("N") + " Bs.").FontSize(8);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text(comprobanteCEVM.PagoReciboCuota.ValorDolar?.ToString() + " Bs.").FontSize(8);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text((comprobanteCEVM.PagoReciboCuota.Monto / comprobanteCEVM.PagoReciboCuota.ValorDolar)?.ToString("N2") + " Bs.").FontSize(8);
+
+                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                //.Padding(5).Text(comprobanteCEVM.Restante.ToString("N2") + " Bs.").FontSize(8);
+                            });
+                        });
                     page.Footer()
                         .AlignCenter()
                         .Text(x =>
