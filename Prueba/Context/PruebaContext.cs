@@ -81,6 +81,7 @@ public partial class PruebaContext : DbContext
     public virtual DbSet<Moneda> Moneda { get; set; }
 
     public virtual DbSet<Municipio> Municipios { get; set; }
+    public virtual DbSet<PagosCuota> PagosCuotas { get; set; }
 
     public virtual DbSet<PagoEmitido> PagoEmitidos { get; set; }
 
@@ -1211,7 +1212,19 @@ public partial class PruebaContext : DbContext
                 .HasForeignKey(d => d.IdCuotaEspecial)
                 .HasConstraintName("Fk_Recibo_Cuota");
         });
+        modelBuilder.Entity<PagosCuota>(entity =>
+        {
+            entity.HasKey(e => e.IdPagoRecibido).HasName("PK__PagosCuo__520DB5BFCBA61A27");
 
+            entity.HasOne(d => d.IdRecibidoCuotaNavigation).WithMany(p => p.PagosCuotas)
+            .HasForeignKey(d => d.IdRecibido)
+            .HasConstraintName("Fk_Relacion_PagosCuotas_RecibosCoutas");
+
+            entity.HasOne(d => d.IdPagoCuotaNavigation).WithMany(p => p.PagosCuotas)
+            .HasForeignKey(d => d.IdPago)
+            .HasConstraintName("Fk_Relacion_PagosCuotas_Pago_Recibido");
+
+        });
         OnModelCreatingPartial(modelBuilder);
     }
 

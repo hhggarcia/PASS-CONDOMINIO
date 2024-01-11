@@ -6,7 +6,7 @@ namespace Prueba.ViewModels
     {
         public Condominio? Condominio { get; set; }
         public CuotasEspeciale CuotasEspeciale { get; set; }
-        public PagoReciboCuota PagoReciboCuota { get; set; }
+        public PagoRecibido PagoRecibido { get; set; }
         public ReciboCuota ReciboCuota { get; set; }
         public Propiedad? Propiedad { get; set; }
         public ReferenciasPr? Referencias { get; set; }

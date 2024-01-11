@@ -468,45 +468,73 @@ namespace Prueba.Controllers
                                     // VERIFICAR SI HAY OTROS PAGOS ABONADOS
 
                                     // SI YA SE PAGA EL RECIBO, SI AUN QUEDA EN DEUDA, SI EL PAGO EXCEDE EL RECIBO
+                                    reciboActual.Pagado = false;
+                                    propiedad.Solvencia = false;
                                     if (propiedad.Deuda > pago.MontoRef)
                                     {
                                         propiedad.Deuda = propiedad.Deuda - pago.MontoRef;
                                     }
-                                    else if(propiedad.Saldo > pago.MontoRef)
+                                    else if(propiedad.Saldo > pago.MontoRef && reciboActual.Abonado > propiedad.Saldo)
                                     {
-                                        if(reciboActual.Abonado> propiedad.Saldo)
-                                        {
-                                            reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
-                                        }
-                                        propiedad.Saldo = propiedad.Saldo - pago.MontoRef;
-                                        reciboActual.Abonado = 0;
+                                        reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
+                                        propiedad.Saldo = 0;
+                                        reciboActual.Pagado = true;
+                                        propiedad.Solvencia = true;
                                     }
-                                    propiedad.Solvencia = false;
-                                    //reciboActual.EnProceso = true;
-                                    reciboActual.Pagado = false;
+                                    reciboActual.EnProceso = false;
                                 }
                                 else if (pago.MontoRef > reciboActual.Monto)
                                 {
                                     // SI EL MONTO PAGADO ES MAYOR AL DEL RECIBO
-
+                                    
                                     // PAGAR EL RECIBO
 
                                     // SI NO HAY DEUDA RESTAR EXCEDENTE AL SALDO
-
-                                    // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
-                   
-                                    if(pago.MontoRef == reciboActual.Abonado)
+                                    if(propiedad.Deuda != 0)
                                     {
-                                        reciboActual.Abonado =  pago.MontoRef - propiedad.Saldo;
+                                        reciboActual.Abonado = reciboActual.Abonado - propiedad.Deuda;
+                                        propiedad.Deuda = 0;
+                                     // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
+                                        if (reciboActual.Abonado >= propiedad.Saldo)
+                                        {
+                                            reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
+                                            propiedad.Saldo = 0;
+                                            propiedad.Solvencia = true;
+                                            reciboActual.Pagado = true;
+                                        }
+                                        else
+                                        {
+                                            reciboActual.Pagado = false;
+                                            propiedad.Solvencia = false;
+                                        }
+                                        reciboActual.EnProceso = false;
                                     }
                                     else
                                     {
-                                        reciboActual.Abonado = reciboActual.Abonado + (pago.MontoRef - propiedad.Saldo);
+                                        if (reciboActual.Abonado > propiedad.Saldo)
+                                        {
+                                            reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
+                                            propiedad.Saldo = 0;
+                                            propiedad.Solvencia = true;
+                                            reciboActual.EnProceso = false;
+                                            reciboActual.Pagado = true;
+                                        }
                                     }
-                                    propiedad.Saldo = 0;
-                                    propiedad.Solvencia = true;
-                                    //reciboActual.EnProceso = false;
-                                    reciboActual.Pagado = true;
+
+
+                                    //    if (pago.MontoRef == reciboActual.Abonado)
+                                    //{
+                                    //    reciboActual.Abonado =  pago.MontoRef - propiedad.Saldo;
+                                    //}
+                                    //else
+                              
+                                    //else 
+                                    //{
+                                    //    reciboActual.Abonado = reciboActual.Abonado + (pago.MontoRef - propiedad.Saldo);
+                                    //}
+                                 
+                                  
+
                                 }
 
                                 //if (propiedad.Saldo == reciboActual.Monto

@@ -44,11 +44,11 @@
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
                                     @if (Model.Abonado !=0)
                                     {
-                                        <p><strong>Monto extra abonado</strong>: @Model.Abonado Bs</p>
+                                        <p><strong>Monto extra abonado</strong>: @Model.Abonado Bs.</p>
                                     }
                                     if (Model.Restante!=0)
                                     {
-                                        <p><strong>Faltante por pagar</strong>: @Model.Restante Bs</p>
+                                        <p><strong>Faltante por pagar</strong>: @Model.Restante Bs.</p>
                                     }
                                 }
                             </div>
@@ -77,7 +77,7 @@
                                     else
                                     {
                                         <h3>Efectivo</h3>
-                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N")) Bs.</p>
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }

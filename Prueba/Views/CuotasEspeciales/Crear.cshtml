@@ -69,6 +69,18 @@
                                                    asp-for="FechaInicio" />
                                         </div>
                                     </div>  
+
+                                    <div class="col-md-6 mt-3">
+                                        <label for="last-name-column">Tipo de moneda</label>
+                                        <select asp-for="SimboloMoneda" id='mySelect' class="form-select nav-tabs-selector">
+                                            <option value="Bs">
+                                                Bolivares
+                                            </option>
+                                            <option value="$">
+                                                Dolares
+                                            </option>
+                                        </select>
+                                    </div>  
                                     <div class="col-md-6 mt-3">
                                         <label for="last-name-column">¿Desea activar la cuota?</label>
                                         <select asp-for="Activa" id='mySelect' class="form-select nav-tabs-selector">

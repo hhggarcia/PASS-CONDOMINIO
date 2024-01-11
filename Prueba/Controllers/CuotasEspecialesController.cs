@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using NuGet.Packaging;
 using Org.BouncyCastle.Utilities;
 using Prueba.Areas.Identity.Data;
@@ -127,12 +128,15 @@ namespace Prueba.Controllers
                         (from c in _context.Propiedads
                          where c.IdInmueble == idInmueble.First()
                          select c).ToList();
-
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+                    if (modelo.SimboloMoneda == "$")
+                    {
+                        modelo.MontoTotal = modelo.MontoTotal * monedaPrincipal.First().ValorDolar;
+                    }
                     modelo.SubCuotas = Math.Round((decimal)(modelo.MontoTotal / listaPropiedades.Count()), 2);
                     modelo.MontoMensual = modelo.MontoTotal / modelo.CantidadCuotas;
                     DateTime fechacreacion = (DateTime)modelo.FechaInicio;
                     modelo.FechaFin = fechacreacion.AddMonths((int)modelo.CantidadCuotas);
-                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
                     modelo.ValorDolar = monedaPrincipal.First().ValorDolar;
                     modelo.SimboloMoneda = monedaPrincipal.First().Simbolo;
                     modelo.SimboloRef = "$";
@@ -380,36 +384,69 @@ namespace Prueba.Controllers
                                      NombreCompleto = a.FirstName + ' ' + a.LastName,
                                      Codigo = p.Codigo
                                  }).ToList();
-                var pagoRecibosCuotas = await _context.PagoReciboCuota.ToListAsync();
+                var idPagosCuotas = await _context.PagosCuotas.Select(c=>c.IdPago).ToListAsync();
+                var relacionPagosRecibidosCuotas= await _context.PagosCuotas.ToListAsync();
+                var pagoRecibos = await _context.PagoRecibidos.Where(c=> idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
+                //var pagoRecibosCuotas = await _context.PagoReciboCuota.ToListAsync();
+
                 var cuotasEspeciales = await _context.CuotasEspeciales.ToListAsync();
                 var datosCobro = new List<CobrarCuotasVM>();
-                foreach (var cuota in cuotasEspeciales)
+                foreach(var cuota in cuotasEspeciales)
                 {
-                   foreach(var pago  in pagoRecibosCuotas)
+                    foreach(var pago in pagoRecibos)
                     {
-                      
-                        if (cuota.IdCuotaEspecial == pago.IdCuota)
+                        foreach (var relacion in relacionPagosRecibidosCuotas)
                         {
-                            foreach (var usuario in resultado)
+                            if(pago.IdPagoRecibido == relacion.IdPago && cuota.IdCuotaEspecial == relacion.IdCuotaEspecial)
                             {
-                                if(usuario.IdPropiedad == pago.IdPropiedad)
+                                foreach (var usuario in resultado)
                                 {
-                                   if(pago.Confirmado != true)
+                                    if (usuario.IdPropiedad == pago.IdPropiedad)
                                     {
-                                        var cobrarCuotasVM = new CobrarCuotasVM
+                                        if (pago.Confirmado != true)
                                         {
-                                            NombreUsuario = usuario.NombreCompleto,
-                                            CodigoPropiedad = usuario.Codigo,
-                                            PagoReciboCuota = pago,
-                                            CuotasEspeciale = cuota
-                                        };
-                                        datosCobro.Add(cobrarCuotasVM);
+                                            var cobrarCuotasVM = new CobrarCuotasVM
+                                            {
+                                                NombreUsuario = usuario.NombreCompleto,
+                                                CodigoPropiedad = usuario.Codigo,
+                                                PagoReciboCuota = pago,
+                                                CuotasEspeciale = cuota
+                                            };
+                                            datosCobro.Add(cobrarCuotasVM);
+                                        }
                                     }
                                 }
                             }
                         }
-                    } 
+                    }
                 }
+                //foreach (var cuota in cuotasEspeciales)
+                //{
+                //   foreach(var pago  in pagoRecibos)
+                //    {
+                      
+                //        if (cuota.IdCuotaEspecial == pago.IdCuota)
+                //        {
+                //            foreach (var usuario in resultado)
+                //            {
+                //                if(usuario.IdPropiedad == pago.IdPropiedad)
+                //                {
+                //                   if(pago.Confirmado != true)
+                //                    {
+                //                        var cobrarCuotasVM = new CobrarCuotasVM
+                //                        {
+                //                            NombreUsuario = usuario.NombreCompleto,
+                //                            CodigoPropiedad = usuario.Codigo,
+                //                            PagoReciboCuota = pago,
+                //                            CuotasEspeciale = cuota
+                //                        };
+                //                        datosCobro.Add(cobrarCuotasVM);
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    } 
+                //}
 
                 return View(datosCobro);
             }
@@ -447,15 +484,13 @@ namespace Prueba.Controllers
             try
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
-
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                // buscar pago
-                var pago = await _context.PagoReciboCuota.FindAsync(id);
-                var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(pago.IdCuota);
+                var pago = await _context.PagoRecibidos.FindAsync(id);
+                var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdPago == pago.IdPagoRecibido).FirstAsync();
+                var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(relacionPagosCuotas.IdCuotaEspecial);
                 if (pago != null)
                 {
-                    var relacionPagosRecibos = await _context.PagosCuotasRecibidos.FindAsync(pago.IdPagoRecibido);
-                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosRecibos.IdRecibido);
+                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosCuotas.IdRecibido);
                     // buscar subcuenta contable donde esta el pago del condominio
                     var cuentaCondominio = from s in _context.SubCuenta
                                            join cc in _context.CodigoCuentasGlobals
@@ -471,7 +506,7 @@ namespace Prueba.Controllers
                     }
                     if (reciboActual == null)
                     {
-                        _context.PagoReciboCuota.Remove(pago);
+                        _context.PagoRecibidos.Remove(pago);
                         await _context.SaveChangesAsync();
 
                         var modeloError = new ErrorViewModel()
@@ -488,6 +523,7 @@ namespace Prueba.Controllers
                         {
                             var pagoMensual = cuotaEspecial.SubCuotas / (reciboActual.CuotasFaltantes + reciboActual.CuotasPagadas);
                             // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
+
                             if (pago.MontoRef == pagoMensual)
                             {
                                 reciboActual.SubCuotas = reciboActual.SubCuotas-pago.MontoRef;
@@ -496,18 +532,32 @@ namespace Prueba.Controllers
                                 reciboActual.Abonado = reciboActual.Abonado - pago.MontoRef;
                                 reciboActual.EnProceso = false;
                             }
-                            else if(pago.MontoRef < pagoMensual) 
+                            else if (pago.MontoRef < pagoMensual)
                             {
-                                reciboActual.Abonado = reciboActual.Abonado - pago.MontoRef;
-                            }else if (pago.MontoRef >pagoMensual)
+                                reciboActual.EnProceso = false;
+                                if (reciboActual.Abonado > pagoMensual)
+                                {
+                                    reciboActual.SubCuotas = reciboActual.SubCuotas - pagoMensual;
+                                    reciboActual.CuotasPagadas = reciboActual.CuotasPagadas + 1;
+                                    reciboActual.CuotasFaltantes = reciboActual.CuotasFaltantes - 1;
+                                    reciboActual.Abonado = reciboActual.Abonado - pagoMensual;
+                                }
+                            }
+                            else if (pago.MontoRef >pagoMensual)
                             {
                                 reciboActual.EnProceso = false;
                                 reciboActual.SubCuotas = reciboActual.SubCuotas - pagoMensual;
                                 reciboActual.CuotasPagadas = reciboActual.CuotasPagadas + 1;
                                 reciboActual.CuotasFaltantes = reciboActual.CuotasFaltantes - 1;
-                                reciboActual.Abonado = (reciboActual.Abonado - pagoMensual) + (pago.MontoRef - pagoMensual);
+                                reciboActual.Abonado = reciboActual.Abonado - pagoMensual;
                             }
+                            if(reciboActual.CuotasFaltantes == 0)
+                            {
+                                reciboActual.Confirmado = true;
+                            }
+                            
                             pago.Confirmado = true;
+
                             dbContext.Update(reciboActual);
                             dbContext.Update(pago);
                             int numAsiento = 1;

@@ -52,4 +52,5 @@ public partial class PagoRecibido
     public virtual ICollection<PagosRecibo> PagosRecibos { get; } = new List<PagosRecibo>();
 
     public virtual ICollection<ReferenciasPr> ReferenciasPrs { get; } = new List<ReferenciasPr>();
+    public virtual ICollection<PagosCuota> PagosCuotas { get; } = new List<PagosCuota>();
 }

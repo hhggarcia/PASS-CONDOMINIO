@@ -364,7 +364,7 @@ namespace Prueba.Controllers
 
                                 if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
                                 {
-                                    pago.Monto = modelo.Monto;
+                                    pago.Monto = montoReferencia;
                                     if (pago.Monto < recibo.Monto)
                                     {
                                         comprobante.Restante = recibo.Monto - (recibo.Abonado + pago.Monto);
@@ -479,12 +479,12 @@ namespace Prueba.Controllers
 
                                 if (monto > 0)
                                 {
-                                    pago.Monto = modelo.Monto;
+                                    pago.Monto = montoReferencia;
                                     if(pago.Monto < recibo.Monto)
                                     {
                                         comprobante.Restante = recibo.Monto - (recibo.Abonado + pago.Monto);
                                     }
-                                    else if(pago.Monto > recibo.Monto)
+                                    else
                                     {
                                         comprobante.Abonado = pago.Monto - recibo.Monto;
                                     }
@@ -830,14 +830,21 @@ namespace Prueba.Controllers
                                      where mc.IdCodCuenta == idBanco.IdCodCuenta
                                      select m;
 
-                        var pago = new PagoReciboCuota()
+                        //var pago = new PagoReciboCuota()
+                        //{
+                        //    IdPropiedad = reciboCuota.IdPropiedad,
+                        //    Fecha = modelo.Fecha,
+                        //    IdSubCuenta = idBanco.IdCodCuenta,
+                        //    Concepto = modelo.Concepto,
+                        //    Confirmado = false,
+                        //    IdCuota = reciboCuota.IdCuotaEspecial
+                        //};
+                        var pago = new PagoRecibido()
                         {
                             IdPropiedad = reciboCuota.IdPropiedad,
                             Fecha = modelo.Fecha,
                             IdSubCuenta = idBanco.IdCodCuenta,
-                            Concepto = modelo.Concepto,
                             Confirmado = false,
-                            IdCuota = reciboCuota.IdCuotaEspecial
                         };
 
                         if (moneda.First().Equals(monedaPrincipal.First()))
@@ -849,7 +856,6 @@ namespace Prueba.Controllers
                             var montoDolares = modelo.Monto * moneda.First().ValorDolar;
 
                             montoReferencia = (decimal)(montoDolares * monedaPrincipal.First().ValorDolar);
-                            //montoReferencia = montoDolares;
                         }
 
                         pago.FormaPago = true;
@@ -860,9 +866,9 @@ namespace Prueba.Controllers
 
                             var monto = reciboCuota.SubCuotas;
 
-                            if (monto > 0 && (propiedad.Saldo > 0 || propiedad.Deuda > 0))
+                            if (monto > 0)
                             {
-                                pago.Monto = modelo.Monto;
+                                pago.Monto = montoReferencia;
                                 if (pago.Monto < reciboCuota.SubCuotas)
                                 {
                                     comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.Abonado + pago.Monto));
@@ -885,7 +891,7 @@ namespace Prueba.Controllers
                             // regitrar en bd el pago
                             using (var dbcontext = new PruebaContext())
                             {
-                                dbcontext.PagoReciboCuota.Add(pago);
+                                dbcontext.PagoRecibidos.Add(pago);
                                 dbcontext.SaveChanges();
                             }
 
@@ -916,18 +922,23 @@ namespace Prueba.Controllers
 
                             using (var dbcontext = new PruebaContext())
                             {
-                                var relacion = new PagosCuotasRecibido
+                                //var relacion = new PagosCuotasRecibido
+                                //{
+                                //    IdPago = pago.IdPagoRecibido,
+                                //    IdRecibido = reciboActual.IdReciboCuotas,
+                                //    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                //};
+                                var relacion = new PagosCuota
                                 {
                                     IdPago = pago.IdPagoRecibido,
                                     IdRecibido = reciboActual.IdReciboCuotas,
                                     IdCuotaEspecial = reciboActual.IdCuotaEspecial
                                 };
-                                
                                 dbcontext.Add(relacion);
                                 await dbcontext.SaveChangesAsync();
                             }
 
-                            comprobante.PagoReciboCuota = pago;
+                            comprobante.PagoRecibido = pago;
                             comprobante.Referencias = referencia;
                             comprobante.Mensaje = "Gracias por su pago!";
 
@@ -949,16 +960,23 @@ namespace Prueba.Controllers
                                      where mc.IdCodCuenta == idCaja.IdCodCuenta
                                      select m;
 
-                        var pago = new PagoReciboCuota()
+                        //var pago = new PagoReciboCuota()
+                        //{
+                        //    IdSubCuenta = idCaja.IdCodCuenta,
+                        //    Concepto = modelo.Concepto,
+                        //    IdPropiedad = reciboCuota.IdPropiedad,
+                        //    Fecha = modelo.Fecha,
+                        //    Confirmado = false,
+                        //    IdCuota = reciboCuota.IdCuotaEspecial
+                        //};
+                        var pago = new PagoRecibido()
                         {
                             IdSubCuenta = idCaja.IdCodCuenta,
                             Concepto = modelo.Concepto,
                             IdPropiedad = reciboCuota.IdPropiedad,
                             Fecha = modelo.Fecha,
-                            Confirmado = false,
-                            IdCuota = reciboCuota.IdCuotaEspecial
+                            Confirmado = false
                         };
-
                         if (moneda.First().Equals(monedaPrincipal.First()))
                         {
                             montoReferencia = (decimal)modelo.Monto;
@@ -970,7 +988,6 @@ namespace Prueba.Controllers
                             montoReferencia = (decimal)(montoDolares * monedaPrincipal.First().ValorDolar);
                             //montoReferencia = montoDolares;
                         }
-
                         pago.FormaPago = false;
 
                         if (reciboCuota != null)
@@ -979,12 +996,12 @@ namespace Prueba.Controllers
 
                             if (monto > 0)
                             {
-                                pago.Monto = modelo.Monto;
+                                pago.Monto = montoReferencia;
                                 if (pago.Monto < reciboCuota.SubCuotas)
                                 {
                                     comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.Abonado + pago.Monto));
                                 }
-                                else if (pago.Monto > reciboCuota.SubCuotas)
+                                else 
                                 {
                                     comprobante.Abonado = (decimal)(pago.Monto - reciboCuota.SubCuotas);
                                 }
@@ -1001,7 +1018,7 @@ namespace Prueba.Controllers
 
                             using (var dbcontext = new PruebaContext())
                             {
-                                dbcontext.PagoReciboCuota.Add(pago);
+                                dbcontext.PagoRecibidos.Add(pago);
                                 dbcontext.SaveChanges();
                             }
                             // cambiar a -en proceso = true- el recibo mas actual 
@@ -1016,7 +1033,13 @@ namespace Prueba.Controllers
                             }
                             using (var dbcontext = new PruebaContext())
                             {
-                                var relacion = new PagosCuotasRecibido
+                                //var relacion = new PagosCuotasRecibido
+                                //{
+                                //    IdPago = pago.IdPagoRecibido,
+                                //    IdRecibido = reciboActual.IdReciboCuotas,
+                                //    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                //};
+                                var relacion = new PagosCuota
                                 {
                                     IdPago = pago.IdPagoRecibido,
                                     IdRecibido = reciboActual.IdReciboCuotas,
@@ -1026,7 +1049,7 @@ namespace Prueba.Controllers
                                 dbcontext.Add(relacion);
                                 await dbcontext.SaveChangesAsync();
                             }
-                            comprobante.PagoReciboCuota = pago;
+                            comprobante.PagoRecibido = pago;
                             comprobante.Mensaje = "Gracias por su pago!";
                         }
                         return View("ComprobanteCE", comprobante);
