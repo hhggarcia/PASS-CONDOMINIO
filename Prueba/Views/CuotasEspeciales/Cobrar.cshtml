@@ -46,42 +46,51 @@
                                 </tr>
                             </thead>
                             <tbody>
+
                                 @if (Model != null && Model.Any())
                                 {
-                                    foreach (var item in Model)
-                                    {
-                                        <th>@item.NombreUsuario</th>
-                                        <th>@item.CuotasEspeciale.Descripcion</th>
-                                        <th>@item.CodigoPropiedad</th>
-                                        <th>@item.PagoReciboCuota.Concepto</th>
-                                        <th>@item.PagoReciboCuota.Monto?.ToString("N2")</th>
-                                        @if (item.PagoReciboCuota.FormaPago ==true)
+                                        @foreach (var item in Model)
                                         {
-                                        <td>Transferencia</td>
+                                        <tr class="tr_s">
+
+                                            <td>@item.NombreUsuario</td>
+
+                                            <td>@item.CuotasEspeciale.Descripcion</td>
+
+                                            <td>@item.CodigoPropiedad</td>
+
+                                            <td>@item.PagoReciboCuota.Concepto</td>
+
+                                            <td>@item.PagoReciboCuota.Monto?.ToString("N2")</td>
+
+                                                @if (item.PagoReciboCuota.FormaPago ==true)
+                                                {
+                                                    <td>Transferencia</td>
+                                                }
+                                                  else
+                                                {
+                                                     <td>Efectivo</td>
+                                                    }
+                                            <td>
+                                            <a class="btn btn-outline-success"
+                                               asp-controller="CuotasEspeciales"
+                                               asp-action="ConfirmarPagoRecibido"
+                                               asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
+                                                Confirmar Pago
+                                            </a>
+                                            <a class="btn btn-outline-danger"
+                                               asp-controller="CuotasEspeciales"
+                                               asp-action="RectificarPago"
+                                               asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
+                                                Rectificar Pago
+                                            </a>
+                                            </td>
+                                        </tr>
                                         }
-                                          else
-                                        {
-                                        <td>Efectivo</td>
-                                        }
-                                    <th>
-                                        <a class="btn btn-outline-success"
-                                           asp-controller="CuotasEspeciales"
-                                           asp-action="ConfirmarPagoRecibido"
-                                           asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
-                                            Confirmar Pago
-                                        </a>
-                                        <a class="btn btn-outline-danger"
-                                           asp-controller="CuotasEspeciales"
-                                           asp-action="RectificarPago"
-                                           asp-route-id="@item.PagoReciboCuota.IdPagoRecibido">
-                                            Rectificar Pago
-                                        </a>
-                                    </th>
-                                    }
                                 }
                                 else
                                 {
-                                    <tr class="tr_s">
+                                     <tr class="tr_s">
                                         <td>No</td>
                                         <td>hay</td>
                                         <td>pagos</td>
@@ -90,8 +99,7 @@
                                         <td>confirmar</td>
                                     </tr>
                                 }
-                         </tbody>
-
+                            </tbody>
                         </table>
                     </div>
                 </div>
