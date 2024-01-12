@@ -2,7 +2,67 @@
 
 @model DetalleReciboVM
 
-<div class="table-responsive" id="DetalleReciboTabla">
+<div class="table-responsive text-center" id="DetalleReciboTabla ">
+    <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+            <thead>
+                <tr>
+                    <th>Saldo Anterior</th>
+                    <th>Saldo Mes Actual</th>
+                    @if (Model.CuotasRecibosCobros.Count > 0)
+                    {
+                        @foreach (var cuotas in Model.CuotasRecibosCobros)
+                        {
+                            <th>
+                                <div>
+                                    @cuotas.CuotasEspeciale.Descripcion
+                                </div>
+                                
+                                <div>
+                                    Cuotas Por Pagar @cuotas.ReciboCuota.CuotasFaltantes
+                                </div>
+                            </th>
+                        }
+                    }
+                    <th>Saldo Actual</th>
+                </tr>
+           </thead>
+            <tbody>
+                <tr class="tr_s">
+                <td>@Model.Propiedad.Deuda.ToString("N2") Bs.</td>
+                <td>@Model.Propiedad.Saldo.ToString("N2") Bs.</td>
+                @{
+                    decimal totalCuotasSubCuotas = 0;
+
+                    if (Model.CuotasRecibosCobros.Count > 0)
+                    {
+                        foreach (var cuotas in Model.CuotasRecibosCobros)
+                        {
+                            if (cuotas.ReciboCuota.CuotasFaltantes != 0)
+                            {
+                                totalCuotasSubCuotas += (decimal)cuotas.ReciboCuota.SubCuotas;
+
+                                <td>
+                                    @(cuotas.ReciboCuota.SubCuotas?.ToString("N2")) Bs.
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    No posee deuda
+                                </td>
+                            }
+                        }
+                    }
+                }
+                
+                <td>
+                     @((Model.Propiedad.Deuda + Model.Propiedad.Saldo + totalCuotasSubCuotas).ToString("N2")) Bs.
+                </td>
+
+                </tr>
+            </tbody>
+
+    </table>
     <table class="table text-center"
            width="100%"
            cellspacing="0">

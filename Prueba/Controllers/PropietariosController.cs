@@ -610,7 +610,6 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-
             //var relacionGasto = await _context.RelacionGastos
             //    .Include(r => r.IdCondominioNavigation)
             //    .FirstOrDefaultAsync(m => m.IdRgastos == id);
@@ -619,7 +618,24 @@ namespace Prueba.Controllers
             //    return NotFound();
             //}
             var modelo = await _repoRelacionGasto.DetalleRecibo(id);
-            //return View(relacionGasto);
+            var listaCuotas = await _context.CuotasEspeciales.Where(c=>c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio ).ToListAsync();
+            var listaRecibos = await _context.ReciboCuotas.Where(c => c.IdPropiedad == modelo.Propiedad.IdPropiedad).ToListAsync();
+
+            foreach (var cuotas in listaCuotas)
+            {
+                CuotasRecibosCobrosVM cuotasRecibosCobros = new CuotasRecibosCobrosVM()
+                {
+                    CuotasEspeciale = cuotas,
+                };
+                foreach (var recibos in listaRecibos)
+                {
+                    if (recibos.IdPropiedad == modelo.Propiedad.IdPropiedad)
+                    {
+                        cuotasRecibosCobros.ReciboCuota = recibos;
+                    }
+                }
+                modelo.CuotasRecibosCobros.Add(cuotasRecibosCobros);
+            }
             return View(modelo);
         }
 
