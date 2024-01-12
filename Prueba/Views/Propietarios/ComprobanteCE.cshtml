@@ -59,23 +59,23 @@
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
 
-                                @if (Model.PagoReciboCuota != null)
+                                @if (Model.PagoRecibido != null)
                                 {
 
-                                    @if ((bool)Model.PagoReciboCuota.FormaPago && Model.Referencias != null)
+                                    @if ((bool)Model.PagoRecibido.FormaPago && Model.Referencias != null)
                                     {
                                         <h3>Transferencia</h3>
-                                        <p><strong>Fecha</strong>: @Model.PagoReciboCuota.Fecha?.ToString("dd/MM/yyyy")</p>
+                                        <p><strong>Fecha</strong>: @Model.PagoRecibido.Fecha.ToString("dd/MM/yyyy")</p>
 
                                         <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
                                         <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
-                                        <p><strong>Monto</strong>: @(Model.PagoReciboCuota.Monto?.ToString("N"))</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N")) Bs.</p>
                                         <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
                                     }
                                     else
                                     {
                                         <h3>Efectivo</h3>
-                                        <p><strong>Monto</strong>: @(Model.PagoReciboCuota.Monto?.ToString("N")) Bs.</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N")) Bs.</p>
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }
@@ -91,7 +91,7 @@
                 <div class="text-center mb-4">
                     <h4 class="text-center">@Model.Mensaje</h4>
 
-                    <a asp-action="DashboardUsuario"
+                    <a asp-action="ReciboCuotasEspeciales"
                        class="btn btn-primary me-1 mb-1">
                         Finalizar
                     </a>

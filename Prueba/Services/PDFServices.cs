@@ -751,7 +751,7 @@ namespace Prueba.Services
                                 .Padding(5).Text(comprobanteVM.PagoRecibido.ValorDolar.ToString()).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar).ToString("N2")).FontSize(8);
+                                .Padding(5).Text(((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar ).ToString("N2") + " Bs.")).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                 .Padding(5).Text((comprobanteVM.Propiedad.Saldo).ToString("N2")).FontSize(8);
@@ -854,16 +854,24 @@ namespace Prueba.Services
                                 .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteCEVM.PagoReciboCuota.Monto?.ToString("N") + " Bs.").FontSize(8);
+                                .Padding(5).Text(comprobanteCEVM.PagoRecibido.Monto.ToString("N") + " Bs.").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteCEVM.PagoReciboCuota.ValorDolar?.ToString() + " Bs.").FontSize(8);
+                                .Padding(5).Text(comprobanteCEVM.PagoRecibido.ValorDolar.ToString() + " Bs.").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteCEVM.PagoReciboCuota.Monto / comprobanteCEVM.PagoReciboCuota.ValorDolar)?.ToString("N2") + " Bs.").FontSize(8);
-
-                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                //.Padding(5).Text(comprobanteCEVM.Restante.ToString("N2") + " Bs.").FontSize(8);
+                                .Padding(5).Text((comprobanteCEVM.PagoRecibido.Monto / comprobanteCEVM.PagoRecibido.ValorDolar).ToString("N2") + " Bs.").FontSize(8);
+                                if(comprobanteCEVM.Restante !=0 && comprobanteCEVM.Restante != null)
+                                {
+                                    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                     .Padding(5).Text(comprobanteCEVM.Restante.ToString("N2") + " Bs.").FontSize(8);
+                                }
+                                else
+                                {
+                                    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                     .Padding(5).Text("0,00"+ " Bs.").FontSize(8);
+                                }
+                          
                             });
                         });
                     page.Footer()

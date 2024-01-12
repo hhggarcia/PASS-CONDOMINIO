@@ -6,7 +6,8 @@ namespace Prueba.ViewModels
     {
         public string? NombreUsuario { get; set; }
         public string? CodigoPropiedad { get; set; }
-        public PagoReciboCuota PagoReciboCuota { get; set; } = new PagoReciboCuota();
+        public PagoRecibido PagoReciboCuota { get; set; } = new PagoRecibido();
+        //public PagoReciboCuota PagoReciboCuota { get; set; } = new PagoReciboCuota();
         public CuotasEspeciale CuotasEspeciale { get; set; } = new CuotasEspeciale();
     }
 }

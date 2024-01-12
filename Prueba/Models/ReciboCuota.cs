@@ -34,4 +34,5 @@ public partial class ReciboCuota
     public virtual CuotasEspeciale? IdCuotaEspecialNavigation { get; set; }
 
     public virtual ICollection<PagosCuotasRecibido> PagosCuotasRecibidos { get; } = new List<PagosCuotasRecibido>();
+    public virtual ICollection<PagosCuota> PagosCuotas { get; } = new List<PagosCuota>();
 }

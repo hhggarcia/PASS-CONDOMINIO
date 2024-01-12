@@ -43,19 +43,29 @@
                                 </div>
                                  <div class="col-6">
                                     <dt>Abonado</dt>
-                                    <dd>@Model.reciboCuota.Abonado?.ToString("N2")</dd>
+                                    <dd>@Model.reciboCuota.Abonado?.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
                                 </div> 
                                 <div class="col-6">
                                     <dt>Deuda</dt>
-                                    <dd>@Model.reciboCuota.SubCuotas?.ToString("N2")</dd>
+                                    <dd>@Model.reciboCuota.SubCuotas?.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
                                 </div>
                                 <div class="col-6">
                                     <dt>Monto mensual</dt>
-                                    <dd> @string.Format("{0:N2}", (Model.reciboCuota.SubCuotas / Model.cuotasEspeciale.CantidadCuotas)) @Model.reciboCuota.SimboloMoneda</dd>
+                                    @if (!(bool)Model.reciboCuota.Confirmado)
+                                    {
+                                        <dd> @string.Format("{0:N2}", ((Model.reciboCuota.SubCuotas * (Model.reciboCuota.CuotasFaltantes + Model.reciboCuota.CuotasPagadas)) / Model.reciboCuota.CuotasFaltantes) / (Model.reciboCuota.CuotasPagadas + Model.reciboCuota.CuotasFaltantes)) @Model.reciboCuota.SimboloMoneda</dd>
+                                    } else {
+                                        <dd>@string.Format("{0:N2}", (Model.cuotasEspeciale.SubCuotas / Model.cuotasEspeciale.CantidadCuotas)) @Model.reciboCuota.SimboloMoneda</dd>
+                                    }
                                 </div>
                                 <div class="col-6">
                                     <dt>Monto Total de la Cuota</dt>
-                                    <dd>@string.Format("{0:N2}", Model.reciboCuota.SubCuotas) @Model.reciboCuota.SimboloMoneda</dd>
+                                    @if (!(bool)Model.reciboCuota.Confirmado)
+                                    {
+                                        <dd>@string.Format("{0:N2}", Model.reciboCuota.SubCuotas) @Model.reciboCuota.SimboloMoneda</dd>
+                                    }else{
+                                        <dd>@string.Format("{0:N2}", Model.cuotasEspeciale.SubCuotas)) @Model.reciboCuota.SimboloMoneda</dd>
+                                    }
                                 </div>
                                 <div class="col-6">
                                     <dt>Estatus</dt>

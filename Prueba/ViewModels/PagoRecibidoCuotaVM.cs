@@ -3,7 +3,7 @@ using Prueba.Models;
 
 namespace Prueba.ViewModels
 {
-    public class PagoRecibidoCuotaVM : PagoReciboCuota
+    public class PagoRecibidoCuotaVM : PagoRecibido
     {
         public int idRecibo {  get; set; }
         public ReciboCuota ReciboCuotas { get; set; }=new ReciboCuota();
