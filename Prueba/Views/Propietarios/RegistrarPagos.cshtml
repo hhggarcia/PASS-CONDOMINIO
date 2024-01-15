@@ -393,16 +393,16 @@
                         bancos = response.subCuentasBancos;
                         efectivos = response.subCuentasCaja;
 
-                        var aux1 = String(response.deuda);
-                        var aux2 = String(response.saldo);
-                       
-                        if(response.saldo > response.abonado){
-                            var aux3 = String((response.deuda + response.saldo) - response.abonado)
+                        var aux1 = String(response.deuda.toFixed(2));
+                        var aux2 = String(response.saldo.toFixed(2));
+
+                        if (response.saldo > response.abonado.toFixed(2)) {
+                            var aux3 = String(((response.deuda + response.saldo) - response.abonado).toFixed(2))
                         }else{
                             var aux3 = 0
                         }
 
-                        var aux4 = String(data.abonado);
+                        var aux4 = String(data.abonado.toFixed(2));
                
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
@@ -461,7 +461,7 @@
         function LoadTable(tableId, list) {
             CLearTable(tableId);
             $.each(list, function (idex, value) {
-                $(tableId).append("<tr><td>" + value.monto + "</td><td>"  + value.abonado + "</td><td>" + value.fecha + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.monto.toFixed(2) + "</td><td>" + value.abonado.toFixed(2) + "</td><td>" + value.fecha + "</td><tr>");
             });
         }
 

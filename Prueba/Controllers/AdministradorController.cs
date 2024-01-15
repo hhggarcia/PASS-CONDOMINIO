@@ -182,7 +182,7 @@ namespace Prueba.Controllers
                 var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
-
+                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
@@ -193,7 +193,7 @@ namespace Prueba.Controllers
                         {
                             var pagos = await _context.PagoRecibidos.Where(
                                 c => c.IdPropiedad == propiedad.IdPropiedad
-                                && c.Confirmado == false)
+                                && c.Confirmado == false && !pagosCuotas.Contains(c.IdPagoRecibido))
                                 .ToListAsync();
 
                             if (pagos != null && pagos.Count() > 0)

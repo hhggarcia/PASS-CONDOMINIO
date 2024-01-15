@@ -922,7 +922,7 @@ namespace Prueba.Services
                                 .Padding(5).Text(comprobanteCEVM.PagoRecibido.ValorDolar.ToString() + " Bs.").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteCEVM.PagoRecibido.Monto / comprobanteCEVM.PagoRecibido.ValorDolar).ToString("N2") + " Bs.").FontSize(8);
+                                .Padding(5).Text((comprobanteCEVM.PagoRecibido.Monto / comprobanteCEVM.PagoRecibido.ValorDolar).ToString("N2") + " $").FontSize(8);
                                 if(comprobanteCEVM.Restante !=0 && comprobanteCEVM.Restante != null)
                                 {
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
@@ -983,7 +983,7 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    //columns.RelativeColumn();
                                 });
                                 tabla.Header(header =>
                                 {
@@ -999,99 +999,25 @@ namespace Prueba.Services
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
 
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
+                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   //.Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
                                 });
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                 .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N")).FontSize(8);
+                                .Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Pago.ValorDolar.ToString()).FontSize(8);
+                                .Padding(5).Text(comprobanteVM.ValorDolar.ToString("N2") + " Bs").FontSize(8);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text((comprobanteVM.Pago.Monto / comprobanteVM.ValorDolar).ToString("N2")+ " $").FontSize(8);
 
                                 //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                //.Padding(5).Text((comprobanteVM.Pago.Monto
-                                /// comprobanteVM.Pago.ValorDolar).ToString()).FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                //.Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
  
                             });
-
-                            //x.Item().AlignCenter().Text("DATOS DEL PROPIETARIO").FontSize(16);
-                            //x.Item().AlignCenter().Text("SALDO PENDIENTE").FontSize(12);
-
-                            //x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            //{
-                            //    tabla.ColumnsDefinition(columns =>
-                            //    {
-                            //        columns.RelativeColumn();
-                            //        columns.RelativeColumn();
-                            //        columns.RelativeColumn();
-                            //    });
-                            //    tabla.Header(header =>
-                            //    {
-                            //        header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                            //        .Padding(5).Text("CUOTA ORDINARIA").Bold().FontSize(10);
-
-                            //        header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                            //       .Padding(5).Text("CUOTA EXTRAODINARIA").Bold().FontSize(10);
-
-                            //        header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                            //       .Padding(5).Text("ASOTEA").Bold().FontSize(10);
-
-   
-                            //    });
-                            //    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //    .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
-
-                            //    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //    .Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N")).FontSize(8);
-
-                            //    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //    .Padding(5).Text(comprobanteVM.Pago.ValorDolar.ToString()).FontSize(8);
-
-                            //    //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //    //.Padding(5).Text((comprobanteVM.Pago.Monto / comprobanteVM.Pago.ValorDolar).ToString()).FontSize(8);
-                                
-                            //    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //     .Padding(5).Text("").FontSize(8);
-
-                            //    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                            //    .Padding(5).Text("").FontSize(8);
-
-                            //});
-
-
-                            //if (comprobanteVM.Condominio != null)
-                            //{
-                            //    x.Item().AlignCenter().Text("Condominio").FontColor("#004581").FontSize(12).Bold();
-                            //    x.Item().AlignCenter().Text("Condominio: " + comprobanteVM.Condominio.Nombre);
-                            //    x.Item().AlignCenter().Text("RIF: " + comprobanteVM.Condominio.Rif);
-                            //}
-                            //if (comprobanteVM.Pago != null)
-                            //{
-                            //    if (comprobanteVM.Pagoforma == FormaPago.Transferencia)
-                            //    {
-                            //        x.Item().AlignCenter().Text("Transferencia").FontColor("#004581").FontSize(12).Bold(); ;
-                            //        x.Item().AlignCenter().Text("Fecha: " + comprobanteVM.Pago.Fecha.ToString("dd/MM/yyyy"));
-                            //        x.Item().AlignCenter().Text("Cuenta: " + comprobanteVM.Banco.Descricion);
-                            //        x.Item().AlignCenter().Text("Referencia: " + comprobanteVM.NumReferencia);
-                            //        x.Item().AlignCenter().Text("Fecha de comprobante: " + DateTime.Today.ToString("dd/MM/yyyy"));
-                            //    }
-                            //    else
-                            //    {
-                            //        x.Item().AlignCenter().Text("Efectivo").FontColor("#004581").FontSize(12).Bold(); 
-                            //        x.Item().AlignCenter().Text("Cuenta: " + comprobanteVM.Caja.Descricion);
-                            //        x.Item().AlignCenter().Text("Monto: " + comprobanteVM.Pago.Monto.ToString("N"));
-                            //        x.Item().AlignCenter().Text("Fecha de comprobante: " + DateTime.Today.ToString("dd/MM/yyyy"));
-                            //    }
-                            //}
 
                         });
 
