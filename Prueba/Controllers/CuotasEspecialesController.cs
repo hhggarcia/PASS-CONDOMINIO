@@ -676,16 +676,16 @@ namespace Prueba.Controllers
             try
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
-                var pago = await _context.PagoReciboCuota.FindAsync(id);
+                var pago = await _context.PagoRecibidos.FindAsync(id);
 
                 if (pago != null)
                 {
-                    var relacionPagosRecibos = await _context.PagosCuotasRecibidos.FindAsync(pago.IdPagoRecibido);
+                    var relacionPagosRecibos = await _context.PagosCuotas.Where(c=>c.IdPago == pago.IdPagoRecibido).FirstAsync();
                     var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosRecibos.IdRecibido);
                     reciboActual.Abonado = reciboActual.Abonado- pago.MontoRef;
                     if (reciboActual == null)
                     {
-                        _context.PagoReciboCuota.Remove(pago);
+                        _context.PagoRecibidos.Remove(pago);
                         await _context.SaveChangesAsync();
 
                         var modeloError = new ErrorViewModel()
@@ -700,11 +700,11 @@ namespace Prueba.Controllers
                         {
                             var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
                             _context.ReferenciasPrs.RemoveRange(referencia);
-                            _context.PagoReciboCuota.Remove(pago);
+                            _context.PagoRecibidos.Remove(pago);
                      }else{
-                           _context.PagoReciboCuota.Remove(pago);
+                           _context.PagoRecibidos.Remove(pago);
                      }
-                    var relacionPagosCuotas = await _context.PagosCuotasRecibidos.Where(c => c.IdRecibido == reciboActual.IdReciboCuotas).FirstAsync();
+                    var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdRecibido == reciboActual.IdReciboCuotas).FirstAsync();
                     _context.RemoveRange(relacionPagosCuotas);
                     var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
                     reciboActual.EnProceso = false;

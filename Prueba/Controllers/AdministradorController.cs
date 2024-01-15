@@ -403,6 +403,10 @@ namespace Prueba.Controllers
 
                         if (reciboActual == null)
                         {
+                            foreach(var r in referencias)
+                            {
+                                _context.Remove(r);
+                            }
                             _context.PagoRecibidos.Remove(pago);
                             await _context.SaveChangesAsync();
 
