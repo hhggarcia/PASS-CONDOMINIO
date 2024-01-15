@@ -460,7 +460,65 @@ namespace Prueba.Services
                                     col.Item().Text(detalleReciboVM.Propiedad.Alicuota.ToString());
                                 });
                             });
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").PaddingBottom(5f).Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Saldo Anterior").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo mes actual").Bold().FontSize(10);
+
+                                    if (detalleReciboVM.CuotasRecibosCobros.Count > 0)
+                                    {
+                                        foreach(var cuotas in detalleReciboVM.CuotasRecibosCobros)
+                                        {
+                                            header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                            .Padding(5).Text(cuotas.CuotasEspeciale.Descripcion+ "\n" + 
+                                            " Cuotas Por Pagar " + cuotas.ReciboCuota.CuotasFaltantes).Bold().FontSize(10);
+                                        }
+                                    } 
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo Actual").Bold().FontSize(10);
+                                });
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text(detalleReciboVM.Propiedad.Deuda.ToString("N2") + " Bs.").FontSize(8);
+                                decimal totalCuotasSubCuotas = 0;
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text(detalleReciboVM.Propiedad.Saldo.ToString("N2") + " Bs.").FontSize(8); 
+                                if(detalleReciboVM.CuotasRecibosCobros.Count > 0)
+                                {
+                                    foreach (var cuotas in detalleReciboVM.CuotasRecibosCobros)
+                                    {
+                                        if (cuotas.ReciboCuota.CuotasFaltantes != 0)
+                                        {
+                                            totalCuotasSubCuotas += (decimal)cuotas.ReciboCuota.SubCuotas;
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                            .Padding(5).Text(cuotas.ReciboCuota.SubCuotas?.ToString("N2") + " Bs.").FontSize(8);
+                                        }
+                                        else
+                                        {
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                           .Padding(5).Text("No posee deudas.").FontSize(8);
+                                        }
+                                    }
+                                }
+                                
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text((detalleReciboVM.Propiedad.Deuda + detalleReciboVM.Propiedad.Saldo + totalCuotasSubCuotas).ToString("N2")+ " Bs.").FontSize(8);
+                            });
+
+
+                                x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
                             {
                                 tabla.ColumnsDefinition(columns =>
                                 {
@@ -491,6 +549,7 @@ namespace Prueba.Services
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Pagar Bs").Bold().FontSize(10);
                                 });
+
                                 if (detalleReciboVM.RelacionGastos.SubcuentasGastos != null && detalleReciboVM.RelacionGastos.SubcuentasGastos.Any()
                                 && detalleReciboVM.RelacionGastos.GastosDiario != null && detalleReciboVM.RelacionGastos.GastosDiario.Any()
                                 && detalleReciboVM.RelacionGastos.CCGastos != null && detalleReciboVM.RelacionGastos.CCGastos.Any())
