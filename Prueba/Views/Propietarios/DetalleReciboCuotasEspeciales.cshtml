@@ -66,6 +66,10 @@
                                     }else{
                                         <dd>@string.Format("{0:N2}", Model.cuotasEspeciale.SubCuotas)) @Model.reciboCuota.SimboloMoneda</dd>
                                     }
+                                </div> 
+                                <div class="col-6">
+                                    <dt>Monto Total de la Cuota en Dolares</dt>
+                                    <dd>@string.Format("{0:N2}", (Model.cuotasEspeciale.SubCuotas) / Model.cuotasEspeciale.ValorDolar) $</dd>
                                 </div>
                                 <div class="col-6">
                                     <dt>Estatus</dt>

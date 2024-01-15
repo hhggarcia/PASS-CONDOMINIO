@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Prueba.Models.ReciboCuota>
+﻿@model IEnumerable<Prueba.ViewModels.ReciboCuotaVM>
 
     @{
         ViewData["Title"] = "Recibo Cuotas Especiales";
@@ -61,22 +61,22 @@
                                     @foreach (var item in Model)
                                     {
                                         <tr class="tr_s">
-                                            <td>@item.IdReciboCuotas</td>
-                                            <td>@item.IdPropiedad</td>
-                                            <td>@item.Fecha?.ToString("dd/MM/yyyy")</td>
-                                            @if (!(bool)item.Confirmado)
+                                            <td>@item.ReciboCuota.IdReciboCuotas</td>
+                                            <td>@item.Codigo</td>
+                                            <td>@item.ReciboCuota.Fecha?.ToString("dd/MM/yyyy")</td>
+                                            @if (!(bool)item.ReciboCuota.Confirmado)
                                             {
-                                                <td>@string.Format("{0:N2}", ((item.SubCuotas * (item.CuotasFaltantes + item.CuotasPagadas)) / item.CuotasFaltantes) / (item.CuotasPagadas + item.CuotasFaltantes)) @item.SimboloMoneda</td>
+                                                <td>@string.Format("{0:N2}", ((item.ReciboCuota.SubCuotas * (item.ReciboCuota.CuotasFaltantes + item.ReciboCuota.CuotasPagadas)) / item.ReciboCuota.CuotasFaltantes) / (item.ReciboCuota.CuotasPagadas + item.ReciboCuota.CuotasFaltantes)) @item.ReciboCuota.SimboloMoneda</td>
                                             }else{
-                                                <td>@item.SubCuotas?.ToString("N2") @item.SimboloMoneda</td>
+                                                <td>@item.ReciboCuota.SubCuotas?.ToString("N2") @item.ReciboCuota.SimboloMoneda</td>
                                             }
-                                            <td>@item.SubCuotas?.ToString("N2") @item.SimboloMoneda</td>
-                                            <td>@item.Abonado?.ToString("N2") @item.SimboloMoneda</td>
-                                            @if ((bool)@item.EnProceso)
+                                            <td>@item.ReciboCuota.SubCuotas?.ToString("N2") @item.ReciboCuota.SimboloMoneda</td>
+                                            <td>@item.ReciboCuota.Abonado?.ToString("N2") @item.ReciboCuota.SimboloMoneda</td>
+                                            @if ((bool)@item.ReciboCuota.EnProceso)
                                             {
                                                 <td>En proceso</td>
                                             }
-                                            else if ((bool)@item.Confirmado)
+                                            else if ((bool)@item.ReciboCuota.Confirmado)
                                             {
                                                 <td>Pagado</td>
                                             }
@@ -87,12 +87,12 @@
                                             <td>
                                                 <a asp-controller="Propietarios"
                                                    asp-action="DetalleReciboCuotasEspeciales"
-                                                   asp-route-id="@item.IdReciboCuotas" class="btn btn-primary">Detalles</a> 
-                                                @if (!(bool)item.Confirmado)
+                                                   asp-route-id="@item.ReciboCuota.IdReciboCuotas" class="btn btn-primary">Detalles</a>
+                                                @if (!(bool)item.ReciboCuota.Confirmado)
                                                 {
                                                     <a asp-controller="Propietarios"
                                                        asp-action="PagarCuotaEspeciales"
-                                                       asp-route-id="@item.IdReciboCuotas" class="btn btn-success">Pagar</a>
+                                                       asp-route-id="@item.ReciboCuota.IdReciboCuotas" class="btn btn-success">Pagar</a>
                                                 }
                                             </td>
                                         </tr>

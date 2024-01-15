@@ -98,6 +98,7 @@
 
                                                         <div id="Saldo"></div>
                                                         <div id="Deuda"></div>
+                                                        <div id="Abonado"></div>
 
                                                         <p>
                                                             <div id="Total"></div>
@@ -107,6 +108,7 @@
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Monto</th>
+                                                                        <th>Abonado</th>
                                                                         <th>Fecha</th>
                                                                     </tr>
                                                                 </thead>
@@ -386,13 +388,22 @@
                     success: function (response) {
 
                         console.log(response);
+                        var data = response;
 
                         bancos = response.subCuentasBancos;
                         efectivos = response.subCuentasCaja;
 
                         var aux1 = String(response.deuda);
                         var aux2 = String(response.saldo);
-                        var aux3 = response.deuda + response.saldo;
+                       
+                        if(response.saldo > response.abonado){
+                            var aux3 = String((response.deuda + response.saldo) - response.abonado)
+                        }else{
+                            var aux3 = 0
+                        }
+
+                        var aux4 = String(data.abonado);
+               
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
                         // LLENAR BANCOS
@@ -411,6 +422,10 @@
                         // LLENAR SALDO
                         //$("#Saldo").innerText(response.saldo);
                         $("#Saldo").html("<p> <strong> Deuda Actual </strong> = " + aux2 + "</p>");
+
+                        // LLENAR ABONADO
+                        //$("#Abonado").innerText(response.abonado);
+                        $("#Abonado").html("<p> <strong> Dinero abonado </strong> = " + aux4 + "</p>");
                         
                         // LLENAR total
                         //$("#Total").innerText(response.saldo);
@@ -446,7 +461,7 @@
         function LoadTable(tableId, list) {
             CLearTable(tableId);
             $.each(list, function (idex, value) {
-                $(tableId).append("<tr><td>" + value.monto + "</td><td>" + value.fecha + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.monto + "</td><td>"  + value.abonado + "</td><td>" + value.fecha + "</td><tr>");
             });
         }
 

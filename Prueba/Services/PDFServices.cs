@@ -466,7 +466,10 @@ namespace Prueba.Services
                                 {
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    for(var i = 0; detalleReciboVM.CuotasRecibosCobros.Count >i; ++i)
+                                    {
+                                        columns.RelativeColumn();
+                                    }
                                     columns.RelativeColumn();
                                 });
                                 tabla.Header(header =>
@@ -648,22 +651,22 @@ namespace Prueba.Services
                                     }
                                 }
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderTop(0.5f).BorderBottom(0.5f).BorderColor("#D9D9D9")
                                 .Padding(5).Text("").FontSize(8);
                                 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f).BorderBottom(0.5f)
                                 .Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f).BorderBottom(0.5f)
                                 .Padding(5).Text("Sub Total").FontSize(8);
                                
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f).BorderBottom(0.5f)
                               .Padding(5).Text(detalleReciboVM.RelacionGastos.SubTotal.ToString("N")).FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f).BorderBottom(0.5f)
                                 .Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f).BorderBottom(0.5f)
                                 .Padding(5).Text(((detalleReciboVM.RelacionGastos.SubTotal * (detalleReciboVM.Propiedad.Alicuota / 100)).ToString("N"))).FontSize(8);
 
                                 if (detalleReciboVM.RelacionGastos.Fondos != null && detalleReciboVM.RelacionGastos.Fondos.Any()
@@ -701,22 +704,22 @@ namespace Prueba.Services
 
                                 }
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text("Total gasto del mes").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text(detalleReciboVM.RelacionGastos.Total.ToString("N")).FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9").BorderTop(0.5f)
                                 .Padding(5).Text(((detalleReciboVM.RelacionGastos.Total * (detalleReciboVM.Propiedad.Alicuota / 100)).ToString("N"))).FontSize(8);
                             });
                             x.Item().Column(c =>
@@ -798,22 +801,22 @@ namespace Prueba.Services
                                    .Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
+                                   .Padding(5).Text("SALDO GENERAL").Bold().FontSize(10);
                                 });
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                 .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.PagoRecibido.Monto.ToString("N")).FontSize(8);
+                                .Padding(5).Text(comprobanteVM.PagoRecibido.Monto.ToString("N") + " " + comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.PagoRecibido.ValorDolar.ToString()).FontSize(8);
+                                .Padding(5).Text(comprobanteVM.PagoRecibido.ValorDolar.ToString() + " "+ comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar ).ToString("N2") + " Bs.")).FontSize(8);
-
+                                .Padding(5).Text(((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar ).ToString("N2") + " $")).FontSize(8);
+                        
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Propiedad.Saldo).ToString("N2")).FontSize(8);
+                                .Padding(5).Text((comprobanteVM.Propiedad.Saldo).ToString("N2") + " " + comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
 
                             });
                             //if (comprobanteVM.Condominio != null && comprobanteVM.Inmueble != null && comprobanteVM.Propiedad != null)

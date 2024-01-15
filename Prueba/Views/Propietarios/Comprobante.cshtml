@@ -44,11 +44,11 @@
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
                                     @if (Model.Abonado !=0)
                                     {
-                                        <p><strong>Monto extra abonado</strong>: @Model.Abonado Bs.</p>
+                                        <p><strong>Monto extra abonado</strong>: @Model.Abonado.ToString("N2") Bs.</p>
                                     }
                                     if (Model.Restante!=0)
                                     {
-                                        <p><strong>Faltante por pagar</strong>: @Model.Restante Bs.</p>
+                                        <p><strong>Faltante por pagar</strong>: @Model.Restante.ToString("N2") Bs.</p>
                                     }
                                 }
                             </div>
@@ -71,13 +71,13 @@
 
                                         <p><strong>Cuenta</strong>: @Model.Referencias.Banco</p>
                                         <p><strong>Referencia</strong>: @Model.Referencias.NumReferencia</p>
-                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N"))</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N2"))</p>
                                         <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
                                     }
                                     else
                                     {
                                         <h3>Efectivo</h3>
-                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N")) Bs.</p>
+                                        <p><strong>Monto</strong>: @(Model.PagoRecibido.Monto.ToString("N2")) Bs.</p>
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }
