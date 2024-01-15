@@ -14,6 +14,7 @@ namespace Prueba.ViewModels
         public IList<SelectListItem>? RecibosModel { get; set; }
         public decimal Saldo { get; set; }
         public decimal Deuda { get; set; }
+        public decimal Abonado { get; set; }
         public IList<ReciboCobro>? Recibos { get; set; }
         public int IdRecibo { get; set; }
         //public int IdSubcuenta { get; set; }

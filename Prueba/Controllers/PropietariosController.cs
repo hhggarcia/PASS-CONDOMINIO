@@ -230,9 +230,11 @@ namespace Prueba.Controllers
 
                     modelo.Deuda = propiedad.Deuda;
 
+
                     //modelo.Recibos = await recibos.ToListAsync();
                     modelo.Recibos = await recibos.Where(c => (c.EnProceso == false && c.Pagado == false)|| (c.EnProceso == true && c.Pagado ==false)).ToListAsync();
                     //modelo.Recibos = await _context.ReciboCobros.FindAsync(valor);
+                    modelo.Abonado = modelo.Recibos[0].Abonado;
 
                     if (modelo.Recibos.Any())
                     {
@@ -1104,11 +1106,21 @@ namespace Prueba.Controllers
 
                     if (idPropietario != null)
                     {
-                        var listaRecibosCuotas = await _context.ReciboCuotas.Where(c => propiedades.Contains(c.IdPropiedad)).ToListAsync();
+                    var recibosConCodigoPropiedad = from recibo in _context.ReciboCuotas
+                                                    join propiedad in _context.Propiedads
+                                                    on recibo.IdPropiedad equals propiedad.IdPropiedad
+                                                    where propiedades.Contains(recibo.IdPropiedad) 
+                                                    select new ReciboCuotaVM
+                                                    {
+                                                        Codigo = propiedad.Codigo,
+                                                        ReciboCuota = recibo
+                                                    };
+                    List<ReciboCuotaVM> listaRecibosDelAdmin = recibosConCodigoPropiedad.ToList();
+                    //var listaRecibosCuotas = await _context.ReciboCuotas.Where(c => propiedades.Contains(c.IdPropiedad)).ToListAsync();
 
                         TempData.Keep();
 
-                        return View(listaRecibosCuotas);
+                        return View(listaRecibosDelAdmin);
                     }
                 
                 var modeloError = new ErrorViewModel()

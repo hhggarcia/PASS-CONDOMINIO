@@ -49,8 +49,12 @@
                                 <div class="col-6">
                                     <dt>Monto Total</dt>
                                     <dd>@string.Format("{0:N2}", Model.CuotasEspeciale.MontoTotal) @Model.CuotasEspeciale.SimboloMoneda </dd>
+                                </div>   
+                                <div class="col-6">
+                                    <dt>Monto Total en Dolares</dt>
+                                    <dd>@string.Format("{0:N2}", Model.CuotasEspeciale.MontoTotal / Model.CuotasEspeciale.ValorDolar) $</dd>
                                 </div> 
-                                <div class="col-12">
+                                <div class="col-6">
                                     <dt>Estatus</dt>
                                     @if(Model.CuotasEspeciale.Activa == true)
                                     {

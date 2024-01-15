@@ -318,15 +318,12 @@ namespace Prueba.Controllers
                 var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
                 _context.RemoveRange(recibos);
 
+                var pagoCuotas = await _context.PagosCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                //var pagosRecibidos = await _context.PagosCuotasRecibidos.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                _context.RemoveRange(pagoCuotas);
 
-                 var pagoRecibido = await _context.PagoReciboCuota.Where(c => c.IdCuota == id).ToListAsync();
-                 _context.RemoveRange(pagoRecibido);
 
-                 var pagosRecibidos = await _context.PagosCuotasRecibidos.Where(c => c.IdCuotaEspecial == id).ToListAsync();
-                 _context.RemoveRange(pagosRecibidos); 
-                
-
-                 await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
                
             }
@@ -346,14 +343,17 @@ namespace Prueba.Controllers
             try
             {
               var recibosDelAdmin = from recibo in _context.ReciboCuotas
-                                      join cuota in _context.CuotasEspeciales
-                                      on recibo.IdCuotaEspecial equals cuota.IdCuotaEspecial
-                                      where cuota.IdCuotaEspecial == recibo.IdCuotaEspecial
-                                      select new ReciboCuotaVM
+                                    join cuota in _context.CuotasEspeciales
+                                        on recibo.IdCuotaEspecial equals cuota.IdCuotaEspecial
+                                    join propiedad in _context.Propiedads
+                                        on recibo.IdPropiedad equals propiedad.IdPropiedad
+                                    where cuota.IdCuotaEspecial == recibo.IdCuotaEspecial
+                                    select new ReciboCuotaVM
                                       {
                                           Nombre = cuota.Descripcion,
+                                          Codigo= propiedad.Codigo,
                                           ReciboCuota = recibo
-                                      }; ;
+                                      }; 
                 List<ReciboCuotaVM> listaRecibosDelAdmin = recibosDelAdmin.ToList();
                 return View(listaRecibosDelAdmin);
             }

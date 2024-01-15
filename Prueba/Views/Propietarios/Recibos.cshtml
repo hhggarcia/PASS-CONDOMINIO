@@ -73,8 +73,8 @@
                                                 <tr class="tr_s">
                                                     <th>@item.Key.Codigo</th>
                                                     <td>@recibo.Fecha.ToString("dd/MM/yyyy")</td>
-                                                    <td>@recibo.Monto.ToString("N")</td>
-                                                    <td>@recibo.Abonado.ToString("N")</td>
+                                                    <td>@recibo.Monto.ToString("N") @recibo.SimboloRef</td>
+                                                    <td>@recibo.Abonado.ToString("N") @recibo.SimboloRef</td>
                                                     <td>@recibo.IdRgastos</td>
                                                     @if (@recibo.EnProceso)
                                                     {
