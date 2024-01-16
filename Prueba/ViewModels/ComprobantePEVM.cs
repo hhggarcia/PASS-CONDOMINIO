@@ -10,6 +10,7 @@ namespace Prueba.ViewModels
         public FormaPago Pagoforma { get; set; }
         public SubCuenta? Gasto { get; set; }
         public int NumReferencia { get; set; }
+        public decimal ValorDolar { get; set; }
         public SubCuenta? Banco { get; set; }
         public SubCuenta? Caja { get; set; }
         public string Mensaje { get; set; } = string.Empty;

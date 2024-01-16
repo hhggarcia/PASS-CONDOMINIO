@@ -378,10 +378,11 @@ namespace Prueba.Controllers
                         comprobante.Pago.MontoRef = modelo.MontoRef;
                         comprobante.Pago.SimboloRef = modelo.SimboloRef;
                         comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
-
-
+                        foreach(var item in condominio.MonedaConds)
+                        {
+                            comprobante.ValorDolar = item.ValorDolar;
+                        }
                         TempData.Keep();
-
                         return View("Comprobante", comprobante);
                     }
 
@@ -418,15 +419,6 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-        }
-        [HttpPost]
-        public IActionResult ComprobantePdf2(ComprobantePEVM comprobante)
-        {
-            if (comprobante.Condominio.Nombre != null)
-            {
-
-            }
-            return Json(new { mensaje = "Operación exitosa" });
         }
         //[ValidateAntiForgeryToken]
         //public IActionResult ComprobantePdf(ComprobantePEVM comprobante)
