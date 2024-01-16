@@ -182,7 +182,7 @@ namespace Prueba.Controllers
                 var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
-                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
+                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPago).ToListAsync();
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
