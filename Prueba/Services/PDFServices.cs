@@ -33,10 +33,10 @@ namespace Prueba.Services
     public class PDFServices: IPDFServices
     {
         private readonly IWebHostEnvironment _host;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public PDFServices(IWebHostEnvironment host,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _host = host;
             _context = context; 
@@ -506,7 +506,7 @@ namespace Prueba.Services
                                         {
                                             totalCuotasSubCuotas += (decimal)cuotas.ReciboCuota.SubCuotas;
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(cuotas.ReciboCuota.SubCuotas?.ToString("N2") + " Bs.").FontSize(8);
+                                            .Padding(5).Text(cuotas.ReciboCuota.SubCuotas.ToString("N2") + " Bs.").FontSize(8);
                                         }
                                         else
                                         {

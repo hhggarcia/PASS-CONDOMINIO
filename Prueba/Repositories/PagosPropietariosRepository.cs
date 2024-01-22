@@ -8,9 +8,9 @@ namespace Prueba.Repositories
     }
     public class PagosPropietariosRepository: IPagosPropietariosRepository
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public PagosPropietariosRepository(PruebaContext context)
+        public PagosPropietariosRepository(NuevaAppContext context)
         {
             _context = context;
         }

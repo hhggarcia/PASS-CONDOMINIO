@@ -12,9 +12,9 @@ namespace Prueba.Controllers
 {
     public class AreaComunsController : Controller
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public AreaComunsController(PruebaContext context)
+        public AreaComunsController(NuevaAppContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace Prueba.Controllers
         // GET: AreaComuns
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.AreaComuns.Include(a => a.IdInmuebleNavigation);
-            return View(await pruebaContext.ToListAsync());
+            var NuevaAppContext = _context.AreaComuns.Include(a => a.IdInmuebleNavigation);
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: AreaComuns/Details/5
@@ -148,7 +148,7 @@ namespace Prueba.Controllers
         {
             if (_context.AreaComuns == null)
             {
-                return Problem("Entity set 'PruebaContext.AreaComuns'  is null.");
+                return Problem("Entity set 'NuevaAppContext.AreaComuns'  is null.");
             }
             var areaComun = await _context.AreaComuns.FindAsync(id);
             if (areaComun != null)

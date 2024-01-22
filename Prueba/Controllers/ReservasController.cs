@@ -12,9 +12,9 @@ namespace Prueba.Controllers
 {
     public class ReservasController : Controller
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public ReservasController(PruebaContext context)
+        public ReservasController(NuevaAppContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace Prueba.Controllers
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.Reservas.Include(r => r.IdAreaNavigation).Include(r => r.IdPropiedadNavigation);
-            return View(await pruebaContext.ToListAsync());
+            var NuevaAppContext = _context.Reservas.Include(r => r.IdAreaNavigation).Include(r => r.IdPropiedadNavigation);
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: Reservas/Details/5
@@ -154,7 +154,7 @@ namespace Prueba.Controllers
         {
             if (_context.Reservas == null)
             {
-                return Problem("Entity set 'PruebaContext.Reservas'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Reservas'  is null.");
             }
             var reserva = await _context.Reservas.FindAsync(id);
             if (reserva != null)

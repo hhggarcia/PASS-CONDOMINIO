@@ -16,9 +16,9 @@ namespace Prueba.Controllers
 
     public class CondominiosController : Controller
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public CondominiosController(PruebaContext context)
+        public CondominiosController(NuevaAppContext context)
         {
             _context = context;
         }
@@ -26,8 +26,8 @@ namespace Prueba.Controllers
         // GET: Condominios
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.Condominios.Include(c => c.IdAdministradorNavigation);
-            return View(await pruebaContext.ToListAsync());
+            var NuevaAppContext = _context.Condominios.Include(c => c.IdAdministradorNavigation);
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: Condominios/Details/5
@@ -152,7 +152,7 @@ namespace Prueba.Controllers
         {
             if (_context.Condominios == null)
             {
-                return Problem("Entity set 'PruebaContext.Condominios'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Condominios'  is null.");
             }
             var condominio = await _context.Condominios.FindAsync(id);
             if (condominio != null)

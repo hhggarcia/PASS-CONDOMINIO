@@ -30,7 +30,7 @@ namespace Prueba.Controllers
         private readonly IManageExcel _manageExcel;
         private readonly IReportesRepository _repoReportes;
         private readonly IRelacionGastoRepository _repoRelacionGasto;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         /// <summary>
         /// 
@@ -51,7 +51,7 @@ namespace Prueba.Controllers
             IManageExcel manageExcel,
             IReportesRepository repoReportes,
             IRelacionGastoRepository repoRelacionGasto,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -182,7 +182,7 @@ namespace Prueba.Controllers
                 var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
-                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPago).ToListAsync();
+                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
@@ -421,7 +421,7 @@ namespace Prueba.Controllers
                         try
                         {
                             // se pago solo el recibo del mes actual
-                            using (var dbContext = new PruebaContext())
+                            using (var dbContext = new NuevaAppContext())
                             {
 
                                 // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
@@ -644,7 +644,7 @@ namespace Prueba.Controllers
                                     IdAsiento = asientoBanco.IdAsiento,
                                 };
 
-                                using (var db_context = new PruebaContext())
+                                using (var db_context = new NuevaAppContext())
                                 {
                                     db_context.Add(ingreso);
                                     db_context.Add(activo);

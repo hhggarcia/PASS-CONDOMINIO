@@ -29,7 +29,7 @@ namespace Prueba.Controllers
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPDFServices _servicePDF;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public RelacionGastosController(IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
@@ -38,7 +38,7 @@ namespace Prueba.Controllers
             IRelacionGastoRepository repoRelacionGastos,
             IMonedaRepository repoMoneda,
             IPDFServices PDFService,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _context = context;
             _unitOfWork = unitOfWork;
@@ -55,11 +55,11 @@ namespace Prueba.Controllers
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var pruebaContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
+            var NuevaAppContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
 
             TempData.Keep();
 
-            return View(await pruebaContext.ToListAsync());
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace Prueba.Controllers
         {
             if (_context.RelacionGastos == null)
             {
-                return Problem("Entity set 'PruebaContext.RelacionGastos'  is null.");
+                return Problem("Entity set 'NuevaAppContext.RelacionGastos'  is null.");
             }
             var relacionGasto = await _context.RelacionGastos.FindAsync(id);
             if (relacionGasto != null)
@@ -319,7 +319,7 @@ namespace Prueba.Controllers
                         SimboloRef = "$"
                     };
 
-                    using (var db_context = new PruebaContext())
+                    using (var db_context = new NuevaAppContext())
                     {
                         await db_context.AddAsync(relacionGasto);
                         await db_context.SaveChangesAsync();
@@ -408,7 +408,7 @@ namespace Prueba.Controllers
                         // REGISTRAR EN BD LOS RECIBOS DE COBRO PARA CADA PROPIEDAD
                         //  Y EDITAR LAS PROPIEDADES
 
-                        using (var db_context = new PruebaContext())
+                        using (var db_context = new NuevaAppContext())
                         {
                             foreach (var item in recibosCobroCond)
                             {

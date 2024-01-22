@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Prueba.Models;
 
@@ -8,13 +7,9 @@ public partial class Moneda
 {
     public int IdMoneda { get; set; }
 
-    [StringLength(maximumLength: 50, ErrorMessage = "El nombre no puede pasar de {1} caracteres")]
-    [Required]
-    public string Nombre { get; set; } = string.Empty;
+    public string Nombre { get; set; } = null!;
 
-    [StringLength(maximumLength: 50, ErrorMessage = "El país no puede pasar de {1} caracteres")]
-    [Required]
-    public string Pais { get; set; } = string.Empty;
+    public string Pais { get; set; } = null!;
 
     public virtual ICollection<MonedaCond> MonedaConds { get; } = new List<MonedaCond>();
 }

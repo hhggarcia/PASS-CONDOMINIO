@@ -21,10 +21,10 @@ namespace Prueba.Repositories
     public class CuentasContablesRepository : ICuentasContablesRepository
     {
         private readonly IMonedaRepository _repoMoneda;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public CuentasContablesRepository(IMonedaRepository repoMoneda,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoMoneda = repoMoneda;
             _context = context;
@@ -40,7 +40,7 @@ namespace Prueba.Repositories
             var cuentasContables = await _context.CodigoCuentasGlobals
                 .Where(c => c.IdCondominio == id)
                 .Include(c => c.IdCodigoNavigation)
-                .Include(c => c.IdCondominioNavigation)
+                //.Include(c => c.IdCondominioNavigation)
                 .ToListAsync();
 
             return cuentasContables;
@@ -205,7 +205,7 @@ namespace Prueba.Repositories
                     ValorDolar = monedaPrincipal.First().ValorDolar
 
                 };
-                using (var db_context = new PruebaContext())
+                using (var db_context = new NuevaAppContext())
                 {
                     await db_context.AddAsync(provision);
                     await db_context.AddAsync(asientoGastoProvisionado);

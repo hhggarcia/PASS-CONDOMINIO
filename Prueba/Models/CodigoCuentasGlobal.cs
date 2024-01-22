@@ -11,11 +11,11 @@ public partial class CodigoCuentasGlobal
 
     public int IdCodigo { get; set; }
 
+    public virtual ICollection<CuentasCondominio> CuentasCondominios { get; } = new List<CuentasCondominio>();
+
     public virtual ICollection<Fondo> Fondos { get; } = new List<Fondo>();
 
     public virtual SubCuenta IdCodigoNavigation { get; set; } = null!;
-
-    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; } = new List<LdiarioGlobal>();
 

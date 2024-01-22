@@ -23,11 +23,11 @@
                                 </div>
                                 <div class="col-6">
                                     <dt>Fecha de creación de la cuota</dt>
-                                    <dd> @Model.cuotasEspeciale.FechaInicio?.ToString("dd/MM/yyyy")</dd>
+                                    <dd> @Model.cuotasEspeciale.FechaInicio.ToString("dd/MM/yyyy")</dd>
                                 </div>
                                 <div class="col-6">
                                     <dt>Fecha tope de pago</dt>
-                                    <dd>@Model.cuotasEspeciale.FechaFin?.ToString("dd/MM/yyyy") </dd>
+                                    <dd>@Model.cuotasEspeciale.FechaFin.ToString("dd/MM/yyyy") </dd>
                                 </div>
                                 <div class="col-6">
                                     <dt>Cantidad de Cuotas</dt>
@@ -43,11 +43,11 @@
                                 </div>
                                  <div class="col-6">
                                     <dt>Abonado</dt>
-                                    <dd>@Model.reciboCuota.Abonado?.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
+                                    <dd>@Model.reciboCuota.Abonado.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
                                 </div> 
                                 <div class="col-6">
                                     <dt>Deuda</dt>
-                                    <dd>@Model.reciboCuota.SubCuotas?.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
+                                    <dd>@Model.reciboCuota.SubCuotas.ToString("N2") @Model.reciboCuota.SimboloMoneda</dd>
                                 </div>
                                 <div class="col-6">
                                     <dt>Monto mensual</dt>

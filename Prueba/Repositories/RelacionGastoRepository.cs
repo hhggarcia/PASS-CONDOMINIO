@@ -20,11 +20,11 @@ namespace Prueba.Repositories
     {
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public RelacionGastoRepository(ICuentasContablesRepository repoCuentas,
             IMonedaRepository repoMoneda,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
             _repoMoneda = repoMoneda;

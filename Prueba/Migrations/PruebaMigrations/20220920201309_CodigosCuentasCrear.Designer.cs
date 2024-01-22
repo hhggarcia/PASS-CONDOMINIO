@@ -11,7 +11,7 @@ using Prueba.Context;
 
 namespace Prueba.Migrations.PruebaMigrations
 {
-    [DbContext(typeof(PruebaContext))]
+    [DbContext(typeof(NuevaAppContext))]
     [Migration("20220920201309_CodigosCuentasCrear")]
     partial class CodigosCuentasCrear
     {

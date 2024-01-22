@@ -20,12 +20,12 @@ namespace Prueba.Controllers
     public class LdiarioGlobalsController : Controller
     {
         private readonly ILibroDiarioRepository _repoLibroDiario;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
         private readonly IPDFServices _servicePDF;
 
         public LdiarioGlobalsController(ILibroDiarioRepository repoLibroDiario,
           IPDFServices PDFService,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoLibroDiario = repoLibroDiario;
             _servicePDF = PDFService;
@@ -35,8 +35,8 @@ namespace Prueba.Controllers
         // GET: LdiarioGlobals
         //public async Task<IActionResult> Index()
         //{
-        //    var pruebaContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
-        //    return View(await pruebaContext.ToListAsync());
+        //    var NuevaAppContext = _context.LdiarioGlobals.Include(l => l.IdCodCuentaNavigation);
+        //    return View(await NuevaAppContext.ToListAsync());
         //}
 
         // GET: LdiarioGlobals/Details/5
@@ -165,7 +165,7 @@ namespace Prueba.Controllers
         {
             if (_context.LdiarioGlobals == null)
             {
-                return Problem("Entity set 'PruebaContext.LdiarioGlobals'  is null.");
+                return Problem("Entity set 'NuevaAppContext.LdiarioGlobals'  is null.");
             }
 
             var result = await _repoLibroDiario.Eliminar(id);

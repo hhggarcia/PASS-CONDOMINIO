@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
             errorNumbersToAdd: null);
     }
     ));
-builder.Services.AddDbContext<PruebaContext>(options =>
+builder.Services.AddDbContext<NuevaAppContext>(options =>
     options.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOptions =>
     {
         sqlOptions.EnableRetryOnFailure(

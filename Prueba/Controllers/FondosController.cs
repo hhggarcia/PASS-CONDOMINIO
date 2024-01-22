@@ -16,10 +16,10 @@ namespace Prueba.Controllers
     public class FondosController : Controller
     {
         private readonly ICuentasContablesRepository _repoCuentas;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public FondosController(ICuentasContablesRepository repoCuentas,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
             _context = context;
@@ -28,8 +28,8 @@ namespace Prueba.Controllers
         // GET: Fondos
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.Fondos.Include(f => f.IdCodCuentaNavigation);
-            return View(await pruebaContext.ToListAsync());
+            var NuevaAppContext = _context.Fondos.Include(f => f.IdCodCuentaNavigation);
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: Fondos/Details/5
@@ -215,7 +215,7 @@ namespace Prueba.Controllers
         {
             if (_context.Fondos == null)
             {
-                return Problem("Entity set 'PruebaContext.Fondos'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Fondos'  is null.");
             }
             var fondo = await _context.Fondos.FindAsync(id);
             if (fondo != null)

@@ -56,8 +56,8 @@
                                                 <td>No</td>
                                             }
                                             <td>@string.Format("{0:N2}", item.MontoTotal) @item.SimboloMoneda</td>
-                                            <td>@item.ValorDolar?.ToString("N2") @item.SimboloMoneda</td>
-                                            <td>@((item.MontoTotal / item.ValorDolar)?.ToString("N2")) $</td>
+                                            <td>@item.ValorDolar.ToString("N2") @item.SimboloMoneda</td>
+                                            <td>@((item.MontoTotal / item.ValorDolar).ToString("N2")) $</td>
                                             <td>
                                                 <a asp-action="Editar" asp-route-id="@item.IdCuotaEspecial">Editar</a> |
                                                 <a asp-action="Detalles" asp-route-id="@item.IdCuotaEspecial">Detalles</a> |

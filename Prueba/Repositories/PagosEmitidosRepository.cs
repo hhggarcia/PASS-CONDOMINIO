@@ -21,11 +21,11 @@ namespace Prueba.Repositories
     {
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public PagosEmitidosRepository(ICuentasContablesRepository repoCuentas,
             IMonedaRepository repoMoneda,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
             _repoMoneda = repoMoneda;
@@ -197,7 +197,7 @@ namespace Prueba.Repositories
                     pago.MontoRef = montoReferencia;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                    using (var _dbContext = new PruebaContext())
+                    using (var _dbContext = new NuevaAppContext())
                     {
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
@@ -248,7 +248,7 @@ namespace Prueba.Repositories
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
@@ -272,7 +272,7 @@ namespace Prueba.Repositories
                         //    IdAsiento = asientoProvisionGasto.IdAsiento
                         //};
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
@@ -312,7 +312,7 @@ namespace Prueba.Repositories
 
                         };
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoCaja);
@@ -330,7 +330,7 @@ namespace Prueba.Repositories
                             IdAsiento = asientoCaja.IdAsiento
                         };
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
@@ -395,7 +395,7 @@ namespace Prueba.Repositories
                     pago.MontoRef = montoReferencia;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                    using (var _dbContext = new PruebaContext())
+                    using (var _dbContext = new NuevaAppContext())
                     {
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
@@ -409,7 +409,7 @@ namespace Prueba.Repositories
                         Banco = modelo.IdCodigoCuentaBanco.ToString()
                     };
 
-                    using (var _dbContext = new PruebaContext())
+                    using (var _dbContext = new NuevaAppContext())
                     {
                         _dbContext.Add(referencia);
                         _dbContext.SaveChanges();
@@ -458,7 +458,7 @@ namespace Prueba.Repositories
                             SimboloRef = monedaPrincipal.First().Simbolo
 
                         };
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
@@ -482,7 +482,7 @@ namespace Prueba.Repositories
                         //    IdAsiento = asientoProvisionGasto.IdAsiento
                         //};
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
@@ -526,7 +526,7 @@ namespace Prueba.Repositories
 
                         };
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoBanco);
@@ -544,7 +544,7 @@ namespace Prueba.Repositories
                             IdAsiento = asientoBanco.IdAsiento
                         };
 
-                        using (var _dbContext = new PruebaContext())
+                        using (var _dbContext = new NuevaAppContext())
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);

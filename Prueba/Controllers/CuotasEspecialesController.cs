@@ -36,13 +36,13 @@ namespace Prueba.Controllers
         private readonly IReportesRepository _repoReportes;
         private readonly IRelacionGastoRepository _repoRelacionGasto;
         private readonly IMonedaRepository _repoMoneda;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public CuotasEspecialesController(IUnitOfWork unitOfWork, SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail, IPDFServices servicePDF, IManageExcel manageExcel,
             IReportesRepository repoReportes, IRelacionGastoRepository repoRelacionGasto,
-             IMonedaRepository repoMoneda, PruebaContext context)
+             IMonedaRepository repoMoneda, NuevaAppContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -140,7 +140,7 @@ namespace Prueba.Controllers
                     modelo.ValorDolar = monedaPrincipal.First().ValorDolar;
                     modelo.SimboloMoneda = monedaPrincipal.First().Simbolo;
                     modelo.SimboloRef = "$";
-                    using (var dbContext = new PruebaContext())
+                    using (var dbContext = new NuevaAppContext())
                     {
                         await dbContext.AddAsync(modelo);
                         await dbContext.SaveChangesAsync();
@@ -250,7 +250,7 @@ namespace Prueba.Controllers
                     _context.Update(modelo);
                     _context.SaveChanges();
           
-                    using (var dbContext = new PruebaContext())
+                    using (var dbContext = new NuevaAppContext())
                     {
                         foreach (var c in listaRecibos)
                         {
@@ -307,23 +307,66 @@ namespace Prueba.Controllers
                 {
                     return NotFound();
                 }
-                var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(id);
-                if (cuotaEspecial == null)
+                
+
+                using (_context)
                 {
-                    return NotFound();
+                    var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(id);
+                    if (cuotaEspecial == null)
+                    {
+                        return NotFound();
+                    }
+                    // buscar recibos cuotas
+
+                    var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+
+                    // ver si hay pagos realizados
+
+                    foreach (var recibo in recibos)
+                    {
+                        var pagosCuotas = await _context.PagosCuotas.Where(c => c.IdReciboCuota == recibo.IdReciboCuotas).ToListAsync();
+                        // si es asi -> eliminar pagos, eliminar recibos y eliminar PagosCuotas
+
+                        if (pagosCuotas.Count > 0)
+                        {
+                            foreach (var relacion in pagosCuotas)
+                            {
+                                var pago = await _context.PagoRecibidos.FindAsync(relacion.IdPagoRecibido);
+                                if (pago == null)
+                                {
+                                    return NotFound();
+                                }
+
+                                // verificar si es una transferencia
+
+                                //if (pago.FormaPago = FormaPago.Transferencia)
+                                //{
+                                    
+                                //}
+
+                                _context.Remove(pago);
+                            }
+                        }
+
+                        // eliminar recibo
+                        _context.Remove(recibo);
+                        _context.RemoveRange(pagosCuotas);
+
+                    }
+
+                    _context.Remove(cuotaEspecial);
+
+                    //var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                    //_context.RemoveRange(recibos);
+
+                    //var pagoCuotas = await _context.PagosCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                    //var pagosRecibidos = await _context.PagosCuotasRecibidos.Where(c => c.IdCuotaEspecial == id).ToListAsync();
+                    //_context.RemoveRange(pagoCuotas);
+
+
+                    await _context.SaveChangesAsync();
                 }
-
-                _context.Remove(cuotaEspecial);
-
-                var recibos = await _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
-                _context.RemoveRange(recibos);
-
-                var pagoCuotas = await _context.PagosCuotas.Where(c => c.IdCuotaEspecial == id).ToListAsync();
-                //var pagosRecibidos = await _context.PagosCuotasRecibidos.Where(c => c.IdCuotaEspecial == id).ToListAsync();
-                _context.RemoveRange(pagoCuotas);
-
-
-                await _context.SaveChangesAsync();
+                
                 return RedirectToAction(nameof(Index));
                
             }
@@ -384,9 +427,10 @@ namespace Prueba.Controllers
                                      NombreCompleto = a.FirstName + ' ' + a.LastName,
                                      Codigo = p.Codigo
                                  }).ToList();
-                var idPagosCuotas = await _context.PagosCuotas.Select(c=>c.IdPago).ToListAsync();
-                var relacionPagosRecibidosCuotas= await _context.PagosCuotas.ToListAsync();
-                var pagoRecibos = await _context.PagoRecibidos.Where(c=> idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
+
+                var idPagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
+                var relacionPagosRecibidosCuotas = await _context.PagosCuotas.ToListAsync();
+                var pagoRecibos = await _context.PagoRecibidos.Where(c => idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
                 //var pagoRecibosCuotas = await _context.PagoReciboCuota.ToListAsync();
 
                 var cuotasEspeciales = await _context.CuotasEspeciales.ToListAsync();
@@ -397,7 +441,7 @@ namespace Prueba.Controllers
                     {
                         foreach (var relacion in relacionPagosRecibidosCuotas)
                         {
-                            if(pago.IdPagoRecibido == relacion.IdPago && cuota.IdCuotaEspecial == relacion.IdCuotaEspecial)
+                            if(pago.IdPagoRecibido == relacion.IdPagoRecibido)
                             {
                                 foreach (var usuario in resultado)
                                 {
@@ -486,11 +530,18 @@ namespace Prueba.Controllers
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
                 var pago = await _context.PagoRecibidos.FindAsync(id);
-                var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdPago == pago.IdPagoRecibido).FirstAsync();
-                var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(relacionPagosCuotas.IdCuotaEspecial);
                 if (pago != null)
                 {
-                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosCuotas.IdRecibido);
+                    var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).FirstAsync();
+
+                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosCuotas.IdReciboCuota);
+                    if (reciboActual == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var cuotaEspecial = await _context.CuotasEspeciales.FindAsync(reciboActual.IdCuotaEspecial);
+
                     // buscar subcuenta contable donde esta el pago del condominio
                     var cuentaCondominio = from s in _context.SubCuenta
                                            join cc in _context.CodigoCuentasGlobals
@@ -519,7 +570,7 @@ namespace Prueba.Controllers
                     try
                     {
                         // se pago solo el recibo de la cuota del mes actual
-                        using (var dbContext = new PruebaContext())
+                        using (var dbContext = new NuevaAppContext())
                         {
                             var pagoMensual = cuotaEspecial.SubCuotas / (reciboActual.CuotasFaltantes + reciboActual.CuotasPagadas);
                             // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
@@ -614,7 +665,7 @@ namespace Prueba.Controllers
                                 IdAsiento = asientoBanco.IdAsiento,
                             };
 
-                            using (var db_context = new PruebaContext())
+                            using (var db_context = new NuevaAppContext())
                             {
                                 db_context.Add(ingreso);
                                 db_context.Add(activo);
@@ -680,11 +731,12 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    var relacionPagosRecibos = await _context.PagosCuotas.Where(c=>c.IdPago == pago.IdPagoRecibido).FirstAsync();
-                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosRecibos.IdRecibido);
-                    reciboActual.Abonado = reciboActual.Abonado- pago.MontoRef;
+                    var relacionPagosRecibos = await _context.PagosCuotas.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).FirstAsync();
+                    var reciboActual = await _context.ReciboCuotas.FindAsync(relacionPagosRecibos.IdReciboCuota);
                     if (reciboActual == null)
                     {
+                        reciboActual.Abonado = reciboActual.Abonado - pago.MontoRef;
+
                         _context.PagoRecibidos.Remove(pago);
                         await _context.SaveChangesAsync();
 
@@ -696,7 +748,7 @@ namespace Prueba.Controllers
                         return View("Error", modeloError);
                     }
 
-                     if ((bool)pago.FormaPago)
+                     if (pago.FormaPago)
                         {
                             var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
                             _context.ReferenciasPrs.RemoveRange(referencia);
@@ -704,7 +756,7 @@ namespace Prueba.Controllers
                      }else{
                            _context.PagoRecibidos.Remove(pago);
                      }
-                    var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdRecibido == reciboActual.IdReciboCuotas).FirstAsync();
+                    var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdReciboCuota == reciboActual.IdReciboCuotas).FirstAsync();
                     _context.RemoveRange(relacionPagosCuotas);
                     var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
                     reciboActual.EnProceso = false;

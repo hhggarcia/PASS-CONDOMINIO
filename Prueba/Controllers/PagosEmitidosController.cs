@@ -25,12 +25,12 @@ namespace Prueba.Controllers
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly IPDFServices _servicePDF;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public PagosEmitidosController(IMonedaRepository repoMoneda,
             IPagosEmitidosRepository repoPagosEmitidos,
             IPDFServices servicePDF,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoMoneda = repoMoneda;
             _repoPagosEmitidos = repoPagosEmitidos;
@@ -41,8 +41,8 @@ namespace Prueba.Controllers
         // GET: PagosEmitidos
         //public async Task<IActionResult> Index()
         //{
-        //    var pruebaContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation);
-        //    return View(await pruebaContext.ToListAsync());
+        //    var NuevaAppContext = _context.PagoEmitidos.Include(p => p.IdCondominioNavigation);
+        //    return View(await NuevaAppContext.ToListAsync());
         //}
 
         public async Task<IActionResult> Index()
@@ -240,7 +240,7 @@ namespace Prueba.Controllers
             {
                 if (_context.PagoEmitidos == null)
                 {
-                    return Problem("Entity set 'PruebaContext.PagoEmitidos'  is null.");
+                    return Problem("Entity set 'NuevaAppContext.PagoEmitidos'  is null.");
                 }
                 var result = await _repoPagosEmitidos.Delete(id);
 

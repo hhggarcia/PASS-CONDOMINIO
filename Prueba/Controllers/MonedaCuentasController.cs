@@ -19,10 +19,10 @@ namespace Prueba.Controllers
     public class MonedaCuentasController : Controller
     {
         private readonly ICuentasContablesRepository _repoCuentas;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public MonedaCuentasController(ICuentasContablesRepository repoCuentas,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
             _context = context;
@@ -37,7 +37,7 @@ namespace Prueba.Controllers
             var codigos = await _repoCuentas.ObtenerCuentasCond(idCondominio);
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
             
-            var pruebaContext = from mc in aux
+            var NuevaAppContext = from mc in aux
                                 join cc in _context.CodigoCuentasGlobals
                                 on mc.IdCodCuenta equals cc.IdCodCuenta
                                 where cc.IdCondominio == idCondominio
@@ -45,7 +45,7 @@ namespace Prueba.Controllers
 
             var modelo = new MonedaCuentasVM()
             {
-                MonedaCuentas = await pruebaContext.ToListAsync(),
+                MonedaCuentas = await NuevaAppContext.ToListAsync(),
                 SubCuentas = subcuentas,
                 Codigos = codigos
             };
@@ -266,7 +266,7 @@ namespace Prueba.Controllers
             {
                 if (_context.MonedaCuenta == null)
                 {
-                    return Problem("Entity set 'PruebaContext.MonedaCuenta'  is null.");
+                    return Problem("Entity set 'NuevaAppContext.MonedaCuenta'  is null.");
                 }
                 var monedaCuenta = await _context.MonedaCuenta.FindAsync(id);
                 if (monedaCuenta != null)

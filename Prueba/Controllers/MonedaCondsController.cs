@@ -18,10 +18,10 @@ namespace Prueba.Controllers
     public class MonedaCondsController : Controller
     {
         private readonly IMonedaRepository _repoMoneda;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public MonedaCondsController(IMonedaRepository repoMoneda,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoMoneda = repoMoneda;
             _context = context;
@@ -32,14 +32,14 @@ namespace Prueba.Controllers
         {
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var pruebaContext = _context.MonedaConds
+            var NuevaAppContext = _context.MonedaConds
                 .Where(m => m.IdCondominio == idCondominio)
                 .Include(m => m.IdCondominioNavigation)
                 .Include(m => m.IdMonedaNavigation);
 
             TempData.Keep();
 
-            return View(await pruebaContext.ToListAsync());
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: MonedaConds/Details/5
@@ -244,7 +244,7 @@ namespace Prueba.Controllers
         {
             if (_context.MonedaConds == null)
             {
-                return Problem("Entity set 'PruebaContext.MonedaConds'  is null.");
+                return Problem("Entity set 'NuevaAppContext.MonedaConds'  is null.");
             }
             var usada = await _context.MonedaCuenta.Where(c => c.IdMoneda == id).ToListAsync();
 

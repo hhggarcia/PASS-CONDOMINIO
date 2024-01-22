@@ -38,7 +38,7 @@ namespace Prueba.Controllers
         private readonly IReportesRepository _repoReportes;
         private readonly IMonedaRepository _repoMoneda;
         private readonly ICuentasContablesRepository _repoCuentas;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
         private readonly IPDFServices _servicePDF;
 
         public PropietariosController(IUnitOfWork unitOfWork,
@@ -52,7 +52,7 @@ namespace Prueba.Controllers
             IMonedaRepository repoMoneda,
             ICuentasContablesRepository repoCuentas, 
             IPDFServices PDFService,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -388,7 +388,7 @@ namespace Prueba.Controllers
                                 }
 
                                 // regitrar en bd el pago
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     dbcontext.PagoRecibidos.Add(pago);
                                     dbcontext.SaveChanges();
@@ -402,7 +402,7 @@ namespace Prueba.Controllers
                                 };
 
                                 // regitrar en bd la referencia del pago
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     dbcontext.ReferenciasPrs.Add(referencia);
                                     dbcontext.SaveChanges();
@@ -413,13 +413,13 @@ namespace Prueba.Controllers
                                 reciboActual.EnProceso = true;
                                 reciboActual.Abonado += montoReferencia;
 
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     dbcontext.ReciboCobros.Update(reciboActual);
                                     dbcontext.SaveChanges();
                                 }
 
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     var relacion = new PagosRecibo
                                     {
@@ -501,7 +501,7 @@ namespace Prueba.Controllers
                                     return View("Comprobante", comprobante);
                                 }
 
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     dbcontext.PagoRecibidos.Add(pago);
                                     dbcontext.SaveChanges();
@@ -511,12 +511,12 @@ namespace Prueba.Controllers
                                 reciboActual.EnProceso = true;
                                 reciboActual.Abonado += montoReferencia;
 
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     dbcontext.ReciboCobros.Update(reciboActual);
                                     dbcontext.SaveChanges();
                                 }
-                                using (var dbcontext = new PruebaContext())
+                                using (var dbcontext = new NuevaAppContext())
                                 {
                                     var relacion = new PagosRecibo
                                     {
@@ -907,7 +907,7 @@ namespace Prueba.Controllers
                             }
 
                             // regitrar en bd el pago
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 dbcontext.PagoRecibidos.Add(pago);
                                 dbcontext.SaveChanges();
@@ -921,7 +921,7 @@ namespace Prueba.Controllers
                             };
 
                             // regitrar en bd la referencia del pago
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 dbcontext.ReferenciasPrs.Add(referencia);
                                 dbcontext.SaveChanges();
@@ -932,13 +932,13 @@ namespace Prueba.Controllers
                             reciboActual.EnProceso = true;
                             reciboActual.Abonado += montoReferencia;
 
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 dbcontext.ReciboCuotas.Update(reciboActual);
                                 dbcontext.SaveChanges();
                             }
 
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 //var relacion = new PagosCuotasRecibido
                                 //{
@@ -946,11 +946,11 @@ namespace Prueba.Controllers
                                 //    IdRecibido = reciboActual.IdReciboCuotas,
                                 //    IdCuotaEspecial = reciboActual.IdCuotaEspecial
                                 //};
-                                var relacion = new PagosCuota
+                                var relacion = new PagosCuotas
                                 {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdRecibido = reciboActual.IdReciboCuotas,
-                                    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                    IdPagoRecibido = pago.IdPagoRecibido,
+                                    IdReciboCuota = reciboActual.IdReciboCuotas,
+                                    //IdCuotaEspecial = reciboActual.IdCuotaEspecial
                                 };
                                 dbcontext.Add(relacion);
                                 await dbcontext.SaveChangesAsync();
@@ -1034,7 +1034,7 @@ namespace Prueba.Controllers
                                 return View("ComprobanteCE", comprobante);
                             }
 
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 dbcontext.PagoRecibidos.Add(pago);
                                 dbcontext.SaveChanges();
@@ -1044,12 +1044,12 @@ namespace Prueba.Controllers
                             reciboActual.EnProceso = true;
                             reciboActual.Abonado += montoReferencia;
 
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 dbcontext.ReciboCuotas.Update(reciboActual);
                                 dbcontext.SaveChanges();
                             }
-                            using (var dbcontext = new PruebaContext())
+                            using (var dbcontext = new NuevaAppContext())
                             {
                                 //var relacion = new PagosCuotasRecibido
                                 //{
@@ -1057,11 +1057,11 @@ namespace Prueba.Controllers
                                 //    IdRecibido = reciboActual.IdReciboCuotas,
                                 //    IdCuotaEspecial = reciboActual.IdCuotaEspecial
                                 //};
-                                var relacion = new PagosCuota
+                                var relacion = new PagosCuotas
                                 {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdRecibido = reciboActual.IdReciboCuotas,
-                                    IdCuotaEspecial = reciboActual.IdCuotaEspecial
+                                    IdPagoRecibido = pago.IdPagoRecibido,
+                                    IdReciboCuota = reciboActual.IdReciboCuotas,
+                                    //IdCuotaEspecial = reciboActual.IdCuotaEspecial
                                 };
 
                                 dbcontext.Add(relacion);

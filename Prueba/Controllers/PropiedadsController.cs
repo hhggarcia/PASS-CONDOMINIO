@@ -16,9 +16,9 @@ namespace Prueba.Controllers
 
     public class PropiedadsController : Controller
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public PropiedadsController(PruebaContext context)
+        public PropiedadsController(NuevaAppContext context)
         {
             _context = context;
         }
@@ -26,8 +26,8 @@ namespace Prueba.Controllers
         // GET: Propiedads
         public async Task<IActionResult> Index()
         {
-            var pruebaContext = _context.Propiedads.Include(p => p.IdInmuebleNavigation).Include(p => p.IdUsuarioNavigation);
-            return View(await pruebaContext.OrderBy(c => c.IdUsuarioNavigation.Email).ToListAsync());
+            var NuevaAppContext = _context.Propiedads.Include(p => p.IdInmuebleNavigation).Include(p => p.IdUsuarioNavigation);
+            return View(await NuevaAppContext.OrderBy(c => c.IdUsuarioNavigation.Email).ToListAsync());
         }
 
         // GET: Propiedads/Details/5
@@ -158,7 +158,7 @@ namespace Prueba.Controllers
         {
             if (_context.Propiedads == null)
             {
-                return Problem("Entity set 'PruebaContext.Propiedads'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Propiedads'  is null.");
             }
             var propiedad = await _context.Propiedads.FindAsync(id);
             if (propiedad != null)

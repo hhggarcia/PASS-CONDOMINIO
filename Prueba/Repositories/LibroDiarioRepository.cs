@@ -15,9 +15,9 @@ namespace Prueba.Repositories
     }
     public class LibroDiarioRepository : ILibroDiarioRepository
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public LibroDiarioRepository(PruebaContext context)
+        public LibroDiarioRepository(NuevaAppContext context)
         {
             _context = context;
         }

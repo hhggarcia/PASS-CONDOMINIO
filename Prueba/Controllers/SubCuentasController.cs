@@ -18,10 +18,10 @@ namespace Prueba.Controllers
     public class SubCuentasController : Controller
     {
         private readonly ICuentasContablesRepository _repoCuentasContables;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public SubCuentasController(ICuentasContablesRepository repoCuentasContables,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentasContables = repoCuentasContables;
             _context = context;
@@ -30,8 +30,8 @@ namespace Prueba.Controllers
         // GET: SubCuentas
         //public async Task<IActionResult> Index()
         //{
-        //    var pruebaContext = _context.SubCuenta.Include(s => s.IdCuentaNavigation);
-        //    return View(await pruebaContext.ToListAsync());
+        //    var NuevaAppContext = _context.SubCuenta.Include(s => s.IdCuentaNavigation);
+        //    return View(await NuevaAppContext.ToListAsync());
         //}
 
         // GET: SubCuentas/Details/5
@@ -59,7 +59,7 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var subcuentas = _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == idCondominio);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (subcuentas != null && subcuentas.Any())
             {
                 var cuentas = from c in _context.SubCuenta
@@ -101,45 +101,45 @@ namespace Prueba.Controllers
         }
 
         // GET: SubCuentas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.SubCuenta == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null || _context.SubCuenta == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var subCuenta = await _context.SubCuenta.FindAsync(id);
-            if (subCuenta == null)
-            {
-                return NotFound();
-            }
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    var subCuenta = await _context.SubCuenta.FindAsync(id);
+        //    if (subCuenta == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var subcuentas = _context.CodigoCuentasGlobals.Include(e => e.IdCondominioNavigation)
-                .Where(c => c.IdCondominio == idCondominio);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
-            if (subcuentas != null && subcuentas.Any())
-            {
-                var cuentas = from c in _context.SubCuenta
-                              join sc in subcuentas
-                              on c.Id equals sc.IdCodigo
-                              select c;
+        //    var subcuentas = _context.CodigoCuentasGlobals.Include(e => e.IdCondominioNavigation)
+        //        .Where(c => c.IdCondominio == idCondominio);
+        //    //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+        //    if (subcuentas != null && subcuentas.Any())
+        //    {
+        //        var cuentas = from c in _context.SubCuenta
+        //                      join sc in subcuentas
+        //                      on c.Id equals sc.IdCodigo
+        //                      select c;
 
-                var modelListCuentas = (from c in _context.Cuenta
-                                        join sc in cuentas
-                                        on c.Id equals sc.IdCuenta
-                                        select c).Distinct();
+        //        var modelListCuentas = (from c in _context.Cuenta
+        //                                join sc in cuentas
+        //                                on c.Id equals sc.IdCuenta
+        //                                select c).Distinct();
 
-                ViewData["IdCuenta"] = new SelectList(modelListCuentas, "Id", "Descripcion", subCuenta.IdCuenta);
-            }
-            else
-            {
-                ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Descripcion", subCuenta.IdCuenta);
-            }
+        //        ViewData["IdCuenta"] = new SelectList(modelListCuentas, "Id", "Descripcion", subCuenta.IdCuenta);
+        //    }
+        //    else
+        //    {
+        //        ViewData["IdCuenta"] = new SelectList(_context.Cuenta, "Id", "Descripcion", subCuenta.IdCuenta);
+        //    }
 
-            TempData.Keep();
-            return View(subCuenta);
-        }
+        //    TempData.Keep();
+        //    return View(subCuenta);
+        //}
 
         // POST: SubCuentas/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -203,7 +203,7 @@ namespace Prueba.Controllers
         {
             if (_context.SubCuenta == null)
             {
-                return Problem("Entity set 'PruebaContext.SubCuenta'  is null.");
+                return Problem("Entity set 'NuevaAppContext.SubCuenta'  is null.");
             }
 
             var result = await _repoCuentasContables.EliminarSubCuenta(id);
@@ -369,7 +369,7 @@ namespace Prueba.Controllers
                     Codigo = modelo.Codigo
                 };
 
-                using (var _dbContext = new PruebaContext())
+                using (var _dbContext = new NuevaAppContext())
                 {
                     _dbContext.Add(nuevaSubCuenta);
                     _dbContext.SaveChanges();
@@ -384,7 +384,7 @@ namespace Prueba.Controllers
                     IdCondominio = idCondominio
                 };
 
-                using (var _dContext = new PruebaContext())
+                using (var _dContext = new NuevaAppContext())
                 {
                     _dContext.Add(nuevoCC);
                     _dContext.SaveChanges();

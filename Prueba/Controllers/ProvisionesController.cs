@@ -20,10 +20,10 @@ namespace Prueba.Controllers
     public class ProvisionesController : Controller
     {
         private readonly ICuentasContablesRepository _repoCuentas;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public ProvisionesController(ICuentasContablesRepository repoCuentas,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
             _context = context;
@@ -33,11 +33,11 @@ namespace Prueba.Controllers
         public async Task<IActionResult> Index()
         {
 
-            var pruebaContext = _context.Provisiones
+            var NuevaAppContext = _context.Provisiones
                 .Include(p => p.IdCodCuentaNavigation)
                 .Include(p => p.IdCodGastoNavigation);
 
-            return View(await pruebaContext.ToListAsync());
+            return View(await NuevaAppContext.ToListAsync());
         }
 
         // GET: Provisiones/Details/5
@@ -276,7 +276,7 @@ namespace Prueba.Controllers
         {
             if (_context.Provisiones == null)
             {
-                return Problem("Entity set 'PruebaContext.Provisiones'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Provisiones'  is null.");
             }
             var provision = await _context.Provisiones.FindAsync(id);
             if (provision != null)

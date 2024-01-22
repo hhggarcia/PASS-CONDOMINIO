@@ -10,8 +10,8 @@ using Prueba.Context;
 
 namespace Prueba.Migrations.PruebaMigrations
 {
-    [DbContext(typeof(PruebaContext))]
-    partial class PruebaContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(NuevaAppContext))]
+    partial class NuevaAppContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

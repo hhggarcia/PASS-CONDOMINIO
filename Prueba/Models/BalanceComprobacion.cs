@@ -14,4 +14,8 @@ public partial class BalanceComprobacion
     public decimal SaldoFinal { get; set; }
 
     public decimal Diferencia { get; set; }
+
+    public int IdCondominio { get; set; }
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 }

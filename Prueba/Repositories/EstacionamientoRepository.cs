@@ -18,9 +18,9 @@ namespace Prueba.Repositories
     }
     public class EstacionamientoRepository: IEstacionamientoRepository
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public EstacionamientoRepository(PruebaContext context)
+        public EstacionamientoRepository(NuevaAppContext context)
         {
             _context = context;
         }

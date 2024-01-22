@@ -46,14 +46,14 @@
                                         <tr class="tr_s">
                                             <td>@item.Codigo</td>
                                             <td>@item.Nombre</td>
-                                            <td>@item.ReciboCuota.SubCuotas?.ToString("N2") Bs.</td>
-                                            <td>@item.ReciboCuota.Fecha?.ToString("dd/MM/yyyy") </td>
+                                            <td>@item.ReciboCuota.SubCuotas.ToString("N2") Bs.</td>
+                                            <td>@item.ReciboCuota.Fecha.ToString("dd/MM/yyyy") </td>
                                             <td>@((bool)item.ReciboCuota.EnProceso ? "Sí" : "No")</td>
                                             <th>@((bool)item.ReciboCuota.Confirmado ? "Sí" : "No")</th>
                                             <td>@item.ReciboCuota.CuotasFaltantes</td>
                                             <td>@item.ReciboCuota.CuotasPagadas</td>
-                                            <td>@item.ReciboCuota.Abonado?.ToString("N2") Bs.</td>
-                                            <td>@item.ReciboCuota.ValorDolar?.ToString("N2") Bs.</td>
+                                            <td>@item.ReciboCuota.Abonado.ToString("N2") Bs.</td>
+                                            <td>@item.ReciboCuota.ValorDolar.ToString("N2") Bs.</td>
                                         </tr>
                                     }
                                 }

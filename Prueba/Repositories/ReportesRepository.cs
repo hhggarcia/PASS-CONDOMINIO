@@ -21,9 +21,9 @@ namespace Prueba.Repositories
     }
     public class ReportesRepository : IReportesRepository
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public ReportesRepository(PruebaContext context)
+        public ReportesRepository(NuevaAppContext context)
         {
             _context = context;
         }

@@ -18,10 +18,10 @@ namespace Prueba.Controllers
     public class PuestoEsController : Controller
     {
         private readonly IEstacionamientoRepository _repoEstacionamiento;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public PuestoEsController(IEstacionamientoRepository repoEstacionamiento,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoEstacionamiento = repoEstacionamiento;
             _context = context;
@@ -30,7 +30,7 @@ namespace Prueba.Controllers
         // GET: PuestoEs
         public async Task<IActionResult> Index(int id)
         {
-            //var pruebaContext = _context.PuestoEs.Include(p => p.IdEstacionamientoNavigation).Include(p => p.IdPropiedadNavigation);
+            //var NuevaAppContext = _context.PuestoEs.Include(p => p.IdEstacionamientoNavigation).Include(p => p.IdPropiedadNavigation);
             var puestos = await _repoEstacionamiento.PuestosEsta(id);
             return View(puestos);
         }
@@ -61,7 +61,7 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (inmuebles != null && inmuebles.Any())
             {
                 var propiedades = _context.Propiedads.Where(c => c.IdInmueble == inmuebles.First().IdInmueble);
@@ -126,7 +126,7 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (inmuebles != null && inmuebles.Any())
             {
                 var propiedades = _context.Propiedads.Where(c => c.IdInmueble == inmuebles.First().IdInmueble);
@@ -206,7 +206,7 @@ namespace Prueba.Controllers
         {
             if (_context.PuestoEs == null)
             {
-                return Problem("Entity set 'PruebaContext.PuestoEs'  is null.");
+                return Problem("Entity set 'NuevaAppContext.PuestoEs'  is null.");
             }
             var result = await _repoEstacionamiento.EliminarPuestoEst(id);
             return RedirectToAction(nameof(Index));

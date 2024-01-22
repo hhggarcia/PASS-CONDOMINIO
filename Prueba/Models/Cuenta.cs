@@ -9,11 +9,11 @@ public partial class Cuenta
 
     public short IdGrupo { get; set; }
 
-    public string Descripcion { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = null!;
 
-    public string Codigo { get; set; } = string.Empty;
+    public string Codigo { get; set; } = null!;
 
-    public virtual Grupo IdGrupoNavigation { get; set; } = new Grupo();
+    public virtual Grupo IdGrupoNavigation { get; set; } = null!;
 
     public virtual ICollection<SubCuenta> SubCuenta { get; } = new List<SubCuenta>();
 }

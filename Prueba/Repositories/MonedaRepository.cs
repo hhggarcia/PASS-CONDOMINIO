@@ -15,9 +15,9 @@ namespace Prueba.Repositories
     }
     public class MonedaRepository: IMonedaRepository
     {
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
-        public MonedaRepository(PruebaContext context)
+        public MonedaRepository(NuevaAppContext context)
         {
             _context = context;
         }

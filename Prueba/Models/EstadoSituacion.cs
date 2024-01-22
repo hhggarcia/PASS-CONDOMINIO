@@ -14,4 +14,8 @@ public partial class EstadoSituacion
     public decimal TotalPat { get; set; }
 
     public DateTime Fecha { get; set; }
+
+    public int IdCondominio { get; set; }
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 }

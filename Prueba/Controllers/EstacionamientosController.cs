@@ -19,10 +19,10 @@ namespace Prueba.Controllers
     public class EstacionamientosController : Controller
     {
         private readonly IEstacionamientoRepository _repoEstacionamiento;
-        private readonly PruebaContext _context;
+        private readonly NuevaAppContext _context;
 
         public EstacionamientosController(IEstacionamientoRepository repoEstacionamiento,
-            PruebaContext context)
+            NuevaAppContext context)
         {
             _repoEstacionamiento = repoEstacionamiento;
             _context = context;
@@ -34,29 +34,29 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var inmuebles = await _context.Inmuebles.Where(c => c.IdCondominio == idCondominio).ToListAsync();
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (inmuebles != null && inmuebles.Any())
             {
-                var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation)
+                var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation)
                     .Where(e => e.IdInmueble == inmuebles.First().IdInmueble);
 
                 TempData.Keep();
 
-                return View(await pruebaContext.ToListAsync());
+                return View(await NuevaAppContext.ToListAsync());
 
             }
             else
             {
-                var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+                var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
                 TempData.Keep();
 
-                return View(await pruebaContext.ToListAsync());
+                return View(await NuevaAppContext.ToListAsync());
 
             }
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             //TempData.Keep();
 
-            //return View(await pruebaContext.ToListAsync());
+            //return View(await NuevaAppContext.ToListAsync());
 
         }
 
@@ -85,7 +85,7 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var inmuebles = _context.Inmuebles.Where(c => c.IdCondominio == idCondominio);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (inmuebles != null && inmuebles.Any())
             {
                 ViewData["IdInmueble"] = new SelectList(inmuebles, "IdInmueble", "Nombre");
@@ -142,7 +142,7 @@ namespace Prueba.Controllers
             }
 
             var inmuebles = _context.Inmuebles.Where(c => c.IdInmueble == estacionamiento.IdInmueble);
-            //var pruebaContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
+            //var NuevaAppContext = _context.Estacionamientos.Include(e => e.IdInmuebleNavigation);
             if (inmuebles != null && inmuebles.Any())
             {
                 ViewData["IdInmueble"] = new SelectList(inmuebles, "IdInmueble", "Nombre", estacionamiento.IdInmueble);
@@ -215,7 +215,7 @@ namespace Prueba.Controllers
         {
             if (_context.Estacionamientos == null)
             {
-                return Problem("Entity set 'PruebaContext.Estacionamientos'  is null.");
+                return Problem("Entity set 'NuevaAppContext.Estacionamientos'  is null.");
             }
             var result = await _repoEstacionamiento.Eliminar(id);
 
