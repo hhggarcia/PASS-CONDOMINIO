@@ -85,14 +85,14 @@ namespace Prueba.Controllers
 
                 //CARGAR LIST DE CONDOMINIOS
                 var condominios = _context.Condominios.Include(c => c.IdAdministradorNavigation)
-                    .Include(c => c.Inmuebles)
+                    //.Include(c => c.Inmuebles)
                     .Where(c => c.IdAdministrador == idAdministrador);
 
-                foreach (var item in condominios)
-                {
-                    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
-                        .Where(c => c.IdCondominio == item.IdCondominio);
-                }
+                //foreach (var item in condominios)
+                //{
+                //    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
+                //        .Where(c => c.IdCondominio == item.IdCondominio);
+                //}
 
                 var condominiosModel = await condominios.ToListAsync();
 
@@ -388,9 +388,9 @@ namespace Prueba.Controllers
                         // buscar subcuenta contable donde esta el pago del condominio
                         var cuentaCondominio = from s in _context.SubCuenta
                                                join cc in _context.CodigoCuentasGlobals
-                                               on s.Id equals cc.IdCodigo
+                                               on s.Id equals cc.IdSubCuenta
                                                where cc.IdCondominio == idCondominio
-                                               where s.IdCuenta == 15 && s.Codigo == "01"
+                                               //where s.IdCuenta == 15 && s.Codigo == "01"
                                                select s;
 
                         // buscar referencia si tiene

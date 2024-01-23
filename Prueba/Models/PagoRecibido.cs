@@ -33,7 +33,7 @@ public partial class PagoRecibido
 
     public virtual PagoReserva? PagoReserva { get; set; }
 
-    public virtual ICollection<PagosCuotas> PagosCuota { get; } = new List<PagosCuotas>();
+    public virtual ICollection<PagosCuota> PagosCuota { get; } = new List<PagosCuota>();
 
     public virtual ICollection<PagosRecibo> PagosRecibos { get; } = new List<PagosRecibo>();
 

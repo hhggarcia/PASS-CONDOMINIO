@@ -43,19 +43,19 @@ namespace Prueba.Repositories
 
             var condominio = await _context.Condominios.FindAsync(id);
 
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
-                                       where c.IdCondominio == condominio.IdCondominio
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals 
+                                       where c.IdCondominio == condominio.IdCondominio && c.IdClase == 5
                                        select c;
 
             var gastos = from c in _context.Gastos
                          select c;
 
-            var gruposGastos = from c in _context.Grupos
-                               where c.IdClase == 5
-                               select c;
+            //var gruposGastos = from c in _context.Grupos
+            //                   where c.IdClase == 5
+            //                   select c;
 
-            var cuentas = from c in _context.Cuenta
-                          select c;
+            //var cuentas = from c in _context.Cuenta
+            //              select c;
 
             var subcuentas = from c in _context.SubCuenta
                              select c;
@@ -102,7 +102,7 @@ namespace Prueba.Repositories
 
                     foreach (var item in subcuentasGastos)
                     {
-                        if (idcc.IdCodigo == item.Id)
+                        if (idcc.IdSubCuenta == item.Id)
                         {
                             subtotal += aux.First().MontoRef;
                             total += aux.First().MontoRef;
@@ -137,7 +137,7 @@ namespace Prueba.Repositories
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
 
-                    var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
 
                     modelo.CCProvisiones.Add(idcc);
 
@@ -158,7 +158,7 @@ namespace Prueba.Repositories
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
 
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
 
                     modelo.CCFondos.Add(idcc);
 
@@ -184,7 +184,7 @@ namespace Prueba.Repositories
                 foreach (var provision in modelo.Provisiones)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
-                    var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCProvisiones.Add(idcc);
 
                     if (subcuentaProvision.Any())
@@ -210,7 +210,7 @@ namespace Prueba.Repositories
                 foreach (var fondo in modelo.Fondos)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCFondos.Add(idcc);
 
                     if (subcuentaFondo.Any())
@@ -251,15 +251,16 @@ namespace Prueba.Repositories
                 var condominio = await _context.Condominios.FindAsync(rg.IdCondominio);
 
                 var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
+                                           where c.IdClase == 5
                                            where c.IdCondominio == rg.IdCondominio
                                            select c;
 
                 var gastos = from c in _context.Gastos
                              select c;
 
-                var gruposGastos = from c in _context.Grupos
-                                   where c.IdClase == 5
-                                   select c;
+                //var gruposGastos = from c in _context.Grupos
+                //                   where c.IdClase == 5
+                //                   select c;
 
                 var cuentas = from c in _context.Cuenta
                               select c;
@@ -310,7 +311,7 @@ namespace Prueba.Repositories
 
                         foreach (var item in subcuentasGastos)
                         {
-                            if (idcc.IdCodigo == item.Id)
+                            if (idcc.IdSubCuenta == item.Id)
                             {
                                 subtotal += aux.First().MontoRef;
                                 total += aux.First().MontoRef;
@@ -342,7 +343,7 @@ namespace Prueba.Repositories
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
 
-                        var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
 
                         modelo.CCProvisiones.Add(idcc);
 
@@ -362,7 +363,7 @@ namespace Prueba.Repositories
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
 
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
 
                         modelo.CCFondos.Add(idcc);
 
@@ -387,7 +388,7 @@ namespace Prueba.Repositories
                     foreach (var provision in modelo.Provisiones)
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
-                        var subcuentaProvision = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCProvisiones.Add(idcc);
 
                         if (subcuentaProvision.Any())
@@ -413,7 +414,7 @@ namespace Prueba.Repositories
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
 
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdCodigo == c.Id);
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCFondos.Add(idcc);
 
                         if (subcuentaFondo.Any())

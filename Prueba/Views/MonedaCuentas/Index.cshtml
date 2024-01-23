@@ -53,7 +53,7 @@
                                             @foreach (var item in Model.MonedaCuentas)
                                             {
                                                 var idcc = Model.Codigos.Where(cc => cc.IdCodCuenta == item.IdCodCuenta).First();
-                                                var subcuenta = Model.SubCuentas.Where(c => c.Id == idcc.IdCodigo).First();
+                                                var subcuenta = Model.SubCuentas.Where(c => c.Id == idcc.IdSubCuenta).First();
                                                 <tr>
                                                     <td>
                                                         @Html.DisplayFor(modelItem => item.RecibePagos)

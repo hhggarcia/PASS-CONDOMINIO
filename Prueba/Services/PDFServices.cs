@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+//using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using MimeKit;
 using NetTopologySuite.Index.HPRtree;
 using NPOI.SS.Formula.Functions;
@@ -562,7 +562,7 @@ namespace Prueba.Services
                                         var idcc = detalleReciboVM.RelacionGastos.CCGastos.Where(c => c.IdCodCuenta == item.IdCodCuenta);
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = detalleReciboVM.RelacionGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                                            var subcuenta = detalleReciboVM.RelacionGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(item.Fecha.ToString("dd/MM/yyyy")).FontSize(8);
@@ -616,10 +616,10 @@ namespace Prueba.Services
                                 {
                                     foreach (var provisiones in detalleReciboVM.RelacionGastos.Provisiones)
                                     {
-                                        var idcc = detalleReciboVM.RelacionGastos.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                                        var idcc = detalleReciboVM.RelacionGastos.CCProvisiones.Where(c => c.IdSubCuenta == provisiones.IdCodCuenta);
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = detalleReciboVM.RelacionGastos.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
+                                            var subcuenta = detalleReciboVM.RelacionGastos.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text("").FontSize(8);
@@ -675,10 +675,10 @@ namespace Prueba.Services
                                 {
                                     foreach (var fondo in detalleReciboVM.RelacionGastos.Fondos)
                                     {
-                                        var idcc = detalleReciboVM.RelacionGastos.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
+                                        var idcc = detalleReciboVM.RelacionGastos.CCFondos.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).ToList();
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = detalleReciboVM.RelacionGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                                            var subcuenta = detalleReciboVM.RelacionGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text("").FontSize(8);
@@ -1219,13 +1219,13 @@ namespace Prueba.Services
                                     {
                                         var cc = ldiarioGlobals.CuentasCondominio.Where(c => c.IdCodCuenta == asiento.IdCodCuenta).ToList();
 
-                                        var subcuenta = ldiarioGlobals.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdCodigo).ToList();
+                                        var subcuenta = ldiarioGlobals.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdSubCuenta).ToList();
 
-                                        var cuenta = ldiarioGlobals.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                        var cuenta = ldiarioGlobals.Cuentas.Where(c => c.Id == cc.First().IdCuenta).ToList();
 
-                                        var grupo = ldiarioGlobals.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                        var grupo = ldiarioGlobals.Grupos.Where(c => c.Id == cc.First().IdGrupo).ToList();
 
-                                        var clase = ldiarioGlobals.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+                                        var clase = ldiarioGlobals.Clases.Where(c => c.Id == cc.First().IdClase).ToList();
 
 
                                         if (asiento.IdCodCuenta == cc.First().IdCodCuenta)
@@ -1366,7 +1366,7 @@ namespace Prueba.Services
                                         var idcc = relacionDeGastos.CCGastos.Where(c => c.IdCodCuenta == item.IdCodCuenta);
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = relacionDeGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                                            var subcuenta = relacionDeGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(subcuenta.First().Descricion).FontSize(10).FontColor("#607080");
@@ -1405,10 +1405,10 @@ namespace Prueba.Services
                                 {
                                     foreach (var provisiones in relacionDeGastos.Provisiones)
                                     {
-                                        var idcc = relacionDeGastos.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                                        var idcc = relacionDeGastos.CCProvisiones.Where(c => c.IdSubCuenta == provisiones.IdCodCuenta);
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = relacionDeGastos.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
+                                            var subcuenta = relacionDeGastos.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(subcuenta.First().Descricion).FontSize(10).FontColor("#607080");
@@ -1445,10 +1445,10 @@ namespace Prueba.Services
                                 {
                                     foreach (var fondo in relacionDeGastos.Fondos)
                                     {
-                                        var idcc = relacionDeGastos.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
+                                        var idcc = relacionDeGastos.CCFondos.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).ToList();
                                         if (idcc != null && idcc.Any())
                                         {
-                                            var subcuenta = relacionDeGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                                            var subcuenta = relacionDeGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                                            
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text($"{subcuenta.First().Descricion} - {fondo.Porcentaje}%").FontSize(10).FontColor("#607080");
@@ -1570,28 +1570,28 @@ namespace Prueba.Services
 
                                     foreach (var ingreso in estadoResultado.AsientosIngresos)
                                     {
-                                        var asiento = estadoResultado.AsientosCondominio.Where(c => c.IdAsiento == ingreso.IdAsiento).ToList();
-                                        var subcuenta = estadoResultado.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
-                                        var cuenta = estadoResultado.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
-                                        var grupo = estadoResultado.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
-                                        var clase = estadoResultado.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+                                       // var asiento = estadoResultado.AsientosCondominio.Where(c => c.IdAsiento == ingreso.IdAsiento).ToList();
+                                       // var subcuenta = estadoResultado.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
+                                       // var cuenta = estadoResultado.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                       // var grupo = estadoResultado.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                       // var clase = estadoResultado.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
 
-                                        tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                        .Padding(5).Text((clase.First().Codigo + "." + grupo.First().Codigo + "." + cuenta.First().Codigo
-                                        + "." + subcuenta.First().Codigo)).FontSize(10).FontColor("#607080");
+                                       // tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                       // .Padding(5).Text((clase.First().Codigo + "." + grupo.First().Codigo + "." + cuenta.First().Codigo
+                                       // + "." + subcuenta.First().Codigo)).FontSize(10).FontColor("#607080");
 
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(subcuenta.First().Descricion).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(subcuenta.First().Descricion).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(asiento.First().Concepto).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(asiento.First().Concepto).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(asiento.First().Monto.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(asiento.First().Monto.ToString("N")).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                        .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       // .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
                                     }
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -1659,28 +1659,28 @@ namespace Prueba.Services
 
                                     foreach (var egreso in estadoResultado.AsientosEgresos)
                                     {
-                                        var asiento = estadoResultado.AsientosCondominio.Where(c => c.IdAsiento == egreso.IdAsiento).ToList();
-                                        var subcuenta = estadoResultado.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
-                                        var cuenta = estadoResultado.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
-                                        var grupo = estadoResultado.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
-                                        var clase = estadoResultado.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+                                       // var asiento = estadoResultado.AsientosCondominio.Where(c => c.IdAsiento == egreso.IdAsiento).ToList();
+                                       // var subcuenta = estadoResultado.SubCuentas.Where(c => c.Id == asiento.First().IdCodCuenta).ToList();
+                                       // var cuenta = estadoResultado.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                       // var grupo = estadoResultado.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                       // var clase = estadoResultado.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
 
-                                        tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                        .Padding(5).Text((clase.First().Codigo + "." + grupo.First().Codigo 
-                                        + "." + cuenta.First().Codigo + "." + subcuenta.First().Codigo)).FontSize(10).FontColor("#607080");
+                                       // tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                       // .Padding(5).Text((clase.First().Codigo + "." + grupo.First().Codigo 
+                                       // + "." + cuenta.First().Codigo + "." + subcuenta.First().Codigo)).FontSize(10).FontColor("#607080");
 
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(subcuenta.First().Descricion).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(subcuenta.First().Descricion).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(asiento.First().Concepto).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(asiento.First().Concepto).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text(asiento.First().Monto.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       //.Padding(5).Text(asiento.First().Monto.ToString("N")).FontColor("#607080").Bold().FontSize(10);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                        .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                                       // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                       // .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
                                     }
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()

@@ -129,8 +129,8 @@ namespace Prueba.Controllers
 
                 if (propiedades != null && propiedades.Any())
                 {
-                    var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
-                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == inmuebles.First().IdCondominio).ToListAsync();
+                    //var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
+                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == propiedades.First().IdCondominio).ToListAsync();
                     var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
                     return View(modelo);
                 }
@@ -204,8 +204,8 @@ namespace Prueba.Controllers
 
                 if (propiedad != null)
                 {
-                    var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
-                    var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
+                    //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
 
                     var cuentasCondominio = from c in _context.CodigoCuentasGlobals
                                             where c.IdCondominio == condominio.IdCondominio
@@ -290,17 +290,17 @@ namespace Prueba.Controllers
                     {
                         // validar num referencia repetido
                         decimal montoReferencia = 0;
-                        var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
-                        var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
+                        //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                        var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
 
                         var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
 
-                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
+                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(propiedad.IdCondominio);
 
                         var comprobante = new ComprobanteVM()
                         {
                             Propiedad = propiedad,
-                            Inmueble = inmueble,
+                           // Inmueble = inmueble,
                             Condominio = condominio,
                             FechaComprobante = DateTime.Today
                         };
@@ -325,7 +325,7 @@ namespace Prueba.Controllers
                             }
 
                             var idBanco = (from c in _context.CodigoCuentasGlobals
-                                           where c.IdCodigo == modelo.IdCodigoCuentaBanco
+                                           where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
                                            select c).First();
 
                             // buscar moneda asigna a la subcuenta
@@ -443,7 +443,7 @@ namespace Prueba.Controllers
                         else
                         {
                             var idCaja = (from c in _context.CodigoCuentasGlobals
-                                          where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                          where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
                                           select c).First();
 
                             // buscar moneda asigna a la subcuenta
@@ -655,8 +655,8 @@ namespace Prueba.Controllers
 
                 if (propiedades != null && propiedades.Any())
                 {
-                    var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
-                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == inmuebles.First().IdCondominio).ToListAsync();
+                    //var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
+                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == propiedades.First().IdCondominio).ToListAsync();
                     //var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
                     int idCondominio = condominios.First().IdCondominio;
 
@@ -807,9 +807,9 @@ namespace Prueba.Controllers
                     var reciboCuota = await _context.ReciboCuotas.Where(c=>c.IdReciboCuotas == idRecibo).FirstOrDefaultAsync();
                     var cuotaEspecial = await _context.CuotasEspeciales.Where(c=>c.IdCuotaEspecial == reciboCuota.IdCuotaEspecial).FirstOrDefaultAsync();
                     var propiedad = await _context.Propiedads.FindAsync(reciboCuota.IdPropiedad);
-                    var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
-                    var condominio = await _context.Condominios.FindAsync(inmueble.IdCondominio);
-                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(inmueble.IdCondominio);
+                    //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(propiedad.IdCondominio);
 
                     var comprobante = new ComprobanteCEVM()
                     {
@@ -838,7 +838,7 @@ namespace Prueba.Controllers
                         }
 
                         var idBanco = (from c in _context.CodigoCuentasGlobals
-                                       where c.IdCodigo == modelo.IdCodigoCuentaBanco
+                                       where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
                                        select c).First();
 
                         // buscar moneda asigna a la subcuenta
@@ -968,7 +968,7 @@ namespace Prueba.Controllers
                     else
                     {
                         var idCaja = (from c in _context.CodigoCuentasGlobals
-                                      where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                      where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
                                       select c).First();
 
                         // buscar moneda asigna a la subcuenta

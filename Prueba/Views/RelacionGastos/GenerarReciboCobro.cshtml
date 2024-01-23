@@ -16,9 +16,9 @@
     {
         var propiedad = Model.Propiedades.Where(c => c.IdPropiedad == recibo.IdPropiedad).ToList();
         var propietario = Model.Propietarios.Where(c => c.Id == propiedad.FirstOrDefault().IdUsuario).ToList();
-        var inmueble = Model.Inmuebles.Where(c => c.IdInmueble == propiedad.FirstOrDefault().IdInmueble).ToList();
+        //var inmueble = Model.Inmuebles.Where(c => c.IdInmueble == propiedad.FirstOrDefault().IdInmueble).ToList();
 
-        <p>Inmueble: @inmueble.FirstOrDefault().Nombre</p>
+        @* <p>Inmueble: @inmueble.FirstOrDefault().Nombre</p> *@
         <p>Propiedad: @propiedad.FirstOrDefault().Codigo</p>
         <p>Popietario: @propietario.FirstOrDefault().FirstName @propietario.FirstOrDefault().LastName</p>
         <p>Alicuota: @propiedad.FirstOrDefault().Alicuota %</p>

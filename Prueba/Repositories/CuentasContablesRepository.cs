@@ -39,7 +39,10 @@ namespace Prueba.Repositories
         {
             var cuentasContables = await _context.CodigoCuentasGlobals
                 .Where(c => c.IdCondominio == id)
-                .Include(c => c.IdCodigoNavigation)
+                .Include(c => c.IdSubCuentaNavigation)
+                .Include(c => c.IdCuentaNavigation)
+                .Include(c => c.IdGrupoNavigation)
+                .Include(c => c.IdClaseNavigation)
                 //.Include(c => c.IdCondominioNavigation)
                 .ToListAsync();
 
@@ -55,7 +58,7 @@ namespace Prueba.Repositories
         {
             var subcuentas = from subcuenta in _context.SubCuenta
                              join codigo in _context.CodigoCuentasGlobals
-                             on subcuenta.Id equals codigo.IdCodigo
+                             on subcuenta.Id equals codigo.IdSubCuenta
                              where codigo.IdCondominio == id
                              select subcuenta;
 
@@ -71,22 +74,29 @@ namespace Prueba.Repositories
         {
             var cuentasCond = await ObtenerCuentasCond(id);
 
-            var cuentasGastos = from g in _context.Grupos
-                                join c in _context.Cuenta
-                                on g.Id equals c.IdGrupo
-                                where g.IdClase == 5
-                                select c;
+            //var cuentasGastos = from g in _context.Grupos
+            //                    join c in _context.Cuenta
+            //                    on g.Id equals c.IdGrupo
+            //                    where g.IdClase == 5
+            //                    select c;
 
-            var subcuentasGastos = from c in cuentasGastos
-                                   join s in _context.SubCuenta
-                                   on c.Id equals s.IdCuenta
-                                   select s;
+            //var subcuentasGastos = from c in cuentasGastos
+            //                       join s in _context.SubCuenta
+            //                       on c.Id equals s.IdCuenta
+            //                       select s;
 
-            var model = from s in subcuentasGastos.ToList()
-                        join c in cuentasCond.ToList()
-                        on s.Id equals c.IdCodigo
-                        where s.Id == c.IdCodigo
-                        select s;
+            //var model = from s in subcuentasGastos.ToList()
+            //            join c in cuentasCond.ToList()
+            //            on s.Id equals c.IdCodigo
+            //            where s.Id == c.IdCodigo
+            //            select s;
+
+            var model = from c in cuentasCond.ToList()
+                        join cs in _context.SubCuenta
+                        on c.IdSubCuenta equals cs.Id
+                        where c.IdClase == 5
+                        select cs;
+
 
             return model.ToList();
         }
@@ -98,21 +108,36 @@ namespace Prueba.Repositories
         /// <returns></returns>
         public async Task<ICollection<SubCuenta>> ObtenerProvisiones(int id)
         {
+            //var cuentasCond = await ObtenerCuentasCond(id);
+
+            //var cuentaProvision = from c in _context.Cuenta
+            //                      where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
+            //                      select c;
+
+            //var subcuentasProvision = from c in cuentaProvision.ToList()
+            //                          join s in _context.SubCuenta
+            //                          on c.Id equals s.IdCuenta
+            //                          select s;
+
+            //var model = from s in subcuentasProvision.ToList()
+            //            join c in cuentasCond
+            //            on s.Id equals c.IdCodigo
+            //            select s;
+
+            
+
             var cuentasCond = await ObtenerCuentasCond(id);
 
-            var cuentaProvision = from c in _context.Cuenta
-                                  where c.Descripcion.Trim().ToUpper() == "PROVISIONES"
-                                  select c;
+            var cuentaProvision = from c in cuentasCond.ToList()
+                        join cs in _context.Cuenta
+                        on c.IdCuenta equals cs.Id
+                        where cs.Descripcion.Trim().ToUpper() == "PROVISIONES"
+                        select c;
 
-            var subcuentasProvision = from c in cuentaProvision.ToList()
-                                      join s in _context.SubCuenta
-                                      on c.Id equals s.IdCuenta
-                                      select s;
-
-            var model = from s in subcuentasProvision.ToList()
-                        join c in cuentasCond
-                        on s.Id equals c.IdCodigo
-                        select s;
+            var model = from c in _context.SubCuenta
+                        join cs in cuentaProvision.ToList()
+                        on c.Id equals cs.IdSubCuenta
+                        select c;
 
             return model.ToList();
         }
@@ -131,9 +156,9 @@ namespace Prueba.Repositories
             {
                 // provision 
                 var subcuentaProvision = await _context.SubCuenta.FindAsync(provision.IdCodCuenta);
-                var idProvision = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == subcuentaProvision.Id).FirstAsync();
+                var idProvision = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == subcuentaProvision.Id).FirstAsync();
                 var subcuentaGasto = await _context.SubCuenta.FindAsync(provision.IdCodGasto);
-                var idGasto = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == subcuentaGasto.Id).FirstAsync();
+                var idGasto = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == subcuentaGasto.Id).FirstAsync();
 
                 // buscar moneda
                 var moneda = from c in _context.MonedaConds
@@ -231,8 +256,8 @@ namespace Prueba.Repositories
         /// <returns></returns>
         public async Task<int> EditarProvision(Provision provision, int idCondominio)
         {
-            var idProvision = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == provision.IdCodCuenta).FirstAsync();
-            var idGasto = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == provision.IdCodGasto).FirstAsync();
+            var idProvision = await _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == provision.IdCodCuenta).FirstAsync();
+            var idGasto = await _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == provision.IdCodGasto).FirstAsync();
 
             // buscar moneda
             var moneda = from c in _context.MonedaConds
@@ -278,23 +303,24 @@ namespace Prueba.Repositories
         {
             var cuentasCond = await ObtenerCuentasCond(id);
 
-            var gruposPatrimonio = from c in _context.Grupos
-                                   where c.IdClase == 3
-                                   select c;
+            //var gruposPatrimonio = from c in _context.Grupos
+            //                       where c.IdClase == 3
+            //                       select c;
 
-            var cuentas = from g in gruposPatrimonio.ToList()
-                          join c in _context.Cuenta
-                          on g.Id equals c.IdGrupo
-                          select c;
+            //var cuentas = from g in gruposPatrimonio.ToList()
+            //              join c in _context.Cuenta
+            //              on g.Id equals c.IdGrupo
+            //              select c;
 
-            var subcuentas = from c in cuentas.ToList()
-                             join s in _context.SubCuenta
-                             on c.Id equals s.IdCuenta
-                             select s;
+            //var subcuentas = from c in cuentas.ToList()
+            //                 join s in _context.SubCuenta
+            //                 on c.Id equals s.IdCuenta
+            //                 select s;
 
-            var model = from s in subcuentas.ToList()
+            var model = from s in _context.SubCuenta
                         join c in cuentasCond.ToList()
-                        on s.Id equals c.IdCodigo
+                        on s.Id equals c.IdSubCuenta
+                        where c.IdClase == 3
                         select s;
 
             return model.ToList();
@@ -307,7 +333,7 @@ namespace Prueba.Repositories
         /// <returns></returns>
         public async Task<int> CrearFondo(Fondo fondo)
         {
-            var idFondo = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == fondo.IdCodCuenta).FirstAsync();
+            var idFondo = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).FirstAsync();
 
             fondo.IdCodCuenta = idFondo.IdCodCuenta;
 
@@ -328,7 +354,7 @@ namespace Prueba.Repositories
             if (subCuenta != null)
             {
                 // buscar codigo cuentas -> codigo
-                var codigosCuentas = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == subCuenta.Id).ToListAsync();
+                var codigosCuentas = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == subCuenta.Id).ToListAsync();
                 // eliminar del condominio
                 if (codigosCuentas != null && codigosCuentas.Any())
                 {
@@ -366,9 +392,9 @@ namespace Prueba.Repositories
 
             var subcuentasBancos = from c in _context.SubCuenta
                                    join d in _context.CodigoCuentasGlobals
-                                   on c.Id equals d.IdCodigo
+                                   on c.Id equals d.IdSubCuenta
                                    where d.IdCondominio == id
-                                   where c.IdCuenta == bancos.First().Id
+                                   where d.IdCuenta == bancos.First().Id
                                    select c;
 
             var cuentasdePagos = from m in _context.MonedaCuenta
@@ -379,7 +405,7 @@ namespace Prueba.Repositories
 
             var bancosActivos = from p in cuentasdePagos
                                join sc in subcuentasBancos
-                               on p.IdCodigo equals sc.Id
+                               on p.IdSubCuenta equals sc.Id
                                select sc;
 
             return await bancosActivos.ToListAsync();
@@ -397,9 +423,9 @@ namespace Prueba.Repositories
 
             var subcuentasCaja = from c in _context.SubCuenta
                                  join d in _context.CodigoCuentasGlobals
-                                 on c.Id equals d.IdCodigo
+                                 on c.Id equals d.IdSubCuenta
                                  where d.IdCondominio == id
-                                 where c.IdCuenta == caja.First().Id
+                                 where c.Id == caja.First().Id
                                  select c;
 
             var cuentasdePagos = from m in _context.MonedaCuenta
@@ -410,7 +436,7 @@ namespace Prueba.Repositories
 
             var cajasActivas = from p in cuentasdePagos
                                join sc in subcuentasCaja
-                               on p.IdCodigo equals sc.Id
+                               on p.IdSubCuenta equals sc.Id
                                select sc;
 
             return await cajasActivas.ToListAsync();

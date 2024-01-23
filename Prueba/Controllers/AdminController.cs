@@ -7,7 +7,6 @@ using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Core.ViewModels;
-using Prueba.Models;
 using Prueba.Services;
 using Prueba.Utils;
 using Prueba.ViewModels;
@@ -149,11 +148,11 @@ namespace Prueba.Controllers
                 //CARGAR LIST DE CONDOMINIOS
                 var condominios = _context.Condominios.Include(c => c.IdAdministradorNavigation);
 
-                foreach (var item in condominios)
-                {
-                    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
-                        .Where(c => c.IdInmueble == item.IdCondominio);
-                }
+                //foreach (var item in condominios)
+                //{
+                //    var inmuebles = _context.Inmuebles.Include(c => c.IdCondominioNavigation)
+                //        .Where(c => c.IdInmueble == item.IdCondominio);
+                //}
 
                 var condominiosModel = await condominios.ToListAsync();
                 return View(condominiosModel);

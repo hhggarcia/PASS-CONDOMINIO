@@ -7,15 +7,35 @@ public partial class CodigoCuentasGlobal
 {
     public int IdCodCuenta { get; set; }
 
+    public int IdSubCuenta { get; set; }
+
+    public short IdCuenta { get; set; }
+
+    public short IdGrupo { get; set; }
+
+    public short IdClase { get; set; }
+
+    public string Codigo { get; set; } = null!;
+
+    public decimal Saldo { get; set; }
+
+    public decimal SaldoInicial { get; set; }
+
     public int IdCondominio { get; set; }
 
-    public int IdCodigo { get; set; }
-
-    public virtual ICollection<CuentasCondominio> CuentasCondominios { get; } = new List<CuentasCondominio>();
+    public virtual ICollection<CuentasGrupo> CuentasGrupos { get; } = new List<CuentasGrupo>();
 
     public virtual ICollection<Fondo> Fondos { get; } = new List<Fondo>();
 
-    public virtual SubCuenta IdCodigoNavigation { get; set; } = null!;
+    public virtual Clase IdClaseNavigation { get; set; } = null!;
+
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual Cuenta IdCuentaNavigation { get; set; } = null!;
+
+    public virtual Grupo IdGrupoNavigation { get; set; } = null!;
+
+    public virtual SubCuenta IdSubCuentaNavigation { get; set; } = null!;
 
     public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; } = new List<LdiarioGlobal>();
 

@@ -15,13 +15,17 @@ public partial class Condominio
 
     public string Nombre { get; set; } = null!;
 
-    public decimal? InteresMora { get; set; }
+    public decimal InteresMora { get; set; }
+
+    public string Direccion { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
 
     public virtual ICollection<BalanceComprobacion> BalanceComprobacions { get; } = new List<BalanceComprobacion>();
 
-    public virtual ICollection<CuentasCobrar> CuentasCobrars { get; } = new List<CuentasCobrar>();
+    public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
 
-    public virtual ICollection<CuentasCondominio> CuentasCondominios { get; } = new List<CuentasCondominio>();
+    public virtual ICollection<CuentasCobrar> CuentasCobrars { get; } = new List<CuentasCobrar>();
 
     public virtual ICollection<CuentasPagar> CuentasPagars { get; } = new List<CuentasPagar>();
 
@@ -33,8 +37,6 @@ public partial class Condominio
 
     public virtual AspNetUser IdAdministradorNavigation { get; set; } = null!;
 
-    public virtual ICollection<Inmueble> Inmuebles { get; } = new List<Inmueble>();
-
     public virtual ICollection<LibroCompra> LibroCompras { get; } = new List<LibroCompra>();
 
     public virtual ICollection<LibroVenta> LibroVenta { get; } = new List<LibroVenta>();
@@ -44,6 +46,8 @@ public partial class Condominio
     public virtual ICollection<PagoEmitido> PagoEmitidos { get; } = new List<PagoEmitido>();
 
     public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
+
+    public virtual ICollection<Propiedad> Propiedads { get; } = new List<Propiedad>();
 
     public virtual ICollection<Proveedor> Proveedors { get; } = new List<Proveedor>();
 

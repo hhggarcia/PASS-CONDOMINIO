@@ -20,8 +20,6 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Anticipo> Anticipos { get; set; }
 
-    public virtual DbSet<AreaComun> AreaComuns { get; set; }
-
     public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
 
     public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
@@ -36,8 +34,6 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<BalanceComprobacion> BalanceComprobacions { get; set; }
 
-    public virtual DbSet<CambioSueldo> CambioSueldos { get; set; }
-
     public virtual DbSet<Clase> Clases { get; set; }
 
     public virtual DbSet<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; }
@@ -48,7 +44,7 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<CuentasCobrar> CuentasCobrars { get; set; }
 
-    public virtual DbSet<CuentasCondominio> CuentasCondominios { get; set; }
+    public virtual DbSet<CuentasGrupo> CuentasGrupos { get; set; }
 
     public virtual DbSet<CuentasPagar> CuentasPagars { get; set; }
 
@@ -56,11 +52,9 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<CuotasEspeciale> CuotasEspeciales { get; set; }
 
-    public virtual DbSet<Deduccione> Deducciones { get; set; }
+    public virtual DbSet<Deduccion> Deducciones { get; set; }
 
     public virtual DbSet<Empleado> Empleados { get; set; }
-
-    public virtual DbSet<Estacionamiento> Estacionamientos { get; set; }
 
     public virtual DbSet<EstadoResultado> EstadoResultados { get; set; }
 
@@ -68,7 +62,7 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Factura> Facturas { get; set; }
 
-    public virtual DbSet<FacturaEmitidum> FacturaEmitida { get; set; }
+    public virtual DbSet<FacturaEmitida> FacturaEmitida { get; set; }
 
     public virtual DbSet<Fondo> Fondos { get; set; }
 
@@ -76,9 +70,9 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Grupo> Grupos { get; set; }
 
-    public virtual DbSet<Ingreso> Ingresos { get; set; }
+    public virtual DbSet<GrupoGasto> GrupoGastos { get; set; }
 
-    public virtual DbSet<Inmueble> Inmuebles { get; set; }
+    public virtual DbSet<Ingreso> Ingresos { get; set; }
 
     public virtual DbSet<Islr> Islrs { get; set; }
 
@@ -106,7 +100,7 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<PagoReserva> PagoReservas { get; set; }
 
-    public virtual DbSet<PagosCuotas> PagosCuotas { get; set; }
+    public virtual DbSet<PagosCuota> PagosCuotas { get; set; }
 
     public virtual DbSet<PagosNomina> PagosNominas { get; set; }
 
@@ -116,17 +110,17 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Patrimonio> Patrimonios { get; set; }
 
-    public virtual DbSet<Percepcione> Percepciones { get; set; }
+    public virtual DbSet<Percepcion> Percepciones { get; set; }
 
     public virtual DbSet<Producto> Productos { get; set; }
 
     public virtual DbSet<Propiedad> Propiedads { get; set; }
 
+    public virtual DbSet<PropiedadesGrupo> PropiedadesGrupos { get; set; }
+
     public virtual DbSet<Proveedor> Proveedors { get; set; }
 
     public virtual DbSet<Provision> Provisiones { get; set; }
-
-    public virtual DbSet<PuestoE> PuestoEs { get; set; }
 
     public virtual DbSet<ReciboCobro> ReciboCobros { get; set; }
 
@@ -181,24 +175,6 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdProveedor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Anticipo_Proveedor");
-        });
-
-        modelBuilder.Entity<AreaComun>(entity =>
-        {
-            entity.HasKey(e => e.IdArea);
-
-            entity.ToTable("Area_Comun");
-
-            entity.Property(e => e.IdArea).ValueGeneratedNever();
-            entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
-            entity.Property(e => e.Nombre)
-                .HasMaxLength(30)
-                .HasColumnName("nombre");
-
-            entity.HasOne(d => d.IdInmuebleNavigation).WithMany(p => p.AreaComuns)
-                .HasForeignKey(d => d.IdInmueble)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Area_Comun_Inmueble");
         });
 
         modelBuilder.Entity<AspNetRole>(entity =>
@@ -301,25 +277,6 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Balance_Comprobacion_Condominio");
         });
 
-        modelBuilder.Entity<CambioSueldo>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("Cambio_Sueldo");
-
-            entity.Property(e => e.Cargo)
-                .HasMaxLength(30)
-                .HasColumnName("cargo");
-            entity.Property(e => e.Fecha)
-                .HasColumnType("date")
-                .HasColumnName("fecha");
-            entity.Property(e => e.IdCsueldo).HasColumnName("id_csueldo");
-            entity.Property(e => e.IdEmpleado).HasColumnName("id_empleado");
-            entity.Property(e => e.Salario)
-                .HasColumnType("money")
-                .HasColumnName("salario");
-        });
-
         modelBuilder.Entity<Clase>(entity =>
         {
             entity.ToTable("Clase");
@@ -335,11 +292,35 @@ public partial class NuevaAppContext : DbContext
             entity.ToTable("CodigoCuentas_Global");
 
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
-            entity.Property(e => e.IdCodigo).HasColumnName("id_Codigo");
-            entity.Property(e => e.IdCondominio).HasColumnName("id_Condominio");
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(10)
+                .HasColumnName("codigo");
+            entity.Property(e => e.IdSubCuenta).HasColumnName("id_SubCuenta");
+            entity.Property(e => e.Saldo).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.SaldoInicial).HasColumnType("decimal(18, 2)");
 
-            entity.HasOne(d => d.IdCodigoNavigation).WithMany(p => p.CodigoCuentasGlobals)
-                .HasForeignKey(d => d.IdCodigo)
+            entity.HasOne(d => d.IdClaseNavigation).WithMany(p => p.CodigoCuentasGlobals)
+                .HasForeignKey(d => d.IdClase)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CodigoCuentas_Global_Clase");
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.CodigoCuentasGlobals)
+                .HasForeignKey(d => d.IdCondominio)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CodigoCuentas_Global_Condominio");
+
+            entity.HasOne(d => d.IdCuentaNavigation).WithMany(p => p.CodigoCuentasGlobals)
+                .HasForeignKey(d => d.IdCuenta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CodigoCuentas_Global_Cuenta");
+
+            entity.HasOne(d => d.IdGrupoNavigation).WithMany(p => p.CodigoCuentasGlobals)
+                .HasForeignKey(d => d.IdGrupo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CodigoCuentas_Global_Grupo");
+
+            entity.HasOne(d => d.IdSubCuentaNavigation).WithMany(p => p.CodigoCuentasGlobals)
+                .HasForeignKey(d => d.IdSubCuenta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CodigoCuentas_Global_SubCuenta");
         });
@@ -351,6 +332,8 @@ public partial class NuevaAppContext : DbContext
             entity.ToTable("Condominio");
 
             entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
+            entity.Property(e => e.Direccion).HasMaxLength(250);
+            entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.IdAdministrador)
                 .HasMaxLength(450)
                 .HasColumnName("id_administrador");
@@ -408,22 +391,19 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuentasCobrar_Factura");
         });
 
-        modelBuilder.Entity<CuentasCondominio>(entity =>
+        modelBuilder.Entity<CuentasGrupo>(entity =>
         {
-            entity.ToTable("CuentasCondominio");
+            entity.HasKey(e => e.IdCuentaGrupos);
 
-            entity.Property(e => e.IdCodCuenta).HasColumnName("Id_codCuenta");
-            entity.Property(e => e.NombreGrupo).HasMaxLength(50);
-
-            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.CuentasCondominios)
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.CuentasGrupos)
                 .HasForeignKey(d => d.IdCodCuenta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CuentasCondominio_CodigoCuentas_Global");
+                .HasConstraintName("FK_CuentasGrupos_CodigoCuentas_Global");
 
-            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.CuentasCondominios)
-                .HasForeignKey(d => d.IdCondominio)
+            entity.HasOne(d => d.IdGrupoGastoNavigation).WithMany(p => p.CuentasGrupos)
+                .HasForeignKey(d => d.IdGrupoGasto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CuentasCondominio_Condominio");
+                .HasConstraintName("FK_CuentasGrupos_GrupoGastos");
         });
 
         modelBuilder.Entity<CuentasPagar>(entity =>
@@ -454,11 +434,6 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsFixedLength();
-
-            entity.HasOne(d => d.IdGrupoNavigation).WithMany(p => p.Cuenta)
-                .HasForeignKey(d => d.IdGrupo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Cuenta_Grupo");
         });
 
         modelBuilder.Entity<CuotasEspeciale>(entity =>
@@ -487,7 +462,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuotasEspeciales_Condominio");
         });
 
-        modelBuilder.Entity<Deduccione>(entity =>
+        modelBuilder.Entity<Deduccion>(entity =>
         {
             entity.HasKey(e => e.IdDeduccion);
 
@@ -514,25 +489,6 @@ public partial class NuevaAppContext : DbContext
                 .HasColumnName("Fecha_ingreso");
             entity.Property(e => e.Nombre).HasMaxLength(30);
             entity.Property(e => e.RefMonto).HasColumnType("money");
-        });
-
-        modelBuilder.Entity<Estacionamiento>(entity =>
-        {
-            entity.HasKey(e => e.IdEstacionamiento);
-
-            entity.ToTable("Estacionamiento");
-
-            entity.Property(e => e.IdEstacionamiento).HasColumnName("id_estacionamiento");
-            entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
-            entity.Property(e => e.Nombre)
-                .HasMaxLength(30)
-                .HasColumnName("nombre");
-            entity.Property(e => e.NumPuestos).HasColumnName("num_puestos");
-
-            entity.HasOne(d => d.IdInmuebleNavigation).WithMany(p => p.Estacionamientos)
-                .HasForeignKey(d => d.IdInmueble)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Estacionamiento_Inmueble");
         });
 
         modelBuilder.Entity<EstadoResultado>(entity =>
@@ -611,7 +567,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Factura_Proveedor");
         });
 
-        modelBuilder.Entity<FacturaEmitidum>(entity =>
+        modelBuilder.Entity<FacturaEmitida>(entity =>
         {
             entity.HasKey(e => e.IdFacturaEmitida);
 
@@ -668,11 +624,13 @@ public partial class NuevaAppContext : DbContext
 
             entity.Property(e => e.Codigo).HasMaxLength(1);
             entity.Property(e => e.Descripcion).HasMaxLength(50);
+        });
 
-            entity.HasOne(d => d.IdClaseNavigation).WithMany(p => p.Grupos)
-                .HasForeignKey(d => d.IdClase)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Grupo_Clase");
+        modelBuilder.Entity<GrupoGasto>(entity =>
+        {
+            entity.HasKey(e => e.IdGrupoGasto);
+
+            entity.Property(e => e.NombreGrupo).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Ingreso>(entity =>
@@ -688,36 +646,25 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Ingresos_LDiario_Global");
         });
 
-        modelBuilder.Entity<Inmueble>(entity =>
-        {
-            entity.HasKey(e => e.IdInmueble);
-
-            entity.ToTable("Inmueble");
-
-            entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
-            entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
-            entity.Property(e => e.Nombre)
-                .HasMaxLength(30)
-                .HasColumnName("nombre");
-            entity.Property(e => e.TotalPropiedad).HasColumnName("total_propiedad");
-            entity.Property(e => e.Ubicacion)
-                .HasMaxLength(250)
-                .HasColumnName("ubicacion");
-
-            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Inmuebles)
-                .HasForeignKey(d => d.IdCondominio)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Inmueble_Condominio");
-        });
-
         modelBuilder.Entity<Islr>(entity =>
         {
             entity.ToTable("islr");
 
-            entity.Property(e => e.Concepto).HasMaxLength(50);
+            entity.Property(e => e.BaseImponible).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Concepto).HasMaxLength(250);
             entity.Property(e => e.Factor).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.Literal).HasMaxLength(10);
-            entity.Property(e => e.MontoMin).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MontoSujeto)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.PagosMayores)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.Sustraendo)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.Tarifa).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TipoReceptor).HasMaxLength(2);
             entity.Property(e => e.UnidadTributaria).HasColumnType("decimal(18, 2)");
         });
 
@@ -990,7 +937,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoReserva_Recibo_Reserva");
         });
 
-        modelBuilder.Entity<PagosCuotas>(entity =>
+        modelBuilder.Entity<PagosCuota>(entity =>
         {
             entity.HasKey(e => e.IdPagoCuota);
 
@@ -1063,7 +1010,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Patrimonio_LDiario_Global");
         });
 
-        modelBuilder.Entity<Percepcione>(entity =>
+        modelBuilder.Entity<Percepcion>(entity =>
         {
             entity.HasKey(e => e.IdPercepcion);
 
@@ -1122,7 +1069,6 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Dimensiones)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("dimensiones");
-            entity.Property(e => e.IdInmueble).HasColumnName("id_inmueble");
             entity.Property(e => e.IdUsuario)
                 .HasMaxLength(450)
                 .HasColumnName("id_usuario");
@@ -1132,15 +1078,32 @@ public partial class NuevaAppContext : DbContext
                 .HasColumnName("saldo");
             entity.Property(e => e.Solvencia).HasColumnName("solvencia");
 
-            entity.HasOne(d => d.IdInmuebleNavigation).WithMany(p => p.Propiedads)
-                .HasForeignKey(d => d.IdInmueble)
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Propiedads)
+                .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Propiedad_Inmueble");
+                .HasConstraintName("FK_Propiedad_Condominio");
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Propiedads)
                 .HasForeignKey(d => d.IdUsuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Propiedad_AspNetUsers");
+        });
+
+        modelBuilder.Entity<PropiedadesGrupo>(entity =>
+        {
+            entity.HasKey(e => e.IdPropiedadGrupo);
+
+            entity.Property(e => e.Alicuota).HasColumnType("decimal(18, 4)");
+
+            entity.HasOne(d => d.IdGrupoGastoNavigation).WithMany(p => p.PropiedadesGrupos)
+                .HasForeignKey(d => d.IdGrupoGasto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PropiedadesGrupos_GrupoGastos");
+
+            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.PropiedadesGrupos)
+                .HasForeignKey(d => d.IdPropiedad)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PropiedadesGrupos_Propiedad");
         });
 
         modelBuilder.Entity<Proveedor>(entity =>
@@ -1198,31 +1161,6 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdCodGasto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Provisiones_CodigoCuentas_Global1");
-        });
-
-        modelBuilder.Entity<PuestoE>(entity =>
-        {
-            entity.HasKey(e => e.IdPuestoE).HasName("PK_Puesto_E");
-
-            entity.ToTable("PuestoE");
-
-            entity.Property(e => e.IdPuestoE).HasColumnName("id_puestoE");
-            entity.Property(e => e.Alicuota).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Codigo)
-                .HasMaxLength(10)
-                .HasColumnName("codigo");
-            entity.Property(e => e.IdEstacionamiento).HasColumnName("id_estacionamiento");
-            entity.Property(e => e.IdPropiedad).HasColumnName("id_propiedad");
-
-            entity.HasOne(d => d.IdEstacionamientoNavigation).WithMany(p => p.PuestoEs)
-                .HasForeignKey(d => d.IdEstacionamiento)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Puesto_E_Estacionamiento");
-
-            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.PuestoEs)
-                .HasForeignKey(d => d.IdPropiedad)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Puesto_E_Propiedad");
         });
 
         modelBuilder.Entity<ReciboCobro>(entity =>
@@ -1398,11 +1336,6 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.IdReserva).ValueGeneratedNever();
             entity.Property(e => e.TipoEvento).HasMaxLength(50);
 
-            entity.HasOne(d => d.IdAreaNavigation).WithMany(p => p.Reservas)
-                .HasForeignKey(d => d.IdArea)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Reserva_Area_Comun");
-
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.Reservas)
                 .HasForeignKey(d => d.IdPropiedad)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1413,12 +1346,6 @@ public partial class NuevaAppContext : DbContext
         {
             entity.Property(e => e.Codigo).HasMaxLength(2);
             entity.Property(e => e.Descricion).HasMaxLength(70);
-            entity.Property(e => e.Saldo).HasColumnType("money");
-
-            entity.HasOne(d => d.IdCuentaNavigation).WithMany(p => p.SubCuenta)
-                .HasForeignKey(d => d.IdCuenta)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SubCuenta_Cuenta");
         });
 
         OnModelCreatingPartial(modelBuilder);

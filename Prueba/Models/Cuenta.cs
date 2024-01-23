@@ -7,13 +7,9 @@ public partial class Cuenta
 {
     public short Id { get; set; }
 
-    public short IdGrupo { get; set; }
-
     public string Descripcion { get; set; } = null!;
 
     public string Codigo { get; set; } = null!;
 
-    public virtual Grupo IdGrupoNavigation { get; set; } = null!;
-
-    public virtual ICollection<SubCuenta> SubCuenta { get; } = new List<SubCuenta>();
+    public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
 }

@@ -11,19 +11,25 @@ public partial class Islr
 
     public decimal Factor { get; set; }
 
-    public decimal MontoMin { get; set; }
-
-    public bool Activo { get; set; }
-
     public string Concepto { get; set; } = null!;
 
     public string Literal { get; set; } = null!;
 
-    public int Porcentaje { get; set; }
+    public string TipoReceptor { get; set; } = null!;
 
-    public bool Pnatural { get; set; }
+    public bool Residente { get; set; }
 
-    public bool Pjuridica { get; set; }
+    public bool Domiciliada { get; set; }
+
+    public decimal BaseImponible { get; set; }
+
+    public decimal Tarifa { get; set; }
+
+    public string? MontoSujeto { get; set; }
+
+    public string? PagosMayores { get; set; }
+
+    public string? Sustraendo { get; set; }
 
     public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
 

@@ -16,15 +16,15 @@ namespace Prueba.ViewModels
         public IFormFile? ExcelPropietarios { get; set; }
         public IEnumerable<SelectListItem>? Propietarios { get; set; }
         public string? IdPropietario { get; set; }
-        public Ubicacion? Ubicacion { get; set; }
+        //public Ubicacion? Ubicacion { get; set; }
         public Condominio? Condominio { get; set; }
-        public Inmueble? Inmueble { get; set; }
+        //public Inmueble? Inmueble { get; set; }
         public IList<Propiedad>? Propiedades { get; set; }
         public IEnumerable<SelectListItem>? SelectPropiedades { get; set; }
         public Propiedad? Propiedad { get; set; }
-        public Estacionamiento? Estacionamiento { get; set; }
+        //public Estacionamiento? Estacionamiento { get; set; }
         public IFormFile? ExcelPuestos_Est { get; set; }
-        public IList<PuestoE>? Puesto_Est { get; set; }
+        //public IList<PuestoE>? Puesto_Est { get; set; }
         public string? Nombre { get; set; }
         public int Rif { get; set; }
     }

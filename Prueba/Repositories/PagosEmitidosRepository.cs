@@ -115,9 +115,9 @@ namespace Prueba.Repositories
             bool resultado = false;
             decimal montoReferencia = 0;
 
-            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == modelo.IdSubcuenta).ToListAsync();
+            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
             var idCodCuenta = from c in _context.CodigoCuentasGlobals
-                              where c.IdCodigo == modelo.IdSubcuenta
+                              where c.IdSubCuenta == modelo.IdSubcuenta
                               select c;
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
@@ -154,7 +154,7 @@ namespace Prueba.Repositories
                 try
                 {
                     var idCaja = (from c in _context.CodigoCuentasGlobals
-                                 where c.IdCodigo == modelo.IdCodigoCuentaCaja
+                                 where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
                                  select c).First();
 
                     // buscar moneda asigna a la subcuenta
@@ -352,7 +352,7 @@ namespace Prueba.Repositories
                 {
 
                     var idBanco = (from c in _context.CodigoCuentasGlobals
-                                  where c.IdCodigo == modelo.IdCodigoCuentaBanco
+                                  where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
                                   select c).First();
 
                     // buscar moneda asigna a la subcuenta

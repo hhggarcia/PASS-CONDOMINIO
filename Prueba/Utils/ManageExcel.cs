@@ -67,44 +67,44 @@ namespace Prueba.Utils
             return listaUsuarios;
         }
 
-        public List<PuestoE> ExcelPuestos_Est(IFormFile archivoExcel)
-        {
-            //falta validar si es null
-            Stream stream = archivoExcel.OpenReadStream();
+        //public List<PuestoE> ExcelPuestos_Est(IFormFile archivoExcel)
+        //{
+        //    //falta validar si es null
+        //    Stream stream = archivoExcel.OpenReadStream();
 
-            IWorkbook MiExcel = null;
+        //    IWorkbook MiExcel = null;
 
-            if (Path.GetExtension(archivoExcel.FileName) == ".xlsx")
-            {
-                MiExcel = new XSSFWorkbook(stream);
-            }
-            else
-            {
-                MiExcel = new HSSFWorkbook(stream);
-            }
+        //    if (Path.GetExtension(archivoExcel.FileName) == ".xlsx")
+        //    {
+        //        MiExcel = new XSSFWorkbook(stream);
+        //    }
+        //    else
+        //    {
+        //        MiExcel = new HSSFWorkbook(stream);
+        //    }
 
-            ISheet HojaExcel = MiExcel.GetSheetAt(0);
+        //    ISheet HojaExcel = MiExcel.GetSheetAt(0);
 
-            int cantidadFilas = HojaExcel.LastRowNum;
+        //    int cantidadFilas = HojaExcel.LastRowNum;
 
-            //Lista de usuarios
-            List<PuestoE> listaPuestos_Est = new List<PuestoE>();
+        //    //Lista de usuarios
+        //    List<PuestoE> listaPuestos_Est = new List<PuestoE>();
 
-            //FOR - para recorrer la hoja y extraer los usuarios
-            for (int i = 1; i <= cantidadFilas; i++)
-            {
+        //    //FOR - para recorrer la hoja y extraer los usuarios
+        //    for (int i = 1; i <= cantidadFilas; i++)
+        //    {
 
-                IRow fila = HojaExcel.GetRow(i);
+        //        IRow fila = HojaExcel.GetRow(i);
 
-                listaPuestos_Est.Add(new PuestoE
-                {
-                    Codigo = fila.GetCell(0).ToString(),
-                    Alicuota = Convert.ToInt32(fila.GetCell(1))
-                });
-            }
+        //        listaPuestos_Est.Add(new PuestoE
+        //        {
+        //            Codigo = fila.GetCell(0).ToString(),
+        //            Alicuota = Convert.ToInt32(fila.GetCell(1))
+        //        });
+        //    }
 
-            return listaPuestos_Est;
-        }
+        //    return listaPuestos_Est;
+        //}
 
         public void RandomPasswords()
         {

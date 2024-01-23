@@ -98,7 +98,7 @@
 
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.RelacionGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        var subcuenta = Model.RelacionGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                         <tr class="tr_s">
                             <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                             <td>@subcuenta.First().Descricion</td>
@@ -127,10 +127,10 @@
             {
                 @foreach (var provisiones in Model.RelacionGastos.Provisiones)
                 {
-                    var idcc = Model.RelacionGastos.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                    var idcc = Model.RelacionGastos.CCProvisiones.Where(c => c.IdCodCuenta == provisiones.IdCodCuenta);
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.RelacionGastos.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
+                        var subcuenta = Model.RelacionGastos.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
 
                         <tr class="tr_s">
                             <td></td>
@@ -165,11 +165,11 @@
             {
                 @foreach (var fondo in Model.RelacionGastos.Fondos)
                 {
-                    var idcc = Model.RelacionGastos.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
+                    var idcc = Model.RelacionGastos.CCFondos.Where(c => c.IdCodCuenta == fondo.IdCodCuenta).ToList();
 
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.RelacionGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        var subcuenta = Model.RelacionGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
 
                         <tr class="tr_s">
                             <td></td>

@@ -17,5 +17,5 @@ public partial class CuentasCobrar
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual FacturaEmitidum IdFacturaNavigation { get; set; } = null!;
+    public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;
 }

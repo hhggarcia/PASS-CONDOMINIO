@@ -95,13 +95,13 @@
                                                     {
                                                         var cc = Model.CuentasCondominio.Where(c => c.IdCodCuenta == asiento.IdCodCuenta).ToList();
 
-                                                        var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdCodigo).ToList();
+                                                        var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdCodCuenta).ToList();
 
-                                                        var cuenta = Model.Cuentas.Where(c => c.Id == subcuenta.First().IdCuenta).ToList();
+                                                        var cuenta = Model.Cuentas.Where(c => c.Id == cc.First().IdCuenta).ToList();
 
-                                                        var grupo = Model.Grupos.Where(c => c.Id == cuenta.First().IdGrupo).ToList();
+                                                        var grupo = Model.Grupos.Where(c => c.Id == cc.First().IdGrupo).ToList();
 
-                                                        var clase = Model.Clases.Where(c => c.Id == grupo.First().IdClase).ToList();
+                                                        var clase = Model.Clases.Where(c => c.Id == cc.First().IdClase).ToList();
 
                                                         if (asiento.IdCodCuenta == cc.First().IdCodCuenta)
                                                         {

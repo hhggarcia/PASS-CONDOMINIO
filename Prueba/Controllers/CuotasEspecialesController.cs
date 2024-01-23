@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+//using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
 using NuGet.Packaging;
@@ -120,13 +120,13 @@ namespace Prueba.Controllers
                         return View("Error", modeloError);
                     }
                     int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-                    var idInmueble = from c in _context.Inmuebles
-                                     where c.IdCondominio == idCondominio
-                                     select c.IdInmueble;
+                    //var idInmueble = from c in _context.Inmuebles
+                    //                 where c.IdCondominio == idCondominio
+                    //                 select c.IdInmueble;
 
                     var listaPropiedades =
                         (from c in _context.Propiedads
-                         where c.IdInmueble == idInmueble.First()
+                         where c.IdCondominio == idCondominio
                          select c).ToList();
                     var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
                     if (modelo.SimboloMoneda == "$")
@@ -545,10 +545,11 @@ namespace Prueba.Controllers
                     // buscar subcuenta contable donde esta el pago del condominio
                     var cuentaCondominio = from s in _context.SubCuenta
                                            join cc in _context.CodigoCuentasGlobals
-                                           on s.Id equals cc.IdCodigo
+                                           on s.Id equals cc.IdSubCuenta
                                            where cc.IdCondominio == idCondominio
-                                           where s.IdCuenta == 15 && s.Codigo == "01"
+                                           where s.Id == 15 && s.Codigo == "01"
                                            select s;
+
                     // buscar referencia si tiene
                     var referencias = new List<ReferenciasPr>();
                     if ((bool)pago.FormaPago)

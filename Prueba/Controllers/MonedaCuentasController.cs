@@ -104,7 +104,7 @@ namespace Prueba.Controllers
             {
                 // idCodCuenta es ID de Subcuenta
                 // buscar por Codigo en CodigoCuentasGlobal
-                var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == monedaCuenta.IdCodCuenta).ToListAsync();
+                var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == monedaCuenta.IdCodCuenta).ToListAsync();
 
                 // validar no repetido
                 var exist = await _context.MonedaCuenta.Where(c => c.IdCodCuenta == cc.First().IdCodCuenta && c.IdMoneda == monedaCuenta.IdMoneda).ToListAsync();
@@ -164,7 +164,7 @@ namespace Prueba.Controllers
                 var monedas = await _context.MonedaConds.Where(c => c.IdCondominio == idCondominio).ToListAsync();
                 var cc = await _context.CodigoCuentasGlobals.FindAsync(monedaCuenta.IdCodCuenta);
 
-                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", cc.IdCodigo);
+                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", cc.IdSubCuenta);
                 ViewData["IdMoneda"] = new SelectList(monedas, "IdMonedaCond", "Simbolo", monedaCuenta.IdMoneda);
 
                 return View(monedaCuenta);
@@ -199,7 +199,7 @@ namespace Prueba.Controllers
             {
                 // idCodCuenta es ID de Subcuenta
                 // buscar por Codigo en CodigoCuentasGlobal
-                var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == monedaCuenta.IdCodCuenta).ToListAsync();
+                var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == monedaCuenta.IdCodCuenta).ToListAsync();
                 // validar no repetido
                 var exist = await _context.MonedaCuenta.Where(c => c.IdCodCuenta == cc.First().IdCodCuenta
                                                                     && cc.First().IdCodCuenta != monedaCuenta.IdCodCuenta

@@ -53,7 +53,7 @@
 
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        var subcuenta = Model.SubcuentasGastos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                         <tr class="tr_s">
                             <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
                             <td>@subcuenta.First().Descricion</td>
@@ -86,10 +86,10 @@
             {
                 @foreach (var provisiones in Model.Provisiones)
                 {
-                    var idcc = Model.CCProvisiones.Where(c => c.IdCodigo == provisiones.IdCodCuenta);
+                    var idcc = Model.CCProvisiones.Where(c => c.IdSubCuenta == provisiones.IdCodCuenta);
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.SubCuentasProvisiones.Where(c => idcc.First().IdCodigo == c.Id).ToList();
+                        var subcuenta = Model.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
 
                         <tr class="tr_s">
                             <td></td>
@@ -123,11 +123,11 @@
             {
                 @foreach (var fondo in Model.Fondos)
                 {
-                    var idcc = Model.CCFondos.Where(c => c.IdCodigo == fondo.IdCodCuenta).ToList();
+                    var idcc = Model.CCFondos.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).ToList();
 
                     if (idcc != null && idcc.Any())
                     {
-                        var subcuenta = Model.SubCuentasFondos.Where(c => c.Id == idcc.First().IdCodigo).ToList();
+                        var subcuenta = Model.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
 
                         <tr class="tr_s">
                             <th></th>

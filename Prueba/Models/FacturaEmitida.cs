@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Prueba.Models;
 
-public partial class FacturaEmitidum
+public partial class FacturaEmitida
 {
     public int IdFacturaEmitida { get; set; }
 

@@ -7,7 +7,7 @@ public partial class Propiedad
 {
     public int IdPropiedad { get; set; }
 
-    public int IdInmueble { get; set; }
+    public int IdCondominio { get; set; }
 
     public string IdUsuario { get; set; } = null!;
 
@@ -23,15 +23,15 @@ public partial class Propiedad
 
     public decimal Deuda { get; set; }
 
-    public decimal? MontoIntereses { get; set; }
+    public decimal MontoIntereses { get; set; }
 
-    public virtual Inmueble IdInmuebleNavigation { get; set; } = null!;
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual AspNetUser IdUsuarioNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoRecibido> PagoRecibidos { get; } = new List<PagoRecibido>();
 
-    public virtual ICollection<PuestoE> PuestoEs { get; } = new List<PuestoE>();
+    public virtual ICollection<PropiedadesGrupo> PropiedadesGrupos { get; } = new List<PropiedadesGrupo>();
 
     public virtual ICollection<ReciboCobro> ReciboCobros { get; } = new List<ReciboCobro>();
 

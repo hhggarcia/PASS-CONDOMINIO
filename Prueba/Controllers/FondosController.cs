@@ -165,7 +165,7 @@ namespace Prueba.Controllers
                     return View("Error", error2);
                 }
                 // 
-                var idFondo = await _context.CodigoCuentasGlobals.Where(c => c.IdCodigo == fondo.IdCodCuenta).FirstAsync();
+                var idFondo = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).FirstAsync();
 
                 fondo.IdCodCuenta = idFondo.IdCodCuenta;
 

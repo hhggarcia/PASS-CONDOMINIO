@@ -36,11 +36,11 @@
 
                                 <h3>Condominio</h3>
                                 @if (Model.Condominio != null
-                                && Model.Inmueble != null
+                                
                                 && Model.Propiedad != null)
                                 {
                                     <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
-                                    <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
+                                    @* <p><strong>Inmueble</strong>: </p> *@
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
                                     @if (Model.Abonado !=0)
                                     {

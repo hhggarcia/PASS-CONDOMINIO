@@ -40,12 +40,10 @@ namespace Prueba.Repositories
             {
                 foreach (var item in propiedades)
                 {
-                    var inmueble = await _context.Inmuebles.FindAsync(item.IdInmueble);
+                    //var inmueble = await _context.Inmuebles.FindAsync(item.Condmini);
 
-                    if (inmueble != null)
-                    {
-                        listIdCondominios.Add(inmueble.IdCondominio);
-                    }
+                    listIdCondominios.Add(item.IdCondominio);
+
                 }
 
                 return listIdCondominios;

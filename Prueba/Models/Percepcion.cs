@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Prueba.Models;
 
-public partial class Percepcione
+public partial class Percepcion
 {
     public int IdPercepcion { get; set; }
 

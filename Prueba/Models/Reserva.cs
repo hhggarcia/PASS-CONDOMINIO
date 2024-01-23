@@ -15,8 +15,6 @@ public partial class Reserva
 
     public string Descripcion { get; set; } = null!;
 
-    public virtual AreaComun IdAreaNavigation { get; set; } = null!;
-
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual ICollection<ReciboReserva> ReciboReservas { get; } = new List<ReciboReserva>();

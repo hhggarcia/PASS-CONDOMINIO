@@ -40,19 +40,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    IList<Propiedad> propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -79,19 +76,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -117,19 +111,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -155,19 +146,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -194,19 +182,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -231,19 +216,16 @@ namespace Prueba.Repositories
             var condominio = await _context.Condominios.FindAsync(idCondominio);
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -268,19 +250,16 @@ namespace Prueba.Repositories
             decimal ingresoMes = 0;
             if (condominio != null)
             {
-                var inmuebles = from a in _context.Inmuebles
-                                where a.IdCondominio == condominio.IdCondominio
-                                select a;
+                //var inmuebles = from a in _context.Inmuebles
+                //                where a.IdCondominio == condominio.IdCondominio
+                //                select a;
 
-                IList<Propiedad> propiedades = new List<Propiedad>();
+                //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                foreach (var inmueble in inmuebles)
-                {
-                    var propiedad = await _context.Propiedads.Where(c => c.IdInmueble == inmueble.IdInmueble).ToListAsync();
+                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
-                    var aux = propiedades.Concat(propiedad).ToList();
-                    propiedades = aux.ToList();
-                }
+                //var aux = propiedades.Concat(propiedad).ToList();
+                //propiedades = aux.ToList();
 
                 foreach (var propiedad in propiedades)
                 {
@@ -360,9 +339,9 @@ namespace Prueba.Repositories
         public async Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio)
         {
             // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
-            var inmueblesCondominio = from c in _context.Inmuebles
-                                      where c.IdCondominio == idCondominio
-                                      select c;
+            //var inmueblesCondominio = from c in _context.Inmuebles
+            //                          where c.IdCondominio == idCondominio
+            //                          select c;
             var propiedades = from c in _context.Propiedads
                               where c.Solvencia == false
                               select c;
@@ -374,8 +353,7 @@ namespace Prueba.Repositories
             var recibosCobro = from c in _context.ReciboCobros
                                select c;
 
-            if (inmueblesCondominio != null && inmueblesCondominio.Any()
-                && propiedades != null && propiedades.Any()
+            if (propiedades != null && propiedades.Any()
                 && propietarios != null && propietarios.Any()
                 && relacionesGastos != null && relacionesGastos.Any())
             {
@@ -384,12 +362,9 @@ namespace Prueba.Repositories
                 IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
                 // BUSCAR PROPIEADES DE LOS INMUEBLES
 
-                foreach (var item in inmueblesCondominio)
-                {
-                    var propiedadsCond = await propiedades.Where(c => c.IdInmueble == item.IdInmueble).ToListAsync();
-                    var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
-                    listaPropiedadesCondominio = aux2;
-                }
+                var propiedadsCond = await propiedades.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+                var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
+                listaPropiedadesCondominio = aux2;
 
                 // BUSCAR SUS RECIBOS DE COBRO
                 // BUSCAR PROPIEDADES CON DEUDA
@@ -409,7 +384,7 @@ namespace Prueba.Repositories
                     Propiedades = listaPropiedadesCondominio,
                     Propietarios = await propietarios.ToListAsync(),
                     Recibos = recibosCobroCond,
-                    Inmuebles = await inmueblesCondominio.ToListAsync()
+                    //Inmuebles = await inmueblesCondominio.ToListAsync()
                 };
 
                 return modelo;
