@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Prueba.Models.Islr>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UnidadTributaria)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Factor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Concepto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Literal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoReceptor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Residente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Domiciliada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseImponible)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tarifa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MontoSujeto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PagosMayores)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sustraendo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnidadTributaria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Factor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Concepto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Literal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoReceptor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Residente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Domiciliada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaseImponible)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tarifa)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MontoSujeto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PagosMayores)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sustraendo)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
