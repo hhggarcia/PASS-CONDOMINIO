@@ -1,0 +1,58 @@
+﻿@model Prueba.Models.SubCuenta
+
+@{
+    ViewData["Title"] = "Detalles SubCuenta";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cuentas Contables Global
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div>
+
+                                    <dl class="row">
+                                        <dt class="col-sm-3">
+                                            @Html.DisplayNameFor(model => model.Descricion)
+                                        </dt>
+                                        <dd class="col-sm-10">
+                                            @Html.DisplayFor(model => model.Descricion)
+                                        </dd>
+                                        <dt class="col-sm-3">
+                                            @Html.DisplayNameFor(model => model.Codigo)
+                                        </dt>
+                                        <dd class="col-sm-10">
+                                            @Html.DisplayFor(model => model.Codigo)
+                                        </dd>
+                                        @*<dt class="col-sm-3">
+                                        @Html.DisplayNameFor(model => model.IdCuentaNavigation)
+                                        </dt>
+                                        <dd class="col-sm-10">
+                                        @Html.DisplayFor(model => model.IdCuentaNavigation.Id)
+                                        </dd>*@
+                                    </dl>
+                                </div>
+                                <div>
+                                    <a asp-action="EditSubCuenta" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

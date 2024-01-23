@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Prueba.Models.LibroCompra>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseImponible)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExentoIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Iva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Igtf)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RetIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RetIslr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumComprobanteRet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaComprobanteRet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FormaPago)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaseImponible)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExentoIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Iva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Igtf)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RetIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RetIslr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Monto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumComprobanteRet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaComprobanteRet)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormaPago)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFactura)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
