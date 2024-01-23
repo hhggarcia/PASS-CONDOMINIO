@@ -1,0 +1,75 @@
+﻿@model Prueba.Models.Proveedor
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Proveedor</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdCondominio" class="control-label"></label>
+                <select asp-for="IdCondominio" class ="form-control" asp-items="ViewBag.IdCondominio"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Direccion" class="control-label"></label>
+                <input asp-for="Direccion" class="form-control" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label"></label>
+                <input asp-for="Telefono" class="form-control" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Rif" class="control-label"></label>
+                <input asp-for="Rif" class="form-control" />
+                <span asp-validation-for="Rif" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdRetencionIslr" class="control-label"></label>
+                <select asp-for="IdRetencionIslr" class ="form-control" asp-items="ViewBag.IdRetencionIslr"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdRetencionIva" class="control-label"></label>
+                <select asp-for="IdRetencionIva" class ="form-control" asp-items="ViewBag.IdRetencionIva"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Saldo" class="control-label"></label>
+                <input asp-for="Saldo" class="form-control" />
+                <span asp-validation-for="Saldo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Representante" class="control-label"></label>
+                <input asp-for="Representante" class="form-control" />
+                <span asp-validation-for="Representante" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

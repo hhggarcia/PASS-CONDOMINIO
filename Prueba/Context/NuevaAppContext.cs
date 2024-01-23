@@ -142,7 +142,7 @@ public partial class NuevaAppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-1GR3ADJ;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -434,6 +434,10 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsFixedLength();
+            entity.HasOne(d => d.IdGrupoNavigation).WithMany(p => p.Cuenta)
+             .HasForeignKey(d => d.IdGrupo)
+             .OnDelete(DeleteBehavior.ClientSetNull)
+             .HasConstraintName("FK_Cuenta_Grupo");
         });
 
         modelBuilder.Entity<CuotasEspeciale>(entity =>
@@ -624,6 +628,11 @@ public partial class NuevaAppContext : DbContext
 
             entity.Property(e => e.Codigo).HasMaxLength(1);
             entity.Property(e => e.Descripcion).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdClaseNavigation).WithMany(p => p.Grupos)
+           .HasForeignKey(d => d.IdClase)
+           .OnDelete(DeleteBehavior.ClientSetNull)
+           .HasConstraintName("FK_Grupo_Clase");
         });
 
         modelBuilder.Entity<GrupoGasto>(entity =>
@@ -1346,6 +1355,10 @@ public partial class NuevaAppContext : DbContext
         {
             entity.Property(e => e.Codigo).HasMaxLength(2);
             entity.Property(e => e.Descricion).HasMaxLength(70);
+            entity.HasOne(d => d.IdCuentaNavigation).WithMany(p => p.SubCuenta)
+             .HasForeignKey(d => d.IdCuenta)
+             .OnDelete(DeleteBehavior.ClientSetNull)
+             .HasConstraintName("FK_SubCuenta_Cuenta");
         });
 
         OnModelCreatingPartial(modelBuilder);
