@@ -49,8 +49,8 @@ namespace Prueba.Controllers
         // GET: CuentasPagar/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
             return View();
         }
 
@@ -61,14 +61,17 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,IdCondominio,IdFactura,Monto,Status")] CuentasPagar cuentasPagar)
         {
+            ModelState.Remove(nameof(cuentasPagar.IdCondominioNavigation));
+            ModelState.Remove(nameof(cuentasPagar.IdFacturaNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(cuentasPagar);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", cuentasPagar.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", cuentasPagar.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
             return View(cuentasPagar);
         }
 
@@ -85,8 +88,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", cuentasPagar.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", cuentasPagar.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
             return View(cuentasPagar);
         }
 
@@ -101,6 +104,10 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(cuentasPagar.IdCondominioNavigation));
+            ModelState.Remove(nameof(cuentasPagar.IdFacturaNavigation));
+
 
             if (ModelState.IsValid)
             {
@@ -122,8 +129,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", cuentasPagar.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", cuentasPagar.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
             return View(cuentasPagar);
         }
 

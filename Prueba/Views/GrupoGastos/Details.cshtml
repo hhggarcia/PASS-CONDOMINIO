@@ -1,0 +1,31 @@
+﻿@model Prueba.Models.GrupoGasto
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>GrupoGasto</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NumGrupo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NumGrupo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NombreGrupo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NombreGrupo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdGrupoGasto">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

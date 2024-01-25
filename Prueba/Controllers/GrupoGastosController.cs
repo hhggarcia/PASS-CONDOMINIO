@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MathNet.Numerics.Distributions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,25 +10,22 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "SuperAdmin")]
-
-    public class CondominiosController : Controller
+    public class GrupoGastosController : Controller
     {
         private readonly NuevaAppContext _context;
 
-        public CondominiosController(NuevaAppContext context)
+        public GrupoGastosController(NuevaAppContext context)
         {
             _context = context;
         }
 
-        // GET: Condominios
+        // GET: GrupoGastos
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Condominios.Include(c => c.IdAdministradorNavigation);
-            return View(await nuevaAppContext.ToListAsync());
+            return View(await _context.GrupoGastos.ToListAsync());
         }
 
-        // GET: Condominios/Details/5
+        // GET: GrupoGastos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,44 +33,39 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var condominio = await _context.Condominios
-                .Include(c => c.IdAdministradorNavigation)
-                .FirstOrDefaultAsync(m => m.IdCondominio == id);
-            if (condominio == null)
+            var grupoGasto = await _context.GrupoGastos
+                .FirstOrDefaultAsync(m => m.IdGrupoGasto == id);
+            if (grupoGasto == null)
             {
                 return NotFound();
             }
 
-            return View(condominio);
+            return View(grupoGasto);
         }
 
-        // GET: Condominios/Create
+        // GET: GrupoGastos/Create
         public IActionResult Create()
         {
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email");
             return View();
         }
 
-        // POST: Condominios/Create
+        // POST: GrupoGastos/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email")] Condominio condominio)
+        public async Task<IActionResult> Create([Bind("IdGrupoGasto,NumGrupo,NombreGrupo")] GrupoGasto grupoGasto)
         {
-            ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
-
             if (ModelState.IsValid)
             {
-                _context.Add(condominio);
+                _context.Add(grupoGasto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
-            return View(condominio);
+            return View(grupoGasto);
         }
 
-        // GET: Condominios/Edit/5
+        // GET: GrupoGastos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -83,39 +73,36 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var condominio = await _context.Condominios.FindAsync(id);
-            if (condominio == null)
+            var grupoGasto = await _context.GrupoGastos.FindAsync(id);
+            if (grupoGasto == null)
             {
                 return NotFound();
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
-            return View(condominio);
+            return View(grupoGasto);
         }
 
-        // POST: Condominios/Edit/5
+        // POST: GrupoGastos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email")] Condominio condominio)
+        public async Task<IActionResult> Edit(int id, [Bind("IdGrupoGasto,NumGrupo,NombreGrupo")] GrupoGasto grupoGasto)
         {
-            if (id != condominio.IdCondominio)
+            if (id != grupoGasto.IdGrupoGasto)
             {
                 return NotFound();
             }
-
-            ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(condominio);
+                    _context.Update(grupoGasto);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CondominioExists(condominio.IdCondominio))
+                    if (!GrupoGastoExists(grupoGasto.IdGrupoGasto))
                     {
                         return NotFound();
                     }
@@ -126,11 +113,10 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id", condominio.IdAdministrador);
-            return View(condominio);
+            return View(grupoGasto);
         }
 
-        // GET: Condominios/Delete/5
+        // GET: GrupoGastos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,35 +124,34 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var condominio = await _context.Condominios
-                .Include(c => c.IdAdministradorNavigation)
-                .FirstOrDefaultAsync(m => m.IdCondominio == id);
-            if (condominio == null)
+            var grupoGasto = await _context.GrupoGastos
+                .FirstOrDefaultAsync(m => m.IdGrupoGasto == id);
+            if (grupoGasto == null)
             {
                 return NotFound();
             }
 
-            return View(condominio);
+            return View(grupoGasto);
         }
 
-        // POST: Condominios/Delete/5
+        // POST: GrupoGastos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var condominio = await _context.Condominios.FindAsync(id);
-            if (condominio != null)
+            var grupoGasto = await _context.GrupoGastos.FindAsync(id);
+            if (grupoGasto != null)
             {
-                _context.Condominios.Remove(condominio);
+                _context.GrupoGastos.Remove(grupoGasto);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CondominioExists(int id)
+        private bool GrupoGastoExists(int id)
         {
-            return _context.Condominios.Any(e => e.IdCondominio == id);
+            return _context.GrupoGastos.Any(e => e.IdGrupoGasto == id);
         }
     }
 }

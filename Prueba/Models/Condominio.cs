@@ -7,7 +7,7 @@ public partial class Condominio
 {
     public int IdCondominio { get; set; }
 
-    public string IdAdministrador { get; set; } = null!;
+    public string IdAdministrador { get; set; } = string.Empty;
 
     public string Rif { get; set; } = null!;
 
