@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class PropiedadesController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -49,8 +52,8 @@ namespace Prueba.Controllers
         // GET: Propiedades/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
-            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Id");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Email");
             return View();
         }
 
@@ -61,14 +64,17 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses")] Propiedad propiedad)
         {
+            ModelState.Remove(nameof(propiedad.IdCondominioNavigation));
+            ModelState.Remove(nameof(propiedad.IdUsuarioNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(propiedad);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", propiedad.IdCondominio);
-            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Id", propiedad.IdUsuario);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", propiedad.IdCondominio);
+            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Email", propiedad.IdUsuario);
             return View(propiedad);
         }
 
@@ -102,6 +108,9 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
+            ModelState.Remove(nameof(propiedad.IdCondominioNavigation));
+            ModelState.Remove(nameof(propiedad.IdUsuarioNavigation));
+
             if (ModelState.IsValid)
             {
                 try
@@ -122,8 +131,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", propiedad.IdCondominio);
-            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Id", propiedad.IdUsuario);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", propiedad.IdCondominio);
+            ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Email", propiedad.IdUsuario);
             return View(propiedad);
         }
 

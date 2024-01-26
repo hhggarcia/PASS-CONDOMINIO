@@ -2,78 +2,92 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
 }
 
-<h1>Edit</h1>
-
-<h4>LibroVenta</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="IdCondominio" class="control-label"></label>
-                <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
-                <span asp-validation-for="IdCondominio" class="text-danger"></span>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Libro de Ventas
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form asp-action="Edit">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="Id" />
+                                <div class="form-group">
+                                    <label asp-for="IdCondominio" class="control-label"></label>
+                                    <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                                    <span asp-validation-for="IdCondominio" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdFactura" class="control-label"></label>
+                                    <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
+                                    <span asp-validation-for="IdFactura" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="BaseImponible" class="control-label"></label>
+                                    <input asp-for="BaseImponible" class="form-control" />
+                                    <span asp-validation-for="BaseImponible" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Iva" class="control-label"></label>
+                                    <input asp-for="Iva" class="form-control" />
+                                    <span asp-validation-for="Iva" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Total" class="control-label"></label>
+                                    <input asp-for="Total" class="form-control" />
+                                    <span asp-validation-for="Total" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="RetIva" class="control-label"></label>
+                                    <input asp-for="RetIva" class="form-control" />
+                                    <span asp-validation-for="RetIva" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="RetIslr" class="control-label"></label>
+                                    <input asp-for="RetIslr" class="form-control" />
+                                    <span asp-validation-for="RetIslr" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Monto" class="control-label"></label>
+                                    <input asp-for="Monto" class="form-control" />
+                                    <span asp-validation-for="Monto" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NumComprobanteRet" class="control-label"></label>
+                                    <input asp-for="NumComprobanteRet" class="form-control" />
+                                    <span asp-validation-for="NumComprobanteRet" class="text-danger"></span>
+                                </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" asp-for="FormaPago" /> @Html.DisplayNameFor(model => model.FormaPago)
+                                    </label>
+                                </div>
+                                <div class="form-group pt-2">
+                                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdFactura" class="control-label"></label>
-                <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
-                <span asp-validation-for="IdFactura" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BaseImponible" class="control-label"></label>
-                <input asp-for="BaseImponible" class="form-control" />
-                <span asp-validation-for="BaseImponible" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Iva" class="control-label"></label>
-                <input asp-for="Iva" class="form-control" />
-                <span asp-validation-for="Iva" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RetIva" class="control-label"></label>
-                <input asp-for="RetIva" class="form-control" />
-                <span asp-validation-for="RetIva" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RetIslr" class="control-label"></label>
-                <input asp-for="RetIslr" class="form-control" />
-                <span asp-validation-for="RetIslr" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Monto" class="control-label"></label>
-                <input asp-for="Monto" class="form-control" />
-                <span asp-validation-for="Monto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumComprobanteRet" class="control-label"></label>
-                <input asp-for="NumComprobanteRet" class="form-control" />
-                <span asp-validation-for="NumComprobanteRet" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="FormaPago" /> @Html.DisplayNameFor(model => model.FormaPago)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+                     
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

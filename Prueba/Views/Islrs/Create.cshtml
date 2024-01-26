@@ -2,87 +2,102 @@
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
 }
 
-<h1>Create</h1>
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
 
-<h4>Islr</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UnidadTributaria" class="control-label"></label>
-                <input asp-for="UnidadTributaria" class="form-control" />
-                <span asp-validation-for="UnidadTributaria" class="text-danger"></span>
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Impuesto ISLR
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="UnidadTributaria" class="control-label"></label>
+                            <input asp-for="UnidadTributaria" class="form-control" />
+                            <span asp-validation-for="UnidadTributaria" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Factor" class="control-label"></label>
+                            <input asp-for="Factor" class="form-control" />
+                            <span asp-validation-for="Factor" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Concepto" class="control-label"></label>
+                            <input asp-for="Concepto" class="form-control" />
+                            <span asp-validation-for="Concepto" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Literal" class="control-label"></label>
+                            <input asp-for="Literal" class="form-control" />
+                            <span asp-validation-for="Literal" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TipoReceptor" class="control-label"></label>
+                            <input asp-for="TipoReceptor" class="form-control" />
+                            <span asp-validation-for="TipoReceptor" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Residente" /> @Html.DisplayNameFor(model => model.Residente)
+                            </label>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Domiciliada" /> @Html.DisplayNameFor(model => model.Domiciliada)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BaseImponible" class="control-label"></label>
+                            <input asp-for="BaseImponible" class="form-control" />
+                            <span asp-validation-for="BaseImponible" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Tarifa" class="control-label"></label>
+                            <input asp-for="Tarifa" class="form-control" />
+                            <span asp-validation-for="Tarifa" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoSujeto" class="control-label"></label>
+                            <input asp-for="MontoSujeto" class="form-control" />
+                            <span asp-validation-for="MontoSujeto" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PagosMayores" class="control-label"></label>
+                            <input asp-for="PagosMayores" class="form-control" />
+                            <span asp-validation-for="PagosMayores" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Sustraendo" class="control-label"></label>
+                            <input asp-for="Sustraendo" class="form-control" />
+                            <span asp-validation-for="Sustraendo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Factor" class="control-label"></label>
-                <input asp-for="Factor" class="form-control" />
-                <span asp-validation-for="Factor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Concepto" class="control-label"></label>
-                <input asp-for="Concepto" class="form-control" />
-                <span asp-validation-for="Concepto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Literal" class="control-label"></label>
-                <input asp-for="Literal" class="form-control" />
-                <span asp-validation-for="Literal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TipoReceptor" class="control-label"></label>
-                <input asp-for="TipoReceptor" class="form-control" />
-                <span asp-validation-for="TipoReceptor" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Residente" /> @Html.DisplayNameFor(model => model.Residente)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Domiciliada" /> @Html.DisplayNameFor(model => model.Domiciliada)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="BaseImponible" class="control-label"></label>
-                <input asp-for="BaseImponible" class="form-control" />
-                <span asp-validation-for="BaseImponible" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tarifa" class="control-label"></label>
-                <input asp-for="Tarifa" class="form-control" />
-                <span asp-validation-for="Tarifa" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MontoSujeto" class="control-label"></label>
-                <input asp-for="MontoSujeto" class="form-control" />
-                <span asp-validation-for="MontoSujeto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PagosMayores" class="control-label"></label>
-                <input asp-for="PagosMayores" class="form-control" />
-                <span asp-validation-for="PagosMayores" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sustraendo" class="control-label"></label>
-                <input asp-for="Sustraendo" class="form-control" />
-                <span asp-validation-for="Sustraendo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+                
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
