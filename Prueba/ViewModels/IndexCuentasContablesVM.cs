@@ -10,6 +10,6 @@ namespace Prueba.ViewModels
         public IList<Grupo>? Grupos { get; set; }
         public IList<Cuenta>? Cuentas { get; set; }
         public IList<SubCuenta>? SubCuentas { get; set; }
-
+        public IList<CuentaGlobalSubCuentasVM>? SubCuentasSaldo { get; set; }
     }
 }
