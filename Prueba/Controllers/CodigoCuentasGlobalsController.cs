@@ -60,9 +60,18 @@ namespace Prueba.Controllers
                 }
             }
             //PASAR MODELO
-            modelo.Clases = clases.ToList();
-            modelo.Grupos = grupos.ToList();
-            modelo.Cuentas = cuentas.ToList();
+            if(clases.ToList().Count > 0)
+            {
+                modelo.Clases = clases.ToList();
+            }
+            if (grupos.ToList().Count > 0)
+            {
+                modelo.Grupos = grupos.ToList();
+            }   
+            if (cuentas.ToList().Count > 0)
+            {
+                modelo.Cuentas = cuentas.ToList();
+            }
             //modelo.SubCuentas = subcuentasModel;
             modelo.SubCuentasSaldo = subcuentaSaldo;
             //CREAR FOR PARA CREAR LAS FILAS CON LA INFO 
@@ -187,7 +196,7 @@ namespace Prueba.Controllers
                     _dContext.SaveChanges();
                 }
 
-                return RedirectToAction("CodigoCuentasGlobals");
+                return RedirectToAction(nameof(Index));
 
                 //}
 

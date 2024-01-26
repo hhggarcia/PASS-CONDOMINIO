@@ -303,12 +303,14 @@ namespace Prueba.Controllers
                         {
                             _context.PagoRecibidos.Remove(pago);
                         }
-
+                        
                         reciboActual.First().EnProceso = false;
 
                         _context.ReciboCobros.Update(reciboActual.First());
 
                         await _context.SaveChangesAsync();
+                        var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                        _serviceEmail.RectificarPago(email, pago);
                     }
 
                 }
@@ -525,51 +527,7 @@ namespace Prueba.Controllers
                                         }
                                     }
 
-
-                                    //    if (pago.MontoRef == reciboActual.Abonado)
-                                    //{
-                                    //    reciboActual.Abonado =  pago.MontoRef - propiedad.Saldo;
-                                    //}
-                                    //else
-                              
-                                    //else 
-                                    //{
-                                    //    reciboActual.Abonado = reciboActual.Abonado + (pago.MontoRef - propiedad.Saldo);
-                                    //}
-                                 
-                                  
-
                                 }
-
-                                //if (propiedad.Saldo == reciboActual.Monto
-                                //    && propiedad.Deuda == 0)
-                                //{
-                                //    // hacer saldo = 0
-                                //    propiedad.Saldo = 0;
-                                //    // cambiar solvencia = True
-                                //    propiedad.Solvencia = true;
-
-                                //}
-                                //else 
-                                //if (propiedad.Saldo == 0
-                                //    && propiedad.Deuda >= reciboActual.Monto)
-                                //{
-                                //    // restar de Deuda -Monto
-                                //    propiedad.Deuda -= reciboActual.Monto;
-                                //    // si deuda y saldo == 0 -> solvencia = true
-                                //    if (propiedad.Deuda == 0)
-                                //    {
-                                //        propiedad.Solvencia = true;
-                                //    }
-                                //}
-                                //else if (propiedad.Saldo > 0
-                                //    && propiedad.Saldo != reciboActual.Monto
-                                //    && propiedad.Deuda >= reciboActual.Monto)
-                                //{
-                                //    // restar de Deuda -Monto
-                                //    propiedad.Deuda -= reciboActual.Monto;
-
-                                //}
 
                                 // cambiar en recibo o en los recibos - en proceso a false y pagado a true
                             
@@ -580,6 +538,10 @@ namespace Prueba.Controllers
                                 dbContext.Update(propiedad);
                                 dbContext.Update(reciboActual);
                                 dbContext.Update(pago);
+
+                                // Enviar Correo
+                                var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                                _serviceEmail.ConfirmacionPago(email, propiedad, reciboActual, pago);
 
                                 int numAsiento = 1;
 

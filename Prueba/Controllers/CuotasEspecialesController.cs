@@ -612,6 +612,9 @@ namespace Prueba.Controllers
 
                             dbContext.Update(reciboActual);
                             dbContext.Update(pago);
+                            var propiedad = await _context.Propiedads.Where(c => c.IdPropiedad == reciboActual.IdPropiedad).FirstAsync();
+                            var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                            _serviceEmail.ConfirmacionPagoCuota(email,cuotaEspecial, reciboActual, pago);
                             int numAsiento = 1;
 
                             var diarioCondominio = from a in _context.LdiarioGlobals
@@ -763,6 +766,10 @@ namespace Prueba.Controllers
                     reciboActual.EnProceso = false;
                     _context.ReciboCuotas.Update(reciboActual);
                     await _context.SaveChangesAsync();
+
+                    var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == reciboActual.IdCuotaEspecial).FirstAsync();
+                    var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                    _serviceEmail.RectificarPagoCuotaEspecial(email, cuotaEspecial, pago);
                 }
                 TempData.Keep();
                 return RedirectToAction("Cobrar");
