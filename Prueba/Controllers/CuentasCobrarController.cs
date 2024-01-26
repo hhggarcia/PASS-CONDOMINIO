@@ -11,7 +11,7 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "Administrador")]
+    [Authorize(Policy = "RequireAdmin")]
 
     public class CuentasCobrarController : Controller
     {
