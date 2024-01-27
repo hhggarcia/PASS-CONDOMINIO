@@ -140,6 +140,7 @@ namespace Prueba.Controllers
                     modelo.ValorDolar = monedaPrincipal.First().ValorDolar;
                     modelo.SimboloMoneda = monedaPrincipal.First().Simbolo;
                     modelo.SimboloRef = "$";
+                    List<GastosCuotasEmailVM> relacionGastosCuotas = new List<GastosCuotasEmailVM>();
                     using (var dbContext = new NuevaAppContext())
                     {
                         await dbContext.AddAsync(modelo);
@@ -147,6 +148,13 @@ namespace Prueba.Controllers
                         var idCuotaEspecial = modelo.IdCuotaEspecial;
                         foreach (var c in listaPropiedades)
                         {
+                            string email = await _context.AspNetUsers.Where(a => a.Id == c.IdUsuario).Select(c => c.Email).FirstAsync();
+                            var gastosCuotas = new GastosCuotasEmailVM() { 
+                                Propiedad = c,
+                                CuotasEspeciale = modelo,
+                                Email = email
+                            };
+                            relacionGastosCuotas.Add(gastosCuotas);
                             var nuevoReciboCuota = new ReciboCuota
                             {
                                 IdPropiedad = c.IdPropiedad,
@@ -162,9 +170,17 @@ namespace Prueba.Controllers
                                 ValorDolar = monedaPrincipal.First().ValorDolar,
                                 SimboloRef = "$"
                             };
+
                             await dbContext.AddAsync(nuevoReciboCuota);
 
                         }
+
+                        var emailFrom = (from a in _context.AspNetUsers
+                                         join c in _context.Condominios
+                                         on a.Id equals c.IdAdministrador
+                                         where c.IdCondominio == idCondominio
+                                         select a.Email).ToString();
+                        _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, "");
                         await dbContext.SaveChangesAsync();
                         TempData.Keep();
                     }
@@ -614,7 +630,12 @@ namespace Prueba.Controllers
                             dbContext.Update(pago);
                             var propiedad = await _context.Propiedads.Where(c => c.IdPropiedad == reciboActual.IdPropiedad).FirstAsync();
                             var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                            _serviceEmail.ConfirmacionPagoCuota(email,cuotaEspecial, reciboActual, pago);
+                            var emailFrom = (from a in _context.AspNetUsers
+                                             join c in _context.Condominios
+                                             on a.Id equals c.IdAdministrador
+                                             where c.IdCondominio == idCondominio
+                                             select a.Email).ToString();
+                            _serviceEmail.ConfirmacionPagoCuota(emailFrom,email, cuotaEspecial, reciboActual, pago, "");
                             int numAsiento = 1;
 
                             var diarioCondominio = from a in _context.LdiarioGlobals
@@ -732,6 +753,7 @@ namespace Prueba.Controllers
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
                 var pago = await _context.PagoRecibidos.FindAsync(id);
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 if (pago != null)
                 {
@@ -769,7 +791,13 @@ namespace Prueba.Controllers
 
                     var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == reciboActual.IdCuotaEspecial).FirstAsync();
                     var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                    _serviceEmail.RectificarPagoCuotaEspecial(email, cuotaEspecial, pago);
+
+                    var emailFrom = (from a in _context.AspNetUsers
+                                    join c in _context.Condominios
+                                    on a.Id equals c.IdAdministrador 
+                                    where c.IdCondominio == idCondominio
+                                    select a.Email).ToString();
+                    _serviceEmail.RectificarPagoCuotaEspecial(emailFrom,email, cuotaEspecial, pago, "");
                 }
                 TempData.Keep();
                 return RedirectToAction("Cobrar");

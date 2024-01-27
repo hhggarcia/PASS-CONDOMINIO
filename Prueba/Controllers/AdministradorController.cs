@@ -257,6 +257,7 @@ namespace Prueba.Controllers
             try
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 // buscar pago
                 var pago = await _context.PagoRecibidos.FindAsync(id);
@@ -310,7 +311,12 @@ namespace Prueba.Controllers
 
                         await _context.SaveChangesAsync();
                         var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                        _serviceEmail.RectificarPago(email, pago);
+                        var emailFrom = (from a in _context.AspNetUsers
+                                         join c in _context.Condominios
+                                         on a.Id equals c.IdAdministrador
+                                         where c.IdCondominio == idCondominio
+                                         select a.Email).ToString();
+                        _serviceEmail.RectificarPago(emailFrom,email, pago, "");
                     }
 
                 }
@@ -541,7 +547,14 @@ namespace Prueba.Controllers
 
                                 // Enviar Correo
                                 var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                                _serviceEmail.ConfirmacionPago(email, propiedad, reciboActual, pago);
+
+                                var emailFrom = (from a in _context.AspNetUsers
+                                                 join c in _context.Condominios
+                                                 on a.Id equals c.IdAdministrador
+                                                 where c.IdCondominio == idCondominio
+                                                 select a.Email).ToString();
+
+                                _serviceEmail.ConfirmacionPago(emailFrom,email, propiedad, reciboActual, pago, "");
 
                                 int numAsiento = 1;
 

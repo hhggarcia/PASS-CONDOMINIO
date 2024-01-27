@@ -11,10 +11,11 @@ namespace Prueba.Services
     public interface IEmailService
     {
         void SendEmail(RegisterConfirm request);
-        void ConfirmacionPago(String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido);
-        void RectificarPago(String EmailTo, PagoRecibido pago);
-        void ConfirmacionPagoCuota(String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido);
-        void RectificarPagoCuotaEspecial(String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago);
+        void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password);
+        void RectificarPago(String EmailFrom, String EmailTo, PagoRecibido pago, String password);
+        void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
+        void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
+        void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
     }
     public class EmailService: IEmailService
     {
@@ -39,7 +40,7 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void ConfirmacionPago(String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido)
+        public void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password)
         {
 
             var email = new MimeMessage();
@@ -76,12 +77,12 @@ namespace Prueba.Services
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            smtp.Authenticate(EmailFrom, password);
             smtp.Send(email);
             smtp.Disconnect(true);
         }
 
-        public void RectificarPago(String EmailTo, PagoRecibido pago)
+        public void RectificarPago(String EmailFrom, String EmailTo, PagoRecibido pago, String password)
         {
 
             var email = new MimeMessage();
@@ -116,11 +117,11 @@ namespace Prueba.Services
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            smtp.Authenticate(EmailFrom, password);
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void ConfirmacionPagoCuota(String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido)
+        public void ConfirmacionPagoCuota(String EmailFrom,String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
@@ -163,19 +164,17 @@ namespace Prueba.Services
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            smtp.Authenticate(EmailFrom, password);
             smtp.Send(email);
             smtp.Disconnect(true);
         }
 
-        public void RectificarPagoCuotaEspecial(String EmailTo,CuotasEspeciale cuotasEspeciale, PagoRecibido pago)
+        public void RectificarPagoCuotaEspecial(String EmailFrom,String EmailTo,CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password)
         {
-
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
+            email.From.Add(MailboxAddress.Parse(EmailFrom));
             email.To.Add(MailboxAddress.Parse(EmailTo));
             email.Subject = "Rectificación de pago Cuota Especial";
-
             email.Body = new TextPart(TextFormat.Html)
             {
                 Text =
@@ -205,10 +204,86 @@ namespace Prueba.Services
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            //smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+            smtp.Authenticate(EmailFrom, password);
             smtp.Send(email);
             smtp.Disconnect(true);
         }
 
+        public void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(EmailFrom));
+
+            foreach(var item in relacionGastosEmailVM)
+            {
+                email.To.Add(MailboxAddress.Parse(item.Email));
+                if(item.CuotasEspeciale == null)
+                {
+                    email.Subject = "Recibo de Cobro para la propiedad " + item.Propiedad.Codigo;
+                    email.Body = new TextPart(TextFormat.Html)
+                    {
+                        Text =
+                       $@"
+                        <html>
+                        <body>
+                            <h3>{email.Subject}</h3>
+                             <p>A continuación, se detallan los datos:</p>
+                            <table border='1' style='border-collapse: collapse; width: 100%;'>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Propiedad</th>
+                                    <th>Monto</th>
+                                </tr>
+                                <tr>
+                                    <td>{item.ReciboCobro.Fecha}</td>
+                                    <td>{item.Propiedad.Codigo}</td>
+                                    <td>{item.ReciboCobro.MontoRef}</td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>"
+                    };
+                }
+                else
+                {
+                    email.Subject = "Recibo de Cobro para la Cuota Especial " + item.CuotasEspeciale.Descripcion;
+                    email.Body = new TextPart(TextFormat.Html)
+                    {
+                        Text =
+                       $@"
+                        <html>
+                        <body>
+                            <h3>{email.Subject}</h3>
+                             <p>A continuación, se detallan los datos:</p>
+                            <table border='1' style='border-collapse: collapse; width: 100%;'>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Propiedad</th>
+                                    <th>Cantidad de cuotas</th>
+                                    <th>Monto de cuotas</th>
+                                    <th>Monto Total</th>
+                                </tr>
+                                <tr>
+                                    <td>{item.CuotasEspeciale.FechaInicio}</td>
+                                    <td>{item.CuotasEspeciale.CantidadCuotas}</td>
+                                    <td>{item.CuotasEspeciale.SubCuotas / item.CuotasEspeciale.CantidadCuotas} Bs</td>
+                                    <td>{item.Propiedad.Codigo}</td>
+                                    <td>{item.CuotasEspeciale.SubCuotas} Bs</td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>"
+                    };
+                }
+              
+                using var smtp = new SmtpClient();
+                smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                //smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
+                smtp.Authenticate(EmailFrom, password);
+                smtp.Send(email);
+                smtp.Disconnect(true);
+            }
+        }
     }
 }

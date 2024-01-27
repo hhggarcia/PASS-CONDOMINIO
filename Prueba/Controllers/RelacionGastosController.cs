@@ -336,6 +336,7 @@ namespace Prueba.Controllers
         //                // CALCULAR LOS PAGOS DE CADA PROPIEDAD POR SU ALICUOTA
         //                // CAMBIAR SOLVENCIA, SALDO Y DEUDA DE LA PROPIEDAD
         //                IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
+        //                IList<RelacionGastosEmailVM> recibosCobroEmail = new List<RelacionGastosEmailVM>();
         //                foreach (var propiedad in listaPropiedadesCondominio)
         //                {
         //                    // BUSCAR PUESTOS DE ESTACIONAMIENTO EXTRAS
@@ -462,7 +463,7 @@ namespace Prueba.Controllers
         //    return RedirectToAction("Index");
 
         //}
-        
+
         [HttpPost]
         public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
         {
