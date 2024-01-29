@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class ProveedoresController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -50,9 +53,9 @@ namespace Prueba.Controllers
         // GET: Proveedores/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id");
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto");
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
             return View();
         }
 
@@ -63,15 +66,19 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor)
         {
+            ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
+            ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(proveedor.IdRetencionIvaNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(proveedor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", proveedor.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", proveedor.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
             return View(proveedor);
         }
 
@@ -88,9 +95,9 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", proveedor.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", proveedor.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
             return View(proveedor);
         }
 
@@ -105,6 +112,10 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
+            ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(proveedor.IdRetencionIvaNavigation));
 
             if (ModelState.IsValid)
             {
@@ -126,9 +137,10 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", proveedor.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", proveedor.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", proveedor.IdRetencionIva);
+
             return View(proveedor);
         }
 

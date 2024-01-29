@@ -1,0 +1,57 @@
+﻿@model Prueba.Models.GrupoGasto
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+    </div>*@
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Condominios
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="NumGrupo" class="control-label"></label>
+                            <input asp-for="NumGrupo" class="form-control" />
+                            <span asp-validation-for="NumGrupo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NombreGrupo" class="control-label"></label>
+                            <input asp-for="NombreGrupo" class="form-control" />
+                            <span asp-validation-for="NombreGrupo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

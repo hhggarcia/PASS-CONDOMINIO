@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MathNet.Numerics.Distributions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "SuperAdmin")]
+
     public class CondominiosController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -48,7 +52,7 @@ namespace Prueba.Controllers
         // GET: Condominios/Create
         public IActionResult Create()
         {
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id");
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email");
             return View();
         }
 
@@ -59,13 +63,15 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email")] Condominio condominio)
         {
+            ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(condominio);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id", condominio.IdAdministrador);
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
             return View(condominio);
         }
 
@@ -82,7 +88,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id", condominio.IdAdministrador);
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
             return View(condominio);
         }
 
@@ -97,6 +103,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
 
             if (ModelState.IsValid)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class LibroComprasController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -49,8 +52,8 @@ namespace Prueba.Controllers
         // GET: LibroCompras/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
             return View();
         }
 
@@ -61,14 +64,17 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,IdCondominio,IdFactura,BaseImponible,ExentoIva,Iva,Igtf,RetIva,RetIslr,Monto,NumComprobanteRet,FechaComprobanteRet,FormaPago")] LibroCompra libroCompra)
         {
+            ModelState.Remove(nameof(libroCompra.IdCondominioNavigation));
+            ModelState.Remove(nameof(libroCompra.IdFacturaNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(libroCompra);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", libroCompra.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", libroCompra.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", libroCompra.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", libroCompra.IdFactura);
             return View(libroCompra);
         }
 
@@ -85,8 +91,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", libroCompra.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", libroCompra.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", libroCompra.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", libroCompra.IdFactura);
             return View(libroCompra);
         }
 
@@ -101,6 +107,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove(nameof(libroCompra.IdCondominioNavigation));
+            ModelState.Remove(nameof(libroCompra.IdFacturaNavigation));
 
             if (ModelState.IsValid)
             {
@@ -122,8 +130,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", libroCompra.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", libroCompra.IdFactura);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", libroCompra.IdCondominio);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", libroCompra.IdFactura);
             return View(libroCompra);
         }
 
