@@ -20,12 +20,10 @@ namespace Prueba.Services
     public class EmailService: IEmailService
     {
         private readonly IConfiguration _config;
-
         public EmailService(IConfiguration config)
         {
             _config = config;
         }
-
         public void SendEmail(RegisterConfirm request)
         {
             var email = new MimeMessage();
@@ -81,7 +79,6 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-
         public void RectificarPago(String EmailFrom, String EmailTo, PagoRecibido pago, String password)
         {
 
@@ -168,7 +165,6 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-
         public void RectificarPagoCuotaEspecial(String EmailFrom,String EmailTo,CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password)
         {
             var email = new MimeMessage();
@@ -209,7 +205,6 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-
         public void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password)
         {
             var email = new MimeMessage();

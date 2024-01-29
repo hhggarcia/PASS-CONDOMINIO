@@ -311,11 +311,8 @@ namespace Prueba.Controllers
 
                         await _context.SaveChangesAsync();
                         var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                        var emailFrom = (from a in _context.AspNetUsers
-                                         join c in _context.Condominios
-                                         on a.Id equals c.IdAdministrador
-                                         where c.IdCondominio == idCondominio
-                                         select a.Email).ToString();
+                        var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+
                         _serviceEmail.RectificarPago(emailFrom,email, pago, "");
                     }
 
@@ -548,11 +545,7 @@ namespace Prueba.Controllers
                                 // Enviar Correo
                                 var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
 
-                                var emailFrom = (from a in _context.AspNetUsers
-                                                 join c in _context.Condominios
-                                                 on a.Id equals c.IdAdministrador
-                                                 where c.IdCondominio == idCondominio
-                                                 select a.Email).ToString();
+                                var emailFrom = await _context.Condominios.Where(c=>c.IdCondominio == idCondominio).Select(c=>c.Email).FirstAsync();
 
                                 _serviceEmail.ConfirmacionPago(emailFrom,email, propiedad, reciboActual, pago, "");
 
