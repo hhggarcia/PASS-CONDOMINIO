@@ -44,33 +44,36 @@ namespace Prueba.Controllers
                                                select c;
             //IList<SubCuenta> subcuentasModel = new List<SubCuenta>();
             IList<CuentaGlobalSubCuentasVM> subcuentaSaldo = new List<CuentaGlobalSubCuentasVM>();
-            CuentaGlobalSubCuentasVM cuentaGlobalSubCuentasVM = new CuentaGlobalSubCuentasVM();
+
             foreach (var item in cuentasContablesCond)
             {
                 foreach (var subcuenta in subcuentas)
                 {
                     if (item.IdSubCuenta == subcuenta.Id)
                     {
+                        // Crear una nueva instancia para cada coincidencia
+                        CuentaGlobalSubCuentasVM cuentaGlobalSubCuentasVM = new CuentaGlobalSubCuentasVM();
+
                         cuentaGlobalSubCuentasVM.SaldoInicial = item.SaldoInicial;
                         cuentaGlobalSubCuentasVM.Saldo = item.Saldo;
                         cuentaGlobalSubCuentasVM.SubCuentas = subcuenta;
+
                         subcuentaSaldo.Add(cuentaGlobalSubCuentasVM);
-                        //subcuentasModel.Add(subcuenta);
                     }
                 }
             }
             //PASAR MODELO
-            if(clases.ToList().Count > 0)
+            if (clases.ToList().Count > 0)
             {
-                modelo.Clases = clases.ToList();
+            modelo.Clases = clases.ToList();
             }
             if (grupos.ToList().Count > 0)
             {
-                modelo.Grupos = grupos.ToList();
+            modelo.Grupos = grupos.ToList();
             }   
             if (cuentas.ToList().Count > 0)
             {
-                modelo.Cuentas = cuentas.ToList();
+            modelo.Cuentas = cuentas.ToList();
             }
             //modelo.SubCuentas = subcuentasModel;
             modelo.SubCuentasSaldo = subcuentaSaldo;
@@ -196,9 +199,9 @@ namespace Prueba.Controllers
                     _dContext.SaveChanges();
                 }
 
-                return RedirectToAction(nameof(Index));
 
                 //}
+                return RedirectToAction(nameof(Index));
 
                 //return View(modelo);
 

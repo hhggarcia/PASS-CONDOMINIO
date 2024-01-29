@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class PropiedadesGruposController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -49,8 +52,8 @@ namespace Prueba.Controllers
         // GET: PropiedadesGrupos/Create
         public IActionResult Create()
         {
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto");
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad");
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre");
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo");
             return View();
         }
 
@@ -61,14 +64,16 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPropiedadGrupo,IdGrupoGasto,IdPropiedad,Alicuota")] PropiedadesGrupo propiedadesGrupo)
         {
+            ModelState.Remove(nameof(propiedadesGrupo.IdGrupoGastoNavigation));
+            ModelState.Remove(nameof(propiedadesGrupo.IdPropiedadNavigation));
             if (ModelState.IsValid)
             {
                 _context.Add(propiedadesGrupo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", propiedadesGrupo.IdGrupoGasto);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", propiedadesGrupo.IdPropiedad);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }
 
@@ -85,8 +90,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", propiedadesGrupo.IdGrupoGasto);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", propiedadesGrupo.IdPropiedad);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }
 
@@ -101,6 +106,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove(nameof(propiedadesGrupo.IdGrupoGastoNavigation));
+            ModelState.Remove(nameof(propiedadesGrupo.IdPropiedadNavigation));
 
             if (ModelState.IsValid)
             {
@@ -122,8 +129,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", propiedadesGrupo.IdGrupoGasto);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", propiedadesGrupo.IdPropiedad);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }
 

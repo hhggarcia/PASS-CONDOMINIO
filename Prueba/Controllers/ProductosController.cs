@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class ProductosController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -50,9 +53,9 @@ namespace Prueba.Controllers
         // GET: Productos/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id");
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto");
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
             return View();
         }
 
@@ -63,15 +66,19 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto)
         {
+            ModelState.Remove(nameof(producto.IdRetencionIvaNavigation));
+            ModelState.Remove(nameof(producto.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(producto.IdCondominioNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(producto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", producto.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", producto.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", producto.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", producto.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
             return View(producto);
         }
 
@@ -88,9 +95,9 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", producto.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", producto.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", producto.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", producto.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
             return View(producto);
         }
 
@@ -105,6 +112,10 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(producto.IdRetencionIvaNavigation));
+            ModelState.Remove(nameof(producto.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(producto.IdCondominioNavigation));
 
             if (ModelState.IsValid)
             {
@@ -126,9 +137,9 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", producto.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Id", producto.IdRetencionIslr);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Id", producto.IdRetencionIva);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", producto.IdRetencionIslr);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
             return View(producto);
         }
 

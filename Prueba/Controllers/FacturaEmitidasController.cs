@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class FacturaEmitidasController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -48,7 +51,7 @@ namespace Prueba.Controllers
         // GET: FacturaEmitidas/Create
         public IActionResult Create()
         {
-            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "IdProducto");
+            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre");
             return View();
         }
 
@@ -59,13 +62,15 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso")] FacturaEmitida facturaEmitida)
         {
+            ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(facturaEmitida);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "IdProducto", facturaEmitida.IdProducto);
+            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
             return View(facturaEmitida);
         }
 
@@ -97,6 +102,9 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
+
 
             if (ModelState.IsValid)
             {

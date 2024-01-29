@@ -308,12 +308,17 @@ namespace Prueba.Controllers
                         reciboActual.First().EnProceso = false;
 
                         _context.ReciboCobros.Update(reciboActual.First());
-
+                      
                         await _context.SaveChangesAsync();
-                        var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
-                        var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                        if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                        {
+                            string password = TempData.Peek("Contrasena").ToString();
+                            var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                            var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
 
-                        _serviceEmail.RectificarPago(emailFrom,email, pago, "");
+                            _serviceEmail.RectificarPago(emailFrom, email, pago, password);
+                            TempData["Contrasena"] = null;
+                        }
                     }
 
                 }
@@ -543,11 +548,19 @@ namespace Prueba.Controllers
                                 dbContext.Update(pago);
 
                                 // Enviar Correo
-                                var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                             
 
-                                var emailFrom = await _context.Condominios.Where(c=>c.IdCondominio == idCondominio).Select(c=>c.Email).FirstAsync();
 
-                                _serviceEmail.ConfirmacionPago(emailFrom,email, propiedad, reciboActual, pago, "");
+                                if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                                {
+                                    string password = TempData.Peek("Contrasena").ToString();
+                                    var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+
+                                    var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+
+                                    _serviceEmail.ConfirmacionPago(emailFrom, email, propiedad, reciboActual, pago, "");
+                                    TempData["Contrasena"] = null;
+                                }
 
                                 int numAsiento = 1;
 
@@ -855,6 +868,13 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+        [HttpPost]
+        public IActionResult UsuarioContraseña(string usuario, string contrasena)
+        {
+            TempData["Usuario"] = usuario;
+            TempData["Contrasena"] = contrasena;
 
+            return Json(new { success = true, message = "Datos almacenados correctamente" });
+        }
     }
 }

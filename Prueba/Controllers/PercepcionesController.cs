@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class PercepcionesController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -48,7 +51,7 @@ namespace Prueba.Controllers
         // GET: Percepciones/Create
         public IActionResult Create()
         {
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
             return View();
         }
 
@@ -59,13 +62,15 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPercepcion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Percepcion percepcion)
         {
+            ModelState.Remove(nameof(percepcion.IdEmpleadoNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(percepcion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }
 
@@ -82,7 +87,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }
 
@@ -97,6 +102,9 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(percepcion.IdEmpleadoNavigation));
+
 
             if (ModelState.IsValid)
             {
@@ -118,7 +126,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }
 

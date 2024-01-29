@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class DeduccionesController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -59,13 +62,15 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdDeduccion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Deduccion deduccion)
         {
+            ModelState.Remove(nameof(deduccion.IdEmpleadoNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(deduccion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
@@ -82,7 +87,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
@@ -97,6 +102,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove(nameof(deduccion.IdEmpleadoNavigation));
 
             if (ModelState.IsValid)
             {
@@ -118,7 +124,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
