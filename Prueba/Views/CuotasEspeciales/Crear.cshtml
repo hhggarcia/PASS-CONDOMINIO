@@ -13,7 +13,9 @@
                     <h6 class="m-0 font-weight-bold text-primary">
                         Crear una nueva cuota especial
                     </h6>
+                    <!-- Button trigger modal -->
                 </div>
+
                 <div class="card-body">
                     <div class="form form-horizontal">
                         <div class="form-body">
@@ -68,7 +70,7 @@
                                                    value="@DateTime.Today"
                                                    asp-for="FechaInicio" />
                                         </div>
-                                    </div>  
+                                    </div>
 
                                     <div class="col-md-6 mt-3">
                                         <label for="last-name-column">Tipo de moneda</label>
@@ -80,7 +82,7 @@
                                                 Dolares
                                             </option>
                                         </select>
-                                    </div>  
+                                    </div>
                                     <div class="col-md-6 mt-3">
                                         <label for="last-name-column">¿Desea activar la cuota?</label>
                                         <select asp-for="Activa" id='mySelect' class="form-select nav-tabs-selector">
@@ -91,13 +93,23 @@
                                                 No
                                             </option>
                                         </select>
-                                    </div>  
+                                    </div>
+                                    <div class="col-md-6 mt-3">
+                                        <label for="last-name-column">¿Desea enviar correo a los propietarios?</label>
+                                        <select id="selectEnviarCorreo" class="form-select nav-tabs-selector" onchange="mostrarModal()">
+                                            <option value="no">No</option>
+                                            <option value="si">Sí</option>
+                                        </select>
+                                    </div>
+                                
                                 </div>
                                 <div class="form-group mt-3">
                                     <input type="submit" value="Crear" class="btn btn-primary" />
-                                </div>
+                                </div>                        
+                            
+
                             </form>
-                       
+                            
                         </div>
                     </div>
                 </div>
@@ -106,4 +118,66 @@
       
     </div>
 </div>
+<!-- Modal -->
+<div id="exampleModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Ingresar datos del correo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="usuario" name="usuario" required>
+                   </div>
+                    <div class="mb-3">
+                        <label for="contrasena" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    </div>
+                    <button type="button" id="enviarDatos" class="btn btn-primary">Enviar</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    $("#selectEnviarCorreo").on("click", function () {
+        // Si el valor del select es "si", abre el modal
+        if (this.value === "si") {
+            // Abre el modal
+            $("#exampleModal").modal("show");
+        }
+    });
+    $(document).ready(function () {
+        $("#enviarDatos").click(function () {
+            // Obtener valores del formulario
+            var usuario = $("#usuario").val();
+            var contrasena = $("#contrasena").val();
+
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: '/CuotasEspeciales/UsuarioContraseña',
+                type: 'POST',
+                data: { usuario: usuario, contrasena: contrasena },
+                success: function (response) {
+                    // console.log(response);
+                    // alert(response.message); // Mostrar mensaje de éxito o error
+                },
+                error: function (error) {
+                    console.error(error);
+                    // alert('Error en la solicitud AJAX');
+                }
+            });
+        });
+    });
+
+</script>
 

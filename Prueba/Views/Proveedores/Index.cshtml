@@ -2,6 +2,93 @@
 
 @{
     ViewData["Title"] = "Index";
+// <<<<<<< HEAD
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefono)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rif)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Saldo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Representante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdRetencionIslrNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdRetencionIvaNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Direccion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rif)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Saldo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Representante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContribuyenteEspecial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdProveedor">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdProveedor">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdProveedor">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+=======
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 
 }
@@ -129,3 +216,4 @@
     </div>
 </div>
 
+>>>>>>> DevAdminstradoras

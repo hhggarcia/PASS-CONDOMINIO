@@ -257,6 +257,7 @@ namespace Prueba.Controllers
             try
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 // buscar pago
                 var pago = await _context.PagoRecibidos.FindAsync(id);
@@ -303,12 +304,21 @@ namespace Prueba.Controllers
                         {
                             _context.PagoRecibidos.Remove(pago);
                         }
-
+                        
                         reciboActual.First().EnProceso = false;
 
                         _context.ReciboCobros.Update(reciboActual.First());
-
+                      
                         await _context.SaveChangesAsync();
+                        if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                        {
+                            string password = TempData.Peek("Contrasena").ToString();
+                            var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                            var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+
+                            _serviceEmail.RectificarPago(emailFrom, email, pago, password);
+                            TempData["Contrasena"] = null;
+                        }
                     }
 
                 }
@@ -525,51 +535,7 @@ namespace Prueba.Controllers
                                         }
                                     }
 
-
-                                    //    if (pago.MontoRef == reciboActual.Abonado)
-                                    //{
-                                    //    reciboActual.Abonado =  pago.MontoRef - propiedad.Saldo;
-                                    //}
-                                    //else
-                              
-                                    //else 
-                                    //{
-                                    //    reciboActual.Abonado = reciboActual.Abonado + (pago.MontoRef - propiedad.Saldo);
-                                    //}
-                                 
-                                  
-
                                 }
-
-                                //if (propiedad.Saldo == reciboActual.Monto
-                                //    && propiedad.Deuda == 0)
-                                //{
-                                //    // hacer saldo = 0
-                                //    propiedad.Saldo = 0;
-                                //    // cambiar solvencia = True
-                                //    propiedad.Solvencia = true;
-
-                                //}
-                                //else 
-                                //if (propiedad.Saldo == 0
-                                //    && propiedad.Deuda >= reciboActual.Monto)
-                                //{
-                                //    // restar de Deuda -Monto
-                                //    propiedad.Deuda -= reciboActual.Monto;
-                                //    // si deuda y saldo == 0 -> solvencia = true
-                                //    if (propiedad.Deuda == 0)
-                                //    {
-                                //        propiedad.Solvencia = true;
-                                //    }
-                                //}
-                                //else if (propiedad.Saldo > 0
-                                //    && propiedad.Saldo != reciboActual.Monto
-                                //    && propiedad.Deuda >= reciboActual.Monto)
-                                //{
-                                //    // restar de Deuda -Monto
-                                //    propiedad.Deuda -= reciboActual.Monto;
-
-                                //}
 
                                 // cambiar en recibo o en los recibos - en proceso a false y pagado a true
                             
@@ -580,6 +546,21 @@ namespace Prueba.Controllers
                                 dbContext.Update(propiedad);
                                 dbContext.Update(reciboActual);
                                 dbContext.Update(pago);
+
+                                // Enviar Correo
+                             
+
+
+                                if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                                {
+                                    string password = TempData.Peek("Contrasena").ToString();
+                                    var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+
+                                    var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+
+                                    _serviceEmail.ConfirmacionPago(emailFrom, email, propiedad, reciboActual, pago, "");
+                                    TempData["Contrasena"] = null;
+                                }
 
                                 int numAsiento = 1;
 
@@ -887,6 +868,13 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+        [HttpPost]
+        public IActionResult UsuarioContraseña(string usuario, string contrasena)
+        {
+            TempData["Usuario"] = usuario;
+            TempData["Contrasena"] = contrasena;
 
+            return Json(new { success = true, message = "Datos almacenados correctamente" });
+        }
     }
 }

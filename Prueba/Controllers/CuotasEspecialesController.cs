@@ -104,8 +104,10 @@ namespace Prueba.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
+                //if (ModelState.IsValid)
+                //{
+                    //string emailFrom = TempData.Peek("Usuario").ToString();
+
                     //Crear Cuotas Especiales
                     modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
                     var revisionCuotas = from c in _context.CuotasEspeciales
@@ -140,6 +142,7 @@ namespace Prueba.Controllers
                     modelo.ValorDolar = monedaPrincipal.First().ValorDolar;
                     modelo.SimboloMoneda = monedaPrincipal.First().Simbolo;
                     modelo.SimboloRef = "$";
+                    List<GastosCuotasEmailVM> relacionGastosCuotas = new List<GastosCuotasEmailVM>();
                     using (var dbContext = new NuevaAppContext())
                     {
                         await dbContext.AddAsync(modelo);
@@ -147,6 +150,13 @@ namespace Prueba.Controllers
                         var idCuotaEspecial = modelo.IdCuotaEspecial;
                         foreach (var c in listaPropiedades)
                         {
+                            string email = await _context.AspNetUsers.Where(a => a.Id == c.IdUsuario).Select(c => c.Email).FirstAsync();
+                            var gastosCuotas = new GastosCuotasEmailVM() { 
+                                Propiedad = c,
+                                CuotasEspeciale = modelo,
+                                Email = email
+                            };
+                            relacionGastosCuotas.Add(gastosCuotas);
                             var nuevoReciboCuota = new ReciboCuota
                             {
                                 IdPropiedad = c.IdPropiedad,
@@ -162,15 +172,24 @@ namespace Prueba.Controllers
                                 ValorDolar = monedaPrincipal.First().ValorDolar,
                                 SimboloRef = "$"
                             };
+
                             await dbContext.AddAsync(nuevoReciboCuota);
 
                         }
-                        await dbContext.SaveChangesAsync();
+
+                        if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                        {
+                            string password = TempData.Peek("Contrasena").ToString();
+                            var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                            _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, password);
+                            TempData["Contrasena"] = null;
+                        }
+                    await dbContext.SaveChangesAsync();
                         TempData.Keep();
                     }
                     return RedirectToAction(nameof(Index));
-                }
-                return View();
+                //}
+                //return View();
             }
             catch (Exception ex)
             {
@@ -612,6 +631,16 @@ namespace Prueba.Controllers
 
                             dbContext.Update(reciboActual);
                             dbContext.Update(pago);
+                            var propiedad = await _context.Propiedads.Where(c => c.IdPropiedad == reciboActual.IdPropiedad).FirstAsync();
+                            //string Usuario = TempData.Peek("Usuario").ToString();
+                            if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                            {
+                                string password = TempData.Peek("Contrasena").ToString();
+                                var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                                var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                                _serviceEmail.ConfirmacionPagoCuota(emailFrom, email, cuotaEspecial, reciboActual, pago, password);
+                                TempData["Contrasena"] = null;
+                            }
                             int numAsiento = 1;
 
                             var diarioCondominio = from a in _context.LdiarioGlobals
@@ -729,6 +758,7 @@ namespace Prueba.Controllers
             {
                 int id = Convert.ToInt32(TempData.Peek("idPagoConfirmar").ToString());
                 var pago = await _context.PagoRecibidos.FindAsync(id);
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 if (pago != null)
                 {
@@ -763,6 +793,17 @@ namespace Prueba.Controllers
                     reciboActual.EnProceso = false;
                     _context.ReciboCuotas.Update(reciboActual);
                     await _context.SaveChangesAsync();
+
+                    var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == reciboActual.IdCuotaEspecial).FirstAsync();
+                
+                    if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                    {
+                        string password = TempData.Peek("Contrasena").ToString();
+                        var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                        var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                        _serviceEmail.RectificarPagoCuotaEspecial(emailFrom, email, cuotaEspecial, pago, password);
+                        TempData["Contrasena"] = null;
+                    }
                 }
                 TempData.Keep();
                 return RedirectToAction("Cobrar");
@@ -777,6 +818,15 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
+        }
+
+        [HttpPost]
+        public IActionResult UsuarioContraseña(string usuario, string contrasena)
+        {
+            TempData["Usuario"] = usuario;
+            TempData["Contrasena"] = contrasena;
+
+            return Json(new { success = true, message = "Datos almacenados correctamente" });
         }
     }
 }
