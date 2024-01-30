@@ -24,11 +24,11 @@
             Cuentas
         </a>
         @* <a asp-action="Create" asp-controller="Provisiones"
-           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
-            Agregar Provisión
+        class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+        Agregar Provisión
         </a> *@
     </div>
-    
+
 
     <!-- Content Row -->
     <div class="row">
@@ -64,65 +64,65 @@
                                 </tr>
                             </tfoot>
                             <tbody>
-                                @* @if (@Model.SubCuentasSaldo.Count() > 0) *@
-                                    @if (@Model.SubCuentasSaldo.Count() > 0 && @Model.Clases.Count > 0)
+
+                                @if (@Model.SubCuentasSaldo.Count() > 0 && @Model.Clases.Count > 0)
+                                {
+                                    for (int i = 0; i < @Model.Clases.Count(); i++)
                                     {
-                                        for (int i = 0; i < @Model.Clases.Count(); i++)
+                                        <tr>
+                                            <td>@(Model.Clases[i].Codigo + " 0 00 00")</td>
+                                            <td>@Model.Clases[i].Descripcion</td>
+                                        </tr>
+                                        if (@Model.Grupos.Count > 0 && @Model.Grupos != null)
                                         {
-                                            <tr>
-                                                <td>@(Model.Clases[i].Codigo + " 0 00 00")</td>
-                                                <td>@Model.Clases[i].Descripcion</td>
-                                            </tr>
-                                            if (@Model.Grupos.Count > 0 && @Model.Grupos != null)
+                                            for (int j = 0; j < @Model.Grupos.Count(); j++)
                                             {
-                                                for (int j = 0; j < @Model.Grupos.Count(); j++)
+                                                if (@Model.Grupos[j].IdClase == @Model.Clases[i].Id)
                                                 {
-                                                    if (@Model.Grupos[j].IdClase == @Model.Clases[i].Id)
+                                                    <tr>
+                                                        <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " 00 00")</td>
+                                                        <td> &nbsp; <i class="text-s-1 bi bi-arrow-return-right"></i> @Model.Grupos[j].Descripcion</td>
+                                                    </tr>
+                                                    if (Model.Cuentas.Count > 0 && @Model.Cuentas != null)
                                                     {
-                                                        <tr>
-                                                            <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " 00 00")</td>
-                                                            <td> &nbsp; <i class="text-s-1 bi bi-arrow-return-right"></i> @Model.Grupos[j].Descripcion</td>
-                                                        </tr>
-                                                        if (Model.Cuentas.Count > 0 && @Model.Cuentas != null)
+                                                        for (int k = 0; k < @Model.Cuentas.Count(); k++)
                                                         {
-                                                            for (int k = 0; k < @Model.Cuentas.Count(); k++)
+                                                            if (@Model.Cuentas[k].IdGrupo == @Model.Grupos[j].Id)
                                                             {
-                                                                if (@Model.Cuentas[k].IdGrupo == @Model.Grupos[j].Id)
+                                                                <tr>
+                                                                    <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " " + Model.Cuentas[k].Codigo + " 00")</td>
+                                                                    <td> &nbsp; &nbsp; &nbsp; <i class="text-s-2 bi bi-arrow-return-right"></i> @Model.Cuentas[k].Descripcion</td>
+                                                                </tr>
+                                                                for (int z = 0; z < @Model.SubCuentasSaldo.Count(); z++)
                                                                 {
-                                                                    <tr>
-                                                                        <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " " + Model.Cuentas[k].Codigo + " 00")</td>
-                                                                        <td> &nbsp; &nbsp; &nbsp; <i class="text-s-2 bi bi-arrow-return-right"></i> @Model.Cuentas[k].Descripcion</td>
-                                                                    </tr>
-                                                                    for (int z = 0; z < @Model.SubCuentasSaldo.Count(); z++)
+                                                                    if (@Model.SubCuentasSaldo[z].SubCuentas.IdCuenta == @Model.Cuentas[k].Id)
                                                                     {
-                                                                        if (@Model.SubCuentasSaldo[z].SubCuentas.IdCuenta == @Model.Cuentas[k].Id)
-                                                                        {
-                                                                            <tr>
-                                                                                <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " " + Model.Cuentas[k].Codigo + " " + Model.SubCuentasSaldo[z].SubCuentas.Codigo)</td>
-                                                                                <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentasSaldo[z].SubCuentas.Descricion</td>
-                                                                                <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentasSaldo[z].SaldoInicial</td>
-                                                                                <td>
-                                                                                    <a asp-action="EditSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Editar</a> |
-                                                                                    <a asp-action="DetailsSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Detalles</a> |
-                                                                                    <a asp-action="DeleteSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Eliminar</a>
-                                                                                </td>
-                                                                            </tr>
+                                                                        <tr>
+                                                                            <td>@(Model.Clases[i].Codigo + " " + Model.Grupos[j].Codigo + " " + Model.Cuentas[k].Codigo + " " + Model.SubCuentasSaldo[z].SubCuentas.Codigo)</td>
+                                                                            <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentasSaldo[z].SubCuentas.Descricion</td>
+                                                                            <td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <i class="text-s-3 bi bi-arrow-return-right"></i> @Model.SubCuentasSaldo[z].SaldoInicial</td>
+                                                                            <td>
+                                                                                <a asp-action="EditSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Editar</a> |
+                                                                                <a asp-action="DetailsSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Detalles</a> |
+                                                                                <a asp-action="DeleteSubCuenta" asp-route-id="@Model.SubCuentasSaldo[z].SubCuentas.Id">Eliminar</a>
+                                                                            </td>
+                                                                        </tr>
 
-                                                                        }
-                                                                        continue;
                                                                     }
+                                                                    continue;
                                                                 }
-                                                                continue;
                                                             }
-
+                                                            continue;
                                                         }
-                                                    }
-                                                    continue;
-                                                }
-                                            }
 
+                                                    }
+                                                }
+                                                continue;
+                                            }
                                         }
+
                                     }
+                                }
                             </tbody>
                         </table>
                     </div>
