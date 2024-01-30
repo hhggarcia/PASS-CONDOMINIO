@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Prueba.Models.CuotasEspeciale>
+
+
+<tbody>
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <tr class="tr_s">
+                <td>@item.Descripcion</td>
+                <td>@string.Format("{0:N2}", item.SubCuotas) @item.SimboloMoneda</td>
+                <td>@item.FechaInicio</td>
+                @if (item.Activa == true)
+                {
+                    <td>Si</td>
+                }
+                else
+                {
+                    <td>No</td>
+                }
+                <td>@string.Format("{0:N2}", item.MontoTotal) @item.SimboloMoneda</td>
+                <td>@item.ValorDolar.ToString("N2") @item.SimboloMoneda</td>
+                <td>@((item.MontoTotal / item.ValorDolar).ToString("N2")) $</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@item.IdCuotaEspecial">Editar</a> |
+                    <a asp-action="Detalles" asp-route-id="@item.IdCuotaEspecial">Detalles</a> |
+                    <a asp-action="borrar" asp-route-id="@item.IdCuotaEspecial">Eliminar</a>
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr class="tr_s">
+            <td colspan="7">No hay cuotas especiales</td>
+        </tr>
+    }
+</tbody>

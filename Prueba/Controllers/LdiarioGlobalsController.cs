@@ -20,13 +20,16 @@ namespace Prueba.Controllers
     public class LdiarioGlobalsController : Controller
     {
         private readonly ILibroDiarioRepository _repoLibroDiario;
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
         private readonly IPDFServices _servicePDF;
 
         public LdiarioGlobalsController(ILibroDiarioRepository repoLibroDiario,
           IPDFServices PDFService,
+          IFiltroFechaRepository filtroFechaRepository,
             NuevaAppContext context)
         {
+            _reposFiltroFecha=filtroFechaRepository;
             _repoLibroDiario = repoLibroDiario;
             _servicePDF = PDFService;
             _context = context;
@@ -222,7 +225,13 @@ namespace Prueba.Controllers
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
-
+        [HttpPost]
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var filtrarFecha = await _reposFiltroFecha.ObtenerLdiarioGlobals(idCondominio, filtrarFechaVM);
+            return View("Index", filtrarFecha);
+        }
         //[HttpGet]
         //public async Task<IActionResult> LibroDiarioPDF2()
         //{

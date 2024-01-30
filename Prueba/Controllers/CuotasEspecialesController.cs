@@ -36,13 +36,14 @@ namespace Prueba.Controllers
         private readonly IReportesRepository _repoReportes;
         private readonly IRelacionGastoRepository _repoRelacionGasto;
         private readonly IMonedaRepository _repoMoneda;
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
         public CuotasEspecialesController(IUnitOfWork unitOfWork, SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore,
             IEmailService serviceEmail, IPDFServices servicePDF, IManageExcel manageExcel,
             IReportesRepository repoReportes, IRelacionGastoRepository repoRelacionGasto,
-             IMonedaRepository repoMoneda, NuevaAppContext context)
+             IMonedaRepository repoMoneda, IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
@@ -54,6 +55,7 @@ namespace Prueba.Controllers
             _repoReportes = repoReportes;
             _repoRelacionGasto = repoRelacionGasto;
             _repoMoneda = repoMoneda;
+            _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
 
@@ -177,13 +179,13 @@ namespace Prueba.Controllers
 
                         }
 
-                        if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
-                        {
-                            string password = TempData.Peek("Contrasena").ToString();
-                            var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
-                            _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, password);
-                            TempData["Contrasena"] = null;
-                        }
+                    if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                    {
+                        string password = TempData.Peek("Contrasena").ToString();
+                        var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                        _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, password);
+                        TempData["Contrasena"] = null;
+                    }
                     await dbContext.SaveChangesAsync();
                         TempData.Keep();
                     }
@@ -828,5 +830,13 @@ namespace Prueba.Controllers
 
             return Json(new { success = true, message = "Datos almacenados correctamente" });
         }
+        [HttpPost]
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var idAdministrador = TempData.Peek("idUserLog").ToString();
+            var cuotas = await _reposFiltroFecha.ObtenerCuoetasEspeciales(idAdministrador, filtrarFechaVM);
+            return View("Index", cuotas);
+        }
+
     }
 }
