@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -15,10 +17,12 @@ namespace Prueba.Controllers
 
     public class FacturaEmitidasController : Controller
     {
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturaEmitidasController(NuevaAppContext context)
+        public FacturaEmitidasController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
         {
+            _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
 
@@ -167,6 +171,12 @@ namespace Prueba.Controllers
         private bool FacturaEmitidaExists(int id)
         {
             return _context.FacturaEmitida.Any(e => e.IdFacturaEmitida == id);
+        }
+
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var facturasEmitdas = await _reposFiltroFecha.ObteneFactirasEmitidas(filtrarFechaVM);
+            return View("Index", facturasEmitdas);
         }
     }
 }

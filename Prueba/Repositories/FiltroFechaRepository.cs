@@ -11,7 +11,12 @@ namespace Prueba.Repositories
         Task<ICollection<CuotasEspeciale>> ObtenerCuoetasEspeciales(string id, FiltrarFechaVM filtrarFechaVM);
         Task<ICollection<Anticipo>> ObtenerAnticipos(FiltrarFechaVM filtrarFechaVM);
         Task<ICollection<Factura>> ObtenerFacturas(FiltrarFechaVM filtrarFechaVM);
-        Task<ICollection<LdiarioGlobal>> ObtenerLdiarioGlobals(int id, FiltrarFechaVM filtrarFechaVM);
+        Task<LibroDiarioVM> ObtenerLdiarioGlobals(int id, FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<FacturaEmitida>> ObteneFactirasEmitidas(FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<LibroCompra>> ObtenerLibroCompras(FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<LibroVenta>> ObtenerLibroVentas(FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<CuentasCobrar>> ObtenerCuentaCobrar(FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<CuentasPagar>> ObtenerCuentasPagar(FiltrarFechaVM filtrarFechaVM);
     }
     public class FiltroFechaRepository : IFiltroFechaRepository
     {
@@ -105,6 +110,79 @@ namespace Prueba.Repositories
                 Diferencia = diferencia
             };
             return modelo;
+        }
+        public async Task<ICollection<FacturaEmitida>> ObteneFactirasEmitidas(FiltrarFechaVM filtrarFechaVM)
+        {
+            var nuevaAppContext = _context.FacturaEmitida.Where(c=>c.FechaEmision >= filtrarFechaVM.Desde && c.FechaEmision <= filtrarFechaVM.Hasta).Include(f => f.IdProductoNavigation);
+            return await nuevaAppContext.ToListAsync();
+        }
+        public async Task<ICollection<LibroCompra>> ObtenerLibroCompras(FiltrarFechaVM filtrarFechaVM)
+        {
+            //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var consulta = _context.LibroCompras
+                .Join(_context.Facturas,
+                    libro => libro.IdFactura,
+                    factura => factura.IdFactura,
+                    (libro, factura) => new { Libro = libro, Factura = factura })
+                .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
+                                      c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
+                .Select(c => c.Libro)
+                .Include(libro => libro.IdCondominioNavigation)
+                .Include(libro => libro.IdFacturaNavigation);
+
+            return await consulta.ToListAsync();
+            //return await nuevaAppContext.ToListAsync();
+        }
+          public async Task<ICollection<LibroVenta>> ObtenerLibroVentas(FiltrarFechaVM filtrarFechaVM)
+        {
+            //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var consulta = _context.LibroVentas
+                .Join(_context.Facturas,
+                    libro => libro.IdFactura,
+                    factura => factura.IdFactura,
+                    (libro, factura) => new { Libro = libro, Factura = factura })
+                .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
+                                      c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
+                .Select(c => c.Libro)
+                .Include(libro => libro.IdCondominioNavigation)
+                .Include(libro => libro.IdFacturaNavigation);
+
+            return await consulta.ToListAsync();
+            //return await nuevaAppContext.ToListAsync();
+        }
+         public async Task<ICollection<CuentasCobrar>> ObtenerCuentaCobrar(FiltrarFechaVM filtrarFechaVM)
+        {
+            //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var consulta = _context.CuentasCobrars
+                .Join(_context.Facturas,
+                    libro => libro.IdFactura,
+                    factura => factura.IdFactura,
+                    (libro, factura) => new { Libro = libro, Factura = factura })
+                .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
+                                      c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
+                .Select(c => c.Libro)
+                .Include(libro => libro.IdCondominioNavigation)
+                .Include(libro => libro.IdFacturaNavigation);
+
+            return await consulta.ToListAsync();
+            //return await nuevaAppContext.ToListAsync();
+        }
+         public async Task<ICollection<CuentasPagar>> ObtenerCuentasPagar(FiltrarFechaVM filtrarFechaVM)
+        {
+            //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var consulta = _context.CuentasPagars
+                .Join(_context.Facturas,
+                    libro => libro.IdFactura,
+                    factura => factura.IdFactura,
+                    (libro, factura) => new { Libro = libro, Factura = factura })
+                .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
+                                      c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
+                .Select(c => c.Libro)
+                .Include(libro => libro.IdCondominioNavigation)
+                .Include(libro => libro.IdFacturaNavigation);
+
+            return await consulta.ToListAsync();
+            //return await nuevaAppContext.ToListAsync();
         }
 
     }
