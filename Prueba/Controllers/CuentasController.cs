@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class CuentasController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -56,6 +59,8 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Descripcion,Codigo")] Cuenta cuenta)
         {
+            ModelState.Remove(nameof(cuenta.IdGrupoNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(cuenta);
@@ -92,6 +97,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove(nameof(cuenta.IdGrupoNavigation));
+
 
             if (ModelState.IsValid)
             {

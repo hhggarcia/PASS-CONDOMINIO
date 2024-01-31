@@ -11,9 +11,27 @@
     @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Plan de Cuentas</h1>
     </div>*@
-    <a class="btn btn-light mb-3" asp-controller="CodigoCuentasGlobals" asp-action="CrearSubCuenta">Crear Sub Cuenta</a>
+    @* <a class="btn btn-light mb-3" asp-controller="CodigoCuentasGlobals" asp-action="CrearSubCuenta">Crear Sub Cuenta</a>
     <a class="btn btn-primary mb-3" asp-controller="" asp-action="">Clases</a>
-    <a class="btn btn-info mb-3" asp-controller="" asp-action="">Grupos</a>
+    <a class="btn btn-info mb-3" asp-controller="" asp-action="">Grupos</a> *@
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller="CodigoCuentasGlobals" asp-action="CrearSubCuenta">Crear Sub Cuenta</a>
+
+
+        <a asp-action="Index" asp-controller="Grupos"
+           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+            Grupos
+        </a>
+        <a asp-action="Index" asp-controller="Cuentas"
+           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+            Cuentas
+        </a>
+        @* <a asp-action="Create" asp-controller="Provisiones"
+           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+            Agregar Provisión
+        </a> *@
+    </div>
 
     <!-- Content Row -->
     <div class="row">

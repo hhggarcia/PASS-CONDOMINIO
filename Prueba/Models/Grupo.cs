@@ -13,5 +13,5 @@ public partial class Grupo
     public short IdClase { get; set; }
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
     public virtual ICollection<Cuenta> Cuenta { get; } = new List<Cuenta>();
-    public virtual Clase IdClaseNavigation { get; set; } = new Clase();
+    public virtual Clase IdClaseNavigation { get; set; } = null!;
 }

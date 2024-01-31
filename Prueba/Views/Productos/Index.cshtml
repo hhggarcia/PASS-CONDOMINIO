@@ -2,81 +2,6 @@
 
 @{
     ViewData["Title"] = "Index";
-// <<<<<<< HEAD
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Precio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoProducto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponible)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdCondominioNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRetencionIslrNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRetencionIvaNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoProducto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disponible)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdProducto">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdProducto">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdProducto">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-=======
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 
 }
@@ -187,6 +112,3 @@
         </div>
     </div>
 </div>
-                    
-
->>>>>>> DevAdminstradoras
