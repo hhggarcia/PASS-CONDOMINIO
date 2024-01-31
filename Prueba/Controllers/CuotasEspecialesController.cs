@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 //using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
+using NPOI.SS.Formula.Functions;
 using NuGet.Packaging;
 using Org.BouncyCastle.Utilities;
 using Prueba.Areas.Identity.Data;
@@ -106,8 +107,11 @@ namespace Prueba.Controllers
         {
             try
             {
-                //if (ModelState.IsValid)
-                //{
+                ModelState.Remove(nameof(modelo.IdCondominioNavigation));
+                ModelState.Remove(nameof(modelo.SimboloRef));
+
+                if (ModelState.IsValid)
+                {
                     //string emailFrom = TempData.Peek("Usuario").ToString();
 
                     //Crear Cuotas Especiales
@@ -190,8 +194,8 @@ namespace Prueba.Controllers
                         TempData.Keep();
                     }
                     return RedirectToAction(nameof(Index));
-                //}
-                //return View();
+                }
+                return View();
             }
             catch (Exception ex)
             {

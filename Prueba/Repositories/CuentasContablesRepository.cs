@@ -17,6 +17,9 @@ namespace Prueba.Repositories
         Task<ICollection<SubCuenta>> ObtenerGastos(int id);
         Task<ICollection<SubCuenta>> ObtenerProvisiones(int id);
         Task<ICollection<SubCuenta>> ObtenerSubcuentas(int id);
+        Task<ICollection<Proveedor>> ObtenerProveedores(int id);
+        Task<ICollection<Factura>> ObtenerFacturas(ICollection<Proveedor> proveedores);
+        Task<ICollection<Anticipo>> ObtenerAnticipos(ICollection<Proveedor> proveedores);
     }
     public class CuentasContablesRepository : ICuentasContablesRepository
     {
@@ -425,7 +428,7 @@ namespace Prueba.Repositories
                                  join d in _context.CodigoCuentasGlobals
                                  on c.Id equals d.IdSubCuenta
                                  where d.IdCondominio == id
-                                 where c.Id == caja.First().Id
+                                 where c.IdCuenta == caja.First().Id
                                  select c;
 
             var cuentasdePagos = from m in _context.MonedaCuenta
@@ -440,6 +443,55 @@ namespace Prueba.Repositories
                                select sc;
 
             return await cajasActivas.ToListAsync();
+        }
+
+        public async Task<ICollection<Proveedor>> ObtenerProveedores(int id)
+        {
+            var proovedores = from p in _context.Proveedors
+                              where p.IdCondominio == id
+                              select p;
+            return await proovedores.ToListAsync();
+        }
+
+        public async Task<ICollection<Factura>> ObtenerFacturas(ICollection<Proveedor> proveedores)
+        {
+            var proveedoresIds = proveedores.Select(prov => prov.IdProveedor).ToList();
+
+            //var facturas = await _context.Facturas
+            //    .Where(f => proveedoresIds.Contains(f.IdProveedor))
+            //    .ToListAsync();
+            if (proveedoresIds != null && proveedoresIds.Any())
+            {
+                var facturas = await _context.Facturas
+                    .Where(f => proveedoresIds.Contains(f.IdProveedor))
+                    .ToListAsync();
+                return facturas;
+            }
+            else
+            {
+                // Manejar el caso cuando proveedoresIds es nulo o está vacío
+                // Puedes devolver una lista vacía o manejarlo de acuerdo a tus necesidades.
+                var facturas = new List<Factura>(); // O cualquier otro manejo que desees
+                return facturas;
+            }
+
+        }
+        public async Task<ICollection<Anticipo>> ObtenerAnticipos(ICollection<Proveedor> proveedores)
+        {
+            var proveedoresIds = proveedores.Select(prov => prov.IdProveedor).ToList();
+            if (proveedoresIds != null && proveedoresIds.Any())
+            {
+                var anticipos = await _context.Anticipos
+                .Where(f => proveedoresIds.Contains(f.IdProveedor))
+                .ToListAsync();
+                return anticipos;
+            }
+            else
+            {
+                var anticipos = new List<Anticipo>(); // O cualquier otro manejo que desees
+                return anticipos;
+            }
+                
         }
     }
 }

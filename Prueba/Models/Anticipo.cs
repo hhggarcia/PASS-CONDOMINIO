@@ -16,6 +16,7 @@ public partial class Anticipo
     public string Detalle { get; set; } = null!;
 
     public int IdProveedor { get; set; }
+    public bool Activo { get; set; }
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
 
