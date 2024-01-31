@@ -107,5 +107,9 @@ namespace Prueba.Repositories
             return modelo;
         }
 
+        Task<ICollection<LdiarioGlobal>> IFiltroFechaRepository.ObtenerLdiarioGlobals(int id, FiltrarFechaVM filtrarFechaVM)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
