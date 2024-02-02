@@ -15,7 +15,7 @@ public partial class Iva
 
     public bool Principal { get; set; }
 
-    public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
+    public virtual ICollection<Producto> Productos { get; set; } = new List<Producto>();
 
-    public virtual ICollection<Proveedor> Proveedors { get; } = new List<Proveedor>();
+    public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
 }

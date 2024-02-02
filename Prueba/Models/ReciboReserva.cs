@@ -27,5 +27,5 @@ public partial class ReciboReserva
 
     public virtual Reserva IdReservaNavigation { get; set; } = null!;
 
-    public virtual ICollection<PagoReserva> PagoReservas { get; } = new List<PagoReserva>();
+    public virtual ICollection<PagoReserva> PagoReservas { get; set; } = new List<PagoReserva>();
 }

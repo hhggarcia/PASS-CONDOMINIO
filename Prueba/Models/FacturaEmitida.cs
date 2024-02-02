@@ -31,9 +31,9 @@ public partial class FacturaEmitida
 
     public bool EnProceso { get; set; }
 
-    public virtual ICollection<CuentasCobrar> CuentasCobrars { get; } = new List<CuentasCobrar>();
+    public virtual ICollection<CuentasCobrar> CuentasCobrars { get; set; } = new List<CuentasCobrar>();
 
     public virtual Producto IdProductoNavigation { get; set; } = null!;
 
-    public virtual ICollection<LibroVenta> LibroVenta { get; } = new List<LibroVenta>();
+    public virtual ICollection<LibroVenta> LibroVenta { get; set; } = new List<LibroVenta>();
 }

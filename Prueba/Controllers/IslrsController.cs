@@ -57,7 +57,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UnidadTributaria,Factor,Concepto,Literal,TipoReceptor,Residente,Domiciliada,BaseImponible,Tarifa,MontoSujeto,PagosMayores,Sustraendo")] Islr islr)
+        public async Task<IActionResult> Create([Bind("Id,UnidadTributaria,Factor,Concepto,Pnatural,Pjuridica,Residenciada,NoResidenciada,Domiciliada,NoDomiciliada,BaseImponible,Modo,MontoDesde,MontoHasta,Tarifa,Sustraendo")] Islr islr)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UnidadTributaria,Factor,Concepto,Literal,TipoReceptor,Residente,Domiciliada,BaseImponible,Tarifa,MontoSujeto,PagosMayores,Sustraendo")] Islr islr)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UnidadTributaria,Factor,Concepto,Pnatural,Pjuridica,Residenciada,NoResidenciada,Domiciliada,NoDomiciliada,BaseImponible,Modo,MontoDesde,MontoHasta,Tarifa,Sustraendo")] Islr islr)
         {
             if (id != islr.Id)
             {

@@ -56,28 +56,37 @@
                                         @Html.DisplayNameFor(model => model.Concepto)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Literal)
+                                        @Html.DisplayNameFor(model => model.Pnatural)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.TipoReceptor)
+                                        @Html.DisplayNameFor(model => model.Pjuridica)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Residente)
+                                        @Html.DisplayNameFor(model => model.Residenciada)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.NoResidenciada)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Domiciliada)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.NoDomiciliada)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.BaseImponible)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.Modo)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.MontoDesde)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.MontoHasta)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Tarifa)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.MontoSujeto)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.PagosMayores)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Sustraendo)
@@ -99,35 +108,44 @@
                                             @Html.DisplayFor(modelItem => item.Concepto)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Literal)
+                                            @Html.DisplayFor(modelItem => item.Pnatural)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TipoReceptor)
+                                            @Html.DisplayFor(modelItem => item.Pjuridica)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Residente)
+                                            @Html.DisplayFor(modelItem => item.Residenciada)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NoResidenciada)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Domiciliada)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.NoDomiciliada)
+                                        </td>
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.BaseImponible)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Modo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MontoDesde)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MontoHasta)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Tarifa)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.MontoSujeto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.PagosMayores)
-                                        </td>
-                                        <td>
                                             @Html.DisplayFor(modelItem => item.Sustraendo)
                                         </td>
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> 
+                                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> 
                                             <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
                                         </td>
                                     </tr>
@@ -140,4 +158,5 @@
         </div>
     </div>
 </div>
+
 

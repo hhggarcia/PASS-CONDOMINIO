@@ -23,9 +23,9 @@ public partial class CodigoCuentasGlobal
 
     public int IdCondominio { get; set; }
 
-    public virtual ICollection<CuentasGrupo> CuentasGrupos { get; } = new List<CuentasGrupo>();
+    public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
 
-    public virtual ICollection<Fondo> Fondos { get; } = new List<Fondo>();
+    public virtual ICollection<Fondo> Fondos { get; set; } = new List<Fondo>();
 
     public virtual Clase IdClaseNavigation { get; set; } = null!;
 
@@ -37,11 +37,11 @@ public partial class CodigoCuentasGlobal
 
     public virtual SubCuenta IdSubCuentaNavigation { get; set; } = null!;
 
-    public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; } = new List<LdiarioGlobal>();
+    public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; set; } = new List<LdiarioGlobal>();
 
-    public virtual ICollection<MonedaCuenta> MonedaCuenta { get; } = new List<MonedaCuenta>();
+    public virtual ICollection<MonedaCuenta> MonedaCuenta { get; set; } = new List<MonedaCuenta>();
 
-    public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; } = new List<Provision>();
+    public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; set; } = new List<Provision>();
 
-    public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; } = new List<Provision>();
+    public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; set; } = new List<Provision>();
 }

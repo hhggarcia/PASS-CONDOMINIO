@@ -11,6 +11,7 @@ public partial class Clase
 
     public string Codigo { get; set; } = null!;
 
-    public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
-    public virtual ICollection<Grupo> Grupos { get; } = new List<Grupo>();
+    public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; } = new List<CodigoCuentasGlobal>();
+
+    public virtual ICollection<Grupo> Grupos { get; set; } = new List<Grupo>();
 }

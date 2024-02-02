@@ -13,25 +13,31 @@ public partial class Islr
 
     public string Concepto { get; set; } = null!;
 
-    public string Literal { get; set; } = null!;
+    public bool Pnatural { get; set; }
 
-    public string TipoReceptor { get; set; } = null!;
+    public bool Pjuridica { get; set; }
 
-    public bool Residente { get; set; }
+    public bool Residenciada { get; set; }
+
+    public bool NoResidenciada { get; set; }
 
     public bool Domiciliada { get; set; }
 
+    public bool NoDomiciliada { get; set; }
+
     public decimal BaseImponible { get; set; }
+
+    public string Modo { get; set; } = null!;
+
+    public decimal MontoDesde { get; set; }
+
+    public decimal MontoHasta { get; set; }
 
     public decimal Tarifa { get; set; }
 
-    public string? MontoSujeto { get; set; }
+    public decimal Sustraendo { get; set; }
 
-    public string? PagosMayores { get; set; }
+    public virtual ICollection<Producto> Productos { get; set; } = new List<Producto>();
 
-    public string? Sustraendo { get; set; }
-
-    public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
-
-    public virtual ICollection<Proveedor> Proveedors { get; } = new List<Proveedor>();
+    public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
 }

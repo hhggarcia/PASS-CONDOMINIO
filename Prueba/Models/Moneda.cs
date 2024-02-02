@@ -11,5 +11,5 @@ public partial class Moneda
 
     public string Pais { get; set; } = null!;
 
-    public virtual ICollection<MonedaCond> MonedaConds { get; } = new List<MonedaCond>();
+    public virtual ICollection<MonedaCond> MonedaConds { get; set; } = new List<MonedaCond>();
 }

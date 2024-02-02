@@ -27,9 +27,9 @@ public partial class Proveedor
 
     public bool ContribuyenteEspecial { get; set; }
 
-    public virtual ICollection<Anticipo> Anticipos { get; } = new List<Anticipo>();
+    public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
-    public virtual ICollection<Factura> Facturas { get; } = new List<Factura>();
+    public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
