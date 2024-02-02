@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "Editar Caso";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Editar caso
+                    </h6>
+                    <!-- Button trigger modal -->
+                </div>
+
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <label for="InputNombreCaso" class="form-label">Tipo de Caso</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>- Seleccionar -</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="exampleUsuarioCliente" class="form-label">Usuario / Cliente</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>- Seleccionar -</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="exampleResponsable" class="form-label">Responsable</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>- Seleccionar -</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <label for="exampleStatus" class="form-label">Status</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>En Proceso</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <label for="examplePrioridad" class="form-label">Prioridad</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>Normal</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="exampleSolicitud" class="form-label">Solicitud</label>
+                                                <textarea class="form-control casos-input" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="exampleComentarios" class="form-label">Comentarios</label>
+                                                <textarea class="form-control casos-input" id="exampleFormComentarios" rows="3"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <label for="exampleRemitirCaso" class="form-label">Solo en caso que desee remitir este caso, Selecone la persona e indique el motivi</label>
+                                                <select class="form-select  casos-input" aria-label="Default select example">
+                                                    <option selected>- Seleccionar -</option>
+                                                    <option value="1">Uno</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="exampleFormMotivo" class="form-label">Motivo</label>
+                                                <textarea class="form-control casos-input" id="exampleFormMotivo" rows="3"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary">Guardar</button>
+                                            <button type="submit" class="btn btn-secondary">Cancelar</button>
+                                        </div>
+                                    </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

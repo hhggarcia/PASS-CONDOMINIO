@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "Tipo de Casos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary mb-2">
+                        Tipo de Casos
+                    </h6>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleCodCaso" class="form-label">Cod. Caso</label>
+                                    <input type="text" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="examplePrioridad" class="form-label">Prioridad</label>
+                                    <select class="form-select  casos-input" aria-label="Default select example">
+                                        <option selected>Todos</option>
+                                        <option value="1">Uno</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleStatus" class="form-label">Status</label>
+                                    <select class="form-select  casos-input" aria-label="Default select example">
+                                        <option selected>En Proceso</option>
+                                        <option value="1">Uno</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleAgencia" class="form-label">Agencia</label>
+                                    <select class="form-select  casos-input" aria-label="Default select example">
+                                        <option selected>Todas</option>
+                                        <option value="1">Uno</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleUsuario" class="form-label">Usuario</label>
+                                    <input type="text" class="form-control  casos-input" id="exampleInputUsuario" aria-describedby="emailHelp">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleFechaDesde" class="form-label">Fecha Desde</label>
+                                    <input type="date" class="form-control  casos-input" id="exampleInputFechaDesde" aria-describedby="emailHelp">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleFechaDesde" class="form-label">Fecha Hasta</label>
+                                    <input type="date" class="form-control  casos-input" id="exampleInputFechaDesde" aria-describedby="emailHelp">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleCargadoPor" class="form-label">Cargado Por</label>
+                                    <select class="form-select casos-input" aria-label="Default select example">
+                                        <option selected>Todos</option>
+                                        <option value="1">Uno</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <label for="exampleTipoCasos" class="form-label">Tpos de Casos</label>
+                                    <select class="form-select casos-input" aria-label="Default select example">
+                                        <option selected>Todos</option>
+                                        <option value="1">Uno</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">Solo casos propios / Remitidos a mi persona.</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-center" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Agregado Por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="tr_s">
+                                    <td>Otto</td>
+                                    <td>Otto</td>
+                                    <td>mdo</td>
+                                </tr>
+                                <tr class="tr_s">
+                                    <td>Otto</td>
+                                    <td>Thornton</td>
+                                    <td>fat</td>
+                                </tr>
+                                <tr class="tr_s">
+                                    <td>Otto</td>
+                                    <td>Larry the Bird</td>
+                                    <td><a href="#">Editar</a> | <a href="#">Eliminar</a></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
