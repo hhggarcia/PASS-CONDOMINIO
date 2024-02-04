@@ -43,8 +43,93 @@
                             <div class="form-body">
                                 <div class="row">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                    <!-- Proveedor -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Proveedor</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="proveedorSelect" asp-for="IdProveedor">
+                                                        <option value="">Seleccione un proveedor</option>
+                                                        @foreach (var factura in Model.Proveedor)
+                                                        {
+                                                            <option value="@factura.Value">@factura.Text</option>
+                                                        }
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Facturas -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Facturas</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="facturaSelect" asp-for="IdFactura">
+                                                        <option value="">Seleccione una factura</option>
+                                                        <!-- Mantén esta opción manual al cargar la página -->
+                                                    </select>
+                                                    <span id="facturaMessage" class="text-danger" style="display:none;">No hay facturas disponibles.</span>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                          @*           <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Facturas</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="facturaSelect" asp-for="IdFactura">
+                                                        <option value="">Seleccione una factura</option>
+                                                        @foreach (var factura in Model.Facturas)
+                                                        {
+                                                            <option value="@factura.Value">@factura.Text</option>
+                                                        }
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div> *@
                                     
-                                    <!-- Subcuentas -->
+                                    <!-- Anticipos -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">¿Desea pagar con anticipos?</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="basicSelectAnticipos" >
+                                                        <option value="No">No</option>
+                                                        <option value="Si">Si</option>
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Anticipos -->
+                                    <div class="col-md-6 col-12 anticipo-group">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Anticipos</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+
+                                                    <select class="form-select" id="basicSelect" asp-for="IdAnticipo">
+                                                        <option value="">Seleccione un anticipo</option>
+                                                       @*  @foreach (var factura in Model.Anticipos)
+                                                        {
+                                                            <option value="@factura.Value">@factura.Text</option>
+                                                        } *@
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                  @*   <!-- Subcuentas -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Sub Cuentas</label>
@@ -57,10 +142,29 @@
                                                 </fieldset>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>  
+                                     *@
+                                    
 
                                     <!-- Monto -->
                                     <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Monto</label>
+                                            <span asp-validation-for="Monto" class="text-danger"></span>
+                                            <div class="position-relative">
+                                                <input type="text"
+                                                       class="form-control"
+                                                       placeholder="Monto"
+                                                       id="montoInput"
+                                                       asp-for="Monto"
+                                                       /> <!-- Agregar el atributo disabled -->
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @*     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
                                             <span asp-validation-for="Monto" class="text-danger"></span>
@@ -75,7 +179,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> *@
 
                                     <!-- Moneda -->
                                    @* <div class="col-md-6 col-12">
@@ -254,8 +358,6 @@
                         <p> Registre Monedas. Configuración > Monedas > Registrar </p>
                         <p> Asigne una Moneda a las cuentas de Caja y Banco. Configuración > Cuentas > Registrar </p>
                     }
-
-
                 </div>
             </div>
         </div>
@@ -264,6 +366,76 @@
 </div>
 <!-- /.container-fluid -->
 @section Scripts{
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.anticipo-group').hide();
+            $('#proveedorSelect').change(function () {
+                var proveedorId = $(this).val();
+
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerFacturasPorProveedor',
+                    type: 'GET',
+                    data: { proveedorId: proveedorId },
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $.each(data, function (index, item) {
+                                $('#facturaSelect').empty();
+                                 $('#facturaSelect').append('<option value="">Seleccione una factura</option>');
+                                $('#facturaSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                            });
+                        } else {
+                            $('#facturaMessage').show();
+                        }
+
+                        // $.each(data, function (index, item) {
+                        //     $('#facturaSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                        // });
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las facturas: ', error);
+                    }
+                });
+            });
+            $('#basicSelectAnticipos').change(function () {
+                var opcionSeleccionada = $(this).val();
+
+                if (opcionSeleccionada === 'Si') {
+                    var proveedorId = $('#proveedorSelect').val();
+
+                    obtenerAnticiposPorProveedor(proveedorId);
+                } else {
+                    $('.anticipo-group').hide();  // Ocultar el grupo de anticipos
+                    $('#montoInput').prop('disabled', false); // Deshabilitar el campo
+                }
+            });
+
+            function obtenerAnticiposPorProveedor(proveedorId) {
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerAnticiposPorProveedor',
+                    type: 'GET',
+                    data: { proveedorId: proveedorId },
+                    success: function (data) {
+
+                        $('#basicSelect').empty();
+                        $('#basicSelect').append('<option value="">Seleccione un anticipo</option>');
+
+                        $.each(data, function (index, item) {
+                            $('#basicSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                        });
+                        $('#montoInput').val(data.saldo);
+                        $('#montoInput').prop('disabled', true); // Deshabilitar el campo
+                        $('.anticipo-group').show();  // Mostrar el grupo de anticipos
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener los anticipos: ', error);
+                    }
+                });
+            }
+        });
+    </script>
+
     <script>
         $('.nav-tabs-selector').on('change', function (e) {
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');

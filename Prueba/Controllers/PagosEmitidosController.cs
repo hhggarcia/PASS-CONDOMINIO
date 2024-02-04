@@ -456,6 +456,27 @@ namespace Prueba.Controllers
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
+       
+        [HttpGet]
+        public async Task<IActionResult> ObtenerFacturasPorProveedor(int proveedorId)
+        {
+            // Lógica para obtener las facturas asociadas al proveedor seleccionado
+            var facturas = await _context.Facturas
+           .Where(c => c.IdProveedor == proveedorId)
+           .ToListAsync();
 
+            // Devolver las facturas en formato JSON
+            var facturaItems = facturas.Select(f => new { Value = f.IdFactura, Text = f.Descripcion }).ToList();
+            return Json(facturaItems);
+        } [HttpGet]
+        public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
+        {
+            var anticipos = await _context.Anticipos
+           .Where(c => c.IdProveedor == proveedorId)
+           .ToListAsync();
+
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = f.Detalle + " " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
+            return Json(anticiposItems);
+        }
     }
 }

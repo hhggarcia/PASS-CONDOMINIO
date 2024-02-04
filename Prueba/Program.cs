@@ -94,6 +94,7 @@ void AddScoped()
 {
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+    builder.Services.AddScoped<IFiltroFechaRepository, FiltroFechaRepository>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddScoped<IPDFServices, PDFServices>();

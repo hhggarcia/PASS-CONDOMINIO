@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -15,10 +17,12 @@ namespace Prueba.Controllers
 
     public class LibroComprasController : Controller
     {
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public LibroComprasController(NuevaAppContext context)
+        public LibroComprasController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
         {
+            _reposFiltroFecha=  filtroFechaRepository;
             _context = context;
         }
 
@@ -173,6 +177,11 @@ namespace Prueba.Controllers
         private bool LibroCompraExists(int id)
         {
             return _context.LibroCompras.Any(e => e.Id == id);
+        }
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var LibroCompras = await _reposFiltroFecha.ObtenerLibroCompras(filtrarFechaVM);
+            return View("Index", LibroCompras);
         }
     }
 }

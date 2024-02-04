@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Prueba.Models.CuotasEspeciale>
+﻿
+ @model IEnumerable<Prueba.Models.CuotasEspeciale>
 
 @{
     ViewData["Title"] = "Cuotas Especiales";
@@ -20,13 +21,12 @@
                     <h6 class="m-0 font-weight-bold text-primary">
                         Cuotas Especiales
                     </h6>
+                    <partial name="_FiltrarFecha" model="@(new Prueba.ViewModels.FiltrarFechaVM())" />
+
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table text-center"
-                               id="dataTable"
-                               width="100%"
-                               cellspacing="0">
+                        <table class="table text-center" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>Cuota Especial</th>
@@ -41,20 +41,14 @@
                             </thead>
                             <tbody>
                                 @if (Model != null && Model.Any())
-@*                                 @if (Model.Count() == 0)
- *@
                                 {
-                                    @foreach(var item in Model)
+                                    foreach (var item in Model)
                                     {
                                         <tr class="tr_s">
                                             <td>@item.Descripcion</td>
                                             <td>@string.Format("{0:N2}", item.SubCuotas) @item.SimboloMoneda</td>
                                             <td>@item.FechaInicio</td>
-                                           @if(item.Activa == true){
-                                                <td>Si</td>
-                                            }else{
-                                                <td>No</td>
-                                            }
+                                            <td>@(item.Activa ? "Si" : "No")</td>
                                             <td>@string.Format("{0:N2}", item.MontoTotal) @item.SimboloMoneda</td>
                                             <td>@item.ValorDolar.ToString("N2") @item.SimboloMoneda</td>
                                             <td>@((item.MontoTotal / item.ValorDolar).ToString("N2")) $</td>
@@ -65,21 +59,15 @@
                                             </td>
                                         </tr>
                                     }
-                                  
-                                }else{
+                                }
+                                else
+                                {
                                     <tr class="tr_s">
-                                        <td>No</td>
-                                        <td>hay</td>
-                                        <td>cuotas</td>
-                                        <td>especiales</td>
-                                        <td></td>
-                                        <td> </td>
+                                        <td colspan="8">No hay cuotas especiales</td>
                                     </tr>
                                 }
                             </tbody>
-
                         </table>
-
                     </div>
                 </div>
             </div>
@@ -87,3 +75,59 @@
 
     </div>
 </div>
+@*                     <form>
+                        <div class="row">
+                            <div class="col-md-5 mt-3">
+                                <label for="last-name-column">Fecha Inicio</label>
+                                <div class="input-group date">
+                                    <input class="form-control"
+                                           type="date"
+                                           id="fechaDesde" name="fechaDesde"
+                                           value="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" required>
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mt-3">
+                                <label for="last-name-column">Fecha Fin</label>
+                                <div class="position-relative">
+                                    <input class="form-control"
+                                           type="date"
+                                           id="fechaHasta" name="fechaHasta"
+                                           value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mt-auto">
+                                <button type="button" class="btn btn-primary" id="filtroForm">Filtrar</button>
+                            </div>
+                        </div>
+                    </form>
+ *@
+@* <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#filtroForm').click(function () {
+            // e.preventDefault(); 
+
+            // Captura los valores de las fechas
+            var fechaInicio = $('#fechaDesde').val();
+            var fechaFin = $('#fechaHasta').val();
+
+            $.ajax({
+                url: '/CuotasEspeciales/FiltrarFecha',
+                type: 'POST',
+                data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
+                success: function (result) {
+                    // Actualiza la tabla con los datos filtrados
+                    $('#dataTable tbody').html(result);
+
+                },
+                error: function (error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+        });
+    });
+</script> *@

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -16,9 +18,12 @@ namespace Prueba.Controllers
     public class AnticiposController : Controller
     {
         private readonly NuevaAppContext _context;
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
 
-        public AnticiposController(NuevaAppContext context)
+
+        public AnticiposController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
         {
+            _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
 
@@ -162,6 +167,13 @@ namespace Prueba.Controllers
         private bool AnticipoExists(int id)
         {
             return _context.Anticipos.Any(e => e.IdAnticipo == id);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var filtrarFecha = await _reposFiltroFecha.ObtenerAnticipos(filtrarFechaVM);
+            return View("Index", filtrarFecha);
         }
     }
 }

@@ -434,7 +434,6 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsFixedLength();
-
             entity.HasOne(d => d.IdGrupoNavigation).WithMany(p => p.Cuenta)
                 .HasForeignKey(d => d.IdGrupo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -448,6 +447,8 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(250)
                 .IsUnicode(false);
+            entity.Property(e => e.FechaFin).HasColumnType("date");
+            entity.Property(e => e.FechaInicio).HasColumnType("date");
             entity.Property(e => e.MontoMensual).HasColumnType("money");
             entity.Property(e => e.MontoTotal).HasColumnType("money");
             entity.Property(e => e.SimboloMoneda)
