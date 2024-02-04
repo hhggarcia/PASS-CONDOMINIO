@@ -468,7 +468,18 @@ namespace Prueba.Controllers
             // Devolver las facturas en formato JSON
             var facturaItems = facturas.Select(f => new { Value = f.IdFactura, Text = f.Descripcion }).ToList();
             return Json(facturaItems);
-        } [HttpGet]
+        }
+        public async Task<IActionResult> ObtenerFactura(int id)
+        {
+            var factura = await _context.Facturas.Where(c => c.IdFactura == id).FirstAsync();
+            var facturaMonto = new
+            {
+                Value = factura.IdFactura,
+                Monto = factura.Subtotal
+            };
+            return Json(facturaMonto);
+        }
+        [HttpGet]
         public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
         {
             var anticipos = await _context.Anticipos
@@ -478,5 +489,6 @@ namespace Prueba.Controllers
             var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = f.Detalle + " " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
             return Json(anticiposItems);
         }
+
     }
 }

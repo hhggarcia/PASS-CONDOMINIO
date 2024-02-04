@@ -222,26 +222,43 @@ namespace Prueba.Repositories
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                    if (pago.MontoRef > factura.MontoTotal){
-                        factura.Pagada = true;
-                        factura.EnProceso = false;
-                        factura.Abonado = pago.MontoRef - factura.MontoTotal;
-                        factura.Subtotal = 0;
-                        factura.MontoTotal = 0;
-                    }
-                    else if(pago.MontoRef < factura.MontoTotal ) 
+                    if(factura.Abonado == 0)
                     {
-                        factura.Pagada = false;
-                        factura.EnProceso = true;
-                        factura.Abonado = pago.MontoRef;
+                        if (pago.MontoRef == factura.Subtotal)
+                        {
+                            factura.Abonado = pago.MontoRef;
+                            factura.Pagada = true;
+                            factura.EnProceso = false;
+                            factura.MontoTotal = 0;
+                        }
+                        else if (pago.MontoRef < factura.Subtotal)
+                        {
+                            factura.Abonado = pago.MontoRef + factura.Abonado;
+                            factura.Pagada = false;
+                            factura.EnProceso = true;
+                        }
                     }
                     else
                     {
-                        factura.Pagada = true;
-                        factura.EnProceso = false;
-                        factura.Subtotal = 0;
-                        factura.MontoTotal = 0;
-                        factura.Abonado = 0;
+                        var montototal = factura.Abonado + pago.MontoRef;
+                        if (montototal == factura.Subtotal)
+                        {
+                            factura.Abonado = montototal;
+                            factura.Pagada = true;
+                            factura.EnProceso = false;
+                        }
+                        else if (montototal < factura.Subtotal)
+                        {
+                            factura.Abonado = pago.MontoRef + factura.Abonado;
+                            factura.Pagada = false;
+                            factura.EnProceso = true;
+                        }
+                        else
+                        {
+                            factura.Abonado = montototal;
+                            factura.Pagada = true;
+                            factura.EnProceso = false;
+                        }
                     }
                   
                     using (var _dbContext = new NuevaAppContext())

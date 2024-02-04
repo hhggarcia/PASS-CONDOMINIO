@@ -398,6 +398,36 @@
                     }
                 });
             });
+            $('#facturaSelect').change(function () {
+                var proveedorId = $(this).val();
+
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerFactura',
+                    type: 'GET',
+                    data: { proveedorId: proveedorId },
+                    success: function (data) {
+
+                        $('#montoInput').val(data.monto);
+                        // Permitir la edición del campo de monto
+                        $('#montoInput').prop('readonly', false);
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las facturas: ', error);
+                    }
+                });
+            });
+            // Validar el monto antes de permitir la edición
+            $('#montoInput').on('input', function () {
+                var montoFactura = parseFloat($('#montoFactura').val());
+                var montoInput = parseFloat($(this).val());
+
+                if (montoInput > montoFactura) {
+                    // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
+                    alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                    $(this).val(montoFactura);
+                }
+            });
+
             $('#basicSelectAnticipos').change(function () {
                 var opcionSeleccionada = $(this).val();
 
