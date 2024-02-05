@@ -17,9 +17,6 @@ public partial class Anticipo
 
     public int IdProveedor { get; set; }
     public bool Activo { get; set; }
-
-    public bool Activo { get; set; }
-
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoAnticipo> PagoAnticipos { get; set; } = new List<PagoAnticipo>();

@@ -51,11 +51,29 @@ namespace Prueba.Controllers
         }
 
         // GET: Proveedores/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto");
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
+
+            var selectIslrs = await (from c in _context.Islrs
+                              where c.Tarifa > 0
+                              select new
+                              {
+                                  DataValue = c.Id,
+                                  DataText =  c.Concepto 
+                                  + ((c.Pjuridica) ? " PJ" : "") 
+                                  + ((c.Pnatural) ? " PN" : "") 
+                                  + ((c.Domiciliada) ? " Domiciliado" : "") 
+                                  + ((c.NoDomiciliada) ? " No Domiciliado" : "") 
+                                  + ((c.Residenciada) ? " Residenciada" : "")
+                                  + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                  + " " + c.Tarifa + "%"
+
+                              }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
             return View();
         }
 
@@ -77,8 +95,26 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
             return View(proveedor);
         }
 
@@ -96,8 +132,26 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
             return View(proveedor);
         }
 
@@ -138,8 +192,25 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIslr"] = new SelectList(_context.Islrs, "Id", "Concepto", proveedor.IdRetencionIslr);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", proveedor.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
 
             return View(proveedor);
         }
