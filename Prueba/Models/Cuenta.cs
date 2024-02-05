@@ -15,4 +15,6 @@ public partial class Cuenta
 
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; } = new List<CodigoCuentasGlobal>();
     public virtual ICollection<SubCuenta> SubCuenta { get; } = new List<SubCuenta>();
+    public virtual ICollection<Factura> Facturas { get; } = new List<Factura>();
+
 }

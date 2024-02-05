@@ -156,7 +156,7 @@ namespace Prueba.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CrearSubCuentaPost(SubcuentaCascadingVM modelo)
+        public async Task<IActionResult> CrearSubCuentaPost(SubcuentaCascadingVM modelo)
         {
             try
             {
@@ -181,6 +181,10 @@ namespace Prueba.Controllers
                 //recuperar el id del condominio
                 //var idCondominio = 1;
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var codClases = await _context.Clases.Where(c=>c.Id == modelo.IdClase).Select(c => c.Codigo).FirstAsync();
+                var codGrupos = await _context.Grupos.Where(c=>c.Id == modelo.IdGrupo).Select(c => c.Codigo).FirstAsync();
+                var codCuenta = await _context.Cuenta.Where(c=>c.Id == modelo.IdCuenta).Select(c => c.Codigo).FirstAsync();
+                
                 var nuevoCC = new CodigoCuentasGlobal
                 {
                     IdSubCuenta = nuevaSubCuenta.Id,
@@ -189,8 +193,8 @@ namespace Prueba.Controllers
                     IdGrupo = modelo.IdGrupo,
                     IdCuenta = modelo.IdCuenta,
                     Saldo = modelo.Saldo,
-                    SaldoInicial = modelo.SaldoInicial,   
-                    Codigo = modelo.Codigo
+                    SaldoInicial = modelo.SaldoInicial,
+                    Codigo = codClases+ codGrupos + codCuenta +modelo.Codigo
                 };
 
                 using (var _dContext = new NuevaAppContext())

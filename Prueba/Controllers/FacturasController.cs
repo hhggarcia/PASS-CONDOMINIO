@@ -56,6 +56,7 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.Cuenta, "Id", "Descripcion");
             return View();
         }
 

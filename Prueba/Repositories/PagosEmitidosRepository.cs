@@ -126,9 +126,9 @@ namespace Prueba.Repositories
             decimal montoReferencia = 0;
 
             //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
-            var idCodCuenta = from c in _context.CodigoCuentasGlobals
-                              where c.IdSubCuenta == modelo.IdSubcuenta
-                              select c;
+            //var idCodCuenta = from c in _context.CodigoCuentasGlobals
+            //                  where c.IdSubCuenta == modelo.IdSubcuenta
+            //                  select c;
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -360,7 +360,7 @@ namespace Prueba.Repositories
                     {
                         LdiarioGlobal asientoGasto = new LdiarioGlobal
                         {
-                            IdCodCuenta = idCodCuenta.First().IdCodCuenta,
+                            IdCodCuenta = factura.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,
@@ -618,7 +618,7 @@ namespace Prueba.Repositories
 
                         LdiarioGlobal asientoGasto = new LdiarioGlobal
                         {
-                            IdCodCuenta = idCodCuenta.First().IdCodCuenta,
+                            IdCodCuenta = factura.IdCodCuenta,
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Monto = modelo.Monto,

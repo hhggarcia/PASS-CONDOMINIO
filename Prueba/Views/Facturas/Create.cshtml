@@ -70,6 +70,10 @@
                             <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
                         </div>
                         <div class="form-group">
+                            <label asp-for="IdCodCuenta" class="control-label"></label>
+                            <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="Abonado" class="control-label"></label>
                             <input asp-for="Abonado" class="form-control" />
                             <span asp-validation-for="Abonado" class="text-danger"></span>

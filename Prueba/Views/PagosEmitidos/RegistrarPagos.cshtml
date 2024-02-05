@@ -129,21 +129,7 @@
                                     </div>
 
 
-                                  @*   <!-- Subcuentas -->
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Sub Cuentas</label>
-                                            <div class="position-relative">
-                                                <fieldset class="form-group">
-                                                    <select class="form-select" id="basicSelect"
-                                                        asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
-                                                        <option value="">Seleccione la Sub Cuenta a pagar</option>
-                                                    </select>
-                                                </fieldset>
-                                            </div>
-                                        </div>
-                                    </div>  
-                                     *@
+                            
                                     
 
                                     <!-- Monto -->
@@ -213,7 +199,21 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                      <!-- Subcuentas -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left mandaory">
+                                        <label for="last-name-column">Sub Cuentas</label>
+                                        <div class="position-relative">
+                                            <fieldset class="form-group">
+                                            <select class="form-select" id="basicSelect"
+                                            asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
+                                            <option value="">Seleccione la Sub Cuenta a pagar</option>
+                                            </select>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+                               
                                     <!-- Concepto -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left">
