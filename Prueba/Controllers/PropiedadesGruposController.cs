@@ -52,8 +52,11 @@ namespace Prueba.Controllers
         // GET: PropiedadesGrupos/Create
         public IActionResult Create()
         {
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre");
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo");
+            int idPropiedad = Convert.ToInt32(TempData.Peek("IDPropiedad").ToString());
+
+
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo");
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads.Where(c => c.IdPropiedad.Equals(idPropiedad)), "IdPropiedad", "Codigo");
             return View();
         }
 
@@ -70,9 +73,9 @@ namespace Prueba.Controllers
             {
                 _context.Add(propiedadesGrupo);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), "Propiedades");
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", propiedadesGrupo.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }
@@ -90,7 +93,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", propiedadesGrupo.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }
@@ -129,7 +132,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", propiedadesGrupo.IdGrupoGasto);
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", propiedadesGrupo.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "Codigo", propiedadesGrupo.IdPropiedad);
             return View(propiedadesGrupo);
         }

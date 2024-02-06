@@ -1,4 +1,4 @@
-﻿@model IList<SelectListItem>
+﻿@model System.Collections.Generic.IList<SelectListItem>
 
 @{
     ViewData["Title"] = "Create";
@@ -40,6 +40,12 @@
                                                 @Html.HiddenFor(h => @Model[i].Text)
                                             </div>
                                         }
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="submit"
+                                                class="btn btn-primary me-1 mb-1">
+                                            Guardar
+                                        </button>
                                     </div>
                                 </form>
                             </div>
