@@ -1109,7 +1109,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Representante).HasMaxLength(50);
             entity.Property(e => e.Rif).HasMaxLength(10);
             entity.Property(e => e.Saldo).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Telefono).HasMaxLength(10);
+            entity.Property(e => e.Telefono).HasMaxLength(50);
 
             entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Proveedors)
                 .HasForeignKey(d => d.IdCondominio)

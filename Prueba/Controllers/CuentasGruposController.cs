@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using Prueba.Context;
 using Prueba.Models;
 
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
+
     public class CuentasGruposController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -51,8 +53,10 @@ namespace Prueba.Controllers
         // GET: CuentasGrupos/Create
         public IActionResult Create()
         {
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "Codigo");
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre");
+            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo");
             return View();
         }
 
@@ -63,17 +67,24 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdCuentaGrupos,IdCodCuenta,IdGrupoGasto")] CuentasGrupo cuentasGrupo)
         {
-            ModelState.Remove(nameof(cuentasGrupo.IdCodCuentaNavigation));
             ModelState.Remove(nameof(cuentasGrupo.IdGrupoGastoNavigation));
+            ModelState.Remove(nameof(cuentasGrupo.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
+                var subcuenta = await _context.SubCuenta.FindAsync(cuentasGrupo.IdCodCuenta);
+                var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == subcuenta.Id).ToListAsync();
+                cuentasGrupo.IdCodCuenta = cc.First().IdCodCuenta;
+
                 _context.Add(cuentasGrupo);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "GrupoGastos");
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "Codigo", cuentasGrupo.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", cuentasGrupo.IdGrupoGasto);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
+            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
+
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
+            
             return View(cuentasGrupo);
         }
 
@@ -90,8 +101,10 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "Codigo", cuentasGrupo.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", cuentasGrupo.IdGrupoGasto);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
+            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
+
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
             return View(cuentasGrupo);
         }
 
@@ -107,13 +120,17 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            ModelState.Remove(nameof(cuentasGrupo.IdCodCuentaNavigation));
             ModelState.Remove(nameof(cuentasGrupo.IdGrupoGastoNavigation));
+            ModelState.Remove(nameof(cuentasGrupo.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var subcuenta = await _context.SubCuenta.FindAsync(cuentasGrupo.IdCodCuenta);
+                    var cc = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == subcuenta.Id).ToListAsync();
+                    cuentasGrupo.IdCodCuenta = cc.First().IdCodCuenta;
+
                     _context.Update(cuentasGrupo);
                     await _context.SaveChangesAsync();
                 }
@@ -128,10 +145,13 @@ namespace Prueba.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "GrupoGastos");
+
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "Codigo", cuentasGrupo.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "Nombre", cuentasGrupo.IdGrupoGasto);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
+            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
+
+            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
             return View(cuentasGrupo);
         }
 

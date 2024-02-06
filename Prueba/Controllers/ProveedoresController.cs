@@ -113,7 +113,7 @@ namespace Prueba.Controllers
 
                                      }).ToListAsync();
 
-            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText", proveedor.IdRetencionIslr);
 
             return View(proveedor);
         }
