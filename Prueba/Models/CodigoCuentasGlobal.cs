@@ -44,4 +44,5 @@ public partial class CodigoCuentasGlobal
     public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; set; } = new List<Provision>();
 
     public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; set; } = new List<Provision>();
+    public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 }

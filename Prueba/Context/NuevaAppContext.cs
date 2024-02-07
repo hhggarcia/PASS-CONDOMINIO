@@ -142,7 +142,7 @@ public partial class NuevaAppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=true;MultipleActiveResultSets=true;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -567,7 +567,7 @@ public partial class NuevaAppContext : DbContext
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Facturas)
                 .HasForeignKey(d => d.IdCodCuenta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Factura_Cuenta");
+                .HasConstraintName("FK_Factura_CodigoCuentas_Global");
         });
 
         modelBuilder.Entity<FacturaEmitida>(entity =>

@@ -67,9 +67,10 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.IdCuenta).FirstOrDefault();
+            var idCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == factura.IdCodCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
             factura.IdCodCuenta = idCuenta;
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
+            ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
             if (ModelState.IsValid)
             {
                 _context.Add(factura);
@@ -110,6 +111,7 @@ namespace Prueba.Controllers
             }
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
+            ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
