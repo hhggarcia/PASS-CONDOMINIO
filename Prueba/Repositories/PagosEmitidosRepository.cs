@@ -144,7 +144,7 @@ namespace Prueba.Repositories
             
 
             var provisiones = from c in _context.Provisiones
-                              where c.IdCodGasto == modelo.IdSubcuenta
+                              where c.IdCodGasto == modelo.IdFactura
                               select c;
 
             var diario = from l in _context.LdiarioGlobals
