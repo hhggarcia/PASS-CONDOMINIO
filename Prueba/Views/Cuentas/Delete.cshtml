@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -37,6 +36,12 @@
                                             </dt>
                                             <dd class="col-sm-10">
                                                 @Html.DisplayFor(model => model.Codigo)
+                                            </dd>
+                                            <dt class="col-sm-2">
+                                                @Html.DisplayNameFor(model => model.IdGrupoNavigation)
+                                            </dt>
+                                            <dd class="col-sm-10">
+                                                @Html.DisplayFor(model => model.IdGrupoNavigation.Descripcion)
                                             </dd>
                                         </dl>
                                         <form asp-action="Delete">

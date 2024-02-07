@@ -828,6 +828,7 @@ namespace Prueba.Controllers
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "PagosRecibidos.pdf");
          }
+
         [HttpPost]
         public ContentResult EstadoResultadoPDF([FromBody] EstadoResultadoVM estadoResultado)
         {

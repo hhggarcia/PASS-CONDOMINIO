@@ -23,7 +23,7 @@ public partial class Producto
 
     public int IdRetencionIslr { get; set; }
 
-    public virtual ICollection<FacturaEmitida> FacturaEmitida { get; } = new List<FacturaEmitida>();
+    public virtual ICollection<FacturaEmitida> FacturaEmitida { get; set; } = new List<FacturaEmitida>();
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 

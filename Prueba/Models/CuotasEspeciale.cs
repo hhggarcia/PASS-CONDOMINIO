@@ -33,5 +33,5 @@ public partial class CuotasEspeciale
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual ICollection<ReciboCuota> ReciboCuota { get; } = new List<ReciboCuota>();
+    public virtual ICollection<ReciboCuota> ReciboCuota { get; set; } = new List<ReciboCuota>();
 }

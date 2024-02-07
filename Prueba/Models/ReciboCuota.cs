@@ -35,5 +35,5 @@ public partial class ReciboCuota
 
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
-    public virtual ICollection<PagosCuota> PagosCuota { get; } = new List<PagosCuota>();
+    public virtual ICollection<PagosCuota> PagosCuota { get; set; } = new List<PagosCuota>();
 }

@@ -24,5 +24,5 @@ public partial class MonedaCond
 
     public virtual Moneda IdMonedaNavigation { get; set; } = null!;
 
-    public virtual ICollection<MonedaCuenta> MonedaCuenta { get; } = new List<MonedaCuenta>();
+    public virtual ICollection<MonedaCuenta> MonedaCuenta { get; set; } = new List<MonedaCuenta>();
 }

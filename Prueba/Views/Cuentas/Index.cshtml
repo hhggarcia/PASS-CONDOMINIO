@@ -3,14 +3,15 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
-        <a class="btn btn-light mb-3" asp-controller="Condominios"
+        <a asp-action="Index" asp-controller="CodigoCuentasGlobals" class="btn btn-light">Volver</a>
+
+        <a class="btn btn-light mb-3" asp-controller="Cuentas"
            asp-action="Create">
             Registrar
         </a>
@@ -53,6 +54,9 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.Codigo)
                                     </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdGrupoNavigation)
+                                    </th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -67,6 +71,9 @@
                                             @Html.DisplayFor(modelItem => item.Codigo)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.IdGrupoNavigation.Descripcion)
+                                        </td>
+                                        <td>
                                             <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
                                             <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
@@ -75,6 +82,7 @@
                                 }
                             </tbody>
                         </table>
+
                     </div>
                 </div>
             </div>
@@ -82,4 +90,3 @@
     </div>
 </div>
                  
-

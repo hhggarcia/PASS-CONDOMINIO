@@ -13,83 +13,101 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Impuestos ISLR
+                        Impuesto ISLR
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="form form-horizontal">
                         <div class="form-body">
                             <dl class="row">
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.UnidadTributaria)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.UnidadTributaria)
                                 </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.Factor)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.Factor)
                                 </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.Concepto)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.Concepto)
                                 </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Literal)
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.Pnatural)
                                 </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Literal)
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.Pnatural)
                                 </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.TipoReceptor)
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.Pjuridica)
                                 </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.TipoReceptor)
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.Pjuridica)
                                 </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Residente)
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.Residenciada)
                                 </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Residente)
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.Residenciada)
                                 </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.NoResidenciada)
+                                </dt>
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.NoResidenciada)
+                                </dd>
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.Domiciliada)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.Domiciliada)
                                 </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.NoDomiciliada)
+                                </dt>
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.NoDomiciliada)
+                                </dd>
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.BaseImponible)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.BaseImponible)
                                 </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.Modo)
+                                </dt>
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.Modo)
+                                </dd>
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.MontoDesde)
+                                </dt>
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.MontoDesde)
+                                </dd>
+                                <dt class="col-sm-5">
+                                    @Html.DisplayNameFor(model => model.MontoHasta)
+                                </dt>
+                                <dd class="col-sm-5">
+                                    @Html.DisplayFor(model => model.MontoHasta)
+                                </dd>
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.Tarifa)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.Tarifa)
                                 </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.MontoSujeto)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.MontoSujeto)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.PagosMayores)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.PagosMayores)
-                                </dd>
-                                <dt class="col-sm-2">
+                                <dt class="col-sm-5">
                                     @Html.DisplayNameFor(model => model.Sustraendo)
                                 </dt>
-                                <dd class="col-sm-10">
+                                <dd class="col-sm-5">
                                     @Html.DisplayFor(model => model.Sustraendo)
                                 </dd>
                             </dl>
@@ -103,7 +121,4 @@
             </div>
         </div>
     </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
 </div>

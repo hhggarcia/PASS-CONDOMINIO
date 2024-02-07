@@ -56,7 +56,7 @@ namespace Prueba.Utils
                         FirstName = fila.GetCell(0).ToString(),
                         LastName = fila.GetCell(1).ToString(),
                         Email = fila.GetCell(2).ToString(),
-                        CantPropiedades = fila.GetCell(3).ToString()
+                        //CantPropiedades = fila.GetCell(3).ToString()
                         //generar claves alaetorias
                     });
                 }

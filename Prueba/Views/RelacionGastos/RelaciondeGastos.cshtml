@@ -1,5 +1,6 @@
 ﻿@using Prueba.ViewModels
 
+
 @model RelacionDeGastosVM
 @{
     ViewData["Title"] = "Relación de Gastos";
@@ -34,7 +35,7 @@
                 <i class="fas fa-download fa-sm text-white-50"></i> Generar
                 PDF
             </a> *@
-            <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="RelacionGastosPDF">Crear pdf</button>
+            <a type="button" asp-action="ReciboPdf" asp-controller="RelacionGastos" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf2</a>
 
             <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
                 <i class="fas fa-download fa-sm text-white-50"></i> Generar
@@ -44,6 +45,7 @@
     }
     else
     {
+        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="RelacionGastosPDF">Crear pdf</button>
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Al realizar pagos se podrá generar la Relación de Gastos y los Recibos de Cobro</h1>
         </div>
@@ -198,14 +200,28 @@
 
 </script>
 
-<script>
+
+@* <script>
     $(document).ready(function () {
+
+        // var datos = JSON.stringify(modeloSerializado, function (key, value) {
+        //     console.log(key + " key");
+        //     if (key === 'propiedadProblematica') {
+        //         return 'valorAlternativo'; // Reemplaza con el valor deseado
+        //     } else {
+        //         return value;
+        //     }
+        // }); 
         $("#RelacionGastosPDF").click(function () {
+            // var datos = JsonSerializer.Serialize(Model);
+            // console.log(datos + " datos");
             var datos = @Html.Raw(Json.Serialize(Model));
+
             $.ajax({
                 url: '/RelacionGastos/RelacionGastosPDF',
                 type: 'POST',
                 contentType: 'application/json',
+                // data: @Html.Raw(serializedModel),
                 data: JSON.stringify(datos),
                 success: function (result) {
                     var binaryData = atob(result);
@@ -235,7 +251,7 @@
         });
     });
 </script>
-
+ *@
 
 @section scripts{
     <script>

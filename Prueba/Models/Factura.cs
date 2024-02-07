@@ -30,14 +30,14 @@ public partial class Factura
     public bool Pagada { get; set; }
 
     public bool EnProceso { get; set; }
-    public short IdCodCuenta { get; set; }
+    public int IdCodCuenta { get; set; }
 
-    public virtual ICollection<CuentasPagar> CuentasPagars { get; } = new List<CuentasPagar>();
+    public virtual ICollection<CuentasPagar> CuentasPagars { get; set; } = new List<CuentasPagar>();
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
-    public virtual Cuenta IdCodCuentaNavigation { get; set; } = null!;
+    public virtual CodigoCuentasGlobal IdCodCuentaGlobalNavigation { get; set; } = null!;
 
-    public virtual ICollection<LibroCompra> LibroCompras { get; } = new List<LibroCompra>();
+    public virtual ICollection<LibroCompra> LibroCompras { get; set; } = new List<LibroCompra>();
 
     public virtual ICollection<PagoFactura> PagoFacturas { get; } = new List<PagoFactura>();
 

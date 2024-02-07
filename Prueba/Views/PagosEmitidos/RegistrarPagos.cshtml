@@ -77,7 +77,8 @@
                                             </div>
                                         </div>
                                     </div>
-                          @*           <div class="col-md-6 col-12">
+                          @*         
+                              <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Facturas</label>
                                             <div class="position-relative">
@@ -204,7 +205,7 @@
                                     <div class="form-group has-icon-left mandaory">
                                         <label for="last-name-column">Sub Cuentas</label>
                                         <div class="position-relative">
-                                            <fieldset class="form-group">
+                                            <fieldset class="form-gro up">
                                             <select class="form-select" id="basicSelect"
                                             asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
                                             <option value="">Seleccione la Sub Cuenta a pagar</option>
@@ -369,7 +370,28 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
     <script>
+        // $(document).on('change', '#facturaSelect', function () {
+        //     var facturaId = $(this).val();
+        //     console.log('ID de factura seleccionado:', facturaId); // Agrega esta línea para depurar
+
+        //     $.ajax({
+        //         url: '/PagosEmitidos/ObtenerFactura',
+        //         type: 'GET',
+        //         data: { facturaId: facturaId },
+        //         success: function (data) {
+        //             $('#montoInput').val(data.monto);
+        //             // Permitir la edición del campo de monto
+        //             $('#montoInput').prop('readonly', false);
+        //         },
+        //         error: function (error) {
+        //             console.error('Error al obtener las facturas: ', error);
+        //         }
+        //     });
+        // });
         $(document).ready(function () {
+            var montoFacturaOriginal;
+            var montoAnticipo; 
+            var datAnticipo;
             $('.anticipo-group').hide();
             $('#proveedorSelect').change(function () {
                 var proveedorId = $(this).val();
@@ -380,10 +402,10 @@
                     data: { proveedorId: proveedorId },
                     success: function (data) {
                         if (data.length > 0) {
+                            $('#facturaSelect').empty();
+                            $('#facturaSelect').append('<option value="">Seleccione una factura</option>');
                             $.each(data, function (index, item) {
-                                $('#facturaSelect').empty();
-                                 $('#facturaSelect').append('<option value="">Seleccione una factura</option>');
-                                $('#facturaSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                                $('#facturaSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
                             });
                         } else {
                             $('#facturaMessage').show();
@@ -399,13 +421,14 @@
                 });
             });
             $('#facturaSelect').change(function () {
-                var proveedorId = $(this).val();
+                var facturaId = $(this).val();
 
                 $.ajax({
                     url: '/PagosEmitidos/ObtenerFactura',
                     type: 'GET',
-                    data: { proveedorId: proveedorId },
+                    data: { facturaId: facturaId },
                     success: function (data) {
+                        montoFacturaOriginal = parseFloat(data.monto);
 
                         $('#montoInput').val(data.monto);
                         // Permitir la edición del campo de monto
@@ -416,15 +439,13 @@
                     }
                 });
             });
-            // Validar el monto antes de permitir la edición
             $('#montoInput').on('input', function () {
-                var montoFactura = parseFloat($('#montoFactura').val());
                 var montoInput = parseFloat($(this).val());
 
-                if (montoInput > montoFactura) {
+                if (montoInput > montoFacturaOriginal) {
                     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
                     alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                    $(this).val(montoFactura);
+                    $(this).val(montoFacturaOriginal);
                 }
             });
 
@@ -440,22 +461,22 @@
                     $('#montoInput').prop('disabled', false); // Deshabilitar el campo
                 }
             });
-
+           
             function obtenerAnticiposPorProveedor(proveedorId) {
                 $.ajax({
                     url: '/PagosEmitidos/ObtenerAnticiposPorProveedor',
                     type: 'GET',
                     data: { proveedorId: proveedorId },
                     success: function (data) {
-
+                        datAnticipo = data;
                         $('#basicSelect').empty();
                         $('#basicSelect').append('<option value="">Seleccione un anticipo</option>');
 
                         $.each(data, function (index, item) {
-                            $('#basicSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                            $('#basicSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
                         });
-                        $('#montoInput').val(data.saldo);
-                        $('#montoInput').prop('disabled', true); // Deshabilitar el campo
+                        // $('#montoInput').val(data.saldo);
+                        // $('#montoInput').prop('disabled', true); // Deshabilitar el campo
                         $('.anticipo-group').show();  // Mostrar el grupo de anticipos
                     },
                     error: function (error) {
@@ -463,6 +484,17 @@
                     }
                 });
             }
+            $('#basicSelect').change(function () {
+                var opcionSeleccionada = $(this).val();
+                console.log(opcionSeleccionada + " opcionSeleccionada")
+                var selectedAnticipo = datAnticipo.find(item => item.value == opcionSeleccionada);
+                console.log(selectedAnticipo + " selectedAnticipo")
+                if (selectedAnticipo) {
+                    var precioSeleccionado = selectedAnticipo.precio;
+                    $('#montoInput').val(precioSeleccionado);
+                    $('#montoInput').prop('disabled', true);
+                } 
+            });
         });
     </script>
 

@@ -25,11 +25,11 @@ public partial class PagoEmitido
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual ICollection<PagoAnticipo> PagoAnticipos { get; } = new List<PagoAnticipo>();
+    public virtual ICollection<PagoAnticipo> PagoAnticipos { get; set; } = new List<PagoAnticipo>();
 
-    public virtual ICollection<PagoFactura> PagoFacturas { get; } = new List<PagoFactura>();
+    public virtual ICollection<PagoFactura> PagoFacturas { get; set; } = new List<PagoFactura>();
 
-    public virtual ICollection<PagosNomina> PagosNominas { get; } = new List<PagosNomina>();
+    public virtual ICollection<PagosNomina> PagosNominas { get; set; } = new List<PagosNomina>();
 
-    public virtual ICollection<ReferenciasPe> ReferenciasPes { get; } = new List<ReferenciasPe>();
+    public virtual ICollection<ReferenciasPe> ReferenciasPes { get; set; } = new List<ReferenciasPe>();
 }

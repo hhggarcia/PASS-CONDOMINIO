@@ -10,11 +10,14 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
-        <a class="btn btn-light mb-3" asp-controller="Condominios"
+        <a class="btn btn-light mb-3" asp-controller="GrupoGastos"
            asp-action="Create">
             Registrar
         </a>
+        @* <a class="btn btn-light mb-3" asp-controller="Grupos"
+           asp-action="Index">
+            Grupos
+        </a> *@
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -65,6 +68,7 @@
                                             @Html.DisplayFor(modelItem => item.NombreGrupo)
                                         </td>
                                         <td>
+                                            <a asp-action="VerCuentas" asp-route-id="@item.IdGrupoGasto">Ver cuentas</a> |
                                             <a asp-action="Edit" asp-route-id="@item.IdGrupoGasto">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdGrupoGasto">Detalles</a> |
                                             <a asp-action="Delete" asp-route-id="@item.IdGrupoGasto">Eliminar</a>
