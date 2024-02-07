@@ -56,6 +56,7 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View();
         }
 
@@ -64,10 +65,11 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,Abonado,Pagada,EnProceso")] Factura factura)
+        public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.IdCuenta).FirstOrDefault();
+            factura.IdCodCuenta = idCuenta;
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
-
             if (ModelState.IsValid)
             {
                 _context.Add(factura);

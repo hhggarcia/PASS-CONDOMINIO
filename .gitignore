@@ -456,3 +456,4 @@ $RECYCLE.BIN/
 /Prueba/appsettings.Development.json
 /Prueba/Repositories/FiltroFechaRepository.cs
 /Prueba/Controllers/CuentasGruposController.cs
+/Prueba/Views/TipoCasos/Index.cshtml
