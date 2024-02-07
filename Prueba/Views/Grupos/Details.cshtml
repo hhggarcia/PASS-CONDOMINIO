@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -13,7 +12,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Grupos contables
+                        Cuentas
                     </h6>
                 </div>
                 <div class="card-body">
@@ -32,6 +31,12 @@
                                 <dd class="col-sm-10">
                                     @Html.DisplayFor(model => model.Codigo)
                                 </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdClaseNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdClaseNavigation.Descripcion)
+                                </dd>
                             </dl>
                             <div class="col-md-12">
                                 <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
@@ -44,4 +49,3 @@
         </div>
     </div>
 </div>
-                  

@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
 }
 
 <div class="container-fluid">
@@ -12,7 +13,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Condominios
+                        Cuentas de Grupos
                     </h6>
                 </div>
                 <div class="card-body">
@@ -22,9 +23,7 @@
 
                                 <div class="col-md-12">
                                     <div class="card-body">
-                                        <h4>Are you sure you want to delete this?</h4>
-
-                                        <hr />
+                                        <h6>Are you sure you want to delete this?</h6>
                                         <dl class="row">
                                             <dt class="col-sm-2">
                                                 @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
@@ -39,7 +38,6 @@
                                                 @Html.DisplayFor(model => model.IdGrupoGastoNavigation.IdGrupoGasto)
                                             </dd>
                                         </dl>
-    
                                         <form asp-action="Delete">
                                             <input type="hidden" asp-for="IdCuentaGrupos" />
                                             <input type="submit" value="Eliminar" class="btn btn-danger" />

@@ -25,5 +25,5 @@ public partial class ReciboNomina
 
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 
-    public virtual ICollection<PagosNomina> PagosNominas { get; } = new List<PagosNomina>();
+    public virtual ICollection<PagosNomina> PagosNominas { get; set; } = new List<PagosNomina>();
 }

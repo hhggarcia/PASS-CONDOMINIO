@@ -1,23 +1,21 @@
-﻿@model IEnumerable<Prueba.Models.CuentasGrupo>
+﻿@model IEnumerable<SubCuenta>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cuentas de Grupo";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
-
 
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3" asp-controller="CuentasGrupos"
-           asp-action="Create">
-            Registrar
+        <a class="btn btn-light mb-3"
+           asp-action="AgregarCuenta">
+            Agregar Cuenta
         </a>
-        @* <a class="btn btn-light mb-3" asp-controller="Grupos"
+        <a class="btn btn-light mb-3" asp-controller="GrupoGastos"
         asp-action="Index">
-        Grupos
-        </a> *@
+        Volver
+        </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -39,7 +37,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Cuentas de Grupo
+                        Cuentas de un Grupos
                     </h6>
 
                 </div>
@@ -49,10 +47,10 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
+                                        @Html.DisplayNameFor(model => model.Descricion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdGrupoGastoNavigation)
+                                        @Html.DisplayNameFor(model => model.Codigo)
                                     </th>
                                     <th></th>
                                 </tr>
@@ -62,16 +60,16 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
+                                            @Html.DisplayFor(modelItem => item.Descricion)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdGrupoGastoNavigation.IdGrupoGasto)
+                                            @Html.DisplayFor(modelItem => item.Codigo)
                                         </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdCuentaGrupos">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdCuentaGrupos">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdCuentaGrupos">Eliminar</a>
-                                        </td>
+                                        @* <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                        </td> *@
                                     </tr>
                                 }
                             </tbody>
@@ -82,4 +80,3 @@
         </div>
     </div>
 </div>
-

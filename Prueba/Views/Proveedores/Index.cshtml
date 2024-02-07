@@ -108,7 +108,15 @@
                                             @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Concepto)
+                                            @* @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Concepto) *@
+                                            @item.IdRetencionIslrNavigation.Concepto
+                                            @((item.IdRetencionIslrNavigation.Pjuridica) ? " PJ" : "")
+                                            @((item.IdRetencionIslrNavigation.Pnatural) ? " PN" : "")
+                                            @((item.IdRetencionIslrNavigation.Domiciliada) ? " Domiciliado" : "")
+                                            @((item.IdRetencionIslrNavigation.NoDomiciliada) ? " No Domiciliado" : "")
+                                            @((item.IdRetencionIslrNavigation.Residenciada) ? " Residenciada" : "")
+                                            @((item.IdRetencionIslrNavigation.NoResidenciada) ? " No Residenciada" : "")    
+                                            @item.IdRetencionIslrNavigation.Tarifa %
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Descripcion)

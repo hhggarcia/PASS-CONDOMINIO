@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
     public class GrupoGastosController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -142,6 +144,19 @@ namespace Prueba.Controllers
             var grupoGasto = await _context.GrupoGastos.FindAsync(id);
             if (grupoGasto != null)
             {
+                IList<CuentasGrupo> cuentasGrupos = await _context.CuentasGrupos.Where(c => c.IdGrupoGasto == id).ToListAsync();
+                IList<PropiedadesGrupo> propiedadesGrupos = await _context.PropiedadesGrupos.Where(c => c.IdGrupoGasto == id).ToListAsync();
+
+                if (cuentasGrupos.Any())
+                {
+                    _context.CuentasGrupos.RemoveRange(cuentasGrupos);
+                }
+
+                if (propiedadesGrupos.Any())
+                {
+                    _context.PropiedadesGrupos.RemoveRange(propiedadesGrupos);
+                }
+
                 _context.GrupoGastos.Remove(grupoGasto);
             }
 
@@ -149,9 +164,36 @@ namespace Prueba.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Accion para llevar a la vista index de cuentas en un grupo
+        /// </summary>
+        /// <param name="id">id del grupo para buscar sus cuentas</param>
+        /// <returns></returns>
+        public async Task<IActionResult> VerCuentas(int id)
+        {
+            // buscar cuentas del grupo
+            var cuentasGrupos = await (from g in _context.GrupoGastos
+                                join cg in _context.CuentasGrupos
+                                on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                join cc in _context.CodigoCuentasGlobals
+                                on cg.IdCodCuenta equals cc.IdCodCuenta
+                                join sc in _context.SubCuenta
+                                on cc.IdSubCuenta equals sc.Id
+                                where g.IdGrupoGasto == id
+                                select sc).ToListAsync();
+
+            return View(cuentasGrupos);
+        }
+
+        public IActionResult AgregarCuenta()
+        {
+            return RedirectToAction("Create", "CuentasGrupos");
+        }
+
         private bool GrupoGastoExists(int id)
         {
             return _context.GrupoGastos.Any(e => e.IdGrupoGasto == id);
         }
+
     }
 }

@@ -6,11 +6,10 @@
 
 }
 
-<h1>Create</h1>
-
 <div class="container-fluid">
+    <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a asp-action="Index" class="btn btn-light">Volver</a>
+        <a asp-action="Index" asp-controller="GrupoGastos" class="btn btn-light">Volver</a>
     </div>
     <!-- Content Row -->
     <div class="row justify-content-center">
@@ -20,7 +19,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Grupos Gastos
+                        Cuentas de Grupos
                     </h6>
                 </div>
                 <div class="card-body">
@@ -35,7 +34,7 @@
                             <select asp-for="IdGrupoGasto" class="form-control" asp-items="ViewBag.IdGrupoGasto"></select>
                         </div>
                         <div class="form-group">
-                            <input type="submit" value="Create" class="btn btn-primary" />
+                            <input type="submit" value="Crear" class="btn btn-primary" />
                         </div>
                     </form>
                 </div>
@@ -43,7 +42,7 @@
         </div>
     </div>
 </div>
-                  
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

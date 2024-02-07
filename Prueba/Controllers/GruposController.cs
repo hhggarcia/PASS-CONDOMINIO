@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using Prueba.Context;
 using Prueba.Models;
 
@@ -26,7 +25,8 @@ namespace Prueba.Controllers
         // GET: Grupos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Grupos.ToListAsync());
+            var nuevaAppContext = _context.Grupos.Include(g => g.IdClaseNavigation);
+            return View(await nuevaAppContext.ToListAsync());
         }
 
         // GET: Grupos/Details/5
@@ -38,6 +38,7 @@ namespace Prueba.Controllers
             }
 
             var grupo = await _context.Grupos
+                .Include(g => g.IdClaseNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (grupo == null)
             {
@@ -50,6 +51,7 @@ namespace Prueba.Controllers
         // GET: Grupos/Create
         public IActionResult Create()
         {
+            ViewData["IdClase"] = new SelectList(_context.Clases, "Id", "Descripcion");
             return View();
         }
 
@@ -58,7 +60,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Descripcion,Codigo")] Grupo grupo)
+        public async Task<IActionResult> Create([Bind("Id,Descripcion,Codigo,IdClase")] Grupo grupo)
         {
             ModelState.Remove(nameof(grupo.IdClaseNavigation));
 
@@ -68,6 +70,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdClase"] = new SelectList(_context.Clases, "Id", "Descripcion", grupo.IdClase);
             return View(grupo);
         }
 
@@ -84,6 +87,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdClase"] = new SelectList(_context.Clases, "Id", "Descripcion", grupo.IdClase);
             return View(grupo);
         }
 
@@ -92,7 +96,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(short id, [Bind("Id,Descripcion,Codigo")] Grupo grupo)
+        public async Task<IActionResult> Edit(short id, [Bind("Id,Descripcion,Codigo,IdClase")] Grupo grupo)
         {
             if (id != grupo.Id)
             {
@@ -122,6 +126,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdClase"] = new SelectList(_context.Clases, "Id", "Descripcion", grupo.IdClase);
             return View(grupo);
         }
 
@@ -134,6 +139,7 @@ namespace Prueba.Controllers
             }
 
             var grupo = await _context.Grupos
+                .Include(g => g.IdClaseNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (grupo == null)
             {

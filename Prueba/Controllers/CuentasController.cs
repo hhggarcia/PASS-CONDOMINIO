@@ -25,7 +25,8 @@ namespace Prueba.Controllers
         // GET: Cuentas
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Cuenta.ToListAsync());
+            var nuevaAppContext = _context.Cuenta.Include(c => c.IdGrupoNavigation);
+            return View(await nuevaAppContext.ToListAsync());
         }
 
         // GET: Cuentas/Details/5
@@ -37,6 +38,7 @@ namespace Prueba.Controllers
             }
 
             var cuenta = await _context.Cuenta
+                .Include(c => c.IdGrupoNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cuenta == null)
             {
@@ -49,6 +51,7 @@ namespace Prueba.Controllers
         // GET: Cuentas/Create
         public IActionResult Create()
         {
+            ViewData["IdGrupo"] = new SelectList(_context.Grupos, "Id", "Descripcion");
             return View();
         }
 
@@ -57,7 +60,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Descripcion,Codigo")] Cuenta cuenta)
+        public async Task<IActionResult> Create([Bind("Id,Descripcion,Codigo,IdGrupo")] Cuenta cuenta)
         {
             ModelState.Remove(nameof(cuenta.IdGrupoNavigation));
 
@@ -67,6 +70,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdGrupo"] = new SelectList(_context.Grupos, "Id", "Descripcion", cuenta.IdGrupo);
             return View(cuenta);
         }
 
@@ -83,6 +87,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdGrupo"] = new SelectList(_context.Grupos, "Id", "Descripcion", cuenta.IdGrupo);
             return View(cuenta);
         }
 
@@ -91,12 +96,13 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(short id, [Bind("Id,Descripcion,Codigo")] Cuenta cuenta)
+        public async Task<IActionResult> Edit(short id, [Bind("Id,Descripcion,Codigo,IdGrupo")] Cuenta cuenta)
         {
             if (id != cuenta.Id)
             {
                 return NotFound();
             }
+
             ModelState.Remove(nameof(cuenta.IdGrupoNavigation));
 
 
@@ -120,6 +126,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdGrupo"] = new SelectList(_context.Grupos, "Id", "Descripcion", cuenta.IdGrupo);
             return View(cuenta);
         }
 
@@ -132,6 +139,7 @@ namespace Prueba.Controllers
             }
 
             var cuenta = await _context.Cuenta
+                .Include(c => c.IdGrupoNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cuenta == null)
             {

@@ -8,9 +8,6 @@
 
 <div class="container-fluid">
     <!-- Page Heading -->
-    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
-    </div>*@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <a asp-action="Index" class="btn btn-light">Volver</a>
     </div>
@@ -36,6 +33,11 @@
                             <label asp-for="Nombre" class="control-label"></label>
                             <input asp-for="Nombre" class="form-control" />
                             <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
+                            </label>
                         </div>
                         <div class="form-group">
                             <label asp-for="Direccion" class="control-label"></label>
@@ -70,13 +72,9 @@
                             <input asp-for="Representante" class="form-control" />
                             <span asp-validation-for="Representante" class="text-danger"></span>
                         </div>
-                        <div class="form-group form-check">
-                            <label class="form-check-label">
-                                <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
-                            </label>
-                        </div>
+                        
                         <div class="form-group">
-                            <input type="submit" value="Create" class="btn btn-primary" />
+                            <input type="submit" value="Crear" class="btn btn-primary" />
                         </div>
                     </form>
                 </div>
