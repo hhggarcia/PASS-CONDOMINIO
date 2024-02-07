@@ -22,6 +22,23 @@ namespace Prueba.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Vista para ver solo las percepciones de un empleado
+        /// </summary>
+        /// <param name="id"> ID del empleado al cual consultar las percepciones</param>
+        /// <returns></returns>
+        public async Task<IActionResult> VerPercepciones(int id)
+        {
+            var percepcionesEmpleado = await _context.Percepciones.Where(c => c.IdEmpleado ==  id).Include(p => p.IdEmpleadoNavigation).ToListAsync();
+
+            if (percepcionesEmpleado == null)
+            {
+                return NotFound();
+            }
+
+            return View("Index", percepcionesEmpleado);
+        }
+
         // GET: Percepciones
         public async Task<IActionResult> Index()
         {
@@ -51,7 +68,7 @@ namespace Prueba.Controllers
         // GET: Percepciones/Create
         public IActionResult Create()
         {
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula");
             return View();
         }
 
@@ -70,7 +87,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", percepcion.IdEmpleado);
             return View(percepcion);
         }
 
@@ -87,7 +104,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", percepcion.IdEmpleado);
             return View(percepcion);
         }
 
@@ -126,7 +143,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", percepcion.IdEmpleado);
             return View(percepcion);
         }
 

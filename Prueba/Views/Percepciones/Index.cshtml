@@ -2,65 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
-// <<<<<<< HEAD
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Concepto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Monto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RefMonto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Activo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Concepto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Monto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefMonto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Activo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.IdEmpleado)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPercepcion">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPercepcion">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPercepcion">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-=======
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -69,6 +11,10 @@
         <a class="btn btn-light mb-3" asp-controller="Percepciones"
            asp-action="Create">
             Registrar
+        </a>
+        <a class="btn btn-light mb-3" asp-controller="Empleados"
+           asp-action="Index">
+            Volver
         </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
@@ -104,6 +50,9 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Concepto)
                                     </th>
                                     <th>
@@ -115,9 +64,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.Activo)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
-                                    </th>
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
@@ -125,6 +72,9 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.Nombre)
+                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Concepto)
                                         </td>
@@ -137,9 +87,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Activo)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.Nombre)
-                                        </td>
+                                        
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdPercepcion">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdPercepcion">Detalles</a> |
@@ -155,6 +103,3 @@
         </div>
     </div>
 </div>
-                
-
->>>>>>> DevAdminstradoras
