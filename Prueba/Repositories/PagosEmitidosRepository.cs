@@ -205,7 +205,7 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
                     // añadir al pago
 
-                    if (modelo.IdAnticipo != null || modelo.IdAnticipo !=0 )
+                    if (modelo.IdAnticipo != null && modelo.IdAnticipo !=0 )
                     {
                         var anticipos =await _context.Anticipos.Where(a=>a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         pago.MontoRef = anticipos.Saldo;
@@ -324,10 +324,10 @@ namespace Prueba.Repositories
                         };
                         using (var _dbContext = new NuevaAppContext())
                         {
-                            _dbContext.Add(pagoFactura);
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionCaja);
+                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 
@@ -389,9 +389,9 @@ namespace Prueba.Repositories
 
                         using (var _dbContext = new NuevaAppContext())
                         {
-                            _dbContext.Add(pagoFactura);
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoCaja);
+                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 
@@ -464,7 +464,7 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
 
                     // añadir al pago
-                    if (modelo.IdAnticipo != null || modelo.IdAnticipo != 0)
+                    if (modelo.IdAnticipo != null && modelo.IdAnticipo != 0)
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         pago.MontoRef = anticipos.Saldo;

@@ -407,7 +407,9 @@
                             $.each(data, function (index, item) {
                                 $('#facturaSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
                             });
+                            $('#facturaMessage').hide();
                         } else {
+                            $('#facturaSelect').empty();
                             $('#facturaMessage').show();
                         }
 
