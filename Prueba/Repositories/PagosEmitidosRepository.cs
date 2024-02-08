@@ -260,7 +260,11 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                         }
                     }
-                  
+                    PagoFactura pagoFactura = new PagoFactura
+                    {
+                        IdPagoEmitido = pago.IdPagoEmitido,
+                        IdFactura = modelo.IdFactura
+                    };
                     using (var _dbContext = new NuevaAppContext())
                     {
                         if (modelo.Anticipos != null)
@@ -270,13 +274,10 @@ namespace Prueba.Repositories
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _dbContext.Add(pagoFactura);
                         _dbContext.SaveChanges();
                     }
-                    PagoFactura pagoFactura = new PagoFactura
-                    { 
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
-                    };
+                 
 
                     //verficar si existe una provision sobre la sub cuenta
                     if (provisiones != null && provisiones.Any())
@@ -327,7 +328,6 @@ namespace Prueba.Repositories
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionCaja);
-                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 
@@ -391,7 +391,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoCaja);
-                            _dbContext.Add(pagoFactura);
+                            //_dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 
@@ -410,10 +410,11 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
+                            //_dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
+
                         }
                         resultado = true;
-
                     }
                 }
                 catch (Exception ex)
@@ -503,6 +504,11 @@ namespace Prueba.Repositories
                         factura.MontoTotal = 0;
                         factura.Abonado = 0;
                     }
+                    PagoFactura pagoFactura = new PagoFactura
+                    {
+                        IdPagoEmitido = pago.IdPagoEmitido,
+                        IdFactura = modelo.IdFactura
+                    };
                     using (var _dbContext = new NuevaAppContext())
                     {
                         if (modelo.IdAnticipo != null || modelo.IdAnticipo !=0)
@@ -512,13 +518,10 @@ namespace Prueba.Repositories
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _dbContext.Add(pagoFactura);
                         _dbContext.SaveChanges();
                     }
-                    PagoFactura pagoFactura = new PagoFactura
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
-                    };
+                   
 
                     ReferenciasPe referencia = new ReferenciasPe
                     {
@@ -529,7 +532,6 @@ namespace Prueba.Repositories
 
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        _dbContext.Add(pagoFactura);
                         _dbContext.Add(referencia);
                         _dbContext.SaveChanges();
                     }

@@ -53,8 +53,15 @@ namespace Prueba.Controllers
         }
 
         // GET: Facturas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var listFacturas = await (from f in _context.Facturas
+                                      join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
+            ViewData["NumFactura"] = listFacturas[listFacturas.Count -1].NumFactura;
+            ViewData["NumControl"] = listFacturas[listFacturas.Count -1].NumControl;
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
             ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View();
@@ -70,6 +77,7 @@ namespace Prueba.Controllers
             var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
             var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c=>c.IdCodCuenta).FirstOrDefault();
             factura.IdCodCuenta = (short)idCodCuenta;
+            factura.MontoTotal = factura.Subtotal + factura.Iva;
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaGlobalNavigation));
             if (ModelState.IsValid)
