@@ -57,6 +57,7 @@ namespace Prueba.Controllers
         public IActionResult Create()
         {
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View();
         }
 
@@ -65,8 +66,13 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdAnticipo,Numero,Fecha,Saldo,Detalle,IdProveedor")] Anticipo anticipo)
+        public async Task<IActionResult> Create([Bind("IdAnticipo,Numero,Fecha,Saldo,Detalle,IdProveedor, IdCodCuenta")] Anticipo anticipo)
         {
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+            anticipo.IdCodCuenta = (short)idCodCuenta;
+            ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
+            ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
             if (ModelState.IsValid)
             {
                 _context.Add(anticipo);
