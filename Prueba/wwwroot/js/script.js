@@ -1159,10 +1159,10 @@
 		if ( plugins.bootstrapDateTimePicker.length ) {
 			for ( var i = 0; i < plugins.bootstrapDateTimePicker.length; i++ ) {
 				var
-					$dateTimePicker = $( plugins.bootstrapDateTimePicker[ i ] ),
+					$DateTimePicker = $( plugins.bootstrapDateTimePicker[ i ] ),
 					options = {
-						date:      $dateTimePicker.attr( "data-time-picker" ) === "date",
-						time:      $dateTimePicker.attr( "data-time-picker" ) === "time",
+						date:      $DateTimePicker.attr( "data-time-picker" ) === "date",
+						time:      $DateTimePicker.attr( "data-time-picker" ) === "time",
 						shortTime: true
 					};
 
@@ -1175,8 +1175,8 @@
 					options.format = 'dddd DD MMMM YYYY - HH:mm';
 				}
 
-				$dateTimePicker.bootstrapMaterialDatePicker( options );
-				$dateTimePicker.bootstrapMaterialDatePicker( 'setDate', moment() );
+				$DateTimePicker.bootstrapMaterialDatePicker( options );
+				$DateTimePicker.bootstrapMaterialDatePicker( 'setDate', moment() );
 			}
 		}
 

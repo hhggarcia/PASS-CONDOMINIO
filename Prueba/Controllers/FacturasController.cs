@@ -67,8 +67,9 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
-            var idCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == factura.IdCodCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+            var idCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == factura.IdCodCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
             factura.IdCodCuenta = idCuenta;
+
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
             if (ModelState.IsValid)
@@ -77,7 +78,8 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View(factura);
         }
 
@@ -94,7 +96,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View(factura);
         }
 
@@ -133,7 +136,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View(factura);
         }
 

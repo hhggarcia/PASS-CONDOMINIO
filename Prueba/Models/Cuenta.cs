@@ -18,6 +18,4 @@ public partial class Cuenta
     public virtual Grupo IdGrupoNavigation { get; set; } = null!;
 
     public virtual ICollection<SubCuenta> SubCuenta { get; set; } = new List<SubCuenta>();
-    public virtual ICollection<Factura> Facturas { get; } = new List<Factura>();
-
 }

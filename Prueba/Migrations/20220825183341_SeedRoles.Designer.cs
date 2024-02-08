@@ -194,7 +194,7 @@ namespace Prueba.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("DateTimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
