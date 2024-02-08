@@ -272,6 +272,7 @@ namespace Prueba.Repositories
                         _dbContext.Update(factura);
                         _dbContext.SaveChanges();
                     }
+
                     PagoFactura pagoFactura = new PagoFactura
                     { 
                         IdPagoEmitido = pago.IdPagoEmitido,
