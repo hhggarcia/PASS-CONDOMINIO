@@ -469,9 +469,9 @@ namespace Prueba.Controllers
             var facturaItems = facturas.Select(f => new { Value = f.IdFactura, Text = f.Descripcion }).ToList();
             return Json(facturaItems);
         }
-        public async Task<IActionResult> ObtenerFactura(int id)
+        public async Task<IActionResult> ObtenerFactura(int facturaId)
         {
-            var factura = await _context.Facturas.Where(c => c.IdFactura == id).FirstAsync();
+            var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
