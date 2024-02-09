@@ -138,6 +138,7 @@ namespace Prueba.Repositories
                 Fecha = modelo.Fecha,
                 Monto = modelo.Monto
             };
+
             Anticipo anticipo1 = new Anticipo();
 
             var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
@@ -205,7 +206,7 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
                     // añadir al pago
 
-                    if (modelo.IdAnticipo != null || modelo.IdAnticipo !=0 )
+                    if (modelo.IdAnticipo != 0 )
                     {
                         var anticipos =await _context.Anticipos.Where(a=>a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         pago.MontoRef = anticipos.Saldo;
@@ -253,12 +254,6 @@ namespace Prueba.Repositories
                             factura.Pagada = false;
                             factura.EnProceso = true;
                         }
-                        else
-                        {
-                            factura.Abonado = montototal;
-                            factura.Pagada = true;
-                            factura.EnProceso = false;
-                        }
                     }
                   
                     using (var _dbContext = new NuevaAppContext())
@@ -267,10 +262,12 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Update(anticipo1);
                         }
+
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-                        _dbContext.SaveChanges();
+
+                         await _dbContext.SaveChangesAsync();
                     }
 
                     PagoFactura pagoFactura = new PagoFactura
@@ -329,7 +326,8 @@ namespace Prueba.Repositories
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionCaja);
-                            _dbContext.SaveChanges();
+
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -353,7 +351,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             //_dbContext.Add(gastoProvision);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
                         resultado = true;
                     }
@@ -393,7 +391,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(pagoFactura);
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoCaja);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -411,7 +409,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
                         resultado = true;
 
@@ -465,7 +463,7 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
 
                     // añadir al pago
-                    if (modelo.IdAnticipo != null || modelo.IdAnticipo != 0)
+                    if (modelo.IdAnticipo != 0)
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         pago.MontoRef = anticipos.Saldo;
@@ -475,13 +473,14 @@ namespace Prueba.Repositories
                     else
                     {
                         pago.MontoRef = montoReferencia;
-
                     }
+
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.MontoRef = montoReferencia;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
+
                     if (pago.MontoRef > factura.MontoTotal)
                     {
                         factura.Pagada = true;
@@ -506,14 +505,16 @@ namespace Prueba.Repositories
                     }
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        if (modelo.IdAnticipo != null || modelo.IdAnticipo !=0)
+                        if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
                         }
+
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-                        _dbContext.SaveChanges();
+
+                        await _dbContext.SaveChangesAsync();
                     }
                     PagoFactura pagoFactura = new PagoFactura
                     {
@@ -532,7 +533,7 @@ namespace Prueba.Repositories
                     {
                         _dbContext.Add(pagoFactura);
                         _dbContext.Add(referencia);
-                        _dbContext.SaveChanges();
+                        await _dbContext.SaveChangesAsync();
                     }
                     if (provisiones != null && provisiones.Any())
                     {
@@ -583,7 +584,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionBanco);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -607,7 +608,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             // _dbContext.Add(gastoProvision);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         return true;
@@ -650,7 +651,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoBanco);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -668,7 +669,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            _dbContext.SaveChanges();
+                            await _dbContext.SaveChangesAsync();
                         }
 
                         return true;
