@@ -23,4 +23,5 @@ public partial class Anticipo
     public virtual CodigoCuentasGlobal IdCodCuentaGlobalNavigation { get; set; } = null!; 
 
     public virtual ICollection<PagoAnticipo> PagoAnticipos { get; set; } = new List<PagoAnticipo>();
+    public virtual ICollection<PagoFactura> PagoFacturas { get; set; } = new List<PagoFactura>();
 }

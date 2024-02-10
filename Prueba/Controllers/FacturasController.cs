@@ -60,8 +60,12 @@ namespace Prueba.Controllers
                                       join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
                                       where c.IdCondominio == IdCondominio
                                       select f).ToListAsync();
-            ViewData["NumFactura"] = listFacturas[listFacturas.Count -1].NumFactura;
-            ViewData["NumControl"] = listFacturas[listFacturas.Count -1].NumControl;
+            if(listFacturas.Count != 0) 
+            {
+                ViewData["NumFactura"] = listFacturas[listFacturas.Count - 1].NumFactura;
+                ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
+            }
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
             ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View();

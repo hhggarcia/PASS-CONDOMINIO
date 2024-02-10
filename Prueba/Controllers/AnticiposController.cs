@@ -71,6 +71,7 @@ namespace Prueba.Controllers
             var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
             var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
             anticipo.IdCodCuenta = (short)idCodCuenta;
+            anticipo.Activo = true;
             ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
             ModelState.Remove(nameof(anticipo.IdCodCuentaGlobalNavigation));
             if (ModelState.IsValid)

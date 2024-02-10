@@ -340,16 +340,22 @@ namespace Prueba.Controllers
                     {
                         var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
 
+                        var idSubCuenta = (from c in _context.CodigoCuentasGlobals
+                                          join f in _context.Facturas
+                                          on c.IdCodCuenta equals f.IdCodCuenta
+                                          where f.IdFactura == modelo.IdFactura
+                                          select c.IdSubCuenta).First();
+
                         var gasto = from c in _context.SubCuenta
-                                    where c.Id == modelo.IdSubcuenta
-                                    select c;                       
+                                    where c.Id == idSubCuenta
+                                    select c;       
 
                         var comprobante = new ComprobantePEVM()
                         {
                             Condominio = condominio,
                             Concepto = modelo.Concepto,
                             Pagoforma = modelo.Pagoforma,
-                            Mensaje = "Gracias por su pago!",
+                            Mensaje = "¡Gracias por su pago!",
                             Gasto = gasto.First()
                         };
 
@@ -462,7 +468,7 @@ namespace Prueba.Controllers
         {
             // Lógica para obtener las facturas asociadas al proveedor seleccionado
             var facturas = await _context.Facturas
-           .Where(c => c.IdProveedor == proveedorId)
+           .Where(c => c.IdProveedor == proveedorId && c.EnProceso == true)
            .ToListAsync();
 
             // Devolver las facturas en formato JSON
@@ -475,7 +481,7 @@ namespace Prueba.Controllers
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
-                Monto = factura.Subtotal
+                Monto = factura.MontoTotal
             };
             return Json(facturaMonto);
         }
@@ -483,10 +489,10 @@ namespace Prueba.Controllers
         public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
         {
             var anticipos = await _context.Anticipos
-           .Where(c => c.IdProveedor == proveedorId)
+           .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
            .ToListAsync();
 
-            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = f.Detalle + " " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
             return Json(anticiposItems);
         }
 

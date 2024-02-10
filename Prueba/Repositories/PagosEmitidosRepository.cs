@@ -208,9 +208,9 @@ namespace Prueba.Repositories
                     if (modelo.IdAnticipo != null && modelo.IdAnticipo !=0 )
                     {
                         var anticipos =await _context.Anticipos.Where(a=>a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
                         pago.MontoRef = anticipos.Saldo;
-                        anticipo1.IdAnticipo = modelo.IdAnticipo;
-                        anticipo1.Activo = true;
+                        anticipo1.Activo = false;
                     }
                     else
                     {
@@ -229,7 +229,7 @@ namespace Prueba.Repositories
                             factura.Abonado = pago.MontoRef;
                             factura.Pagada = true;
                             factura.EnProceso = false;
-                            factura.MontoTotal = 0;
+                            //factura.MontoTotal = 0;
                         }
                         else if (pago.MontoRef < factura.Subtotal)
                         {
@@ -260,24 +260,25 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                         }
                     }
-                    PagoFactura pagoFactura = new PagoFactura
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
-                    };
+                  
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        if (modelo.Anticipos != null)
-                        {
-                            _dbContext.Update(anticipo1);
-                        }
+                       
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-                        _dbContext.Add(pagoFactura);
+                        if (modelo.IdAnticipo != 0)
+                        {
+                            _dbContext.Update(anticipo1);
+                        }
                         _dbContext.SaveChanges();
                     }
-                 
+                    PagoFactura pagoFactura = new PagoFactura
+                    {
+                        IdPagoEmitido = pago.IdPagoEmitido,
+                        IdFactura = modelo.IdFactura,
+                        IdAnticipo = anticipo1.IdAnticipo
+                    };
 
                     //verficar si existe una provision sobre la sub cuenta
                     if (provisiones != null && provisiones.Any())
@@ -410,7 +411,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            //_dbContext.Add(pagoFactura);
+                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
 
                         }
@@ -468,9 +469,9 @@ namespace Prueba.Repositories
                     if (modelo.IdAnticipo != null && modelo.IdAnticipo != 0)
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
                         pago.MontoRef = anticipos.Saldo;
-                        anticipo1.IdAnticipo = modelo.IdAnticipo;
-                        anticipo1.Activo = true;
+                        anticipo1.Activo = false;
                     }
                     else
                     {
@@ -504,24 +505,25 @@ namespace Prueba.Repositories
                         factura.MontoTotal = 0;
                         factura.Abonado = 0;
                     }
-                    PagoFactura pagoFactura = new PagoFactura
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
-                    };
+            
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        if (modelo.IdAnticipo != null || modelo.IdAnticipo !=0)
-                        {
-                            _dbContext.Update(anticipo1);
-                        }
+ 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-                        _dbContext.Add(pagoFactura);
+                        if (modelo.IdAnticipo != 0)
+                        {
+                            _dbContext.Update(anticipo1);
+                        }
                         _dbContext.SaveChanges();
                     }
-                   
+                    PagoFactura pagoFactura = new PagoFactura
+                    {
+                        IdPagoEmitido = pago.IdPagoEmitido,
+                        IdFactura = modelo.IdFactura,
+                        IdAnticipo = anticipo1.IdAnticipo
+                    };
 
                     ReferenciasPe referencia = new ReferenciasPe
                     {
@@ -669,6 +671,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
+                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 

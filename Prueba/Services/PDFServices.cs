@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 //using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using MimeKit;
-using NetTopologySuite.Index.HPRtree;
-using NPOI.SS.Formula.Functions;
 using Prueba.Context;
-using Prueba.Controllers;
 using Prueba.Models;
 using Prueba.ViewModels;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SQLitePCL;
-using System.Text.RegularExpressions;
 
 namespace Prueba.Services
 {
@@ -1005,18 +999,18 @@ namespace Prueba.Services
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                 .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
+                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                //.Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.ValorDolar.ToString("N2") + " Bs").FontSize(8);
+                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                //.Padding(5).Text(comprobanteVM.ValorDolar.ToString("N2") + " Bs").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Pago.Monto / comprobanteVM.ValorDolar).ToString("N2")+ " $").FontSize(8);
+                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                //.Padding(5).Text((comprobanteVM.Pago.Monto / comprobanteVM.ValorDolar).ToString("N2")+ " $").FontSize(8);
 
                                 //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                 //.Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
- 
+
                             });
 
                         });

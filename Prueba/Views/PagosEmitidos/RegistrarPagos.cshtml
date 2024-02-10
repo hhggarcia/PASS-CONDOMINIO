@@ -119,10 +119,7 @@
 
                                                     <select class="form-select" id="basicSelect" asp-for="IdAnticipo">
                                                         <option value="">Seleccione un anticipo</option>
-                                                       @*  @foreach (var factura in Model.Anticipos)
-                                                        {
-                                                            <option value="@factura.Value">@factura.Text</option>
-                                                        } *@
+          
                                                     </select>
                                                 </fieldset>
                                             </div>
@@ -460,7 +457,7 @@
                     obtenerAnticiposPorProveedor(proveedorId);
                 } else {
                     $('.anticipo-group').hide();  // Ocultar el grupo de anticipos
-                    $('#montoInput').prop('disabled', false); // Deshabilitar el campo
+                    $('#montoInput').prop('readonly', false); // Deshabilitar el campo
                 }
             });
            

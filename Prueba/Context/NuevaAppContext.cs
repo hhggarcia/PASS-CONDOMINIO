@@ -874,20 +874,28 @@ public partial class NuevaAppContext : DbContext
 
         modelBuilder.Entity<PagoFactura>(entity =>
         {
+            entity.HasKey(e => e.Id);
             entity.ToTable("PagoFactura");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.IdPagoEmitido).ValueGeneratedOnAdd();
+            //entity.Property(e => e.Id).ValueGeneratedNever();
+            //entity.Property(e => e.IdPagoEmitido).ValueGeneratedOnAdd();
 
             entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.PagoFacturas)
                 .HasForeignKey(d => d.IdFactura)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PagoFactura_Factura");
+            
+     
 
             entity.HasOne(d => d.IdPagoEmitidoNavigation).WithMany(p => p.PagoFacturas)
                 .HasForeignKey(d => d.IdPagoEmitido)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PagoFactura_Pago_Emitido");
+
+          entity.HasOne(d => d.IdAnticipoNavigation).WithMany(p => p.PagoFacturas)
+         .HasForeignKey(d => d.IdAnticipo)
+         .OnDelete(DeleteBehavior.ClientSetNull)
+         .HasConstraintName("FK__PagoFactura_Anticipo");
         });
 
         modelBuilder.Entity<PagoRecibido>(entity =>
