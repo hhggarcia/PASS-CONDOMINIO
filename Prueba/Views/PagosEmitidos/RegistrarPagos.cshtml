@@ -387,8 +387,9 @@
         // });
         $(document).ready(function () {
             var montoFacturaOriginal;
-            var montoAnticipo; 
+            var montoAnticipo =0; 
             var datAnticipo;
+
             $('.anticipo-group').hide();
             $('#proveedorSelect').change(function () {
                 var proveedorId = $(this).val();
@@ -431,7 +432,7 @@
 
                         $('#montoInput').val(data.monto);
                         // Permitir la edición del campo de monto
-                        $('#montoInput').prop('readonly', false);
+                        $('#montoInput').prop('disabled', false);
                     },
                     error: function (error) {
                         console.error('Error al obtener las facturas: ', error);
@@ -441,10 +442,17 @@
             $('#montoInput').on('input', function () {
                 var montoInput = parseFloat($(this).val());
 
-                if (montoInput > montoFacturaOriginal) {
+                if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
                     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
                     alert('El monto ingresado no puede ser mayor al monto de la factura.');
                     $(this).val(montoFacturaOriginal);
+                }
+
+                if (montoAnticipo != 0 && montoInput != montoAnticipo){
+                    alert('El monto ingresado no puede ser diferente al del anticipo.');
+                    // $(this).val(montoAnticipo);
+                    $('#montoInput').val(montoAnticipo);
+
                 }
             });
 
@@ -457,7 +465,7 @@
                     obtenerAnticiposPorProveedor(proveedorId);
                 } else {
                     $('.anticipo-group').hide();  // Ocultar el grupo de anticipos
-                    $('#montoInput').prop('readonly', false); // Deshabilitar el campo
+                    // $('#montoInput').prop('readonly', false); // Deshabilitar el campo
                 }
             });
            
@@ -485,13 +493,12 @@
             }
             $('#basicSelect').change(function () {
                 var opcionSeleccionada = $(this).val();
-                console.log(opcionSeleccionada + " opcionSeleccionada")
                 var selectedAnticipo = datAnticipo.find(item => item.value == opcionSeleccionada);
-                console.log(selectedAnticipo + " selectedAnticipo")
                 if (selectedAnticipo) {
                     var precioSeleccionado = selectedAnticipo.precio;
+                    montoAnticipo = precioSeleccionado;
                     $('#montoInput').val(precioSeleccionado);
-                    $('#montoInput').prop('disabled', true);
+                    // $('#montoInput').prop('disabled', true);
                 } 
             });
         });
