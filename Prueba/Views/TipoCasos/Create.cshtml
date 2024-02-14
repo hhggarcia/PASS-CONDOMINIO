@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Crear Tipo de Caso";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Crear un nuevo tipo de caso
+                    </h6>
+                    <!-- Button trigger modal -->
+                </div>
+
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="InputNombreTipoCaso" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="InputTiempoRespuesta" class="form-label">Tiempo de respuesta (horas)</label>
+                                            <input type="number" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="examplePersonaResponsable" class="form-label">Persona(s)  Responsable (seleccionar)</label>
+                                            <select class="form-select  casos-input" aria-label="Default select example" multiple>
+                                                <option selected>En Proceso</option>
+                                                <option value="1">Uno</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="examplePersonaSeleccionada" class="form-label">Persona(s)  Seleccionada (s)</label>
+                                            <select class="form-select  casos-input" aria-label="Default select example" multiple>
+                                                <option selected>En Proceso</option>
+                                                <option value="1">Uno</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="InputAyuda" class="form-label">Ayuda</label>
+                                            <div id="summernote"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="InputCorreoAdicional" class="form-label">Enviar Correo Adicional</label>
+                                            <input type="email" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                        <button type="submit" class="btn btn-secondary">Cancelar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+    $('#summernote').summernote({
+        placeholder: 'Escribe aquí.',
+        tabsize: 2,
+        height: 120,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+</script>

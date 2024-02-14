@@ -13,7 +13,7 @@ public partial class PagoRecibido
 
     public decimal Monto { get; set; }
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
     public int IdSubCuenta { get; set; }
 

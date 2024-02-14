@@ -877,6 +877,7 @@ public partial class NuevaAppContext : DbContext
 
             entity.HasOne(d => d.IdAnticipoNavigation).WithMany(p => p.PagoFacturas)
                 .HasForeignKey(d => d.IdAnticipo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PagoFactura_Anticipo");
 
             entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.PagoFacturas)

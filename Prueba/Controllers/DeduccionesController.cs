@@ -22,23 +22,6 @@ namespace Prueba.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Mostrar las deducciones de un empleado especifico
-        /// </summary>
-        /// <param name="id">Id del empleado</param>
-        /// <returns></returns>
-        public async Task<IActionResult> VerDeducciones(int id)
-        {
-            var deduccionesEmpleado = await _context.Deducciones.Where(c => c.IdEmpleado == id).Include(p => p.IdEmpleadoNavigation).ToListAsync();
-
-            if (deduccionesEmpleado == null)
-            {
-                return NotFound();
-            }
-
-            return View("Index", deduccionesEmpleado);
-        }
-
         // GET: Deducciones
         public async Task<IActionResult> Index()
         {
@@ -68,7 +51,7 @@ namespace Prueba.Controllers
         // GET: Deducciones/Create
         public IActionResult Create()
         {
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado");
             return View();
         }
 

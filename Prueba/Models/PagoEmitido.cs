@@ -9,7 +9,7 @@ public partial class PagoEmitido
 
     public int IdCondominio { get; set; }
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
     public decimal Monto { get; set; }
 

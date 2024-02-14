@@ -13,7 +13,7 @@ public partial class ReciboCuota
 
     public decimal SubCuotas { get; set; }
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
     public bool EnProceso { get; set; }
 

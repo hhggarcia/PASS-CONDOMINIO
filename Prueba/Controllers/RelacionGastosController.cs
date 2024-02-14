@@ -434,11 +434,23 @@ namespace Prueba.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ReciboPdf()
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var modelo = await _repoRelacionGastos.LoadDataRelacionGastos(idCondominio);
+            var data = _servicePDF.RelacionGastosPDF(modelo);
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "Recibo.pdf");
+        }
         [HttpPost]
         public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
         {
             try
             {
+  
+
                 var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
                 var base64 = Convert.ToBase64String(data);
                 return Content(base64, "application/pdf");

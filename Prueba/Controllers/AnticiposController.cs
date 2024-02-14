@@ -70,9 +70,12 @@ namespace Prueba.Controllers
         {
             var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
             var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-            anticipo.IdCodCuenta = (short)idCodCuenta;
+            anticipo.IdCodCuenta = idCodCuenta;
+            anticipo.Activo = true;
+
             ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
             ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
+
             if (ModelState.IsValid)
             {
                 _context.Add(anticipo);
@@ -80,6 +83,8 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
             return View(anticipo);
         }
 
@@ -97,6 +102,8 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
             return View(anticipo);
         }
 
@@ -111,6 +118,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+            anticipo.IdCodCuenta = idCodCuenta;
+            anticipo.Activo = true;
+
+            ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
+            ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
@@ -133,6 +148,8 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
             return View(anticipo);
         }
 
@@ -163,6 +180,13 @@ namespace Prueba.Controllers
             var anticipo = await _context.Anticipos.FindAsync(id);
             if (anticipo != null)
             {
+                var pagosAnticipo = await _context.PagoFacturas.Where(c => c.IdAnticipo.Equals(id)).ToListAsync();
+
+                if (pagosAnticipo != null)
+                {
+                    _context.PagoFacturas.RemoveRange(pagosAnticipo);
+                }
+
                 _context.Anticipos.Remove(anticipo);
             }
 

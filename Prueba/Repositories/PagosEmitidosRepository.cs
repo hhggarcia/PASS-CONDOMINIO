@@ -17,7 +17,7 @@ namespace Prueba.Repositories
         bool PagoEmitidoExists(int id);
         Task<bool> RegistrarPago(RegistroPagoVM modelo);
     }
-    public class PagosEmitidosRepository: IPagosEmitidosRepository
+    public class PagosEmitidosRepository : IPagosEmitidosRepository
     {
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
@@ -44,8 +44,8 @@ namespace Prueba.Repositories
             var modelo = new IndexPagosVM();
 
             var listaPagos = (from c in _context.PagoEmitidos
-                             where c.IdCondominio == idCondominio
-                             select c).Include(c => c.IdCondominioNavigation);
+                              where c.IdCondominio == idCondominio
+                              select c).Include(c => c.IdCondominioNavigation);
 
             var referencias = from p in _context.PagoEmitidos
                               where p.IdCondominio == idCondominio
@@ -96,8 +96,8 @@ namespace Prueba.Repositories
             var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
             var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
             var subcuentasModel = await _repoCuentas.ObtenerGastos(id);
-            
-             var proveedores = await _repoCuentas.ObtenerProveedores(id);
+
+            var proveedores = await _repoCuentas.ObtenerProveedores(id);
             //var facturas = await _repoCuentas.ObtenerFacturas(proveedores);
             //var anticipos = await _repoCuentas.ObtenerAnticipos(proveedores); 
             //modelo.Facturas = new List<SelectListItem> { new SelectListItem("Seleccione una factura", "") };
@@ -138,11 +138,10 @@ namespace Prueba.Repositories
                 Fecha = modelo.Fecha,
                 Monto = modelo.Monto
             };
-
             Anticipo anticipo1 = new Anticipo();
 
             var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
-            
+
 
             var provisiones = from c in _context.Provisiones
                               where c.IdCodGasto == modelo.IdFactura
@@ -206,33 +205,34 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
                     // añadir al pago
 
-                    if (modelo.IdAnticipo != 0 )
+                    if (modelo.IdAnticipo != 0)
                     {
-                        var anticipos =await _context.Anticipos.Where(a=>a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
                         pago.MontoRef = anticipos.Saldo;
-                        anticipo1.IdAnticipo = modelo.IdAnticipo;
-                        anticipo1.Activo = true;
+                        anticipo1.Activo = false;
                     }
                     else
                     {
                         pago.MontoRef = montoReferencia;
 
                     }
+
                     pago.FormaPago = false;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                    if(factura.Abonado == 0)
+                    if (factura.Abonado == 0)
                     {
-                        if (pago.MontoRef == factura.Subtotal)
+                        if (pago.MontoRef == (factura.Subtotal + factura.Iva))
                         {
                             factura.Abonado = pago.MontoRef;
                             factura.Pagada = true;
                             factura.EnProceso = false;
-                            factura.MontoTotal = 0;
+                            //factura.MontoTotal = 0;
                         }
-                        else if (pago.MontoRef < factura.Subtotal)
+                        else if (pago.MontoRef < (factura.Subtotal + factura.Iva))
                         {
                             factura.Abonado = pago.MontoRef + factura.Abonado;
                             factura.Pagada = false;
@@ -242,38 +242,38 @@ namespace Prueba.Repositories
                     else
                     {
                         var montototal = factura.Abonado + pago.MontoRef;
-                        if (montototal == factura.Subtotal)
+                        if (montototal == (factura.Subtotal + factura.Iva))
                         {
                             factura.Abonado = montototal;
                             factura.Pagada = true;
                             factura.EnProceso = false;
                         }
-                        else if (montototal < factura.Subtotal)
+                        else if (montototal < (factura.Subtotal + factura.Iva))
                         {
                             factura.Abonado = pago.MontoRef + factura.Abonado;
                             factura.Pagada = false;
                             factura.EnProceso = true;
                         }
                     }
-                  
+
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        if (modelo.Anticipos != null)
-                        {
-                            _dbContext.Update(anticipo1);
-                        }
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-
-                         await _dbContext.SaveChangesAsync();
+                        if (modelo.IdAnticipo != 0)
+                        {
+                            _dbContext.Update(anticipo1);
+                        }
+                        _dbContext.SaveChanges();
                     }
 
                     PagoFactura pagoFactura = new PagoFactura
-                    { 
+                    {
                         IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
+                        IdFactura = modelo.IdFactura,
+                        IdAnticipo = anticipo1.IdAnticipo > 0 ? anticipo1.IdAnticipo : null
                     };
 
                     //verficar si existe una provision sobre la sub cuenta
@@ -322,12 +322,10 @@ namespace Prueba.Repositories
                         };
                         using (var _dbContext = new NuevaAppContext())
                         {
-                            _dbContext.Add(pagoFactura);
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionCaja);
-
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.SaveChanges();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -351,7 +349,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             //_dbContext.Add(gastoProvision);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.SaveChanges();
                         }
                         resultado = true;
                     }
@@ -388,10 +386,10 @@ namespace Prueba.Repositories
 
                         using (var _dbContext = new NuevaAppContext())
                         {
-                            _dbContext.Add(pagoFactura);
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoCaja);
-                            await _dbContext.SaveChangesAsync();
+                            //_dbContext.Add(pagoFactura);
+                            _dbContext.SaveChanges();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -409,16 +407,17 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.Add(pagoFactura);
+                            _dbContext.SaveChanges();
+
                         }
                         resultado = true;
-
                     }
                 }
                 catch (Exception ex)
                 {
                     return false;
-                }                
+                }
 
             }
             else if (modelo.Pagoforma == FormaPago.Transferencia)
@@ -427,8 +426,8 @@ namespace Prueba.Repositories
                 {
 
                     var idBanco = (from c in _context.CodigoCuentasGlobals
-                                  where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
-                                  select c).First();
+                                   where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
+                                   select c).First();
 
                     // buscar moneda asigna a la subcuenta
                     var moneda = from m in _context.MonedaConds
@@ -463,63 +462,75 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
 
                     // añadir al pago
-                    if (modelo.IdAnticipo != 0)
+                    if (modelo.IdAnticipo != null && modelo.IdAnticipo != 0)
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
                         pago.MontoRef = anticipos.Saldo;
-                        anticipo1.IdAnticipo = modelo.IdAnticipo;
-                        anticipo1.Activo = true;
+                        anticipo1.Activo = false;
                     }
                     else
                     {
                         pago.MontoRef = montoReferencia;
-                    }
 
+                    }
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.MontoRef = montoReferencia;
                     pago.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                    if (pago.MontoRef > factura.MontoTotal)
+                    if (factura.Abonado == 0)
                     {
-                        factura.Pagada = true;
-                        factura.EnProceso = false;
-                        factura.Abonado = pago.MontoRef - factura.MontoTotal;
-                        factura.Subtotal = 0;
-                        factura.MontoTotal = 0;
-                    }
-                    else if (pago.MontoRef < factura.MontoTotal)
-                    {
-                        factura.Pagada = false;
-                        factura.EnProceso = true;
-                        factura.Abonado = pago.MontoRef;
+                        if (pago.MontoRef == (factura.Subtotal + factura.Iva))
+                        {
+                            factura.Abonado = pago.MontoRef;
+                            factura.Pagada = true;
+                            factura.EnProceso = false;
+                            //factura.MontoTotal = 0;
+                        }
+                        else if (pago.MontoRef < (factura.Subtotal + factura.Iva))
+                        {
+                            factura.Abonado = pago.MontoRef + factura.Abonado;
+                            factura.Pagada = false;
+                            factura.EnProceso = true;
+                        }
                     }
                     else
                     {
-                        factura.Pagada = true;
-                        factura.EnProceso = false;
-                        factura.Subtotal = 0;
-                        factura.MontoTotal = 0;
-                        factura.Abonado = 0;
+                        var montototal = factura.Abonado + pago.MontoRef;
+                        if (montototal == (factura.Subtotal + factura.Iva))
+                        {
+                            factura.Abonado = montototal;
+                            factura.Pagada = true;
+                            factura.EnProceso = false;
+                        }
+                        else if (montototal < (factura.Subtotal + factura.Iva))
+                        {
+                            factura.Abonado = pago.MontoRef + factura.Abonado;
+                            factura.Pagada = false;
+                            factura.EnProceso = true;
+                        }
                     }
+
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        if (modelo.IdAnticipo != 0)
-                        {
-                            _dbContext.Update(anticipo1);
-                        }
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
-
-                        await _dbContext.SaveChangesAsync();
+                        if (modelo.IdAnticipo != 0)
+                        {
+                            _dbContext.Update(anticipo1);
+                        }
+                        _dbContext.SaveChanges();
                     }
+
                     PagoFactura pagoFactura = new PagoFactura
                     {
                         IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura
+                        IdFactura = modelo.IdFactura,
+                        IdAnticipo = anticipo1.IdAnticipo > 0 ? anticipo1.IdAnticipo : null
                     };
 
                     ReferenciasPe referencia = new ReferenciasPe
@@ -531,9 +542,8 @@ namespace Prueba.Repositories
 
                     using (var _dbContext = new NuevaAppContext())
                     {
-                        _dbContext.Add(pagoFactura);
                         _dbContext.Add(referencia);
-                        await _dbContext.SaveChangesAsync();
+                        _dbContext.SaveChanges();
                     }
                     if (provisiones != null && provisiones.Any())
                     {
@@ -584,7 +594,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(asientoProvisionGasto);
                             _dbContext.Add(asientoProvision);
                             _dbContext.Add(asientoProvisionBanco);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.SaveChanges();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -608,7 +618,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             // _dbContext.Add(gastoProvision);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.SaveChanges();
                         }
 
                         return true;
@@ -651,7 +661,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(asientoGasto);
                             _dbContext.Add(asientoBanco);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.SaveChanges();
                         }
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
@@ -669,7 +679,8 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            await _dbContext.SaveChangesAsync();
+                            _dbContext.Add(pagoFactura);
+                            _dbContext.SaveChanges();
                         }
 
                         return true;

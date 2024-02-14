@@ -29,8 +29,8 @@ namespace Prueba.Controllers
         // GET: Facturas
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Facturas.Include(f => f.IdProveedorNavigation);
-            return View(await nuevaAppContext.ToListAsync());
+            var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
+            return View(nuevaAppContext);
         }
 
         // GET: Facturas/Details/5
@@ -53,8 +53,20 @@ namespace Prueba.Controllers
         }
 
         // GET: Facturas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var listFacturas = await (from f in _context.Facturas
+                                      join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
+
+            if(listFacturas.Count != 0) 
+            {
+                ViewData["NumFactura"] = listFacturas[listFacturas.Count - 1].NumFactura;
+                ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
+            }
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
             ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             return View();
@@ -67,9 +79,10 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
-            var idCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == factura.IdCodCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-            factura.IdCodCuenta = idCuenta;
-
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c=>c.IdCodCuenta).FirstOrDefault();
+            factura.IdCodCuenta = idCodCuenta;
+            factura.MontoTotal = factura.Subtotal + factura.Iva;
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
             if (ModelState.IsValid)
@@ -78,8 +91,9 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
             ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
             return View(factura);
         }
 
@@ -96,8 +110,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var cc = await _context.CodigoCuentasGlobals.FindAsync(factura.IdCodCuenta);
+            if (cc == null)
+            {
+                return NotFound();
+            }
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cc.IdSubCuenta);
+
             return View(factura);
         }
 
@@ -106,12 +126,16 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,Abonado,Pagada,EnProceso")] Factura factura)
+        public async Task<IActionResult> Edit(int id, [Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
             if (id != factura.IdFactura)
             {
                 return NotFound();
             }
+
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+            factura.IdCodCuenta = idCodCuenta;
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
@@ -136,8 +160,9 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
             ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
             return View(factura);
         }
 
@@ -168,6 +193,13 @@ namespace Prueba.Controllers
             var factura = await _context.Facturas.FindAsync(id);
             if (factura != null)
             {
+                var pagosFactura = await _context.PagoFacturas.Where(c => c.IdFactura.Equals(id)).ToListAsync();
+
+                if (pagosFactura != null)
+                {
+                    _context.PagoFacturas.RemoveRange(pagosFactura);
+                }
+
                 _context.Facturas.Remove(factura);
             }
 

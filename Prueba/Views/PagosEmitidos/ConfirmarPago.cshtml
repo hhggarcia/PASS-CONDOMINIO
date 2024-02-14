@@ -1,4 +1,4 @@
-﻿﻿@using Prueba.ViewModels
+﻿@using Prueba.ViewModels
 
 @model RegistroPagoVM
 
@@ -42,6 +42,7 @@
                                 <input type="hidden" asp-for="Monto" />
                                 <input type="hidden" asp-for="IdSubcuenta" />
                                 <input type="hidden" asp-for="IdFactura" />
+                                <input type="hidden" asp-for="IdAnticipo" />
 
                                 <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
                                 <button class="btn btn-primary" type="submit">Si</button>
