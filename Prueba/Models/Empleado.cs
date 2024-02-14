@@ -13,7 +13,7 @@ public partial class Empleado
 
     public int Cedula { get; set; }
 
-    public DateTime FechaIngreso { get; set; }
+    public DateOnly FechaIngreso { get; set; }
 
     public bool Estado { get; set; }
 

@@ -11,9 +11,9 @@ public partial class Fondo
 
     public int Porcentaje { get; set; }
 
-    public DateTime FechaInicio { get; set; }
+    public DateOnly FechaInicio { get; set; }
 
-    public DateTime FechaFin { get; set; }
+    public DateOnly FechaFin { get; set; }
 
     public decimal Saldo { get; set; }
 
