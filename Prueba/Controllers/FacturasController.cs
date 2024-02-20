@@ -72,7 +72,7 @@ namespace Prueba.Controllers
                                       where c.IdCondominio == IdCondominio
                                       select f).ToListAsync();
 
-            if(listFacturas.Count != 0) 
+            if (listFacturas.Count != 0)
             {
                 ViewData["NumFactura"] = listFacturas[listFacturas.Count - 1].NumFactura;
                 ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
@@ -93,7 +93,7 @@ namespace Prueba.Controllers
         public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso")] Factura factura)
         {
             var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c=>c.IdCodCuenta).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
             factura.IdCodCuenta = idCodCuenta;
             factura.MontoTotal = factura.Subtotal + factura.Iva;
 
@@ -122,17 +122,14 @@ namespace Prueba.Controllers
                 decimal montoRTIVA = 0;
                 decimal montoRTISLR = 0;
 
-                if (proveedor.ContribuyenteEspecial)
+                if (rtiva != null)
                 {
-                    if (rtiva != null)
-                    {
-                        montoRTIVA = factura.Iva * (rtiva.Porcentaje/100);
-                    }
+                    montoRTIVA = factura.Iva * (rtiva.Porcentaje / 100);
+                }
 
-                    if (rtislr != null)
-                    {
-                        montoRTISLR = factura.Subtotal * (rtislr.Tarifa/100);
-                    }
+                if (rtislr != null)
+                {
+                    montoRTISLR = factura.Subtotal * (rtislr.Tarifa / 100);
                 }
 
 
