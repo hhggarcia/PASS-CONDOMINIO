@@ -25,7 +25,13 @@ namespace Prueba.Controllers
         // GET: Productos
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Productos.Include(p => p.IdCondominioNavigation).Include(p => p.IdRetencionIslrNavigation).Include(p => p.IdRetencionIvaNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.Productos.Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdRetencionIslrNavigation)
+                .Include(p => p.IdRetencionIvaNavigation)
+                .Where(p => p.IdCondominio == IdCondominio);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -53,7 +59,9 @@ namespace Prueba.Controllers
         // GET: Productos/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", IdCondominio);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await(from c in _context.Islrs

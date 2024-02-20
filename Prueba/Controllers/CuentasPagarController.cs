@@ -29,7 +29,13 @@ namespace Prueba.Controllers
         // GET: CuentasPagar
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.CuentasPagars.Include(c => c.IdCondominioNavigation).Include(c => c.IdFacturaNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.CuentasPagars
+                .Include(c => c.IdCondominioNavigation)
+                .Include(c => c.IdFacturaNavigation)
+                .Where(c => c.IdCondominio == IdCondominio);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -56,8 +62,12 @@ namespace Prueba.Controllers
         // GET: CuentasPagar/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", IdCondominio);
             ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
+
+            TempData.Keep();
             return View();
         }
 

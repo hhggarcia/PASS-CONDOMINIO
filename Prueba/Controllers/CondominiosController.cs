@@ -12,7 +12,7 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "SuperAdmin")]
+    [Authorize(Policy = "RequireSuperAdmin")]
 
     public class CondominiosController : Controller
     {

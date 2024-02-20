@@ -29,7 +29,14 @@ namespace Prueba.Controllers
         // GET: LibroCompras
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.LibroCompras
+                .Include(l => l.IdCondominioNavigation)
+                .Include(l => l.IdFacturaNavigation)
+                .Where(l => l.IdCondominio == IdCondominio);
+
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -56,7 +63,9 @@ namespace Prueba.Controllers
         // GET: LibroCompras/Create
         public IActionResult Create()
         {
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre");
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", IdCondominio);
             ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
             return View();
         }

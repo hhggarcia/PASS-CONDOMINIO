@@ -472,7 +472,7 @@ namespace Prueba.Controllers
            .ToListAsync();
 
             // Devolver las facturas en formato JSON
-            var facturaItems = facturas.Select(f => new { Value = f.IdFactura, Text = f.Descripcion }).ToList();
+            var facturaItems = facturas.Select(f => new { Value = f.IdFactura, Text = f.NumFactura }).ToList();
             return Json(facturaItems);
         }
         public async Task<IActionResult> ObtenerFactura(int facturaId)

@@ -29,8 +29,18 @@ namespace Prueba.Controllers
         // GET: FacturaEmitidas
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.FacturaEmitida.Include(f => f.IdProductoNavigation);
-            return View(await nuevaAppContext.ToListAsync());
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var listFacturas = await (from f in _context.FacturaEmitida.Include(f => f.IdProductoNavigation)
+                                      join c in _context.Productos on f.IdProducto equals c.IdProducto
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
+
+            //var nuevaAppContext = _context.FacturaEmitida.Include(f => f.IdProductoNavigation);
+
+            TempData.Keep();
+
+            return View(listFacturas);
         }
 
         // GET: FacturaEmitidas/Details/5
@@ -70,8 +80,70 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
+                facturaEmitida.EnProceso = true;
                 _context.Add(facturaEmitida);
                 await _context.SaveChangesAsync();
+
+                // calcular retenciones al producto/servicio
+
+                var producto = await _context.Productos.FindAsync(facturaEmitida.IdProducto);
+
+                if (producto == null)
+                {
+                    return NotFound();
+                }
+
+                var rtiva = await _context.Ivas.FindAsync(producto.IdRetencionIva);
+
+                var rtislr = await _context.Islrs.FindAsync(producto.IdRetencionIslr);
+
+                decimal montoRTIVA = 0;
+                decimal montoRTISLR = 0;
+
+
+                if (rtiva != null)
+                {
+                    montoRTIVA = facturaEmitida.Iva * (rtiva.Porcentaje / 100);
+                }
+
+                if (rtislr != null)
+                {
+                    montoRTISLR = facturaEmitida.SubTotal * (rtislr.Tarifa / 100);
+                }
+
+
+                // registrar en libro de ventas
+
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var itemLibroVenta = new LibroVenta
+                {
+                    IdCondominio = IdCondominio,
+                    IdFactura = facturaEmitida.IdFacturaEmitida,
+                    BaseImponible = facturaEmitida.SubTotal,
+                    Iva = facturaEmitida.Iva,
+                    Total = facturaEmitida.MontoTotal,
+                    RetIva = montoRTIVA,
+                    RetIslr = montoRTISLR,
+                    Monto = facturaEmitida.MontoTotal,
+                    NumComprobanteRet = 0
+                };
+
+                // registrar en cuentas por cobrar
+
+                var itemCuentaPorCobrar = new CuentasCobrar
+                {
+                    IdCondominio = IdCondominio,
+                    IdFactura = facturaEmitida.IdFacturaEmitida,
+                    Monto = facturaEmitida.MontoTotal,
+                    Status = facturaEmitida.EnProceso ? "En Proceso" : "Pagada"
+                };
+
+                _context.Add(itemLibroVenta);
+                _context.Add(itemCuentaPorCobrar);
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);

@@ -21,92 +21,92 @@
 
                                 <div class="col-md-12">
                                     <div class="card-body">
-                                        <h4>Are you sure you want to delete this?</h4>
+                                        <h6>Are you sure you want to delete this?</h6>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>FacturaEmitida</h4>
-    <hr />
-                                        <dl class="row">
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.NumFactura)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.NumFactura)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.NumControl)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.NumControl)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Descripcion)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Descripcion)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.FechaEmision)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.FechaEmision)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.FechaVencimiento)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.FechaVencimiento)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.SubTotal)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.SubTotal)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Iva)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Iva)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.MontoTotal)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.MontoTotal)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Abonado)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Abonado)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Pagada)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Pagada)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.EnProceso)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.EnProceso)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.IdProductoNavigation)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.IdProductoNavigation.Nombre)
-                                            </dd>
-                                        </dl>
-    
-                                        <form asp-action="Delete">
-                                            <input type="hidden" asp-for="IdFacturaEmitida" />
-                                            <input type="submit" value="Eliminar" class="btn btn-danger" />
-                                            <a asp-action="Index" class="btn btn-secondary">Volver</a>
-                                        </form>
+                                        <div>
+                                            <h4>FacturaEmitida</h4>
+                                            <hr />
+                                            <dl class="row">
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.NumFactura)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.NumFactura)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.NumControl)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.NumControl)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.Descripcion)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.Descripcion)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.FechaEmision)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.FechaEmision)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.FechaVencimiento)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.FechaVencimiento)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.SubTotal)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.SubTotal)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.Iva)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.Iva)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.MontoTotal)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.MontoTotal)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.Abonado)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.Abonado)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.Pagada)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.Pagada)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.EnProceso)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.EnProceso)
+                                                </dd>
+                                                <dt class="col-sm-2">
+                                                    @Html.DisplayNameFor(model => model.IdProductoNavigation)
+                                                </dt>
+                                                <dd class="col-sm-10">
+                                                    @Html.DisplayFor(model => model.IdProductoNavigation.Nombre)
+                                                </dd>
+                                            </dl>
+
+                                            <form asp-action="Delete">
+                                                <input type="hidden" asp-for="IdFacturaEmitida" />
+                                                <input type="submit" value="Eliminar" class="btn btn-danger" />
+                                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

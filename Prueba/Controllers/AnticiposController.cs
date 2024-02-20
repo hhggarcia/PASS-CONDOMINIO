@@ -30,8 +30,15 @@ namespace Prueba.Controllers
         // GET: Anticipos
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Anticipos.Include(a => a.IdProveedorNavigation);
-            return View(await nuevaAppContext.ToListAsync());
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var listAnticipos = await (from a in _context.Anticipos.Include(f => f.IdProveedorNavigation)
+                                      join c in _context.CodigoCuentasGlobals on a.IdCodCuenta equals c.IdCodCuenta
+                                      where c.IdCondominio == IdCondominio
+                                      select a).ToListAsync();
+
+            //var nuevaAppContext = _context.Anticipos.Include(a => a.IdProveedorNavigation);
+            return View(listAnticipos);
         }
 
         // GET: Anticipos/Details/5

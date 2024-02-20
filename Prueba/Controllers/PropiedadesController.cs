@@ -42,7 +42,12 @@ namespace Prueba.Controllers
         // GET: Propiedades
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Propiedads.Include(p => p.IdCondominioNavigation).Include(p => p.IdUsuarioNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.Propiedads.Include(p => p.IdCondominioNavigation).Include(p => p.IdUsuarioNavigation).Where(p => p.IdCondominio == IdCondominio);
+
+            TempData.Keep();
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
