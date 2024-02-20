@@ -14,6 +14,11 @@ namespace Prueba.ViewModels
         public SubCuenta? Banco { get; set; }
         public SubCuenta? Caja { get; set; }
         public string Mensaje { get; set; } = string.Empty;
+        public decimal Islr { get; set; }
+        public decimal Iva { get; set; }
+        public Factura Factura { get; set; }
+
+        public Anticipo? Anticipo { get; set; }
 
     }
 }
