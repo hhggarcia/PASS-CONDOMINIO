@@ -478,11 +478,20 @@ namespace Prueba.Controllers
         public async Task<IActionResult> ObtenerFactura(int facturaId)
         {
             var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();
+
+            var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+
+            if (itemLibroCompra != null)
+            {
+                factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+            }
+
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
                 Monto = factura.MontoTotal
             };
+
             return Json(facturaMonto);
         }
         [HttpGet]
