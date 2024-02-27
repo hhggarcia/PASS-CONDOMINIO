@@ -1,0 +1,90 @@
+﻿@model Prueba.Models.Cliente
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Clientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form asp-action="Edit">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="IdCliente" />
+                                <div class="form-group">
+                                    <label asp-for="IdCondominio" class="control-label"></label>
+                                    <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                                    <span asp-validation-for="IdCondominio" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Nombre" class="control-label"></label>
+                                    <input asp-for="Nombre" class="form-control" />
+                                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Direccion" class="control-label"></label>
+                                    <input asp-for="Direccion" class="form-control" />
+                                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Telefono" class="control-label"></label>
+                                    <input asp-for="Telefono" class="form-control" />
+                                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Rif" class="control-label"></label>
+                                    <input asp-for="Rif" class="form-control" />
+                                    <span asp-validation-for="Rif" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetencionIslr" class="control-label"></label>
+                                    <select asp-for="IdRetencionIslr" class="form-control" asp-items="ViewBag.IdRetencionIslr"></select>
+                                    <span asp-validation-for="IdRetencionIslr" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetencionIva" class="control-label"></label>
+                                    <select asp-for="IdRetencionIva" class="form-control" asp-items="ViewBag.IdRetencionIva"></select>
+                                    <span asp-validation-for="IdRetencionIva" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Saldo" class="control-label"></label>
+                                    <input asp-for="Saldo" class="form-control" />
+                                    <span asp-validation-for="Saldo" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Representante" class="control-label"></label>
+                                    <input asp-for="Representante" class="form-control" />
+                                    <span asp-validation-for="Representante" class="text-danger"></span>
+                                </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Save" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
