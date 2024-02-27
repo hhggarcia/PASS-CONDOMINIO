@@ -148,6 +148,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <input type="hidden" id="RetIvaInput" asp-for="RetIva" />
+                                    <input type="hidden" id="RetIslrInput" asp-for="RetIslr" />
                                 @*     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
@@ -222,7 +224,7 @@
                                                 <input type="text"
                                                        class="form-control"
                                                        placeholder="Concepto"
-                                                       id="first-name-icon"
+                                                       id="concepto"
                                                        required
                                                    asp-for="Concepto" />
                                                 <div class="form-control-icon">
@@ -389,6 +391,7 @@
             var montoFacturaOriginal;
             var montoAnticipo =0; 
             var datAnticipo;
+            var selectOptionAnticipo = false;
 
             $('.anticipo-group').hide();
             $('#proveedorSelect').change(function () {
@@ -429,8 +432,18 @@
                     data: { facturaId: facturaId },
                     success: function (data) {
                         montoFacturaOriginal = parseFloat(data.monto);
+                        if (montoAnticipo != 0 && selectOptionAnticipo) {
+                            var precioTotal = montoFacturaOriginal - montoAnticipo;
+                            $('#montoInput').val(precioTotal);
+                        }else{
+                            $('#montoInput').val(data.monto);
+                        }
 
-                        $('#montoInput').val(data.monto);
+                        $('#concepto').val(data.descripcion);
+                        $('#RetIvaInput').val(data.iva);
+                        $('#RetIslrInput').val(data.islr);
+
+                     
                         // Permitir la edición del campo de monto
                         $('#montoInput').prop('disabled', false);
                     },
@@ -447,13 +460,21 @@
                     alert('El monto ingresado no puede ser mayor al monto de la factura.');
                     $(this).val(montoFacturaOriginal);
                 }
-
-                if (montoAnticipo != 0 && montoInput != montoAnticipo){
-                    alert('El monto ingresado no puede ser diferente al del anticipo.');
-                    // $(this).val(montoAnticipo);
-                    $('#montoInput').val(montoAnticipo);
-
+                if (montoFacturaOriginal < montoInput) {
+                    alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                    if (montoAnticipo != 0 && selectOptionAnticipo){
+                        var precioTotal = montoFacturaOriginal - montoAnticipo;
+                        $('#montoInput').val(precioTotal);
+                    }else{
+                        $(this).val(montoFacturaOriginal);
+                    }
                 }
+                // if (montoAnticipo != 0 && montoInput != montoAnticipo){
+                //     alert('El monto ingresado no puede ser diferente al del anticipo.');
+                //     // $(this).val(montoAnticipo);
+                //     $('#montoInput').val(montoAnticipo);
+
+                // }
             });
 
             $('#basicSelectAnticipos').change(function () {
@@ -461,10 +482,15 @@
 
                 if (opcionSeleccionada === 'Si') {
                     var proveedorId = $('#proveedorSelect').val();
+                    selectOptionAnticipo = true;
 
                     obtenerAnticiposPorProveedor(proveedorId);
                 } else {
-                    $('.anticipo-group').hide();  // Ocultar el grupo de anticipos
+                    selectOptionAnticipo = false;
+                    $('.anticipo-group').hide();
+                    $('#montoInput').val(montoFacturaOriginal);
+
+                    // Ocultar el grupo de anticipos
                     // $('#montoInput').prop('readonly', false); // Deshabilitar el campo
                 }
             });
@@ -497,7 +523,14 @@
                 if (selectedAnticipo) {
                     var precioSeleccionado = selectedAnticipo.precio;
                     montoAnticipo = precioSeleccionado;
-                    $('#montoInput').val(precioSeleccionado);
+                    if (montoAnticipo > montoFacturaOriginal) {
+                        alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                        $('#montoInput').val(montoFacturaOriginal);
+                        $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+                    }else{
+                        var precioTotal = montoFacturaOriginal - montoAnticipo;
+                        $('#montoInput').val(precioTotal);
+                    }
                     // $('#montoInput').prop('disabled', true);
                 } 
             });

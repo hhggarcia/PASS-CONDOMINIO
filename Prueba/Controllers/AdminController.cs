@@ -60,6 +60,8 @@ namespace Prueba.Controllers
         public IActionResult Index()
         {
             var users = _unitOfWork.User.GetUsers();
+            ViewData["Beneficiario"] = users.First().NormalizedUserName;
+
             //var roles = _unitOfWork.Role.GetRoles();
             return View(users);
         }

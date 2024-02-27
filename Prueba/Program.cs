@@ -8,6 +8,7 @@ using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.Utils;
 using System.Text.Json.Serialization;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
@@ -72,6 +73,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+QuestPDF.Settings.License = LicenseType.Community;
 app.Run();
 
 void AddAuthorizationPolicies()

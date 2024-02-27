@@ -466,14 +466,9 @@ namespace Prueba.Repositories
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         anticipo1 = anticipos;
-                        pago.MontoRef = anticipos.Saldo;
                         anticipo1.Activo = false;
                     }
-                    else
-                    {
-                        pago.MontoRef = montoReferencia;
-
-                    }
+                    pago.MontoRef = montoReferencia;
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;

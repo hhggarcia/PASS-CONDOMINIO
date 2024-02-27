@@ -23,7 +23,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
     <PackageReference Include="NPOI" Version="2.6.2" />
-    <PackageReference Include="QuestPDF" Version="2023.12.4" />
+    <PackageReference Include="QuestPDF" Version="2023.12.6" />
   </ItemGroup>
 
   <ItemGroup>

@@ -336,8 +336,9 @@ namespace Prueba.Controllers
 
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
-                    if (resultado)
+                    if (resultado) 
                     {
+                        var factura = await _context.Facturas.Where(c=>c.IdFactura == modelo.IdFactura).FirstAsync();    
                         var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
 
                         var idSubCuenta = (from c in _context.CodigoCuentasGlobals
@@ -377,7 +378,14 @@ namespace Prueba.Controllers
 
                             comprobante.Caja = caja.First();
                         }
-
+                        if(modelo.IdAnticipo!=0)
+                        {
+                            var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                            comprobante.Anticipo = anticipo;
+                        }
+                        comprobante.Factura = factura;
+                        comprobante.Islr = modelo.RetIslr;
+                        comprobante.Iva = modelo.RetIva;
                         comprobante.Pago.Monto = modelo.Monto;
                         comprobante.Pago.Fecha = modelo.Fecha;
                         comprobante.Pago.ValorDolar = modelo.ValorDolar;
@@ -485,11 +493,15 @@ namespace Prueba.Controllers
             {
                 factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
             }
+            Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
 
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
-                Monto = factura.MontoTotal
+                Monto = factura.MontoTotal,
+                Iva = itemLibroCompra.RetIva,
+                Islr = itemLibroCompra.RetIslr,
+                Descripcion= factura.Descripcion
             };
 
             return Json(facturaMonto);
