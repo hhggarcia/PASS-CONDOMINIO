@@ -33,7 +33,7 @@ public partial class Proveedor
 
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
-    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+    public virtual Condominio IdCondominioNavigation { get; set; }
 
     public virtual Islr? IdRetencionIslrNavigation { get; set; }
 

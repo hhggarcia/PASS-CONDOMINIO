@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -93,9 +94,50 @@ namespace Prueba.Controllers
         // POST: Proveedores/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor)
+        //{
+        //    ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
+        //    ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
+        //    ModelState.Remove(nameof(proveedor.IdRetencionIvaNavigation));
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(proveedor);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
+        //    ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
+
+        //    var selectIslrs = await (from c in _context.Islrs
+        //                             where c.Tarifa > 0
+        //                             select new
+        //                             {
+        //                                 DataValue = c.Id,
+        //                                 DataText = c.Concepto
+        //                                 + ((c.Pjuridica) ? " PJ" : "")
+        //                                 + ((c.Pnatural) ? " PN" : "")
+        //                                 + ((c.Domiciliada) ? " Domiciliado" : "")
+        //                                 + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+        //                                 + ((c.Residenciada) ? " Residenciada" : "")
+        //                                 + ((c.NoResidenciada) ? " No Residenciada" : "")
+        //                                 + " " + c.Tarifa + "%"
+
+        //                             }).ToListAsync();
+
+        //    ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText", proveedor.IdRetencionIslr);
+
+        //    return View(proveedor);
+        //}
+
+        // POST: Proveedores/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor)
+        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check)
         {
             ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
             ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
@@ -103,9 +145,23 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(proveedor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (check)
+                {
+
+                    proveedor.IdRetencionIslr = null;
+                    proveedor.IdRetencionIva = null;
+                    _context.Add(proveedor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                    
+                }
+                else
+                {
+                    _context.Add(proveedor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
@@ -173,7 +229,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor)
+        public async Task<IActionResult> Edit(int id, [Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check)
         {
             if (id != proveedor.IdProveedor)
             {
@@ -188,8 +244,21 @@ namespace Prueba.Controllers
             {
                 try
                 {
-                    _context.Update(proveedor);
-                    await _context.SaveChangesAsync();
+                    if (check)
+                    {
+
+                        proveedor.IdRetencionIslr = null;
+                        proveedor.IdRetencionIva = null;
+                        _context.Update(proveedor);
+                        await _context.SaveChangesAsync();
+
+                    }
+                    else
+                    {
+                        _context.Update(proveedor);
+                        await _context.SaveChangesAsync();
+                    }
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
