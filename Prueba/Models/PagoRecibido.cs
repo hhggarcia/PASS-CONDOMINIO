@@ -31,6 +31,8 @@ public partial class PagoRecibido
 
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
+    public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();
+
     public virtual PagoReserva? PagoReserva { get; set; }
 
     public virtual ICollection<PagosCuota> PagosCuota { get; set; } = new List<PagosCuota>();

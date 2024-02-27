@@ -493,7 +493,7 @@ namespace Prueba.Controllers
             {
                 factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
             }
-            Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
+            //Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
 
             var facturaMonto = new
             {
@@ -501,7 +501,7 @@ namespace Prueba.Controllers
                 Monto = factura.MontoTotal,
                 Iva = itemLibroCompra.RetIva,
                 Islr = itemLibroCompra.RetIslr,
-                Descripcion= factura.Descripcion
+                Descripcion = factura.Descripcion
             };
 
             return Json(facturaMonto);
