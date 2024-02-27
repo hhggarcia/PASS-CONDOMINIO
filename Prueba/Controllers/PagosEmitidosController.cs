@@ -314,6 +314,7 @@ namespace Prueba.Controllers
 
                     //if (ModelState.IsValid)
                     //{
+                    var beneficiario = await _context.Condominios.Where(c => c.IdCondominio == modelo.IdCondominio).Select(c => c.Nombre).FirstAsync();
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
@@ -392,6 +393,7 @@ namespace Prueba.Controllers
                         comprobante.Pago.MontoRef = modelo.MontoRef;
                         comprobante.Pago.SimboloRef = modelo.SimboloRef;
                         comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
+                        comprobante.Beneficiario = beneficiario;
                         foreach(var item in condominio.MonedaConds)
                         {
                             comprobante.ValorDolar = item.ValorDolar;

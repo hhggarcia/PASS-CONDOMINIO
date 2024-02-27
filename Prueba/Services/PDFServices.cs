@@ -963,16 +963,18 @@ namespace Prueba.Services
                     {                  
                         row.RelativeItem().Padding(15).Column(col =>
                         { 
-                            col.Item().Image("wwwroot/images/logo-1.png");
+                            //col.Item().Image("wwwroot/images/logo-1.png");
                             col.Item().PaddingTop(10).Text("Fecha: " + DateTime.Today.ToString("MM/yyyy")).Bold().FontSize(14).FontColor("#004581").Bold();
                             col.Item().Text("FACTURA: "+ comprobanteVM.Factura.NumControl).Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text("Beneficiario").Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text(comprobanteVM.Beneficiario).Bold().FontSize(14).FontColor("#004581");
                             col.Item().Text("Concepto").Bold().FontSize(14).FontColor("#004581").Bold();
-                            col.Item().Text(comprobanteVM.Concepto).Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text(comprobanteVM.Concepto).Bold().FontSize(14).FontColor("#004581");
 
                         });
                         row.RelativeItem().Padding(15).Column(col =>
                         {
-                            col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
+                            //col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
                         });
                     });
 
@@ -988,9 +990,9 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(50);
+                                    columns.ConstantColumn(50);
+                                    columns.ConstantColumn(50);
                                 });
                                 tabla.Header(header =>
                                 {
@@ -1010,138 +1012,122 @@ namespace Prueba.Services
                                    //.Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
                                 });
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                tabla.Cell()
                                .Padding(5).Text("BASE");
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                 .Padding(5).Text("");
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("");
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Islr).ToString()).FontSize(12);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("IVA");
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text("");
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(""); 
+                                tabla.Cell().Padding(5).Text("");
                                 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Iva).FontSize(12);
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("TOTAL");
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Islr).ToString()).FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("IVA");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Pago.Monto+ comprobanteVM.Iva + comprobanteVM.Islr).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text(""); 
+                                
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Iva).FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("TOTAL");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto+ comprobanteVM.Iva + comprobanteVM.Islr).ToString()).FontSize(12);
 
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("TOTAL A PAGAR").FontSize(12);
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text("TOTAL A PAGAR").FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                         .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
                                
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("Retención ISLR Decreto 1808 Art.9 numeral 2%").FontSize(12);
+                                tabla.Cell().Padding(5).Text("Retención ISLR Decreto 1808 Art.9 numeral 2%").FontSize(12);
                                 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Islr.ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString()).FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                         .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("Total a pagar ").FontSize(12);
                                
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
                                 
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Pago.Monto).FontSize(12);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("Total a pagar ").FontSize(12);
-                               
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("ANTICIPO").FontSize(12).FontColor("#FF0000");
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(8);
-                                
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text(comprobanteVM.Pago.Monto).FontSize(12);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("ANTICIPO").FontSize(12).FontColor("#FF0000");
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                              .Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
                                 if (comprobanteVM.Anticipo != null)
                                 {
-                                    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000").FontSize(12);
+                                    tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000").FontSize(12);
                                 }
                                 else
                                 {
-                                    tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("0").FontColor("#FF0000").FontSize(12);
+                                    tabla.Cell().Padding(5).Text("0").FontColor("#FF0000").FontSize(12);
                                 }
                             
 
 
                             });
+                            x.Item().PaddingTop(20).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
 
+
+                                table.Cell().Padding(5).Text("Elaborado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("Revisado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("KARINA LOPEX");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("ROBERTO VILLAGRAS");
+                                table.Cell().Padding(5).Text("MASSIMO RUGGIERO");
+
+
+
+                            });
                         });
 
                     page.Footer()
