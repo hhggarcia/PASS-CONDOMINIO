@@ -494,6 +494,7 @@ namespace Prueba.Controllers
 
             return Json(facturaMonto);
         }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
         {
@@ -501,7 +502,7 @@ namespace Prueba.Controllers
            .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
            .ToListAsync();
 
-            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio = f.Saldo}).ToList();
             return Json(anticiposItems);
         }
 

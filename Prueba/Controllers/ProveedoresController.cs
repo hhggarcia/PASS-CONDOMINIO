@@ -64,7 +64,7 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", IdCondominio);
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios.Where(c => c.IdCondominio == IdCondominio), "IdCondominio", "Nombre");
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
@@ -84,6 +84,8 @@ namespace Prueba.Controllers
                               }).ToListAsync();
 
             ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
+            TempData.Keep();
 
             return View();
         }

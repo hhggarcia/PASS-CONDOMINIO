@@ -94,6 +94,7 @@ namespace Prueba.Controllers
         {
             var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
             var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
             factura.IdCodCuenta = idCodCuenta;
             factura.MontoTotal = factura.Subtotal + factura.Iva;
 
