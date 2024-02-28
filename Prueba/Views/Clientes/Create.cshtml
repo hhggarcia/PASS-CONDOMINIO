@@ -1,9 +1,8 @@
-﻿@model Prueba.Models.Proveedor
+﻿@model Prueba.Models.Cliente
 
 @{
     ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
+    Layout = "_LayoutAdministrador.cshtml";
 }
 
 <div class="container-fluid">
@@ -19,7 +18,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Proveedores
+                        Clientes
                     </h6>
                 </div>
                 <div class="card-body">
@@ -33,11 +32,6 @@
                             <label asp-for="Nombre" class="control-label"></label>
                             <input asp-for="Nombre" class="form-control" />
                             <span asp-validation-for="Nombre" class="text-danger"></span>
-                        </div>
-                        <div class="form-group form-check">
-                            <label class="form-check-label">
-                                <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
-                            </label>
                         </div>
                         <div class="form-group">
                             <label asp-for="Direccion" class="control-label"></label>
@@ -53,11 +47,6 @@
                             <label asp-for="Rif" class="control-label"></label>
                             <input asp-for="Rif" class="form-control" />
                             <span asp-validation-for="Rif" class="text-danger"></span>
-                        </div>
-                        <div class="form-group form-check">
-                            <label class="form-check-label">                                
-                                @Html.CheckBox("check")  @Html.Label("No aplica Retenciones")
-                            </label>
                         </div>
                         <div class="form-group">
                             <label asp-for="IdRetencionIslr" class="control-label"></label>
@@ -77,7 +66,11 @@
                             <input asp-for="Representante" class="form-control" />
                             <span asp-validation-for="Representante" class="text-danger"></span>
                         </div>
-                        
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
+                            </label>
+                        </div>
                         <div class="form-group">
                             <input type="submit" value="Crear" class="btn btn-primary" />
                         </div>

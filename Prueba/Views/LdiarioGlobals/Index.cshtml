@@ -102,7 +102,7 @@
                                                     {
                                                         var cc = Model.CuentasCondominio.Where(c => c.IdCodCuenta == asiento.IdCodCuenta).ToList();
 
-                                                        var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdCodCuenta).ToList();
+                                                        var subcuenta = Model.CuentasDiarioCondominio.Where(c => c.Id == cc.First().IdSubCuenta).ToList();
 
                                                         var cuenta = Model.Cuentas.Where(c => c.Id == cc.First().IdCuenta).ToList();
 
@@ -267,7 +267,7 @@
 
 </script>
 
-<script>
+@* <script>
     $(document).ready(function () {
         $("#LibroDiarioPDF").click(function () {
             console.log( "Model");
@@ -304,7 +304,7 @@
             });
         });
     });
-</script>
+</script> *@
 @section scripts{
     <script>
         function fnExcelReport() {

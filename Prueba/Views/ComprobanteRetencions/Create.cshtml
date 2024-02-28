@@ -1,0 +1,79 @@
+﻿@model Prueba.Models.ComprobanteRetencion
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Comprobante de Retención
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="IdFactura" class="control-label"></label>
+                            <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdProveedor" class="control-label"></label>
+                            <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FechaEmision" class="control-label"></label>
+                            <input asp-for="FechaEmision" class="form-control" />
+                            <span asp-validation-for="FechaEmision" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Descripcion" class="control-label"></label>
+                            <input asp-for="Descripcion" class="form-control" />
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Retencion" class="control-label"></label>
+                            <input asp-for="Retencion" class="form-control" />
+                            <span asp-validation-for="Retencion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Sustraendo" class="control-label"></label>
+                            <input asp-for="Sustraendo" class="form-control" />
+                            <span asp-validation-for="Sustraendo" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ValorRetencion" class="control-label"></label>
+                            <input asp-for="ValorRetencion" class="form-control" />
+                            <span asp-validation-for="ValorRetencion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalImpuesto" class="control-label"></label>
+                            <input asp-for="TotalImpuesto" class="form-control" />
+                            <span asp-validation-for="TotalImpuesto" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

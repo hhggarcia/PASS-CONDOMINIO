@@ -3,7 +3,6 @@
 using MimeKit;
 using NetTopologySuite.Index.HPRtree;
 using NPOI.SS.Formula.Functions;
-using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Controllers;
 using Prueba.Models;
@@ -13,8 +12,6 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SQLitePCL;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Prueba.Services
 {
@@ -962,8 +959,8 @@ namespace Prueba.Services
                     page.Header().ShowOnce().Row(row =>
                     {                  
                         row.RelativeItem().Padding(15).Column(col =>
-                        { 
-                            //col.Item().Image("wwwroot/images/logo-1.png");
+                        {
+                            col.Item().Image("wwwroot/images/logo-1.png");
                             col.Item().PaddingTop(10).Text("Fecha: " + DateTime.Today.ToString("MM/yyyy")).Bold().FontSize(14).FontColor("#004581").Bold();
                             col.Item().Text("FACTURA: "+ comprobanteVM.Factura.NumControl).Bold().FontSize(14).FontColor("#004581").Bold();
                             col.Item().Text("Beneficiario").Bold().FontSize(14).FontColor("#004581").Bold();
@@ -974,7 +971,7 @@ namespace Prueba.Services
                         });
                         row.RelativeItem().Padding(15).Column(col =>
                         {
-                            //col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
+                            col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
                         });
                     });
 
@@ -994,24 +991,7 @@ namespace Prueba.Services
                                     columns.ConstantColumn(50);
                                     columns.ConstantColumn(50);
                                 });
-                                tabla.Header(header =>
-                                {
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   // .Padding(5).Text("FECHA DEL PAGO").Bold().FontSize(10);
-
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("DINERO RECIBIDO").Bold().FontSize(10);
-
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("TASA DE CAMBIO").Bold().FontSize(10);
-
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
-
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
-                                });
-
+                          
                                 tabla.Cell()
                                .Padding(5).Text("BASE");
                                 tabla.Cell().Padding(5).Text("");
@@ -1082,7 +1062,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
                                 
-                                tabla.Cell().Padding(5).Text(comprobanteVM.Pago.Monto).FontSize(12);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("ANTICIPO").FontSize(12).FontColor("#FF0000");
 

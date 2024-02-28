@@ -314,7 +314,7 @@ namespace Prueba.Controllers
 
                     //if (ModelState.IsValid)
                     //{
-                    var beneficiario = await _context.Condominios.Where(c => c.IdCondominio == modelo.IdCondominio).Select(c => c.Nombre).FirstAsync();
+
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
@@ -384,6 +384,11 @@ namespace Prueba.Controllers
                             var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                             comprobante.Anticipo = anticipo;
                         }
+                        //var proovedores = from p in _context.Proveedors
+                        //                  where p.IdCondominio == modelo.IdCondominio
+                        //                  select p;
+                        //var proveedor =  await proovedores.ToListAsync();
+                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).Select(c => c.Nombre).FirstAsync();
                         comprobante.Factura = factura;
                         comprobante.Islr = modelo.RetIslr;
                         comprobante.Iva = modelo.RetIva;
@@ -393,7 +398,7 @@ namespace Prueba.Controllers
                         comprobante.Pago.MontoRef = modelo.MontoRef;
                         comprobante.Pago.SimboloRef = modelo.SimboloRef;
                         comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
-                        comprobante.Beneficiario = beneficiario;
+                        comprobante.Beneficiario = proveedor;
                         foreach(var item in condominio.MonedaConds)
                         {
                             comprobante.ValorDolar = item.ValorDolar;
@@ -495,7 +500,7 @@ namespace Prueba.Controllers
             {
                 factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
             }
-            Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
+            //Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
 
             var facturaMonto = new
             {
@@ -503,11 +508,12 @@ namespace Prueba.Controllers
                 Monto = factura.MontoTotal,
                 Iva = itemLibroCompra.RetIva,
                 Islr = itemLibroCompra.RetIslr,
-                Descripcion= factura.Descripcion
+                Descripcion = factura.Descripcion
             };
 
             return Json(facturaMonto);
         }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
         {
@@ -515,7 +521,7 @@ namespace Prueba.Controllers
            .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
            .ToListAsync();
 
-            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio= f.Saldo}).ToList();
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio = f.Saldo}).ToList();
             return Json(anticiposItems);
         }
 

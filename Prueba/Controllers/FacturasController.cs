@@ -31,16 +31,16 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
-                                      join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
-                                      where c.IdCondominio == IdCondominio
-                                      select f).ToListAsync();
+            //var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
+            //                          join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
+            //                          where c.IdCondominio == IdCondominio
+            //                          select f).ToListAsync();
 
-            //var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
+            var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
 
             TempData.Keep();
 
-            return View(listFacturas);
+            return View(nuevaAppContext);
         }
 
         // GET: Facturas/Details/5
@@ -94,6 +94,7 @@ namespace Prueba.Controllers
         {
             var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
             var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
             factura.IdCodCuenta = idCodCuenta;
             factura.MontoTotal = factura.Subtotal + factura.Iva;
 
@@ -161,9 +162,9 @@ namespace Prueba.Controllers
                     Monto = factura.MontoTotal,
                     Status = factura.EnProceso ? "En Proceso" : "Pagada"
                 };
-
                 _context.Add(itemLibroCompra);
                 _context.Add(itemCuentaPorPagar);
+              
 
                 await _context.SaveChangesAsync();
 
