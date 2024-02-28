@@ -1,14 +1,14 @@
-﻿@model IEnumerable<Prueba.Models.Producto>
+﻿@model IEnumerable<Prueba.Models.Cliente>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
+    Layout = "_LayoutAdministrador.cshtml";
 }
+
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3" asp-controller="Productos"
+        <a class="btn btn-light mb-3"
            asp-action="Create">
             Registrar
         </a>
@@ -33,7 +33,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Productos
+                        Clientes
                     </h6>
 
                 </div>
@@ -46,16 +46,22 @@
                                         @Html.DisplayNameFor(model => model.Nombre)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Precio)
+                                        @Html.DisplayNameFor(model => model.Direccion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.TipoProducto)
+                                        @Html.DisplayNameFor(model => model.Telefono)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Descripcion)
+                                        @Html.DisplayNameFor(model => model.Rif)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Disponible)
+                                        @Html.DisplayNameFor(model => model.Saldo)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Representante)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdCondominioNavigation)
@@ -77,48 +83,36 @@
                                             @Html.DisplayFor(modelItem => item.Nombre)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Precio) Bs
+                                            @Html.DisplayFor(modelItem => item.Direccion)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TipoProducto)
+                                            @Html.DisplayFor(modelItem => item.Telefono)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Descripcion)
+                                            @Html.DisplayFor(modelItem => item.Rif)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Disponible)
+                                            @Html.DisplayFor(modelItem => item.Saldo)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
+                                            @Html.DisplayFor(modelItem => item.Representante)
                                         </td>
-                                        @if (item.IdRetencionIslrNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Concepto)
-                                            </td>
-                                        } else
-                                        {
-                                            <td>
-                                                No Aplica
-                                            </td>
-                                        }
-
-                                        @if (item.IdRetencionIvaNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Descripcion)
-                                            </td>
-                                        } else
-                                        {
-                                            <td>
-                                                No Aplica
-                                            </td>
-                                        }
-
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdProducto">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdProducto">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdProducto">Eliminar</a>
+                                            @Html.DisplayFor(modelItem => item.ContribuyenteEspecial)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Id)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.IdCliente">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdCliente">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdCliente">Eliminar</a>
                                         </td>
                                     </tr>
                                 }

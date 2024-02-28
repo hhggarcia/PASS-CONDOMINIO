@@ -3,7 +3,6 @@
 using MimeKit;
 using NetTopologySuite.Index.HPRtree;
 using NPOI.SS.Formula.Functions;
-using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Controllers;
 using Prueba.Models;
@@ -13,8 +12,6 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SQLitePCL;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Prueba.Services
 {
@@ -996,17 +993,17 @@ namespace Prueba.Services
                                 });
                                 tabla.Header(header =>
                                 {
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   // .Padding(5).Text("FECHA DEL PAGO").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("FECHA DEL PAGO").Bold().FontSize(10);
 
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("DINERO RECIBIDO").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("DINERO RECIBIDO").Bold().FontSize(10);
 
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("TASA DE CAMBIO").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("TASA DE CAMBIO").Bold().FontSize(10);
 
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
 
                                    // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                    //.Padding(5).Text("DIFERENCIA").Bold().FontSize(10);

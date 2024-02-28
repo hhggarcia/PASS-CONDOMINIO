@@ -1,14 +1,14 @@
-﻿@model IEnumerable<Prueba.Models.Producto>
+﻿@model IEnumerable<Prueba.Models.ComprobanteRetencion>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
+    Layout = "_LayoutAdministrador.cshtml";
 }
+
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3" asp-controller="Productos"
+        <a class="btn btn-light mb-3" asp-controller="ComprobanteRetencions"
            asp-action="Create">
             Registrar
         </a>
@@ -33,38 +33,41 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Productos
+                        Comprobante Retención
                     </h6>
 
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table text-center"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Nombre)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Precio)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.TipoProducto)
+                                        @Html.DisplayNameFor(model => model.FechaEmision)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Descripcion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Disponible)
+                                        @Html.DisplayNameFor(model => model.Retencion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdCondominioNavigation)
+                                        @Html.DisplayNameFor(model => model.Sustraendo)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdRetencionIslrNavigation)
+                                        @Html.DisplayNameFor(model => model.ValorRetencion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdRetencionIvaNavigation)
+                                        @Html.DisplayNameFor(model => model.TotalImpuesto)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdProveedorNavigation)
                                     </th>
                                     <th></th>
                                 </tr>
@@ -74,51 +77,33 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Nombre)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Precio) Bs
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TipoProducto)
+                                            @Html.DisplayFor(modelItem => item.FechaEmision)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Descripcion)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Disponible)
+                                            @Html.DisplayFor(modelItem => item.Retencion)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
+                                            @Html.DisplayFor(modelItem => item.Sustraendo)
                                         </td>
-                                        @if (item.IdRetencionIslrNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Concepto)
-                                            </td>
-                                        } else
-                                        {
-                                            <td>
-                                                No Aplica
-                                            </td>
-                                        }
-
-                                        @if (item.IdRetencionIvaNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Descripcion)
-                                            </td>
-                                        } else
-                                        {
-                                            <td>
-                                                No Aplica
-                                            </td>
-                                        }
-
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdProducto">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdProducto">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdProducto">Eliminar</a>
+                                            @Html.DisplayFor(modelItem => item.ValorRetencion)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TotalImpuesto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.IdProveedor)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.IdComprobante">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdComprobante">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a>
                                         </td>
                                     </tr>
                                 }
@@ -130,3 +115,6 @@
         </div>
     </div>
 </div>
+
+
+

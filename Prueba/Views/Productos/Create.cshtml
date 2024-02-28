@@ -35,7 +35,7 @@
                             <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Precio" class="control-label"></label>
+                            <label class="control-label">Monto $</label>
                             <input asp-for="Precio" class="form-control" />
                             <span asp-validation-for="Precio" class="text-danger"></span>
                         </div>
@@ -52,6 +52,11 @@
                         <div class="form-group form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" asp-for="Disponible" /> @Html.DisplayNameFor(model => model.Disponible)
+                            </label>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                @Html.CheckBox("check")  @Html.Label("No aplica Retenciones")
                             </label>
                         </div>
                         <div class="form-group">

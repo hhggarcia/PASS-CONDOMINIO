@@ -21,7 +21,11 @@ public partial class Condominio
 
     public string Email { get; set; } = null!;
 
+    public bool? ContribuyenteEspecial { get; set; }
+
     public virtual ICollection<BalanceComprobacion> BalanceComprobacions { get; set; } = new List<BalanceComprobacion>();
+
+    public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; } = new List<CodigoCuentasGlobal>();
 

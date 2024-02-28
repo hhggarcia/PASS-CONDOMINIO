@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
@@ -15,10 +16,13 @@ namespace Prueba.Controllers
 
     public class ProductosController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public ProductosController(NuevaAppContext context)
+        public ProductosController(IMonedaRepository repoMoneda,
+            NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
@@ -89,7 +93,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto)
+        public async Task<IActionResult> Create([Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto, bool check)
         {
             ModelState.Remove(nameof(producto.IdRetencionIvaNavigation));
             ModelState.Remove(nameof(producto.IdRetencionIslrNavigation));
@@ -97,6 +101,18 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
+                if (check)
+                {
+                    producto.IdRetencionIva = null;
+                    producto.IdRetencionIslr = null;                  
+                }
+
+                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(producto.IdCondominio);
+
+                if (monedaPrincipal.Any())
+                {
+                    producto.Precio = producto.Precio * monedaPrincipal.First().ValorDolar;
+                }
                 _context.Add(producto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -166,7 +182,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto)
+        public async Task<IActionResult> Edit(int id, [Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto, bool check)
         {
             if (id != producto.IdProducto)
             {
@@ -181,8 +197,22 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    if (check)
+                    {
+                        producto.IdRetencionIva = null;
+                        producto.IdRetencionIslr = null;
+                    }
+
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(producto.IdCondominio);
+
+                    if (monedaPrincipal.Any())
+                    {
+                        producto.Precio = producto.Precio * monedaPrincipal.First().ValorDolar;
+                    }
+
                     _context.Update(producto);
                     await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

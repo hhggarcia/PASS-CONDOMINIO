@@ -60,7 +60,7 @@ namespace Prueba.Repositories
                     if (asiento.IdCodCuenta == ccCondominio.IdCodCuenta)
                     {
                         asientosCondominio.Add(asiento);
-                        var aux = subcuentas.Where(c => c.Id == ccCondominio.IdCodCuenta).ToList();
+                        var aux = subcuentas.Where(c => c.Id == ccCondominio.IdSubCuenta).ToList();
                         subCuentasModel.Add(aux.First());
                         if (asiento.TipoOperacion)
                         {

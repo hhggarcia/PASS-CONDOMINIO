@@ -17,9 +17,9 @@ public partial class Proveedor
 
     public string Rif { get; set; } = null!;
 
-    public int IdRetencionIslr { get; set; }
+    public int? IdRetencionIslr { get; set; }
 
-    public int IdRetencionIva { get; set; }
+    public int? IdRetencionIva { get; set; }
 
     public decimal Saldo { get; set; }
 
@@ -29,11 +29,13 @@ public partial class Proveedor
 
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
+    public virtual ICollection<ComprobanteRetencion> ComprobanteRetencions { get; set; } = new List<ComprobanteRetencion>();
+
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
-    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+    public virtual Condominio IdCondominioNavigation { get; set; }
 
-    public virtual Islr IdRetencionIslrNavigation { get; set; } = null!;
+    public virtual Islr? IdRetencionIslrNavigation { get; set; }
 
-    public virtual Iva IdRetencionIvaNavigation { get; set; } = null!;
+    public virtual Iva? IdRetencionIvaNavigation { get; set; }
 }

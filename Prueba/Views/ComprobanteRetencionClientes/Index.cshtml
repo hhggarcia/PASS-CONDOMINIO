@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Prueba.Models.ComprobanteRetencionCliente>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3"
+           asp-action="Create">
+            Registrar
+        </a>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
+
+        @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        Excel
+        </a> *@
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Comprobante Retención Cliente
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <table class="table text-center"
+                           id="dataTable"
+                           width="100%"
+                           cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.FechaEmision)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Retencion)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Sustraendo)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ValorRetencion)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TotalImpuesto)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IdClienteNavigation)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.FechaEmision)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Retencion)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Sustraendo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ValorRetencion)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TotalImpuesto)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.IdComprobanteCliente">Editar</a> |
+                                        <a asp-action="Details" asp-route-id="@item.IdComprobanteCliente">Detalles</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.IdComprobanteCliente">Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
