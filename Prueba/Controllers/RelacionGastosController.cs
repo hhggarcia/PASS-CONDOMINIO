@@ -116,6 +116,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             var modelo = await _repoRelacionGastos.LoadDataRelacionGastosMes(id);
+            modelo.IdDetail = id;
             //return View(relacionGasto);
             return View(modelo);
         }
@@ -438,30 +439,37 @@ namespace Prueba.Controllers
         public async Task<IActionResult> ReciboPdf()
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
+            var dataCondominio = await _context.Condominios.Where(c=>c.IdCondominio==idCondominio).FirstAsync();
             var modelo = await _repoRelacionGastos.LoadDataRelacionGastos(idCondominio);
+
             var data = _servicePDF.RelacionGastosPDF(modelo);
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Recibo.pdf");
         }
-        [HttpPost]
-        public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
+        [HttpGet]
+         public async Task<IActionResult> RelacionGastosPDF(int id)
         {
-            try
-            {
-  
-
-                var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
-                var base64 = Convert.ToBase64String(data);
-                return Content(base64, "application/pdf");
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error generando PDF: {e.Message}");
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
-            }
+            var modelo = await _repoRelacionGastos.LoadDataRelacionGastosMes(id);
+            var data = _servicePDF.RelacionGastosPDF(modelo);
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "Recibo.pdf");
         }
+        //[HttpPost]
+        //public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
+        //{
+        //    try
+        //    {
+        //        var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
+        //        var base64 = Convert.ToBase64String(data);
+        //        return Content(base64, "application/pdf");
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine($"Error generando PDF: {e.Message}");
+        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        //        return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+        //    }
+        //}
     }
 }
