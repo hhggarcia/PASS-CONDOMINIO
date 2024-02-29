@@ -14,5 +14,6 @@ namespace Prueba.ViewModels
         public AspNetUser Propietario { get; set; } = new AspNetUser();
         public decimal Total { get; set; } = 0;
         public decimal SaldoPagar { get; set; } = 0;
+        public int IdDetalleRecibo { get; set; } = 0;
     }
 }

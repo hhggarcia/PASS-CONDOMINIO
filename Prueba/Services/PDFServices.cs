@@ -447,12 +447,12 @@ namespace Prueba.Services
                                 });
                                 row.RelativeItem().Padding(10,0).Column(col =>
                                 {
-                                    var propiedad = detalleReciboVM.Propiedad.Codigo;
-                                    var torrePiso = propiedad.Split("-");
-                                    col.Item().Text("Torre: " + torrePiso[0].Trim()).FontSize(12).Bold();
-                                    col.Item().Text("Piso: " + torrePiso[1].Trim()).FontSize(12).Bold();
-                                    col.Item().Text("Partamento: " + propiedad).FontSize(12).Bold();
-                                    col.Item().Text("Propietario: " + detalleReciboVM.Propietario.FirstName + " " + detalleReciboVM.Propietario.LastName).FontSize(12).Bold();
+                                    //var propiedad = detalleReciboVM.Propiedad.Codigo;
+                                    //var torrePiso = propiedad.Split("-");
+                                    //col.Item().Text("Torre: " + torrePiso[0].Trim()).FontSize(12).Bold();
+                                    //col.Item().Text("Piso: " + torrePiso[1].Trim()).FontSize(12).Bold();
+                                    //col.Item().Text("Partamento: " + propiedad).FontSize(12).Bold();
+                                    //col.Item().Text("Propietario: " + detalleReciboVM.Propietario.FirstName + " " + detalleReciboVM.Propietario.LastName).FontSize(12).Bold();
                                 });
                                 row.RelativeItem().Padding(10, 0).Column(col =>
                                 {

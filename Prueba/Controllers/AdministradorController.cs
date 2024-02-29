@@ -182,7 +182,8 @@ namespace Prueba.Controllers
                 var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
-                var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
+                //var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
+                
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
@@ -191,10 +192,12 @@ namespace Prueba.Controllers
                         propiedadesPorUsuario.Add(user, propiedades);
                         foreach (var propiedad in propiedades)
                         {
-                            var pagos = await _context.PagoRecibidos.Where(
-                                c => c.IdPropiedad == propiedad.IdPropiedad
-                                && c.Confirmado == false && !pagosCuotas.Contains(c.IdPagoRecibido))
-                                .ToListAsync();
+
+                            var pagos = await (from c in _context.PagoRecibidos
+                                               join d in _context.PagosRecibos
+                                               on c.IdPagoRecibido equals d.IdPago
+                                               where c.IdPropiedad == propiedad.IdPropiedad
+                                               select c).ToListAsync();
 
                             if (pagos != null && pagos.Count() > 0)
                             {
@@ -304,11 +307,11 @@ namespace Prueba.Controllers
                         {
                             _context.PagoRecibidos.Remove(pago);
                         }
-                        
+
                         reciboActual.First().EnProceso = false;
 
                         _context.ReciboCobros.Update(reciboActual.First());
-                      
+
                         await _context.SaveChangesAsync();
                         if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
                         {
@@ -388,7 +391,7 @@ namespace Prueba.Controllers
                     if (propiedad != null)
                     {
                         var relacion = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
-                       
+
                         var reciboActual = (from r in relacion
                                             join rc in _context.ReciboCobros
                                             on r.IdRecibo equals rc.IdReciboCobro
@@ -413,7 +416,7 @@ namespace Prueba.Controllers
 
                         if (reciboActual == null)
                         {
-                            foreach(var r in referencias)
+                            foreach (var r in referencias)
                             {
                                 _context.Remove(r);
                             }
@@ -435,11 +438,11 @@ namespace Prueba.Controllers
                             {
 
                                 // ADD PAGOS ABONADOS SOBRE LOS RECIBOS
-    
-                                if (pago.MontoRef == reciboActual.Monto || propiedad.Saldo == pago.MontoRef || (pago.MontoRef ==(propiedad.Saldo + propiedad.Deuda))) //|| reciboActual.Abonado > reciboActual.Monto
+
+                                if (pago.MontoRef == reciboActual.Monto || propiedad.Saldo == pago.MontoRef || (pago.MontoRef == (propiedad.Saldo + propiedad.Deuda))) //|| reciboActual.Abonado > reciboActual.Monto
                                 {
                                     // SI EL MONTO PAGADO ES IGUAL AL DEL RECIBO 
-                                    if(propiedad.Deuda == 0)
+                                    if (propiedad.Deuda == 0)
                                     {
                                         reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
                                         propiedad.Saldo = 0;
@@ -449,20 +452,20 @@ namespace Prueba.Controllers
                                     }
                                     else
                                     {
-                                        if(pago.MontoRef == propiedad.Deuda)
+                                        if (pago.MontoRef == propiedad.Deuda)
                                         {
                                             propiedad.Deuda = 0;
                                             reciboActual.Abonado = reciboActual.Abonado - propiedad.Deuda;
-                                            if(reciboActual.Abonado == propiedad.Saldo)
+                                            if (reciboActual.Abonado == propiedad.Saldo)
                                             {
-                                                reciboActual.Abonado =0;
+                                                reciboActual.Abonado = 0;
                                                 propiedad.Saldo = 0;
                                                 propiedad.Solvencia = true;
                                                 propiedad.Solvencia = true;
                                                 reciboActual.EnProceso = false;
                                                 reciboActual.Pagado = true;
                                             }
-                                            else if(reciboActual.Abonado < propiedad.Saldo)
+                                            else if (reciboActual.Abonado < propiedad.Saldo)
                                             {
                                                 propiedad.Saldo = propiedad.Saldo - reciboActual.Abonado;
                                                 reciboActual.Abonado = 0;
@@ -472,10 +475,10 @@ namespace Prueba.Controllers
                                             }
                                         }
                                     }
-                
+
                                 }
                                 //else if (pago.MontoRef < reciboActual.Monto)
-                                else if ((pago.MontoRef < propiedad.Deuda)|| (propiedad.Deuda ==0 && propiedad.Saldo >pago.MontoRef))
+                                else if ((pago.MontoRef < propiedad.Deuda) || (propiedad.Deuda == 0 && propiedad.Saldo > pago.MontoRef))
                                 {
                                     // SI EL MONTO PAGADO ES MENOR AL DEL RECIBO 
 
@@ -488,7 +491,7 @@ namespace Prueba.Controllers
                                     {
                                         propiedad.Deuda = propiedad.Deuda - pago.MontoRef;
                                     }
-                                    else if(propiedad.Saldo > pago.MontoRef && reciboActual.Abonado > propiedad.Saldo)
+                                    else if (propiedad.Saldo > pago.MontoRef && reciboActual.Abonado > propiedad.Saldo)
                                     {
                                         reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
                                         propiedad.Saldo = 0;
@@ -500,15 +503,15 @@ namespace Prueba.Controllers
                                 else if (pago.MontoRef > reciboActual.Monto)
                                 {
                                     // SI EL MONTO PAGADO ES MAYOR AL DEL RECIBO
-                                    
+
                                     // PAGAR EL RECIBO
 
                                     // SI NO HAY DEUDA RESTAR EXCEDENTE AL SALDO
-                                    if(propiedad.Deuda != 0)
+                                    if (propiedad.Deuda != 0)
                                     {
                                         reciboActual.Abonado = reciboActual.Abonado - propiedad.Deuda;
                                         propiedad.Deuda = 0;
-                                     // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
+                                        // SI HAY DEUDA BUSCAR EL SIGUIENTE RECIBO Y VER SI ES PAGABLE CON EL MONTO
                                         if (reciboActual.Abonado >= propiedad.Saldo)
                                         {
                                             reciboActual.Abonado = reciboActual.Abonado - propiedad.Saldo;
@@ -538,7 +541,7 @@ namespace Prueba.Controllers
                                 }
 
                                 // cambiar en recibo o en los recibos - en proceso a false y pagado a true
-                            
+
 
                                 // cambiar pago.Confirmado a True
                                 pago.Confirmado = true;
@@ -548,7 +551,7 @@ namespace Prueba.Controllers
                                 dbContext.Update(pago);
 
                                 // Enviar Correo
-                             
+
 
 
                                 if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
@@ -768,8 +771,8 @@ namespace Prueba.Controllers
             //return View(relacionGasto);
             return View(modelo);
         }
-       
-      
+
+
         [HttpPost]
         public ContentResult ComprobantePagosRecibidosPDF([FromBody] IndexPagoRecibdioVM indexPagoRecibdio)
         {
@@ -793,7 +796,7 @@ namespace Prueba.Controllers
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             IList<ApplicationUser> listaPropietarios = await _signInManager.UserManager.Users.ToListAsync();
-            
+
             var propiedadesPorUsuario = new Dictionary<ApplicationUser, List<Propiedad>>();
             var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
 
@@ -825,9 +828,9 @@ namespace Prueba.Controllers
                 PropiedadPagos = pagosPorPropiedad,
             };
             var data = _servicePDF.ComprobantePagosRecibidosPDF(modelo);
-                Stream stream = new MemoryStream(data);
-                return File(stream, "application/pdf", "PagosRecibidos.pdf");
-         }
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "PagosRecibidos.pdf");
+        }
 
         [HttpPost]
         public ContentResult EstadoResultadoPDF([FromBody] EstadoResultadoVM estadoResultado)
@@ -851,8 +854,8 @@ namespace Prueba.Controllers
             try
             {
                 var idAdministrador = TempData.Peek("idUserLog").ToString();
-                var idCondominio = _context.Condominios.Where(c=> c.IdAdministrador == idAdministrador).Select(c=>c.IdCondominio).FirstOrDefault();
-                var cuotasCondominio = _context.CuotasEspeciales.Where(c=>c.IdCondominio == idCondominio);
+                var idCondominio = _context.Condominios.Where(c => c.IdAdministrador == idAdministrador).Select(c => c.IdCondominio).FirstOrDefault();
+                var cuotasCondominio = _context.CuotasEspeciales.Where(c => c.IdCondominio == idCondominio);
                 var condominiosModel = await cuotasCondominio.ToListAsync();
 
                 TempData.Keep();
