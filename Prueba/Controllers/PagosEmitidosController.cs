@@ -500,7 +500,7 @@ namespace Prueba.Controllers
             {
                 factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
             }
-            //Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
+            
 
             var facturaMonto = new
             {
