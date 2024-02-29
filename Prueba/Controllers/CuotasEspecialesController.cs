@@ -455,14 +455,20 @@ namespace Prueba.Controllers
 
                 var idPagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
                 var relacionPagosRecibidosCuotas = await _context.PagosCuotas.ToListAsync();
-                var pagoRecibos = await _context.PagoRecibidos.Where(c => idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
+
+                //var pagoRecibos = await _context.PagoRecibidos.Where(c => idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
                 //var pagoRecibosCuotas = await _context.PagoReciboCuota.ToListAsync();
+
+                var auxilio = await (from c in _context.PagoRecibidos
+                              join d in _context.PagosCuotas
+                              on c.IdPagoRecibido equals d.IdPagoRecibido
+                              select c).ToListAsync();
 
                 var cuotasEspeciales = await _context.CuotasEspeciales.ToListAsync();
                 var datosCobro = new List<CobrarCuotasVM>();
                 foreach(var cuota in cuotasEspeciales)
                 {
-                    foreach(var pago in pagoRecibos)
+                    foreach(var pago in auxilio)
                     {
                         foreach (var relacion in relacionPagosRecibidosCuotas)
                         {
