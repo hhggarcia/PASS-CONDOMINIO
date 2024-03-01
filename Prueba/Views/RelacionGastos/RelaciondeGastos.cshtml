@@ -201,57 +201,6 @@
 </script>
 
 
-@* <script>
-    $(document).ready(function () {
-
-        // var datos = JSON.stringify(modeloSerializado, function (key, value) {
-        //     console.log(key + " key");
-        //     if (key === 'propiedadProblematica') {
-        //         return 'valorAlternativo'; // Reemplaza con el valor deseado
-        //     } else {
-        //         return value;
-        //     }
-        // }); 
-        $("#RelacionGastosPDF").click(function () {
-            // var datos = JsonSerializer.Serialize(Model);
-            // console.log(datos + " datos");
-            var datos = @Html.Raw(Json.Serialize(Model));
-
-            $.ajax({
-                url: '/RelacionGastos/RelacionGastosPDF',
-                type: 'POST',
-                contentType: 'application/json',
-                // data: @Html.Raw(serializedModel),
-                data: JSON.stringify(datos),
-                success: function (result) {
-                    var binaryData = atob(result);
-                    var arrayBuffer = new ArrayBuffer(binaryData.length);
-                    var uint8Array = new Uint8Array(arrayBuffer);
-
-                    for (var i = 0; i < binaryData.length; i++) {
-                        uint8Array[i] = binaryData.charCodeAt(i);
-                    }
-
-                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
-                    var url = URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = 'RelacionGastos.pdf';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    // console.log("Exito")
-                },
-                error: function () {
-                    alert('Error al descargar detalle del recibo');
-                }
-            });
-        });
-    });
-</script>
- *@
 
 @section scripts{
     <script>

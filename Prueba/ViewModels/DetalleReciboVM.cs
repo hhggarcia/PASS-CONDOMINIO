@@ -15,5 +15,6 @@ namespace Prueba.ViewModels
         public decimal Total { get; set; } = 0;
         public decimal SaldoPagar { get; set; } = 0;
         public int IdDetalleRecibo { get; set; } = 0;
+        public Condominio condominio { get; set; } 
     }
 }
