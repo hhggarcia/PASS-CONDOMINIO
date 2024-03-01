@@ -154,10 +154,10 @@ namespace Prueba.Services
                                 .Padding(2).Text(cantidad.ToString()).FontSize(10);
 
                                 tabla.Cell().BorderBottom(0.5f).BorderColor("#D9D9D9")
-                                .Padding(2).Text($"S/. {precio}").FontSize(10);
+                                .Padding(2).Text($"S/. {precio.ToString("N")}").FontSize(10);
 
                                 tabla.Cell().BorderBottom(0.5f).BorderColor("#D9D9D9")
-                                .Padding(2).AlignRight().Text($"S/. {total}").FontSize(10);
+                                .Padding(2).AlignRight().Text($"S/. {total.ToString("N")}").FontSize(10);
                             }
 
                         });
@@ -488,11 +488,11 @@ namespace Prueba.Services
                                    .Padding(5).Text("Saldo Actual").Bold().FontSize(10);
                                 });
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(detalleReciboVM.Propiedad.Deuda.ToString("N2") + " Bs.").FontSize(8);
+                                .Padding(5).Text(detalleReciboVM.Propiedad.Deuda.ToString("N") + " Bs.").FontSize(8);
                                 decimal totalCuotasSubCuotas = 0;
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(detalleReciboVM.Propiedad.Saldo.ToString("N2") + " Bs.").FontSize(8); 
+                                .Padding(5).Text(detalleReciboVM.Propiedad.Saldo.ToString("N") + " Bs.").FontSize(8); 
                                 if(detalleReciboVM.CuotasRecibosCobros.Count > 0)
                                 {
                                     foreach (var cuotas in detalleReciboVM.CuotasRecibosCobros)
@@ -501,7 +501,7 @@ namespace Prueba.Services
                                         {
                                             totalCuotasSubCuotas += (decimal)cuotas.ReciboCuota.SubCuotas;
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(cuotas.ReciboCuota.SubCuotas.ToString("N2") + " Bs.").FontSize(8);
+                                            .Padding(5).Text(cuotas.ReciboCuota.SubCuotas.ToString("N") + " Bs.").FontSize(8);
                                         }
                                         else
                                         {
@@ -573,7 +573,7 @@ namespace Prueba.Services
                                                                       
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(detalleReciboVM.Propiedad.Alicuota.ToString()).FontSize(8);
+                                            .Padding(5).Text(detalleReciboVM.Propiedad.Alicuota.ToString("N")).FontSize(8);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(((item.MontoRef * (detalleReciboVM.Propiedad.Alicuota / 100)).ToString("N"))).FontSize(8);
@@ -689,7 +689,7 @@ namespace Prueba.Services
                                             .Padding(5).Text(((detalleReciboVM.RelacionGastos.SubTotal * fondo.Porcentaje / 100).ToString("N"))).FontSize(8);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(detalleReciboVM.Propiedad.Alicuota.ToString()).FontSize(8);
+                                            .Padding(5).Text(detalleReciboVM.Propiedad.Alicuota.ToString("N")).FontSize(8);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text((((detalleReciboVM.RelacionGastos.SubTotal * fondo.Porcentaje / 100) * (detalleReciboVM.Propiedad.Alicuota / 100)).ToString("N"))).FontSize(8);
@@ -803,10 +803,10 @@ namespace Prueba.Services
                                 .Padding(5).Text(comprobanteVM.PagoRecibido.ValorDolar.ToString() + " "+ comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar ).ToString("N2") + " $")).FontSize(8);
+                                .Padding(5).Text(((comprobanteVM.PagoRecibido.Monto / comprobanteVM.PagoRecibido.ValorDolar ).ToString("N") + " $")).FontSize(8);
                         
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Propiedad.Saldo).ToString("N2") + " " + comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
+                                .Padding(5).Text((comprobanteVM.Propiedad.Saldo).ToString("N") + " " + comprobanteVM.PagoRecibido.SimboloRef).FontSize(8);
 
                             });
                             //if (comprobanteVM.Condominio != null && comprobanteVM.Inmueble != null && comprobanteVM.Propiedad != null)
@@ -908,14 +908,14 @@ namespace Prueba.Services
                                 .Padding(5).Text(comprobanteCEVM.PagoRecibido.Monto.ToString("N") + " Bs.").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteCEVM.PagoRecibido.ValorDolar.ToString() + " Bs.").FontSize(8);
+                                .Padding(5).Text(comprobanteCEVM.PagoRecibido.ValorDolar.ToString("N") + " Bs.").FontSize(8);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteCEVM.PagoRecibido.Monto / comprobanteCEVM.PagoRecibido.ValorDolar).ToString("N2") + " $").FontSize(8);
+                                .Padding(5).Text((comprobanteCEVM.PagoRecibido.Monto / comprobanteCEVM.PagoRecibido.ValorDolar).ToString("N") + " $").FontSize(8);
                                 if(comprobanteCEVM.Restante !=0 && comprobanteCEVM.Restante != null)
                                 {
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                     .Padding(5).Text(comprobanteCEVM.Restante.ToString("N2") + " Bs.").FontSize(8);
+                                     .Padding(5).Text(comprobanteCEVM.Restante.ToString("N") + " Bs.").FontSize(8);
                                 }
                                 else
                                 {
@@ -986,7 +986,7 @@ namespace Prueba.Services
                                 
                                 tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Islr).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Islr).ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("IVA");
 
@@ -994,7 +994,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text(""); 
                                 
-                                tabla.Cell().Padding(5).Text(comprobanteVM.Iva).FontSize(12);
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Iva.ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("TOTAL");
 
@@ -1002,7 +1002,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text("");
 
-                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto+ comprobanteVM.Iva + comprobanteVM.Islr).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto+ comprobanteVM.Iva + comprobanteVM.Islr).ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("");
 
@@ -1018,7 +1018,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
 
@@ -1034,7 +1034,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
 
-                                tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
 
@@ -1050,7 +1050,7 @@ namespace Prueba.Services
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
                                 
-                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString("N")).FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("ANTICIPO").FontSize(12).FontColor("#FF0000");
 
@@ -1059,7 +1059,7 @@ namespace Prueba.Services
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
                                 if (comprobanteVM.Anticipo != null)
                                 {
-                                    tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000").FontSize(12);
+                                    tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo.ToString("N")).FontColor("#FF0000").FontSize(12);
                                 }
                                 else
                                 {
@@ -1416,7 +1416,7 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(100);
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
@@ -1456,13 +1456,13 @@ namespace Prueba.Services
                                             .Padding(5).Text(subcuenta.First().Descricion).FontSize(10);
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text((item.Monto / item.ValorDolar ).ToString("N2")).FontSize(10);
+                                            .Padding(5).Text((item.Monto / item.ValorDolar ).ToString("N")).FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(item.ValorDolar.ToString()).FontSize(10);
+                                            .Padding(5).Text(item.ValorDolar.ToString("N")).FontSize(10);
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(item.Monto.ToString()).FontSize(10);
+                                            .Padding(5).Text(item.Monto.ToString("N")).FontSize(10);
                                         }
                                     }
                                 }
@@ -1502,7 +1502,7 @@ namespace Prueba.Services
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text((provisiones.ValorDolar * provisiones.Monto)
-                                            .ToString("N2")).FontSize(10);
+                                            .ToString("N")).FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(provisiones.ValorDolar.ToString("N"))

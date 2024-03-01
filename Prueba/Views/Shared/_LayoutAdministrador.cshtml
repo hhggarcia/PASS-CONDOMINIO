@@ -117,15 +117,15 @@
                 </a>
                 </li>*@
 
-               
+
                 <!-- Pagos -->
                 @* <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       asp-controller="PagosEmitidos" asp-action="Index"
-                       aria-expanded="true">
-                        <i class="fas fa-fw fa-dollar-sign"></i>
-                        <span>Pagar</span>
-                    </a>
+                <a class="nav-link collapsed"
+                asp-controller="PagosEmitidos" asp-action="Index"
+                aria-expanded="true">
+                <i class="fas fa-fw fa-dollar-sign"></i>
+                <span>Pagar</span>
+                </a>
                 </li> *@
                 <!-- Cuotas Especiales -->
                 <li class="nav-item">
@@ -138,49 +138,95 @@
                 </li>
                 <!-- Cobros -->
                 @* <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       asp-controller="Administrador" asp-action="PagosRecibidos"
-                       aria-expanded="true">
-                        <i class="fas fa-fw fa-dollar-sign"></i>
-                        <span>Cobrar</span>
-                    </a>
+                <a class="nav-link collapsed"
+                asp-controller="Administrador" asp-action="PagosRecibidos"
+                aria-expanded="true">
+                <i class="fas fa-fw fa-dollar-sign"></i>
+                <span>Cobrar</span>
+                </a>
                 </li> *@
-
-                <!-- gestion de administracion -->
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        href="#"
                        data-toggle="collapse"
-                       data-target="#collapseAdministracion"
+                       data-target="#collapseCompras"
                        aria-expanded="true"
-                       aria-controls="collapseAdministracion">
+                       aria-controls="collapseCompras">
                         <i class="fas fa-fw fa-folder"></i>
-                        <span>Administración</span>
+                        <span>Compras</span>
                     </a>
-                    <div id="collapseAdministracion"
+                    <div id="collapseCompras"
                          class="collapse"
                          aria-labelledby="headingPages"
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Gestión Administrativa:</h6>
-                            <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="Index">Pagar</a>
+                            <h6 class="collapse-header">Compras:</h6>
+                            <a class="collapse-item" asp-controller="Facturas" asp-action="Index">Facturas de Compras</a>
+                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a>
+                            <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
+                            <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="Index">Pagos</a>
+                            <a class="collapse-item" asp-controller="Anticipos" asp-action="Index">Anticipos</a>
+                            <a class="collapse-item" asp-controller="" asp-action="">Retenciones IVA e ISLR</a>
+                            <a class="collapse-item" asp-controller="LibroCompras" asp-action="Index">Libro de Compras</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       href="#"
+                       data-toggle="collapse"
+                       data-target="#collapseVentas"
+                       aria-expanded="true"
+                       aria-controls="collapseVentas">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Ventas</span>
+                    </a>
+                    <div id="collapseVentas"
+                         class="collapse"
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Ventas:</h6>
+                            <a class="collapse-item" asp-controller="FacturaEmitidas" asp-action="Index">Facturas de Ventas</a>
+                            <a class="collapse-item" asp-controller="Clientes" asp-action="Index">Clientes</a>
+                            <a class="collapse-item" asp-controller="Productos" asp-action="Index">Productos y Servicios</a>
+                            <a class="collapse-item" asp-controller="CuentasCobrar" asp-action="Index">Cuentas por Cobrar</a>
+                            <a class="collapse-item" asp-controller="LibroVentas" asp-action="Index">Libro de Ventas</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       href="#"
+                       data-toggle="collapse"
+                       data-target="#collapseCond"
+                       aria-expanded="true"
+                       aria-controls="collapseCond">
+                        <i class="fas fa-fw bi bi-building"></i>
+                        <span>Condominio</span>
+                    </a>
+                    <div id="collapseCond"
+                         class="collapse"
+                         aria-labelledby="headingPages"
+                         data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Condominio:</h6>
                             <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Pagos Recibidos</a>
                             <a class="collapse-item" asp-controller="RelacionGastos" asp-action="Index">Generar Recibos de Cobro</a>
                             <a class="collapse-item" asp-controller="Propiedades" asp-action="Index">Propiedades</a>
-                            <a class="collapse-item" asp-controller="Productos" asp-action="Index">Productos y Servicios</a>
-                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a>
                             <a class="collapse-item" asp-controller="GrupoGastos" asp-action="Index">Grupos de Gastos</a>
-                            <a class="collapse-item" asp-controller="Anticipos" asp-action="Index">Anticipos</a>
-                            <a class="collapse-item" asp-controller="Empleados" asp-action="Index">Nómina</a>
-                            <a class="collapse-item" asp-controller="Facturas" asp-action="Index">Facturas de Compras</a>
-                            <a class="collapse-item" asp-controller="FacturaEmitidas" asp-action="Index">Facturas de Ventas</a>                            
-                            <a class="collapse-item" asp-controller="CuentasCobrar" asp-action="Index">Cuentas por Cobrar</a>
-                            <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
-                            <a class="collapse-item" asp-controller="LibroCompras" asp-action="Index">Libro de Compras</a>
-                            <a class="collapse-item" asp-controller="LibroVentas" asp-action="Index">Libro de Ventas</a>
-                            
                         </div>
                     </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       asp-controller="Empleados" asp-action="Index"
+                       aria-expanded="true">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span>Nómina</span>
+                    </a>
                 </li>
                 <!-- gestion de contabilidad -->
                 <li class="nav-item">
@@ -200,7 +246,6 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Gestión Contable:</h6>
                             <a class="collapse-item" asp-controller="CodigoCuentasGlobals" asp-action="Index">Plan de Cuentas</a>
-                            @* <a class="collapse-item" asp-controller="RelacionGastos" asp-action="Index">Relación de gastos</a> *@
                             <a class="collapse-item" asp-controller="LdiarioGlobals" asp-action="Index">Libro Diario</a>
                             <a class="collapse-item" asp-controller="Ivas" asp-action="Index">IVA</a>
                             <a class="collapse-item" asp-controller="Islrs" asp-action="Index">ISLR</a>
@@ -210,25 +255,25 @@
                 </li>
 
                 <!-- Estacionamiento -->
-               @* <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       asp-action="Index"
-                       asp-controller="Estacionamientos"
-                       aria-expanded="true">
-                        <i class="fas fa-fw fa-folder"></i>
-                        <span>Estacionamiento</span>
-                    </a>
+                @* <li class="nav-item">
+                <a class="nav-link collapsed"
+                asp-action="Index"
+                asp-controller="Estacionamientos"
+                aria-expanded="true">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Estacionamiento</span>
+                </a>
                 </li>*@
 
                 <!-- Monedas -->
-               @* <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       asp-action="Index"
-                       asp-controller="MonedaConds"
-                       aria-expanded="true">
-                        <i class="fas fa-fw fa-folder"></i>
-                        <span>Monedas</span>
-                    </a>
+                @* <li class="nav-item">
+                <a class="nav-link collapsed"
+                asp-action="Index"
+                asp-controller="MonedaConds"
+                aria-expanded="true">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>Monedas</span>
+                </a>
                 </li>*@
 
                 <!-- reportes -->
@@ -273,11 +318,11 @@
                             <h6 class="collapse-header">Configuración</h6>
                             <a class="collapse-item" asp-action="Index"
                                asp-controller="MonedaConds">Monedas</a>
-                               <a class="collapse-item" asp-action="Index"
+                            <a class="collapse-item" asp-action="Index"
                                asp-controller="MonedaCuentas">Cuentas</a>
                             @* <a class="collapse-item" asp-action="Index"
-                               asp-controller="Estacionamientos">Estacionamiento</a>
- *@
+                            asp-controller="Estacionamientos">Estacionamiento</a>
+                            *@
                         </div>
                     </div>
                 </li>
