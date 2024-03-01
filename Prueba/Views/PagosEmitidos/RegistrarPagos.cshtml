@@ -135,6 +135,7 @@
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
                                             <span asp-validation-for="Monto" class="text-danger"></span>
+                                            <span id="validatonMonto"class="text-danger"></span>
                                             <div class="position-relative">
                                                 <input type="text"
                                                        class="form-control"
@@ -233,7 +234,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                
                                     <div class="col-md-12 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Método de Pago</label>
@@ -338,7 +339,16 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" asp-for="retenciones" /> Aplicar las retenciones
+                                            </label>
+                                      @*       <div class="form-group form-check">
+                                              
+                                            </div> *@
+                                        </div>
+                                    </div>
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit"
                                                 class="btn btn-primary me-1 mb-1">
@@ -454,20 +464,24 @@
             });
             $('#montoInput').on('input', function () {
                 var montoInput = parseFloat($(this).val());
+                var montoTotal = montoInput + montoAnticipo;
 
-                if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
-                    // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
-                    alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                    $(this).val(montoFacturaOriginal);
-                }
-                if (montoFacturaOriginal < montoInput) {
-                    alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
+                //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
+                //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                //     $(this).val(montoFacturaOriginal);
+                // }
+                if (montoFacturaOriginal < montoTotal) {
+                    $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                    // alert('El monto ingresado no puede ser mayor al monto de la factura.');
                     if (montoAnticipo != 0 && selectOptionAnticipo){
                         var precioTotal = montoFacturaOriginal - montoAnticipo;
                         $('#montoInput').val(precioTotal);
                     }else{
                         $(this).val(montoFacturaOriginal);
                     }
+                }else{
+                    $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
                 }
                 // if (montoAnticipo != 0 && montoInput != montoAnticipo){
                 //     alert('El monto ingresado no puede ser diferente al del anticipo.');
@@ -524,12 +538,15 @@
                     var precioSeleccionado = selectedAnticipo.precio;
                     montoAnticipo = precioSeleccionado;
                     if (montoAnticipo > montoFacturaOriginal) {
-                        alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                        $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                        // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
                         $('#montoInput').val(montoFacturaOriginal);
                         $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
                     }else{
                         var precioTotal = montoFacturaOriginal - montoAnticipo;
                         $('#montoInput').val(precioTotal);
+                        $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+
                     }
                     // $('#montoInput').prop('disabled', true);
                 } 

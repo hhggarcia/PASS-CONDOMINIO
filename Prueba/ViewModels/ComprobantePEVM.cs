@@ -19,6 +19,6 @@ namespace Prueba.ViewModels
         public Factura Factura { get; set; }
 
         public Anticipo? Anticipo { get; set; }
-
+        public string Beneficiario { get; set; }
     }
 }

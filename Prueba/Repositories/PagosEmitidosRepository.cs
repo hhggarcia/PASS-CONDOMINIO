@@ -225,36 +225,15 @@ namespace Prueba.Repositories
 
                     if (factura.Abonado == 0)
                     {
-                        if (pago.MontoRef == (factura.Subtotal + factura.Iva))
-                        {
-                            factura.Abonado = pago.MontoRef;
-                            factura.Pagada = true;
-                            factura.EnProceso = false;
-                            //factura.MontoTotal = 0;
-                        }
-                        else if (pago.MontoRef < (factura.Subtotal + factura.Iva))
-                        {
-                            factura.Abonado = pago.MontoRef + factura.Abonado;
-                            factura.Pagada = false;
-                            factura.EnProceso = true;
-                        }
+                        factura.Abonado = pago.MontoRef;
                     }
                     else
                     {
                         var montototal = factura.Abonado + pago.MontoRef;
-                        if (montototal == (factura.Subtotal + factura.Iva))
-                        {
-                            factura.Abonado = montototal;
-                            factura.Pagada = true;
-                            factura.EnProceso = false;
-                        }
-                        else if (montototal < (factura.Subtotal + factura.Iva))
-                        {
-                            factura.Abonado = pago.MontoRef + factura.Abonado;
-                            factura.Pagada = false;
-                            factura.EnProceso = true;
-                        }
+                        factura.Abonado = montototal;
                     }
+                    factura.Pagada = true;
+                    factura.EnProceso = false;
 
                     using (var _dbContext = new NuevaAppContext())
                     {

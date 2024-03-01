@@ -314,6 +314,7 @@ namespace Prueba.Controllers
 
                     //if (ModelState.IsValid)
                     //{
+
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
@@ -383,6 +384,11 @@ namespace Prueba.Controllers
                             var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                             comprobante.Anticipo = anticipo;
                         }
+                        //var proovedores = from p in _context.Proveedors
+                        //                  where p.IdCondominio == modelo.IdCondominio
+                        //                  select p;
+                        //var proveedor =  await proovedores.ToListAsync();
+                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).Select(c => c.Nombre).FirstAsync();
                         comprobante.Factura = factura;
                         comprobante.Islr = modelo.RetIslr;
                         comprobante.Iva = modelo.RetIva;
@@ -392,6 +398,7 @@ namespace Prueba.Controllers
                         comprobante.Pago.MontoRef = modelo.MontoRef;
                         comprobante.Pago.SimboloRef = modelo.SimboloRef;
                         comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
+                        comprobante.Beneficiario = proveedor;
                         foreach(var item in condominio.MonedaConds)
                         {
                             comprobante.ValorDolar = item.ValorDolar;
@@ -493,7 +500,7 @@ namespace Prueba.Controllers
             {
                 factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
             }
-            //Console.WriteLine(itemLibroCompra.RetIva + " " + itemLibroCompra.RetIslr);
+            
 
             var facturaMonto = new
             {

@@ -181,10 +181,7 @@ namespace Prueba.Services
                     .AlignRight()
                     .Text(txt =>
                     {
-                        txt.Span("Pagina ").FontSize(10);
-                        txt.CurrentPageNumber().FontSize(10);
-                        txt.Span(" de ").FontSize(10);
-                        txt.TotalPages().FontSize(10);
+                        txt.Span("Software desarrollado por: Password Tecnology");
                     });
                 });
             }).GeneratePdf();
@@ -295,8 +292,7 @@ namespace Prueba.Services
                         .AlignCenter()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -411,11 +407,10 @@ namespace Prueba.Services
                         });
 
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -431,7 +426,7 @@ namespace Prueba.Services
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(1, Unit.Centimetre);
-                    page.Header().AlignCenter().Text("Junta de Condominio Residencias Parque Humbolt").Bold().FontSize(20).FontColor("#004581");
+                    page.Header().AlignCenter().Text("Junta de Condominio " +detalleReciboVM.condominio.Nombre).Bold().FontSize(20).FontColor("#004581");
 
                     page.Content()
                         .Column(x =>
@@ -447,12 +442,12 @@ namespace Prueba.Services
                                 });
                                 row.RelativeItem().Padding(10,0).Column(col =>
                                 {
-                                    var propiedad = detalleReciboVM.Propiedad.Codigo;
-                                    var torrePiso = propiedad.Split("-");
-                                    col.Item().Text("Torre: " + torrePiso[0].Trim()).FontSize(12).Bold();
-                                    col.Item().Text("Piso: " + torrePiso[1].Trim()).FontSize(12).Bold();
-                                    col.Item().Text("Partamento: " + propiedad).FontSize(12).Bold();
-                                    col.Item().Text("Propietario: " + detalleReciboVM.Propietario.FirstName + " " + detalleReciboVM.Propietario.LastName).FontSize(12).Bold();
+                                    //var propiedad = detalleReciboVM.Propiedad.Codigo;
+                                    //var torrePiso = propiedad.Split("-");
+                                    //col.Item().Text("Torre: " + torrePiso[0].Trim()).FontSize(12).Bold();
+                                    //col.Item().Text("Piso: " + torrePiso[1].Trim()).FontSize(12).Bold();
+                                    //col.Item().Text("Partamento: " + propiedad).FontSize(12).Bold();
+                                    //col.Item().Text("Propietario: " + detalleReciboVM.Propietario.FirstName + " " + detalleReciboVM.Propietario.LastName).FontSize(12).Bold();
                                 });
                                 row.RelativeItem().Padding(10, 0).Column(col =>
                                 {
@@ -724,24 +719,19 @@ namespace Prueba.Services
                             });
                             x.Item().Column(c =>
                             {
-                                c.Item().AlignCenter().Text("Elaborado por Junta de Condominio Res Parque Humbolt").FontSize(8);
-                                c.Item().AlignCenter().Text("Realizar los pagos por Transferencias a la cuenta").FontSize(10);
-                                c.Item().AlignCenter().Text("BANCO MERCANTIL").FontSize(10).Bold();
-                                c.Item().AlignCenter().Text("Junta de Condominio Residencias Parque Humbolt").FontSize(10).Bold();
-                                c.Item().AlignCenter().Text("Rif J-30720421-4").FontSize(10).Bold();
-                                c.Item().AlignCenter().Text("Cta. Cte. 0105-0021-46802103-9647").FontSize(10).Bold();
-                                c.Item().AlignCenter().Text("Enviar al correo: adm.parque.humboldt@gmail.com").FontSize(12).Bold().FontColor("#FF0000");
-                                c.Item().AlignCenter().Text("Favor indicar número de Apartamento").FontSize(12).Bold().FontColor("#FF0000");
+                                c.Item().AlignCenter().Text("Elaborado por Junta de Condominio " + detalleReciboVM.condominio.Nombre).FontSize(8);
+                                c.Item().AlignCenter().Text("Junta de Condominio " + detalleReciboVM.condominio.Nombre).FontSize(10).Bold();
+                                c.Item().AlignCenter().Text("Rif "+ detalleReciboVM.condominio.Rif).FontSize(10).Bold();
+                                c.Item().AlignCenter().Text("Enviar al correo: " + detalleReciboVM.condominio.Email).FontSize(12).Bold().FontColor("#FF0000");
                             });
 
 
                         });
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -847,11 +837,10 @@ namespace Prueba.Services
                         });
 
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -937,11 +926,10 @@ namespace Prueba.Services
                             });
                         });
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -961,6 +949,13 @@ namespace Prueba.Services
                         row.RelativeItem().Padding(15).Column(col =>
                         {
                             col.Item().Image("wwwroot/images/logo-1.png");
+                            col.Item().PaddingTop(10).Text("Fecha: " + DateTime.Today.ToString("MM/yyyy")).Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text("FACTURA: "+ comprobanteVM.Factura.NumControl).Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text("Beneficiario").Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text(comprobanteVM.Beneficiario).Bold().FontSize(14).FontColor("#004581");
+                            col.Item().Text("Concepto").Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text(comprobanteVM.Concepto).Bold().FontSize(14).FontColor("#004581");
+
                         });
                         row.RelativeItem().Padding(15).Column(col =>
                         {
@@ -980,53 +975,134 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    //columns.RelativeColumn();
+                                    columns.ConstantColumn(50);
+                                    columns.ConstantColumn(50);
+                                    columns.ConstantColumn(50);
                                 });
-                                tabla.Header(header =>
+                          
+                                tabla.Cell()
+                               .Padding(5).Text("BASE");
+                                tabla.Cell().Padding(5).Text("");
+                                
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Islr).ToString()).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("IVA");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text(""); 
+                                
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Iva).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("TOTAL");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto+ comprobanteVM.Iva + comprobanteVM.Islr).ToString()).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("TOTAL A PAGAR").FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                               
+                                tabla.Cell().Padding(5).Text("Retención ISLR Decreto 1808 Art.9 numeral 2%").FontSize(12);
+                                
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString()).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("Total a pagar ").FontSize(12);
+                               
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                
+                                tabla.Cell().Padding(5).Text((comprobanteVM.Pago.Monto + comprobanteVM.Iva).ToString()).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("ANTICIPO").FontSize(12).FontColor("#FF0000");
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                if (comprobanteVM.Anticipo != null)
                                 {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("FECHA DEL PAGO").Bold().FontSize(10);
+                                    tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000").FontSize(12);
+                                }
+                                else
+                                {
+                                    tabla.Cell().Padding(5).Text("0").FontColor("#FF0000").FontSize(12);
+                                }
+                            
 
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("DINERO RECIBIDO").Bold().FontSize(10);
 
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("TASA DE CAMBIO").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("EQUIVALENTE EN DOLARES").Bold().FontSize(10);
-
-                                   // header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   //.Padding(5).Text("DIFERENCIA").Bold().FontSize(10);
-                                });
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text(comprobanteVM.ValorDolar.ToString("N2") + " Bs").FontSize(8);
-
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text((comprobanteVM.Pago.Monto / comprobanteVM.ValorDolar).ToString("N2")+ " $").FontSize(8);
-
-                                //tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                //.Padding(5).Text(comprobanteVM.Pago.Monto.ToString("N2") + " Bs").FontSize(8);
- 
                             });
+                            x.Item().PaddingTop(20).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
 
+
+                                table.Cell().Padding(5).Text("Elaborado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("Revisado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("KARINA LOPEX");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("ROBERTO VILLAGRAS");
+                                table.Cell().Padding(5).Text("MASSIMO RUGGIERO");
+
+
+
+                            });
                         });
 
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -1138,11 +1214,10 @@ namespace Prueba.Services
                             });
                         });
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -1292,11 +1367,10 @@ namespace Prueba.Services
 
                         });
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -1312,11 +1386,14 @@ namespace Prueba.Services
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(1, Unit.Centimetre);
+                    page.Header().AlignCenter().Text("Junta de Condominio" + relacionDeGastos.Condominio.Nombre).Bold().FontSize(20).FontColor("#004581");
+
                     page.Header().ShowOnce().Row(row =>
                     {
                         row.RelativeItem().Column(col =>
                         {
                             col.Item().Text("Relación Gastos").Bold().FontSize(20).FontColor("#004581").Bold();
+
                         });
                         row.RelativeItem().Column(col =>
                         {
@@ -1330,8 +1407,8 @@ namespace Prueba.Services
                         {
 
                             x.Spacing(10);
-                            x.Item().AlignCenter().Text("RESIDENCIAS PARQUE HUMBOLDT").FontSize(12);
-                            x.Item().AlignCenter().Text("j-30720421-4").FontSize(12);
+                            x.Item().AlignCenter().Text(relacionDeGastos.Condominio.Nombre).FontSize(12);
+                            x.Item().AlignCenter().Text(relacionDeGastos.Condominio.Rif).FontSize(12);
                             x.Item().AlignCenter().Text("RECIBO DE COBRO MES:" + DateTime.Today.ToString("MM/yyyy")).FontSize(12);
 
                             x.Item().AlignCenter().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
@@ -1342,20 +1419,24 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
+                                    columns.RelativeColumn();
                                 });
                                 tabla.Header(header =>
                                 {
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
+                                    .Padding(5).Text("Fecha").Bold().FontSize(10);    
+                                    
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Descripción").Bold().FontSize(10);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Usd").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Monto").Bold().FontSize(10);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Tasa").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Tasa de Cambio").Bold().FontSize(10);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Bs").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Monto Referencia").Bold().FontSize(10);
                                 });
                                 if((relacionDeGastos.SubcuentasGastos != null && relacionDeGastos.SubcuentasGastos.Any())
                                   && (relacionDeGastos.GastosDiario != null && relacionDeGastos.GastosDiario.Any())
@@ -1369,35 +1450,38 @@ namespace Prueba.Services
                                             var subcuenta = relacionDeGastos.SubcuentasGastos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(subcuenta.First().Descricion).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text(item.Fecha.ToString("dd/MM/yyyy")).FontSize(10);
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text((item.Monto / item.ValorDolar ).ToString("N2")).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text(subcuenta.First().Descricion).FontSize(10);
+                                            
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                            .Padding(5).Text((item.Monto / item.ValorDolar ).ToString("N2")).FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(item.ValorDolar.ToString()).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text(item.ValorDolar.ToString()).FontSize(10);
                                             
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(item.Monto.ToString()).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text(item.Monto.ToString()).FontSize(10);
                                         }
                                     }
                                 }
                                 else
                                 {
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("No").FontSize(10).FontColor("#607080"); 
+                                    .Padding(5).Text("No").FontSize(10); 
                                     
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("hay").FontSize(10).FontColor("#607080"); 
+                                    .Padding(5).Text("hay").FontSize(10); 
                                     
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("Gastos").FontSize(10).FontColor("#607080");
+                                    .Padding(5).Text("Gastos").FontSize(10);
 
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                    .Padding(5).Text("").FontSize(10);
 
                                     tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                    .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                    .Padding(5).Text("").FontSize(10);
                                 }
                                 if (relacionDeGastos.Provisiones != null && relacionDeGastos.Provisiones.Any()
                                 && relacionDeGastos.SubCuentasProvisiones != null && relacionDeGastos.SubCuentasProvisiones.Any()
@@ -1411,33 +1495,39 @@ namespace Prueba.Services
                                             var subcuenta = relacionDeGastos.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(subcuenta.First().Descricion).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text("").FontSize(10);
+                                            
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                            .Padding(5).Text(subcuenta.First().Descricion).FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text((provisiones.ValorDolar * provisiones.Monto)
-                                            .ToString("N2")).FontSize(10).FontColor("#607080");
+                                            .ToString("N2")).FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text(provisiones.ValorDolar.ToString("N"))
-                                            .FontSize(10).FontColor("#607080");
+                                            .FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text(provisiones.Monto.ToString()).FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text(provisiones.Monto.ToString()).FontSize(10);
                                         }
                                     }
                                 }
-                          
-                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("SUBTOTAL").FontSize(10).FontColor("#607080");
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                             .Padding(5).Text("").FontSize(10);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                .Padding(5).Text("SUBTOTAL").FontSize(10);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text(relacionDeGastos.SubTotal.ToString("N")).FontSize(10).FontColor("#607080");
+                                .Padding(5).Text("").FontSize(10);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                               .Padding(5).Text("").FontSize(10);
+
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                               .Padding(5).Text(relacionDeGastos.SubTotal.ToString("N")).FontSize(10);
 
                                 if (relacionDeGastos.Fondos != null && relacionDeGastos.Fondos.Any()
                               && relacionDeGastos.SubCuentasFondos != null && relacionDeGastos.SubCuentasFondos.Any()
@@ -1449,42 +1539,53 @@ namespace Prueba.Services
                                         if (idcc != null && idcc.Any())
                                         {
                                             var subcuenta = relacionDeGastos.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
-                                           
-                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text($"{subcuenta.First().Descricion} - {fondo.Porcentaje}%").FontSize(10).FontColor("#607080");
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                             .Padding(5).Text("").FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                            .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                            .Padding(5).Text($"{subcuenta.First().Descricion} - {fondo.Porcentaje}%").FontSize(10);
+
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                            .Padding(5).Text("").FontSize(10);
+
+                                            tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                            .Padding(5).Text("").FontSize(10);
 
                                             tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
                                             .Padding(5).Text((relacionDeGastos.SubTotal * fondo.Porcentaje / 100)
-                                            .ToString("N")).FontSize(10).FontColor("#607080");
+                                            .ToString("N")).FontSize(10);
                                         }
                                     }
                                 }
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                                .Padding(5).Text("Total gasto del mes").FontSize(10).FontColor("#607080");
+                          .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                                tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
+                                .Padding(5).Text("Total gasto del mes").FontSize(10);
 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text("").FontSize(10).FontColor("#607080");
+                               .Padding(5).Text("").FontSize(10);
                                 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text("").FontSize(10).FontColor("#607080");   
+                               .Padding(5).Text("").FontSize(10);   
                                 
                                 tabla.Cell().BorderRight(0.5f).BorderColor("#D9D9D9")
-                               .Padding(5).Text(relacionDeGastos.Total.ToString("N")).FontSize(10).FontColor("#607080");
+                               .Padding(5).Text(relacionDeGastos.Total.ToString("N")).FontSize(10);
                             });
-
+                            x.Item().Column(c =>
+                            {
+                                c.Item().AlignCenter().Text("Elaborado por Junta de Condominio " + relacionDeGastos.Condominio.Nombre).FontSize(8);
+                                c.Item().AlignCenter().Text("Junta de Condominio " + relacionDeGastos.Condominio.Nombre).FontSize(10).Bold();
+                                c.Item().AlignCenter().Text("Rif " + relacionDeGastos.Condominio.Rif).FontSize(10).Bold();
+                                c.Item().AlignCenter().Text("Enviar al correo: " + relacionDeGastos.Condominio.Email).FontSize(12).Bold().FontColor("#FF0000");
+                            });
                         });
+
                     page.Footer()
-                        .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -1710,11 +1811,10 @@ namespace Prueba.Services
 
                         });
                     page.Footer()
-                    .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })
@@ -1890,11 +1990,10 @@ namespace Prueba.Services
 
                         });
                     page.Footer()
-                    .AlignCenter()
+                        .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
+                            x.Span("Software desarrollado por: Password Tecnology");
                         });
                 });
             })

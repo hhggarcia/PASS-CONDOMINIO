@@ -28,6 +28,7 @@ namespace Prueba.ViewModels
         public DateTime Fecha { get; set; }
         // INFO DE CONDOMINIO
         public Condominio? Condominio { get; set; }
+        public int? IdDetail { get; set; }
         //public IList<ReferenciaDolar>? ReferenciasDolar { get; set; }
 
     }

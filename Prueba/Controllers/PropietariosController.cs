@@ -583,7 +583,7 @@ namespace Prueba.Controllers
                         modelo.Add(item, listaRecibosPorPropiedad);
                     }
                 }
-
+                
                 TempData.Keep();
 
                 return View(modelo);
@@ -638,6 +638,7 @@ namespace Prueba.Controllers
                 }
                 modelo.CuotasRecibosCobros.Add(cuotasRecibosCobros);
             }
+            modelo.IdDetalleRecibo = id;
             return View(modelo);
         }
 
@@ -722,6 +723,38 @@ namespace Prueba.Controllers
             var data = _servicePDF.HistorialPDF(modelo);
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Historial.pdf");
+        }
+        [HttpGet]
+         async public Task<IActionResult> DetallePdf(int id)
+        {
+         
+                var modelo = await _repoRelacionGasto.DetalleRecibo(id);
+                var listaCuotas = await _context.CuotasEspeciales.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).ToListAsync();
+                var listaRecibos = await _context.ReciboCuotas.Where(c => c.IdPropiedad == modelo.Propiedad.IdPropiedad).ToListAsync();
+                var condominio = await _context.Condominios.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).FirstAsync();
+
+                foreach (var cuotas in listaCuotas)
+                    {
+                        CuotasRecibosCobrosVM cuotasRecibosCobros = new CuotasRecibosCobrosVM()
+                        {
+                            CuotasEspeciale = cuotas,
+                        };
+                        foreach (var recibos in listaRecibos)
+                        {
+                            if (recibos.IdPropiedad == modelo.Propiedad.IdPropiedad)
+                            {
+                                cuotasRecibosCobros.ReciboCuota = recibos;
+                            }
+                        }
+                    modelo.CuotasRecibosCobros.Add(cuotasRecibosCobros);
+                }
+                modelo.condominio = condominio;
+
+                var data = _servicePDF.DetalleReciboPDF(modelo);
+                var base64 = Convert.ToBase64String(data);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "DetalleRecibo.pdf");
+          
         }
         [HttpPost]
         public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
