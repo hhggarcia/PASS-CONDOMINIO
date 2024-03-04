@@ -1,0 +1,96 @@
+﻿@model Prueba.Models.Transaccion
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Transacciones
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="TipoTransaccion" /> @Html.DisplayNameFor(model => model.TipoTransaccion)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdPropiedad" class="control-label"></label>
+                            <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdCodCuenta" class="control-label"></label>
+                            <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Descripcion" class="control-label"></label>
+                            <input asp-for="Descripcion" class="form-control" />
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdProveedor" class="control-label"></label>
+                            <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Documento" class="control-label"></label>
+                            <input asp-for="Documento" class="form-control" />
+                            <span asp-validation-for="Documento" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoTotal" class="control-label"></label>
+                            <input asp-for="MontoTotal" class="form-control" />
+                            <span asp-validation-for="MontoTotal" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Cancelado" class="control-label"></label>
+                            <input asp-for="Cancelado" class="form-control" />
+                            <span asp-validation-for="Cancelado" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="FormaPago" /> @Html.DisplayNameFor(model => model.FormaPago)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdCodCuentaBanco" class="control-label"></label>
+                            <select asp-for="IdCodCuentaBanco" class="form-control" asp-items="ViewBag.IdCodCuentaBanco"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NumDocumento" class="control-label"></label>
+                            <input asp-for="NumDocumento" class="form-control" />
+                            <span asp-validation-for="NumDocumento" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdGrupoGasto" class="control-label"></label>
+                            <select asp-for="IdGrupoGasto" class="form-control" asp-items="ViewBag.IdGrupoGasto"></select>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

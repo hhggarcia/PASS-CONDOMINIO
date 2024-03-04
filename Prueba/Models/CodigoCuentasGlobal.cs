@@ -27,6 +27,8 @@ public partial class CodigoCuentasGlobal
 
     public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
 
+    public virtual ICollection<FacturaEmitida> FacturaEmitida { get; set; } = new List<FacturaEmitida>();
+
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
     public virtual ICollection<Fondo> Fondos { get; set; } = new List<Fondo>();
@@ -48,4 +50,8 @@ public partial class CodigoCuentasGlobal
     public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; set; } = new List<Provision>();
 
     public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; set; } = new List<Provision>();
+
+    public virtual ICollection<Transaccion> TransaccionIdCodCuentaBancoNavigations { get; set; } = new List<Transaccion>();
+
+    public virtual ICollection<Transaccion> TransaccionIdCodCuentaNavigations { get; set; } = new List<Transaccion>();
 }

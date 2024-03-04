@@ -25,6 +25,10 @@ public partial class Propiedad
 
     public decimal MontoIntereses { get; set; }
 
+    public decimal? MontoMulta { get; set; }
+
+    public decimal? Creditos { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual AspNetUser IdUsuarioNavigation { get; set; } = null!;
@@ -38,4 +42,6 @@ public partial class Propiedad
     public virtual ICollection<ReciboCuota> ReciboCuota { get; set; } = new List<ReciboCuota>();
 
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
+
+    public virtual ICollection<Transaccion> Transaccions { get; set; } = new List<Transaccion>();
 }

@@ -23,6 +23,8 @@ public partial class Condominio
 
     public bool? ContribuyenteEspecial { get; set; }
 
+    public decimal? Multa { get; set; }
+
     public virtual ICollection<BalanceComprobacion> BalanceComprobacions { get; set; } = new List<BalanceComprobacion>();
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();

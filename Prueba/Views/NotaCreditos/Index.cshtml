@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Prueba.Models.NotaCredito>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Concepto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comprobante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdClienteNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Concepto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comprobante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Monto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdNotaCredito">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdNotaCredito">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdNotaCredito">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
