@@ -29,6 +29,8 @@ public partial class PagoRecibido
 
     public string SimboloRef { get; set; } = null!;
 
+    public byte[]? Imagen { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();

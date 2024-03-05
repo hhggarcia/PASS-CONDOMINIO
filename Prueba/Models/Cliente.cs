@@ -27,6 +27,8 @@ public partial class Cliente
 
     public bool ContribuyenteEspecial { get; set; }
 
+    public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
+
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
@@ -34,4 +36,6 @@ public partial class Cliente
     public virtual Islr IdRetencionIslrNavigation { get; set; } = null!;
 
     public virtual Iva IdRetencionIvaNavigation { get; set; } = null!;
+
+    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
 }

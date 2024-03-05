@@ -31,5 +31,7 @@ public partial class PagoEmitido
 
     public virtual ICollection<PagosNomina> PagosNominas { get; set; } = new List<PagosNomina>();
 
+    public virtual ICollection<PagosNotaDebito> PagosNotaDebitos { get; set; } = new List<PagosNotaDebito>();
+
     public virtual ICollection<ReferenciasPe> ReferenciasPes { get; set; } = new List<ReferenciasPe>();
 }

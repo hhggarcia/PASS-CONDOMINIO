@@ -31,13 +31,21 @@ public partial class FacturaEmitida
 
     public bool EnProceso { get; set; }
 
+    public int? IdCodCuenta { get; set; }
+
+    public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
+
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();
 
     public virtual ICollection<CuentasCobrar> CuentasCobrars { get; set; } = new List<CuentasCobrar>();
 
+    public virtual CodigoCuentasGlobal? IdCodCuentaNavigation { get; set; }
+
     public virtual Producto IdProductoNavigation { get; set; } = null!;
 
     public virtual ICollection<LibroVenta> LibroVenta { get; set; } = new List<LibroVenta>();
+
+    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();
 }

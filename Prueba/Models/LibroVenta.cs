@@ -54,6 +54,16 @@ public partial class LibroVenta
 
     public bool FormaPago { get; set; }
 
+    public decimal? TotalVentaIva { get; set; }
+
+    public decimal? VentaExenta { get; set; }
+
+    public decimal? VentaGravable { get; set; }
+
+    public decimal? IvaRetenido { get; set; }
+
+    public string? ComprobanteRetencion { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;

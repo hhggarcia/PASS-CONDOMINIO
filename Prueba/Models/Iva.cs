@@ -17,6 +17,8 @@ public partial class Iva
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
+    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
+
     public virtual ICollection<Producto> Productos { get; set; } = new List<Producto>();
 
     public virtual ICollection<Proveedor> Proveedors { get; set; } = new List<Proveedor>();
