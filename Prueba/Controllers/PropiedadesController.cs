@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -136,7 +137,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses")] Propiedad propiedad)
+        public async Task<IActionResult> Create([Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses,MontoMulta,Creditos")] Propiedad propiedad)
         {
             ModelState.Remove(nameof(propiedad.IdCondominioNavigation));
             ModelState.Remove(nameof(propiedad.IdUsuarioNavigation));
@@ -157,7 +158,7 @@ namespace Prueba.Controllers
 
                 TempData.Keep();
 
-                return RedirectToAction(nameof(Create), "PropiedadesGrupos");
+                return RedirectToAction(nameof(Grupos));
             }
             //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", propiedad.IdCondominio);
             ViewData["IdUsuario"] = new SelectList(_context.AspNetUsers, "Id", "Email", propiedad.IdUsuario);
@@ -165,6 +166,87 @@ namespace Prueba.Controllers
             TempData.Keep();
 
             return View(propiedad);
+        }
+
+
+        /// <summary>
+        /// ver los grupos a los que pertenece una propiedad
+        /// </summary>
+        /// <param name="id">Id de la propiedad</param>
+        /// <returns></returns>
+        public IActionResult VerGrupos(int id)
+        {
+            var gruposDePropiedad = from c in _context.GrupoGastos
+                                    join d in _context.PropiedadesGrupos
+                                    on c.IdGrupoGasto equals d.IdGrupoGasto
+                                    where d.IdPropiedad == id
+                                    select c;
+
+            TempData["IdPropiedad"] = id.ToString();
+
+            return View(gruposDePropiedad);
+        }
+
+        /// <summary>
+        /// Eliminar un grupo de una propiedad
+        /// </summary>
+        /// <param name="id">Id del grupo a eliminar</param>
+        /// <returns></returns>
+        public async Task<IActionResult> EliminarDeGrupo(int id)
+        {
+            var idPropiedad = Convert.ToInt32(TempData.Peek("IdPropiedad").ToString());
+
+            //var propiedadGrupo = from c in _context.PropiedadesGrupos
+            //                     where c.IdPropiedad == idPropiedad && c.IdGrupoGasto == id
+            //                     select c;
+
+            var propiedadGrupo = await _context.PropiedadesGrupos
+                .Include(p => p.IdGrupoGastoNavigation)
+                .Include(p => p.IdPropiedadNavigation)
+                .FirstOrDefaultAsync(m => m.IdPropiedad == idPropiedad && m.IdGrupoGasto == id);
+
+            if (propiedadGrupo == null)
+            {
+                return NotFound();
+            }
+
+            TempData.Keep();
+
+            return View(propiedadGrupo);
+        }
+
+
+
+        /// <summary>
+        /// Confirmacion
+        /// </summary>
+        /// <param name="id">Id de la relacion grupo gasto - propiedad</param>
+        /// <returns></returns>
+        [HttpPost, ActionName("EliminarDeGrupo")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarDeGrupoConfirmed(int id)
+        {
+            var idPropiedad = Convert.ToInt32(TempData.Peek("IdPropiedad").ToString());
+
+            //var propiedadGrupo = await _context.PropiedadesGrupos.FindAsync(id);
+            var propiedadGrupo = await _context.PropiedadesGrupos
+                .Include(p => p.IdGrupoGastoNavigation)
+                .Include(p => p.IdPropiedadNavigation)
+                .FirstOrDefaultAsync(m => m.IdPropiedad == idPropiedad && m.IdGrupoGasto == id);
+
+            if (propiedadGrupo == null)
+            {
+                return NotFound();
+            }
+            if (propiedadGrupo == null)
+            {
+                return NotFound();
+            }
+
+            _context.PropiedadesGrupos.Remove(propiedadGrupo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("VerGrupos", new { id = propiedadGrupo.IdPropiedad });
         }
 
         /// <summary>
@@ -176,10 +258,13 @@ namespace Prueba.Controllers
             var grupos = _context.GrupoGastos.ToList();
 
             var modelo = grupos.Select(grupo => 
-            new SelectListItem(
-                grupo.NombreGrupo,
-                grupo.IdGrupoGasto.ToString(),
-                false)
+            new PropiedadGruposVM
+            {
+                Text = grupo.NombreGrupo,
+                Value = grupo.IdGrupoGasto.ToString(),
+                Selected = false,
+                Alicuota = 0
+            }
             ).ToList();
 
             return View(modelo);
@@ -192,7 +277,7 @@ namespace Prueba.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AsignarGrupos(List<SelectListItem> model)
+        public async Task<IActionResult> AsignarGrupos(List<PropiedadGruposVM> model)
         {
             int idPropiedad = Convert.ToInt32(TempData.Peek("IDPropiedad").ToString());
 
@@ -208,7 +293,8 @@ namespace Prueba.Controllers
                 if (item.Selected)
                 {
                     // buscar grupo
-                    var grupo = await _context.GrupoGastos.FindAsync(item.Value);
+                    var aux = Convert.ToInt32(item.Value);
+                    var grupo = await _context.GrupoGastos.FindAsync(aux);
 
                     if (grupo == null)
                     {
@@ -219,7 +305,7 @@ namespace Prueba.Controllers
                     {
                         IdGrupoGasto = grupo.IdGrupoGasto,
                         IdPropiedad = propiedad.IdPropiedad,
-                        Alicuota = 0
+                        Alicuota = item.Alicuota
                     };
 
                     _context.PropiedadesGrupos.Add(propiedadGrupo);
@@ -256,7 +342,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses")] Propiedad propiedad)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses,MontoMulta,Creditos")] Propiedad propiedad)
         {
             if (id != propiedad.IdPropiedad)
             {
