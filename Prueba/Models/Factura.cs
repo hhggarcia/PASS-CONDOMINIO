@@ -33,6 +33,8 @@ public partial class Factura
 
     public int IdCodCuenta { get; set; }
 
+    public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
+
     public virtual ICollection<ComprobanteRetencion> ComprobanteRetencions { get; set; } = new List<ComprobanteRetencion>();
 
     public virtual ICollection<CuentasPagar> CuentasPagars { get; set; } = new List<CuentasPagar>();

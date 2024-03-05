@@ -3,6 +3,7 @@
 using MimeKit;
 using NetTopologySuite.Index.HPRtree;
 using NPOI.SS.Formula.Functions;
+using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Controllers;
 using Prueba.Models;
@@ -11,6 +12,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SQLitePCL;
+using System;
 using System.Text.RegularExpressions;
 
 namespace Prueba.Services
@@ -1821,11 +1823,6 @@ namespace Prueba.Services
           .GeneratePdf();
             return data;
         }
-
-        public void BalanceComprobacionPDF()
-        {
-
-        }
         
         public byte[] PagosEmitidosPDF(IndexPagosVM indexPagosVM)
         {
@@ -2079,13 +2076,13 @@ namespace Prueba.Services
                                 foreach (var item in listaRetencionesIVAVM)
                                 {
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(item.Comprobante).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(item.comprobanteRetencion.IdComprobante).FontColor("#607080").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Fecha).FontColor("#607080").FontSize(10);
+                                   .Padding(5).Text(item.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Proveedor).FontColor("#607080").FontSize(10);
+                                   .Padding(5).Text(item.comprobanteRetencion.IdProveedor.ToString()).FontColor("#607080").FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
@@ -2121,22 +2118,25 @@ namespace Prueba.Services
                                    .Padding(5).Text("Retenido").Underline().FontColor("Fecha").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Fecha).Underline().FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text(item.compRetIva.FechaEmision.ToString("dd/MM/yyyy")).Underline().FontColor("#607080").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.NumFactura).Underline().FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text(item.compRetIva.IdFactura.ToString("N")).Underline().FontColor("#607080").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Concepto).Underline().FontColor("#607080").Bold().FontSize(10); 
+                                   .Padding(5).Text(item.comprobanteRetencion.Descripcion).Underline().FontColor("#607080").Bold().FontSize(10); 
                                     
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Iva).Underline().FontColor("#607080").Bold().FontSize(10); 
+                                   .Padding(5).Text(item.compRetIva.TotalCompraRetIva.ToString("N")).Underline().FontColor("#607080").Bold().FontSize(10); 
                                     
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Retenciones).Underline().FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text(item.compRetIva.IvaRetenido.ToString("N")).Underline().FontColor("#607080").Bold().FontSize(10);                        
                                     
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text(item.Retenido).Underline().FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text(item.compRetIva.Alicuota.ToString()).Underline().FontColor("#607080").Bold().FontSize(10);
+                                    
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text(item.compRetIva.IvaRetenido.ToString("N")).Underline().FontColor("#607080").Bold().FontSize(10);
                                 }
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                  .Padding(5).Text("").Underline().FontColor("#607080").Bold().FontSize(10);
@@ -2157,7 +2157,7 @@ namespace Prueba.Services
                                .Padding(5).Text("").Underline().FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("Total").Underline().FontColor("Fecha").Bold().FontSize(10);
+                               .Padding(5).Text("").Underline().FontColor("Fecha").Bold().FontSize(10);
                            });
                         });
                     page.Footer()
@@ -2279,918 +2279,8 @@ namespace Prueba.Services
          .GeneratePdf();
             return data;
         }
-        public byte[] ComprobanteRetencionesIVA()
-        {
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.Header().ShowOnce().Row(row =>
-                    {
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
-                        });
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Image("wwwroot/images/logo-1.png");
-                        });
-                    });
 
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Item().AlignRight().Text("COMPROBANTE DE RETENCIÓN DEL IMPUESTO AL VALOR AGREGADO").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignCenter().Text("(Ley IVA - Art.11.\"Serán responsables del pago del Impuesto en canlidad de agente de retención)").FontSize(14).FontColor("#004581");
-                            x.Item().AlignCenter().Text("comprodaores o adqirientes de determinados bienes muebles y los receptores de ciertos servicios, a").FontSize(14).FontColor("#004581");
-                            x.Item().AlignCenter().Text("quienes la Administración Tributaria designe como tal.\"").FontSize(14).FontColor("#004581");
-                            x.Spacing(20);
-
-
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
-
-                                });
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                            });
-
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
-                                });
-
-                                //tabla.Header(header =>
-                                //{
-                                //    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                //    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                //    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                //   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
-
-                                //});
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("DATOS DEL AGENTE DE RETENCIÓN").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                            });
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text("DATOS DEL AGENTE RETENIDO").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                            });
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha Factura").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Factura").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Nota Crédito").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Tipo Trans.").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Factura Afectada").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Total Compras Incluyendo el I.V.A.").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Total Compras Incluyendo el I.V.A.").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Base imponible").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Alicuota").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Imp. I.V.A.").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("I.V.A Retenido").FontColor("#607080").Bold().FontSize(10);
-
-                                });
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                            });
-
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("Totales =>");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                            });
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("TOTAL COMPRAS MENOS I.V.A. RETENIDO =>");
-                                x.RelativeItem().Text("");
-                            });   
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("____________________________");
-                                x.RelativeItem().Text("CONDOMINIO "+" sdas");
-                            });
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("____________________________");
-                                x.RelativeItem().Text("Firma del Beneficiario");
-                            });
-                        });
-                       
-                        
-                    page.Footer()
-                        .AlignLeft()
-                        .Text(x =>
-                        {
-                           
-                            x.Span("Software desarrollado por: Password Tecnology");
-                        });
-                });
-            })
-         .GeneratePdf();
-            return data;
-        }
-        public byte[] ComprobanteRetencionesISLR(ComprobanteRetencionesISLRVM comprobante)
-        {
-
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Item().AlignRight().Text("Comprobante de Retención de Impuesto Sobre La Renta").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignRight().Text("Decreto Retenciones vigente N° 1.808, Gaceta Oficial 36.203 de fecha 12-05-1997").Bold().FontSize(18).FontColor("#004581");
-
-                            x.Spacing(20);
-
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
-
-                                });
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.NumComprobante.ToString()).FontColor("#607080").Bold().FontSize(10);
-                            });
-
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("DATOS DEL AGENTE DE RETENCIÓN").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Nombre o Razón Social" ).FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.Condominio.Nombre).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.Condominio.Direccion).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.Condominio.Rif).FontColor("#607080").Bold().FontSize(10);
-                            });
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text("DATOS DEL AGENTE RETENIDO").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.Proveedor.Nombre).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.Proveedor.Direccion).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.Proveedor.Rif).FontColor("#607080").Bold().FontSize(10);
-                            });
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha Emisión").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Factura").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Control").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Descripción Retención").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Monto Total").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Base Retención").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("% Retención").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Sustraendo").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Valor Retención").FontColor("#607080").Bold().FontSize(10);
-
-                                });
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.NumFactura).FontColor("#607080").FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.NumControl).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.Descripcion).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.TotalImpuesto).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.Retencion).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("3.00").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.Sustraendo).FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.ValorRetencion).FontColor("#607080").Bold().FontSize(10);
-                            });
-
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("Totales =>");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                            });
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("TOTAL DE IMPUESTO RETENIDO =>");
-                                x.RelativeItem().Text(comprobante.comprobanteRetencion.ValorRetencion);
-                            });   
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("____________________________");
-                                x.RelativeItem().Text("CONDOMINIO "+" sdas");
-                            });
-                            
-                            x.Item().Row(x =>
-                            {
-                                x.RelativeItem().Text("____________________________");
-                                x.RelativeItem().Text("Firma del Beneficiario");
-                            });
-                        });
-                       
-                        
-                    page.Footer()
-                        .AlignLeft()
-                        .Text(x =>
-                        {
-                            x.Span("Software desarrollado por: Password Tecnology");
-                        });
-                });
-            })
-         .GeneratePdf();
-            return data;
-        }
-        public byte[] LibroVentas(List<LibroVenta> libroVentas)
-        {
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.Header().ShowOnce().Row(row =>
-                    {
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
-                            col.Item().Text("Caracas").FontSize(16).FontColor("#004581");
-                            col.Item().Text("Venezuela").FontSize(16).FontColor("#004581");
-                        });
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("Fecha: "+ DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
-                        });
-                    });
-
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Item().AlignRight().Text("Libro de Ventas I.V.A").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
-
-                            x.Spacing(20);
-
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("N°").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("R.I.F.").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nombre o Rázón Social").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Docum.").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Tipo Tran.").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Fac. Afectada").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Total Ventas incluye I.V.A.").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Ventas Exentas").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Ventas Gravables").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("I.V.A.").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("I.V.A. Retenido").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Comprob. Retención").FontColor("#607080").Bold().FontSize(10);
-
-                                });
-
-                                tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Totales=>").Bold().FontColor("#607080").Bold().FontSize(10);
-                                 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);   
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10); 
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("165615").FontColor("#607080").Bold().FontSize(10);
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("0.00").FontColor("#607080").Bold().FontSize(10);
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10); 
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-                            });
-                        });
-                    page.Footer()
-                        .AlignLeft()
-                        .Text(x =>
-                        {
-                            x.Span("Software desarrollado por: Password Tecnology");
-                        });
-                });
-            })
-         .GeneratePdf();
-            return data;
-        }
-        public byte[] Transacciones()
-        {
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.Header().ShowOnce().Row(row =>
-                    {
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
-                        });
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("Fecha: "+ DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
-                            col.Item().AlignRight().Text(x =>
-                            {
-                                x.Span("Página: " + x.CurrentPageNumber()).FontSize(14);
-                            });
-                        });
-                    });
-
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Item().AlignRight().Text("Transacciones del Mes: FEBRERO 2024").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
-
-                            x.Spacing(20);
-                            x.Item().AlignRight().Text("Sector").FontSize(16).FontColor("#004581");
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Trans. Ordinarias°").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Documento").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Inmueble").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Egresos").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Ingresos").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Saldo").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").Bold().FontColor("#607080").Bold().FontSize(10);
-                                 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);   
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10); 
-                                
-                            });  
-                            x.Spacing(20);
-                            x.Item().AlignRight().Text("Total Ordinarias").FontSize(16).FontColor("#004581");
-                            x.Item().AlignRight().Text("Individual").FontSize(16).FontColor("#004581");
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn(5);
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Trans. Ordinarias°").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Documento").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Inmueble").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Egresos").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Ingresos").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Saldo").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Total General=>").Bold().FontColor("#607080").Bold().FontSize(10);
-                                 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);   
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10); 
-                                
-                            });
-                        });
-                    page.Footer()
-                        .AlignLeft()
-                        .Text(x =>
-                        {
-                            x.Span("Software desarrollado por: Password Tecnology");
-                        });
-                });
-            })
-         .GeneratePdf();
-            return data;
-        }
-        public byte[] Montos()
-        {
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.Header().ShowOnce().Row(row =>
-                    {
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
-                        });
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("Fecha: "+ DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
-                            col.Item().AlignRight().Text(x =>
-                            {
-                                x.Span("Página: " + x.CurrentPageNumber()).FontSize(14);
-                            });
-                        });
-                    });
-
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Item().AlignRight().Text("LISTADO MONTOS DEL MES: ENERO 2024").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
-
-                            x.Spacing(20);
-                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Código").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Propietario").FontColor("#607080").Bold().FontSize(10);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Grupos").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Sub-total").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Interés Mora").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Gastos Cob.").FontColor("#607080").Bold().FontSize(10);
-                                    
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Total Cuota Mes").FontColor("#607080").Bold().FontSize(10); 
-                                    
-                                });
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").Bold().FontColor("#607080").Bold().FontSize(10);
-                                 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);   
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);      
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10); 
-
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("Totales =>").Bold().FontColor("#607080").Bold().FontSize(10);
-                                 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
-
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);   
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);  
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);      
-                                
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10); 
-                                
-                            });  
-  
-                        });
-                    page.Footer()
-                        .AlignLeft()
-                        .Text(x =>
-                        {
-                            x.Span("Software desarrollado por: Password Tecnology");
-                        });
-                });
-            })
-         .GeneratePdf();
-            return data;
-        }
+       
         public byte[] EstadoDeCuentas()
         {
             var data = Document.Create(container =>
@@ -3315,5 +2405,1493 @@ namespace Prueba.Services
          .GeneratePdf();
             return data;
         }
+
+
+        public byte[] Transacciones(TransaccionVM transaccion)
+        {
+            decimal totalIngresosSector = 0;
+            decimal totalEgresoSector = 0;
+            decimal totalIngresosIndividual = 0;
+            decimal totalEgresoIndividual = 0;
+
+
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("CONDIOMINIO " + transaccion.Condominio.Nombre).Bold().FontSize(20).FontColor("#004581").Bold();
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Fecha: " + DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
+                            col.Item().AlignRight().Text(x =>
+                            {
+                                x.Span("Página: " + x.CurrentPageNumber()).FontSize(14);
+                            });
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignRight().Text("Transacciones del Mes: FEBRERO 2024").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
+
+                            x.Spacing(20);
+                            x.Item().AlignRight().Text("Sector").FontSize(16).FontColor("#004581");
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Trans. Ordinarias°").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Documento").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Inmueble").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Egresos").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ingresos").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+                                foreach (var item in transaccion.Transaccions)
+                                {
+                                    decimal totalGrupoGastosEgreso = 0;
+                                    decimal totalGrupoGastosIngresos = 0;
+
+                                    foreach (var grupo in transaccion.Transaccions)
+                                    {
+                                        if (item.IdGrupoGasto == grupo.IdGrupoGasto)
+                                        {
+                                            if (item.IdPropiedad == null)
+                                            {
+                                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                         .Padding(5).Text(item.Descripcion).FontColor("#607080").Bold().FontSize(10);
+
+                                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                .Padding(5).Text(item.NumDocumento).FontColor("#607080").Bold().FontSize(10);
+
+                                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                                if (item.TipoTransaccion)
+                                                {
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text(item.MontoTotal).FontColor("#607080").FontSize(10);
+
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text("0.00").FontColor("#607080").FontSize(10);
+                                                    totalGrupoGastosIngresos = (decimal)(totalGrupoGastosIngresos + Convert.ToDecimal(item.MontoTotal));
+                                                    totalIngresosSector = (decimal)(totalIngresosSector + Convert.ToDecimal(item.MontoTotal));
+                                                }
+                                                else
+                                                {
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text("0.00").FontColor("#607080").FontSize(10);
+
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text(item.MontoTotal).FontColor("#607080").FontSize(10);
+                                                    totalGrupoGastosEgreso = (decimal)(totalGrupoGastosEgreso + Convert.ToDecimal(item.MontoTotal));
+                                                    totalEgresoSector = (decimal)(totalEgresoSector + Convert.ToDecimal(item.MontoTotal));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var nombreGrupo = _context.GrupoGastos.Where(c => c.IdGrupoGasto == item.IdGrupoGasto).Select(c => c.NombreGrupo).First();
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Total " + nombreGrupo).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(totalGrupoGastosEgreso.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(totalIngresosSector.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                                }
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Total Ordinarias => ").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalEgresoSector.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalIngresosSector.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text((totalEgresoSector - totalIngresosSector).ToString("N")).FontColor("#607080").FontSize(10);
+                            });
+                            x.Spacing(20);
+                            x.Item().AlignRight().Text("Individual").FontSize(16).FontColor("#004581");
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(5);
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Trans. Ordinarias°").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Documento").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Inmueble").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Egresos").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ingresos").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+                                foreach (var item in transaccion.Transaccions)
+                                {
+                                    decimal totalGrupoGastosEgreso = 0;
+                                    decimal totalGrupoGastosIngresos = 0;
+
+                                    foreach (var grupo in transaccion.Transaccions)
+                                    {
+                                        if (item.IdGrupoGasto == grupo.IdGrupoGasto)
+                                        {
+                                            if (item.IdPropiedad == null)
+                                            {
+                                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                         .Padding(5).Text(item.Descripcion).FontColor("#607080").Bold().FontSize(10);
+
+                                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                .Padding(5).Text(item.NumDocumento).FontColor("#607080").Bold().FontSize(10);
+
+                                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                                if (item.TipoTransaccion)
+                                                {
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text(item.MontoTotal).FontColor("#607080").FontSize(10);
+
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text("0.00").FontColor("#607080").FontSize(10);
+                                                    totalGrupoGastosIngresos = (decimal)(totalGrupoGastosIngresos + Convert.ToDecimal(item.MontoTotal));
+                                                    totalIngresosIndividual = (decimal)(totalIngresosIndividual + Convert.ToDecimal(item.MontoTotal));
+                                                }
+                                                else
+                                                {
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text("0.00").FontColor("#607080").FontSize(10);
+
+                                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                    .Padding(5).Text(item.MontoTotal).FontColor("#607080").FontSize(10);
+                                                    totalGrupoGastosEgreso = (decimal)(totalGrupoGastosEgreso + Convert.ToDecimal(item.MontoTotal));
+                                                    totalEgresoIndividual = (decimal)(totalEgresoIndividual + Convert.ToDecimal(item.MontoTotal));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var nombreGrupo = _context.GrupoGastos.Where(c => c.IdGrupoGasto == item.IdGrupoGasto).Select(c => c.NombreGrupo).First();
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Total " + nombreGrupo).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(totalGrupoGastosEgreso.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(totalIngresosSector.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                                }
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Total Individual => ").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text((totalEgresoIndividual + totalEgresoSector).ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text((totalIngresosIndividual + totalIngresosSector).ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(((totalEgresoIndividual + totalEgresoSector) - (totalIngresosIndividual + totalIngresosSector)).ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                            });
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+        public byte[] MontosPDF(List<MontosVW> montosVW)
+        {
+            decimal totalSubTotal = 0;
+            decimal totalInteresMora = 0;
+            decimal totalGastosCod = 0;
+            decimal totalCuotaMes = 0;
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Fecha: " + DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
+                            col.Item().AlignRight().Text(x =>
+                            {
+                                x.Span("Página: " + x.CurrentPageNumber()).FontSize(14);
+                            });
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignRight().Text("LISTADO MONTOS DEL MES: ENERO 2024").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
+
+                            x.Spacing(20);
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Código").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Propietario").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Grupos").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Sub-total").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Interés Mora").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Gastos Cob.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Cuota Mes").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+                                foreach (var item in montosVW)
+                                {
+                                    var grupos = "";
+                                    tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(item.propiedad.Codigo).Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                     .Padding(5).Text(item.propiedad.IdUsuario).FontColor("#607080").Bold().FontSize(10);
+
+                                    foreach (var grupo in item.grupo)
+                                    {
+                                        grupos = grupos + " " + grupo.Codigo;
+                                    }
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text(grupos).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text(item.propiedad.Deuda.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                                    totalSubTotal += item.propiedad.Deuda;
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(item.propiedad.MontoIntereses.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                                    totalInteresMora += item.propiedad.MontoIntereses;
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(item.propiedad.MontoMulta).FontColor("#607080").Bold().FontSize(10);
+                                    totalGastosCod += item.propiedad.MontoIntereses;
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text(item.propiedad.Saldo.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                                    totalCuotaMes += item.propiedad.MontoIntereses;
+                                }
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Totales =>").Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalSubTotal.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalInteresMora.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalGastosCod.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(totalCuotaMes.ToString("N")).FontColor("#607080").Bold().FontSize(10);
+                            });
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+        public byte[] ComprobanteRetencionesISLR(ComprobanteRetencionesISLRVM comprobante)
+        {
+
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignRight().Text("Comprobante de Retención de Impuesto Sobre La Renta").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Decreto Retenciones vigente N° 1.808, Gaceta Oficial 36.203 de fecha 12-05-1997").Bold().FontSize(18).FontColor("#004581");
+
+                            x.Spacing(20);
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.comprobanteRetencion.IdComprobante.ToString()).FontColor("#607080").Bold().FontSize(10);
+                            });
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn(100);
+                                });
+
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("DATOS DEL AGENTE DE RETENCIÓN").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.Condominio.Nombre).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.Condominio.Direccion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.Condominio.Rif).FontColor("#607080").Bold().FontSize(10);
+                            });
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn(100);
+                                });
+
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("DATOS DEL AGENTE RETENIDO").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.Proveedor.Nombre).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.Proveedor.Direccion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.Proveedor.Rif).FontColor("#607080").Bold().FontSize(10);
+                            });
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha Emisión").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nro. Factura").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nro. Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Descripción Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Monto Total").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Base Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("% Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Sustraendo").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Valor Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.comprobanteRetencion.IdFactura).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("00" + comprobante.comprobanteRetencion.IdFactura).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.comprobanteRetencion.Descripcion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(comprobante.comprobanteRetencion.TotalImpuesto).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.comprobanteRetencion.Retencion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("3.00").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.comprobanteRetencion.Sustraendo).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.comprobanteRetencion.ValorRetencion).FontColor("#607080").Bold().FontSize(10);
+                            });
+
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text(comprobante.comprobanteRetencion.Retencion);
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                            });
+
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Text("TOTAL DE IMPUESTO RETENIDO =>");
+                                x.RelativeItem().Text(comprobante.comprobanteRetencion.ValorRetencion);
+                            });
+
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Text("____________________________");
+                                x.RelativeItem().Text("CONDOMINIO " + " sdas");
+                            });
+
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Text("____________________________");
+                                x.RelativeItem().Text("Firma del Beneficiario");
+                            });
+                        });
+
+
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+        public byte[] ComprobanteRetencionesIVA(ComprobanteRetencionesIVAVM retencionesIVAVM)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignCenter().Text("COMPROBANTE DE RETENCIÓN DEL IMPUESTO AL VALOR AGREGADO").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignCenter().Text("(Ley IVA - Art.11.\"Serán responsables del pago del Impuesto en canlidad de agente de retención)").FontSize(14).FontColor("#004581");
+                            x.Item().AlignCenter().Text("comprodaores o adqirientes de determinados bienes muebles y los receptores de ciertos servicios, a").FontSize(14).FontColor("#004581");
+                            x.Item().AlignCenter().Text("quienes la Administración Tributaria designe como tal.\"").FontSize(14).FontColor("#004581");
+                            x.Spacing(20);
+
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.compRetIva.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.IdComprobanteIva).FontColor("#607080").Bold().FontSize(10);
+                            });
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn(100);
+                                });
+
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("DATOS DEL AGENTE DE RETENCIÓN").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.Condominio.Nombre).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.Condominio.Direccion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.Condominio.Rif).FontColor("#607080").Bold().FontSize(10);
+                            });
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn(100);
+                                });
+
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("DATOS DEL AGENTE RETENIDO").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Nombre o Razón Social").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.Proveedor.Nombre).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Dirección Fiscal").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.Proveedor.Direccion).FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("RIF").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.Proveedor.Rif).FontColor("#607080").Bold().FontSize(10);
+                            });
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha Factura").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Factura").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nro. Nota Crédito").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Tipo Trans.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Factura Afectada").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Compras Incluyendo el I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Compras Incluyendo el I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Base imponible").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Alicuota").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Imp. I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("I.V.A Retenido").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(retencionesIVAVM.compRetIva.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.compRetIva.IdFactura).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("00" + retencionesIVAVM.compRetIva.IdFactura).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.compRetIva.IdNotaDebito).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text(retencionesIVAVM.compRetIva.IdNotaCredito).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.TipoTransaccion).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.NumFacturaAfectada).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.TotalCompraIva.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.CompraSinCreditoIva.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.BaseImponible.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.Alicuota.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.ImpIva.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.IvaRetenido.ToString("N")).FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("Totales =>").Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.TotalCompraIva.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.CompraSinCreditoIva.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.BaseImponible.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.Alicuota.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.ImpIva.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(retencionesIVAVM.compRetIva.IvaRetenido.ToString("N")).Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().ColumnSpan(4).AlignMiddle()
+                                .Padding(5).Text("TOTAL COMPRAS MENOS I.V.A. RETENIDO =>").Bold().FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").FontSize(10);
+
+                                tabla.Cell().AlignMiddle()
+                                .Padding(5).Text(retencionesIVAVM.compRetIva.TotalCompraIva).Bold().FontColor("#607080").FontSize(10);
+
+                            });
+                            x.Spacing(60);
+
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Text("____________________________");
+                                x.RelativeItem().Text("CONDOMINIO " + " sdas");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("____________________________");
+                                x.RelativeItem().Text("Firma del Beneficiario");
+                            });
+
+                            x.Item().Row(x =>
+                            {
+
+                            });
+                        });
+
+
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+
+        public byte[] LibroVentas(List<LibroVenta> libroVentas)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
+                            col.Item().Text("Caracas").FontSize(16).FontColor("#004581");
+                            col.Item().Text("Venezuela").FontSize(16).FontColor("#004581");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Fecha: " + DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignCenter().Text("Libro de Ventas I.V.A").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
+
+                            x.Spacing(20);
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("N°").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("R.I.F.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nombre o Rázón Social").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Docum.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Tipo Tran.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nro. Fac. Afectada").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Ventas incluye I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ventas Exentas").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ventas Gravables").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("I.V.A. Retenido").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Comprob. Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+
+                                foreach (var item in libroVentas)
+                                {
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.NumComprobanteRet).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("rif").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("tipo doc").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Num doc").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Num control").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("tipo transacción").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.NumComprobanteRet).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.TotalVentaIva).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.VentaExenta).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.VentaGravable).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.Iva).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.IvaRetenido).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.ComprobanteRetencion).FontColor("#607080").Bold().FontSize(10);
+                                }
+
+
+                                tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Totales=>").Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("165615").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("0.00").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                            });
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+        public byte[] LibroCompras(List<LibroCompra> libroVentas)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
+                            col.Item().Text("Caracas").FontSize(16).FontColor("#004581");
+                            col.Item().Text("Venezuela").FontSize(16).FontColor("#004581");
+                        });
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("Fecha: " + DateTime.Today.ToString("dd/MM/yyyy")).FontSize(16).FontColor("#004581");
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignCenter().Text("Libro de Ventas I.V.A").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Desde: 01/02/2024 Hasta: 29/02/2024").FontSize(16).FontColor("#004581");
+
+                            x.Spacing(20);
+
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("N°").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("R.I.F.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nombre o Rázón Social").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Docum.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Número Control").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Tipo Tran.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Nro. Fac. Afectada").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Ventas incluye I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ventas Exentas").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ventas Gravables").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("I.V.A.").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("I.V.A. Retenido").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Comprob. Retención").FontColor("#607080").Bold().FontSize(10);
+
+                                });
+
+                                foreach (var item in libroVentas)
+                                {
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.NumComprobanteRet).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(DateTime.Today.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("rif").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("tipo doc").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Num doc").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Num control").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("tipo transacción").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text(item.NumComprobanteRet).FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                    tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                                }
+
+
+                                tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("Totales=>").Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("165615").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("0.00").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("654854").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                            });
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+         .GeneratePdf();
+            return data;
+        }
+
+        public byte[] ReciboCobroPDF(ReciboCobroVM reciboCobroVM)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("CONDIOMINIO" + " ").Bold().FontSize(20).FontColor("#004581").Bold();
+                            col.Item().Text("Caracas").Bold().FontSize(18).FontColor("#004581").Bold();
+                            col.Item().Text("Venezuela").Bold().FontSize(18).FontColor("#004581").Bold();
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().AlignRight().Text("AVISO DE COBRO").Bold().FontSize(20).FontColor("#004581");
+                            x.Item().Row(x =>
+                            {
+                                x.RelativeItem().Column(x => {
+                                    x.Item().AlignLeft().Text("OFICINA: A-01").FontSize(16).FontColor("#004581");
+                                    x.Item().AlignLeft().Text("Propietario: CADOCIUNESR").FontSize(16).FontColor("#004581");
+                                });
+                                x.RelativeItem().Column(x =>
+                                {
+                                    x.Item().AlignRight().Text("Relación de Gastos: 001-ENE-24").FontSize(16).FontColor("#004581");
+                                    x.Item().AlignRight().Text("Mes Relacionado:ENERO 2024").FontSize(16).FontColor("#004581");
+                                    x.Item().AlignRight().Text("Fecha Emisión:23/02/2024").FontSize(16).FontColor("#004581");
+                                    x.Item().AlignRight().Text("Fecha Vencimiento:23/02/2024").FontSize(16).FontColor("#004581");
+
+                                });
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                            });
+                            //x.Spacing(20);
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(100);
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Gtos Generales").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Gtos Grupo 1").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Gtos Grupo 2").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Gtos Grupo 3").FontColor("#607080").Bold().FontSize(10);
+
+                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Cuota").FontColor("#607080").Bold().FontSize(10);
+                                });
+
+                                foreach (var item in reciboCobroVM.transaccions)
+                                {
+                                    foreach (var grupo in reciboCobroVM.transaccions)
+                                    {
+                                        if (item.IdGrupoGasto == grupo.IdGrupoGasto)
+                                        {
+                                            if (item.IdPropiedad == null)
+                                            {
+                                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                 .Padding(5).Text(item.Descripcion).Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                                //tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                                //  .Padding(5).Text(item.Cu).Bold().FontColor("#607080").Bold().FontSize(10);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").Bold().FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                 .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text("").FontColor("#607080").Bold().FontSize(10);
+                            });
+
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+        .GeneratePdf();
+            return data;
+        }
+
+
     }
 }

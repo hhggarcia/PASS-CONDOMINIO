@@ -29,13 +29,19 @@ public partial class Proveedor
 
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
+    public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
+
     public virtual ICollection<ComprobanteRetencion> ComprobanteRetencions { get; set; } = new List<ComprobanteRetencion>();
 
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
-    public virtual Condominio IdCondominioNavigation { get; set; }
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual Islr? IdRetencionIslrNavigation { get; set; }
 
     public virtual Iva? IdRetencionIvaNavigation { get; set; }
+
+    public virtual ICollection<NotaDebito> NotaDebitos { get; set; } = new List<NotaDebito>();
+
+    public virtual ICollection<Transaccion> Transaccions { get; set; } = new List<Transaccion>();
 }

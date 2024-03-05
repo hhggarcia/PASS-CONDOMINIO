@@ -1,0 +1,114 @@
+﻿@model IEnumerable<Prueba.Models.CompRetIvaCliente>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_LayoutAdministrador.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaEmision)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoTransaccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumFacturaAfectada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalCompraIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CompraSinCreditoIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BaseImponible)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Alicuota)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImpIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IvaRetenido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalCompraRetIva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdClienteNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaEmision)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoTransaccion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCompraIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CompraSinCreditoIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaseImponible)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Alicuota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImpIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IvaRetenido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCompraRetIva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdNotaDebitoNavigation.IdNotaDebito)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdComprobanteIva">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdComprobanteIva">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdComprobanteIva">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
