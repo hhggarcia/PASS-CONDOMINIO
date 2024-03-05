@@ -142,6 +142,14 @@ namespace Prueba.Repositories
 
             var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
 
+            // calcular retenciones al proveedor
+
+            var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
+
+            var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
+
+            var rtislr = await _context.Islrs.FindAsync(proveedor.IdRetencionIslr);
+
 
             var provisiones = from c in _context.Provisiones
                               where c.IdCodGasto == modelo.IdFactura

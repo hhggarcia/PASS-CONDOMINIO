@@ -494,20 +494,33 @@ namespace Prueba.Controllers
         {
             var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();
 
-            var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+            //// calcular retenciones al proveedor
 
-            if (itemLibroCompra != null)
-            {
-                factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
-            }
+            //var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
+
+            //if (proveedor == null)
+            //{
+            //    return NotFound();
+            //}
+
+            ////var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
+
+            //var rtislr = await _context.Islrs.FindAsync(proveedor.IdRetencionIslr);
+
+            //var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+
+            //if (itemLibroCompra != null)
+            //{
+            //    factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+            //}
             
 
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
                 Monto = factura.MontoTotal,
-                Iva = itemLibroCompra.RetIva,
-                Islr = itemLibroCompra.RetIslr,
+                //Iva = itemLibroCompra.RetIva,
+                //Islr = itemLibroCompra.RetIslr,
                 Descripcion = factura.Descripcion
             };
 
