@@ -182,6 +182,9 @@ namespace Prueba.Controllers
                                 where g.IdGrupoGasto == id
                                 select sc).ToListAsync();
 
+            TempData["IDGrupo"] = id.ToString();
+            //ViewData["NombreGrupo"] = id;
+
             return View(cuentasGrupos);
         }
 
@@ -195,5 +198,62 @@ namespace Prueba.Controllers
             return _context.GrupoGastos.Any(e => e.IdGrupoGasto == id);
         }
 
+        public async Task<IActionResult> EliminarCuentaGrupo(int? id)
+        {
+            var idGrupo = Convert.ToInt32(TempData.Peek("IDGrupo").ToString());
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var subcuenta = await _context.SubCuenta
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (subcuenta == null)
+            {
+                return NotFound();
+            }
+
+            TempData.Keep();
+
+            return View(subcuenta);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">ID de la subcuenta a eliminar del grupo</param>
+        /// <returns></returns>
+        [HttpPost, ActionName("EliminarCuentaGrupo")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarCuentaGrupoConfirmed(int id)
+        {
+            var idGrupo = Convert.ToInt32(TempData.Peek("IDGrupo").ToString());
+
+            var idCC = from c in _context.CodigoCuentasGlobals
+                       where c.IdSubCuenta == id
+                       select c;
+
+            if (!idCC.Any())
+            {
+                return NotFound();
+            }
+
+            var cuentaGrupo = (from c in _context.CuentasGrupos
+                              where c.IdGrupoGasto == idGrupo && c.IdCodCuenta == idCC.First().IdCodCuenta
+                              select c).First();
+
+            if (cuentaGrupo == null)
+            {
+                return NotFound();
+            }
+
+            _context.CuentasGrupos.Remove(cuentaGrupo);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("VerCuentas", new { id = idGrupo });
+
+        }
     }
 }
