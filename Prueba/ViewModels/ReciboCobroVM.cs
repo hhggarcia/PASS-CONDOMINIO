@@ -6,7 +6,10 @@ namespace Prueba.ViewModels
     {
         public Condominio condominio { get; set; }
         public Propiedad propiedad { get; set; }
-        public IList<PropiedadesGrupo>? grupos { get; set; } = new List<PropiedadesGrupo>();
-        public IList<Transaccion>? transaccions { get; set; } = new List<Transaccion>();
+        public RelacionGasto RelacionGasto { get; set; }
+        public AspNetUser AspNetUser { get; set; }
+        public RelacionGastoTransaccion RelacionGastoTransaccion { get; set; }
+        public List<PropiedadesGrupo> grupos { get; set; } = new List<PropiedadesGrupo>();
+        public List<Transaccion>? transaccions { get; set; } = new List<Transaccion>();
     }
 }

@@ -6,5 +6,6 @@ namespace Prueba.ViewModels
     {
         public CompRetIva compRetIva { get; set; }  
         public ComprobanteRetencion comprobanteRetencion { get; set; }
+        public Proveedor Proveedor { get; set; }
     }
 }
