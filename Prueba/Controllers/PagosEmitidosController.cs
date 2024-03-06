@@ -492,28 +492,7 @@ namespace Prueba.Controllers
         }
         public async Task<IActionResult> ObtenerFactura(int facturaId)
         {
-            var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();
-
-            //// calcular retenciones al proveedor
-
-            //var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
-
-            //if (proveedor == null)
-            //{
-            //    return NotFound();
-            //}
-
-            ////var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
-
-            //var rtislr = await _context.Islrs.FindAsync(proveedor.IdRetencionIslr);
-
-            //var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
-
-            //if (itemLibroCompra != null)
-            //{
-            //    factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
-            //}
-            
+            var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();            
 
             var facturaMonto = new
             {

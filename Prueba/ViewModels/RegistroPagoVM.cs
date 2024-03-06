@@ -26,7 +26,8 @@ namespace Prueba.ViewModels
         public decimal RetIva { get; set; }
         public decimal RetIslr { get; set; }
         public Factura Factura { get; set; }
-        public bool retenciones { get; set; }
+        public bool retencionesIva { get; set; }
+        public bool retencionesIslr { get; set; }
 
         //public int IdReferenciaDolar { get; set; }
         //public int IdMonedaCond { get; set; }

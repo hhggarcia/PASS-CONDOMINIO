@@ -130,9 +130,8 @@ namespace Prueba.Controllers
 
                 if (rtislr != null)
                 {
-                    montoRTISLR = factura.Subtotal * (rtislr.Tarifa / 100);
+                    montoRTISLR = factura.Subtotal * (rtislr.Tarifa / 100) - rtislr.Sustraendo;
                 }
-
 
                 // registrar libro de compras
 

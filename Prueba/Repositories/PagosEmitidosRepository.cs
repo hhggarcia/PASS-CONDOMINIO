@@ -142,14 +142,28 @@ namespace Prueba.Repositories
 
             var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
 
-            // calcular retenciones al proveedor
+            var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
 
-            var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
+            if (itemLibroCompra != null)
+            {
+                if (modelo.retencionesIva && !modelo.retencionesIslr)
+                {
+                    factura.MontoTotal -= itemLibroCompra.RetIva;
+                    pago.Monto -= itemLibroCompra.RetIva;
 
-            var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
+                }
+                else if (!modelo.retencionesIva && modelo.retencionesIslr)
+                {
+                    factura.MontoTotal -=  itemLibroCompra.RetIslr;
+                    pago.Monto -=  itemLibroCompra.RetIslr;
 
-            var rtislr = await _context.Islrs.FindAsync(proveedor.IdRetencionIslr);
-
+                }
+                else if (modelo.retencionesIva && modelo.retencionesIslr)
+                {
+                    factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+                    pago.Monto -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+                }
+            }
 
             var provisiones = from c in _context.Provisiones
                               where c.IdCodGasto == modelo.IdFactura
@@ -188,6 +202,7 @@ namespace Prueba.Repositories
 
                     // si no es principal hacer el cambio
                     var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
                     // calcular monto referencia
                     if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
                     {
@@ -195,13 +210,13 @@ namespace Prueba.Repositories
                     }
                     else if (moneda.First().Equals(monedaPrincipal.First()))
                     {
-                        montoReferencia = modelo.Monto;
+                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
                     }
                     else if (!moneda.First().Equals(monedaPrincipal.First()))
                     {
-                        var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
 
-                        montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                        //montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
                         //montoReferencia = montoDolares;
                     }
 
@@ -213,42 +228,127 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
                     // añadir al pago
 
-                    if (modelo.IdAnticipo != 0)
-                    {
-                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                        anticipo1 = anticipos;
-                        pago.MontoRef = anticipos.Saldo;
-                        anticipo1.Activo = false;
-                    }
-                    else
-                    {
-                        pago.MontoRef = montoReferencia;
-
-                    }
+                    // CRISTHIAN
+                    //if (modelo.IdAnticipo != 0)
+                    //{
+                    //    var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                    //    anticipo1 = anticipos;
+                    //    pago.MontoRef = anticipos.Saldo;
+                    //    anticipo1.Activo = false;
+                    //}
+                    //else
+                    //{
+                    //    pago.MontoRef = montoReferencia;
+                    //}
 
                     pago.FormaPago = false;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
+                    pago.SimboloRef = "$";
+                    pago.MontoRef = montoReferencia;
 
-                    if (factura.Abonado == 0)
+                    // CRISTHIAN 
+
+                    //if (factura.Abonado == 0)
+                    //{
+                    //    factura.Abonado = pago.MontoRef;
+                    //}
+                    //else
+                    //{
+                    //    var montototal = factura.Abonado + pago.MontoRef;
+                    //    factura.Abonado = montototal;
+                    //}
+                    //factura.Pagada = true;
+                    //factura.EnProceso = false;
+
+                    // validar si existe anticipo
+                    if (modelo.IdAnticipo == 0)
                     {
-                        factura.Abonado = pago.MontoRef;
+                        // valido si hay abonado en la factura
+                        if (factura.Abonado == 0)
+                        {
+                            if (pago.Monto < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+
+                            } else if (pago.Monto == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            } else
+                            {
+                                return false;
+                            }
+                        } else
+                        {
+                            if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+
+                            }
+                            else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            } else
+                            {
+                                return false;
+                            }
+                        }
                     }
-                    else
+                    else if (modelo.IdAnticipo != 0)
                     {
-                        var montototal = factura.Abonado + pago.MontoRef;
-                        factura.Abonado = montototal;
+                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
+                        //pago.MontoRef = anticipos.Saldo;
+                        anticipo1.Activo = false;
+
+                        if (factura.Abonado == 0)
+                        {
+                            if ((pago.Monto + anticipo1.Saldo) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+
+                            }
+                            else if ((pago.Monto + anticipo1.Saldo) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if ((pago.Monto + factura.Abonado + anticipo1.Saldo) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+
+                            }
+                            else if ((pago.Monto + factura.Abonado + anticipo1.Saldo) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
                     }
-                    factura.Pagada = true;
-                    factura.EnProceso = false;
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
-                        _dbContext.Update(factura);
+                        //_dbContext.Update(factura);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
@@ -449,49 +549,102 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
 
                     // añadir al pago
-                    if (modelo.IdAnticipo != null && modelo.IdAnticipo != 0)
-                    {
-                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                        anticipo1 = anticipos;
-                        anticipo1.Activo = false;
-                    }
+                    //if (modelo.IdAnticipo != null && modelo.IdAnticipo != 0)
+                    //{
+                    //    var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                    //    anticipo1 = anticipos;
+                    //    anticipo1.Activo = false;
+                    //}
                     pago.MontoRef = montoReferencia;
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.MontoRef = montoReferencia;
-                    pago.SimboloRef = monedaPrincipal.First().Simbolo;
+                    pago.SimboloRef = "$";
 
-                    if (factura.Abonado == 0)
+                    // validar si existe anticipo
+                    if (modelo.IdAnticipo == 0)
                     {
-                        if (pago.MontoRef == (factura.Subtotal + factura.Iva))
+                        // valido si hay abonado en la factura
+                        if (factura.Abonado == 0)
                         {
-                            factura.Abonado = pago.MontoRef;
-                            factura.Pagada = true;
-                            factura.EnProceso = false;
-                            //factura.MontoTotal = 0;
+                            if (pago.Monto < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+
+                            }
+                            else if (pago.Monto == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (pago.MontoRef < (factura.Subtotal + factura.Iva))
+                        else
                         {
-                            factura.Abonado = pago.MontoRef + factura.Abonado;
-                            factura.Pagada = false;
-                            factura.EnProceso = true;
+                            if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+
+                            }
+                            else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
-                    else
+                    else if (modelo.IdAnticipo != 0)
                     {
-                        var montototal = factura.Abonado + pago.MontoRef;
-                        if (montototal == (factura.Subtotal + factura.Iva))
+                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
+                        anticipo1 = anticipos;
+                        //pago.MontoRef = anticipos.Saldo;
+                        anticipo1.Activo = false;
+
+                        if (factura.Abonado == 0)
                         {
-                            factura.Abonado = montototal;
-                            factura.Pagada = true;
-                            factura.EnProceso = false;
+                            if ((pago.Monto + anticipo1.Saldo) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+
+                            }
+                            else if ((pago.Monto + anticipo1.Saldo) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (montototal < (factura.Subtotal + factura.Iva))
+                        else
                         {
-                            factura.Abonado = pago.MontoRef + factura.Abonado;
-                            factura.Pagada = false;
-                            factura.EnProceso = true;
+                            if ((pago.Monto + factura.Abonado + anticipo1.Saldo) < factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+
+                            }
+                            else if ((pago.Monto + factura.Abonado + anticipo1.Saldo) == factura.MontoTotal)
+                            {
+                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.EnProceso = false;
+                                factura.Pagada = true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
 
@@ -500,7 +653,7 @@ namespace Prueba.Repositories
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
-                        _dbContext.Update(factura);
+                        //_dbContext.Update(factura);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
