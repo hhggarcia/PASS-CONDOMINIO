@@ -272,12 +272,21 @@ namespace Prueba.Controllers
             if (factura != null)
             {
                 var pagosFactura = await _context.PagoFacturas.Where(c => c.IdFactura.Equals(id)).ToListAsync();
+                var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).ToListAsync();
+                var itemCuentasCobrar = await _context.CuentasPagars.Where(c => c.IdFactura == factura.IdFactura).ToListAsync();
 
                 if (pagosFactura != null)
                 {
                     _context.PagoFacturas.RemoveRange(pagosFactura);
                 }
-
+                if (itemLibroCompra != null)
+                {
+                    _context.LibroCompras.RemoveRange(itemLibroCompra);
+                }
+                if (itemCuentasCobrar != null)
+                {
+                    _context.CuentasPagars.RemoveRange(itemCuentasCobrar);
+                }
                 _context.Facturas.Remove(factura);
             }
 

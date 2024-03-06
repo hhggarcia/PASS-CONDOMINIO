@@ -79,6 +79,45 @@ namespace Prueba.Repositories
                     }
                 }
                 _context.PagoEmitidos.Remove(pagoEmitido);
+
+                var pagoAnticipo = await _context.PagoAnticipos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+                var pagoNomina = await _context.PagosNominas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+                var pagoNotaDebito = await _context.PagosNotaDebitos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+                var pagoFactura = await _context.PagoFacturas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+
+                if (pagoAnticipo != null)
+                {
+                    _context.PagoAnticipos.RemoveRange(pagoAnticipo);
+                }
+                if (pagoNomina != null)
+                {
+                    _context.PagosNominas.RemoveRange(pagoNomina);
+                }
+                if (pagoNotaDebito != null)
+                {
+                    _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
+                }
+                if (pagoNotaDebito != null)
+                {
+                    _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
+                }
+                if (pagoFactura != null)
+                {
+                    foreach (var item in pagoFactura)
+                    {
+                        // buscar factura
+                        var factura = await _context.Facturas.FindAsync(item.IdFactura);
+                        // en proceso nuevamente
+                        factura.EnProceso = true;
+                        factura.Pagada = false;
+                        factura.Abonado -= pagoEmitido.Monto;
+                        // restar de abonado el monto del pago
+                        // actualizar factura
+                        _context.Facturas.Update(factura);
+                    }
+                    _context.PagoFacturas.RemoveRange(pagoFactura);
+                }
+
             }
 
             return await _context.SaveChangesAsync();

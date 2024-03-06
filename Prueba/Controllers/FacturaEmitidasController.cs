@@ -108,7 +108,7 @@ namespace Prueba.Controllers
 
                 if (rtislr != null)
                 {
-                    montoRTISLR = facturaEmitida.SubTotal * (rtislr.Tarifa / 100);
+                    montoRTISLR = facturaEmitida.SubTotal * (rtislr.Tarifa / 100) - rtislr.Sustraendo;
                 }
 
 
@@ -233,6 +233,22 @@ namespace Prueba.Controllers
             var facturaEmitida = await _context.FacturaEmitida.FindAsync(id);
             if (facturaEmitida != null)
             {
+                var pagosFactura = await _context.PagoFacturaEmitida.Where(c => c.IdFactura.Equals(id)).ToListAsync();
+                var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
+                var itemCuentasCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
+
+                if (pagosFactura != null)
+                {
+                    _context.PagoFacturaEmitida.RemoveRange(pagosFactura);
+                }
+                if (itemLibroVenta != null)
+                {
+                    _context.LibroVentas.RemoveRange(itemLibroVenta);
+                }
+                if (itemCuentasCobrar != null)
+                {
+                    _context.CuentasCobrars.RemoveRange(itemCuentasCobrar);
+                }
                 _context.FacturaEmitida.Remove(facturaEmitida);
             }
 

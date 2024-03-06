@@ -161,13 +161,13 @@
                          data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Compras:</h6>
-                            <a class="collapse-item" asp-controller="Facturas" asp-action="Index">Facturas de Compras</a>
-                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a>
-                            <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
                             <a class="collapse-item" asp-controller="PagosEmitidos" asp-action="Index">Pagos</a>
                             <a class="collapse-item" asp-controller="Anticipos" asp-action="Index">Anticipos</a>
-                            @* <a class="collapse-item" asp-controller="" asp-action="">Retenciones IVA e ISLR</a> *@
+                            <a class="collapse-item" asp-controller="Facturas" asp-action="Index">Facturas de Compras</a>
+                            <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
                             <a class="collapse-item" asp-controller="LibroCompras" asp-action="Index">Libro de Compras</a>
+                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a>
+                            @* <a class="collapse-item" asp-controller="" asp-action="">Retenciones IVA e ISLR</a> *@
                         </div>
                     </div>
                 </li>
@@ -188,10 +188,10 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Ventas:</h6>
                             <a class="collapse-item" asp-controller="FacturaEmitidas" asp-action="Index">Facturas de Ventas</a>
-                            <a class="collapse-item" asp-controller="Clientes" asp-action="Index">Clientes</a>
-                            <a class="collapse-item" asp-controller="Productos" asp-action="Index">Productos y Servicios</a>
                             <a class="collapse-item" asp-controller="CuentasCobrar" asp-action="Index">Cuentas por Cobrar</a>
                             <a class="collapse-item" asp-controller="LibroVentas" asp-action="Index">Libro de Ventas</a>
+                            <a class="collapse-item" asp-controller="Clientes" asp-action="Index">Clientes</a>
+                            <a class="collapse-item" asp-controller="Productos" asp-action="Index">Productos y Servicios</a>
                         </div>
                     </div>
                 </li>
@@ -213,7 +213,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Condominio:</h6>
                             <a class="collapse-item" asp-controller="Administrador" asp-action="PagosRecibidos">Cobros</a>
-                            <a class="collapse-item" asp-controller="RelacionGastos" asp-action="Index">Generar Recibos de Cobro</a>
+                            <a class="collapse-item" asp-controller="RelacionGastos" asp-action="Index">Relación de Gastos</a>
                             <a class="collapse-item" asp-controller="Propiedades" asp-action="Index">Propiedades</a>
                             <a class="collapse-item" asp-controller="GrupoGastos" asp-action="Index">Grupos de Gastos</a>
                             <a class="collapse-item" asp-controller="CuotasEspeciales" asp-action="Index">Cuotas Especiales</a>
