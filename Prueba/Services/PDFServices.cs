@@ -3356,6 +3356,12 @@ namespace Prueba.Services
 
         public byte[] LibroVentas(List<LibroVenta> libroVentas)
         {
+            decimal totalIngresosSector=0;
+            decimal totalEgresoSector = 0;
+            decimal totalIngresosIndividual = 0;
+            decimal totalEgresoIndividual = 0;
+
+
             var data = Document.Create(container =>
             {
                 container.Page(page =>
@@ -3454,6 +3460,10 @@ namespace Prueba.Services
                                    .Padding(5).Text("Comprob. Retención").FontColor("#607080").Bold().FontSize(10);
 
                                 });
+                                foreach(var item in transaccion.Transaccions)
+                                {
+                                    decimal totalGrupoGastosEgreso = 0;
+                                    decimal totalGrupoGastosIngresos = 0;
 
                                 foreach (var item in libroVentas)
                                 {
