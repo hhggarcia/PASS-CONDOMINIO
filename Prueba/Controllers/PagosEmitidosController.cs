@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
@@ -337,7 +338,7 @@ namespace Prueba.Controllers
 
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
-                    if (resultado) 
+                    if (resultado == "exito") 
                     {
                         var factura = await _context.Facturas.Where(c=>c.IdFactura == modelo.IdFactura).FirstAsync();    
                         var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
@@ -388,27 +389,36 @@ namespace Prueba.Controllers
                         //                  where p.IdCondominio == modelo.IdCondominio
                         //                  select p;
                         //var proveedor =  await proovedores.ToListAsync();
-                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).Select(c => c.Nombre).FirstAsync();
+                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstAsync();
+                        var retIslr = _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefault();
+                        var retIva = _context.Ivas.Where(c => c.Id == proveedor.IdRetencionIva).FirstOrDefault();
+
                         comprobante.Factura = factura;
-                        comprobante.Islr = modelo.RetIslr;
-                        comprobante.Iva = modelo.RetIva;
+                        comprobante.Islr = factura.Subtotal * (retIslr.Tarifa / 100);                        
+                        comprobante.Iva = factura.Iva * (retIva.Porcentaje / 100);
                         comprobante.Pago.Monto = modelo.Monto;
                         comprobante.Pago.Fecha = modelo.Fecha;
                         comprobante.Pago.ValorDolar = modelo.ValorDolar;
                         comprobante.Pago.MontoRef = modelo.MontoRef;
                         comprobante.Pago.SimboloRef = modelo.SimboloRef;
                         comprobante.Pago.SimboloMoneda = modelo.SimboloMoneda;
-                        comprobante.Beneficiario = proveedor;
+                        comprobante.Beneficiario = proveedor.Nombre;
+                        comprobante.retencionesIslr = modelo.retencionesIslr;
+                        comprobante.retencionesIva = modelo.retencionesIva;
+
                         foreach(var item in condominio.MonedaConds)
                         {
                             comprobante.ValorDolar = item.ValorDolar;
                         }
+
                         TempData.Keep();
+
                         return View("Comprobante", comprobante);
                     }
 
                     //}
                     ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = resultado;
                     //traer subcuentas del condominio
                     int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
@@ -427,6 +437,7 @@ namespace Prueba.Controllers
                 TempData.Keep();
 
                 ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "Ha ocurrido un error inesperado";
 
                 return View("RegistrarPagos", modelo);
 
@@ -497,7 +508,7 @@ namespace Prueba.Controllers
             var facturaMonto = new
             {
                 Value = factura.IdFactura,
-                Monto = factura.MontoTotal,
+                Monto = factura.MontoTotal - factura.Abonado,
                 //Iva = itemLibroCompra.RetIva,
                 //Islr = itemLibroCompra.RetIslr,
                 Descripcion = factura.Descripcion

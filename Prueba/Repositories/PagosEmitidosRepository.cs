@@ -15,7 +15,7 @@ namespace Prueba.Repositories
         Task<RegistroPagoVM> FormRegistrarPago(int id);
         Task<IndexPagosVM> GetPagosEmitidos(int id);
         bool PagoEmitidoExists(int id);
-        Task<bool> RegistrarPago(RegistroPagoVM modelo);
+        Task<string> RegistrarPago(RegistroPagoVM modelo);
     }
     public class PagosEmitidosRepository : IPagosEmitidosRepository
     {
@@ -159,9 +159,9 @@ namespace Prueba.Repositories
         /// </summary>
         /// <param name="modelo"></param>
         /// <returns></returns>
-        public async Task<bool> RegistrarPago(RegistroPagoVM modelo)
+        public async Task<string> RegistrarPago(RegistroPagoVM modelo)
         {
-            bool resultado = false;
+            string resultado = "";
             decimal montoReferencia = 0;
 
             //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
@@ -245,7 +245,7 @@ namespace Prueba.Repositories
                     // calcular monto referencia
                     if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
                     {
-                        return resultado;
+                        return "No hay monedas registradas en el sistema!";
                     }
                     else if (moneda.First().Equals(monedaPrincipal.First()))
                     {
@@ -317,7 +317,7 @@ namespace Prueba.Repositories
                                 factura.Pagada = true;
                             } else
                             {
-                                return false;
+                                return "El monto es mayor al total de la Factura!";
                             }
                         } else
                         {
@@ -333,7 +333,7 @@ namespace Prueba.Repositories
                                 factura.Pagada = true;
                             } else
                             {
-                                return false;
+                                return "El monto más lo abonado en la factura excede el total de la Factura!";
                             }
                         }
                     }
@@ -359,7 +359,7 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto más el anticipo es mayor al total de la Factura!";
                             }
                         }
                         else
@@ -377,17 +377,19 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
                             }
                         }
                     }
+
+                    factura.MontoTotal = itemLibroCompra.Monto;
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
-                        //_dbContext.Update(factura);
+                        _dbContext.Update(factura);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
@@ -477,7 +479,7 @@ namespace Prueba.Repositories
                             //_dbContext.Add(gastoProvision);
                             _dbContext.SaveChanges();
                         }
-                        resultado = true;
+                        resultado = "exito";
                     }
                     else
                     {
@@ -537,12 +539,12 @@ namespace Prueba.Repositories
                             _dbContext.SaveChanges();
 
                         }
-                        resultado = true;
+                        resultado = "exito";
                     }
                 }
                 catch (Exception ex)
                 {
-                    return false;
+                    return ex.Message;
                 }
 
             }
@@ -567,7 +569,7 @@ namespace Prueba.Repositories
                     // calcular monto referencia
                     if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
                     {
-                        return resultado;
+                        return "No existen monedas registradas en el sistema!";
                     }
                     else if (moneda.First().Equals(monedaPrincipal.First()))
                     {
@@ -620,7 +622,7 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto es mayor al total de la Factura!";
                             }
                         }
                         else
@@ -638,7 +640,7 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto más lo abonado es mayor al total de la Factura!";
                             }
                         }
                     }
@@ -664,7 +666,7 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto más el aniticipo es mayor al total de la Factura!";
                             }
                         }
                         else
@@ -682,17 +684,19 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return false;
+                                return "El monto más el aniticipo más lo abonado es mayor al total de la Factura!";
                             }
                         }
                     }
+
+                    factura.MontoTotal = itemLibroCompra.Monto;
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
-                        //_dbContext.Update(factura);
+                        _dbContext.Update(factura);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
@@ -795,7 +799,7 @@ namespace Prueba.Repositories
                             _dbContext.SaveChanges();
                         }
 
-                        return true;
+                        return "exito";
                     }
                     else
                     {
@@ -857,12 +861,12 @@ namespace Prueba.Repositories
                             _dbContext.SaveChanges();
                         }
 
-                        return true;
+                        return "exito";
                     }
                 }
                 catch (Exception ex)
                 {
-                    return resultado;
+                    return ex.Message;
                 }
             }
 

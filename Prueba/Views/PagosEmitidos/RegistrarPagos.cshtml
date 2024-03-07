@@ -37,7 +37,7 @@
                         <form class="form form-horizontal" asp-action="ConfirmarPago">
                             @if (@ViewBag.FormaPago == "fallido")
                             {
-                                <h6>Debe seleccionar una cuenta de Efectivo o transferencia!</h6>
+                                <h6>@ViewBag.Mensaje</h6>
                                 <hr />
                             }
                             <div class="form-body">
