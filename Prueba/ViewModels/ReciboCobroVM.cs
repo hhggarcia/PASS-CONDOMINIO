@@ -11,5 +11,6 @@ namespace Prueba.ViewModels
         public RelacionGastoTransaccion RelacionGastoTransaccion { get; set; }
         public List<PropiedadesGrupo> grupos { get; set; } = new List<PropiedadesGrupo>();
         public List<Transaccion>? transaccions { get; set; } = new List<Transaccion>();
+        public List<Provision> provisiones { get; set; } = new List<Provision>()
     }
 }
