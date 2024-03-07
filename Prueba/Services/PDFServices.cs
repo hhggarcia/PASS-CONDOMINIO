@@ -3054,11 +3054,6 @@ namespace Prueba.Services
                                    .Padding(5).Text("Comprob. Retención").FontColor("#607080").Bold().FontSize(10);
 
                                 });
-                                //foreach(var item in transaccion.Transaccions)
-                                //{
-                                //    decimal totalGrupoGastosEgreso = 0;
-                                //    decimal totalGrupoGastosIngresos = 0;
-                                //}
                                 foreach (var item in libroVentas)
                                 {
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -3068,10 +3063,10 @@ namespace Prueba.Services
                                   .Padding(5).Text(item.FacturaEmitida.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                  .Padding(5).Text("rif").FontColor("#607080").Bold().FontSize(10);
+                                  .Padding(5).Text(item.cliente.Rif).FontColor("#607080").Bold().FontSize(10);
                                     
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                  .Padding(5).Text(item.Producto.Nombre).FontColor("#607080").Bold().FontSize(10);
+                                  .Padding(5).Text(item.cliente.Nombre).FontColor("#607080").Bold().FontSize(10);
 
                                     tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("FAC").FontColor("#607080").Bold().FontSize(10);
@@ -3262,7 +3257,7 @@ namespace Prueba.Services
                                             .Padding(5).Text(propiedad.ReciboCobro.Fecha.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(10);
 
                                             tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                            .Padding(5).Text("").Bold().FontColor("#607080").FontSize(10);
+                                            .Padding(5).Text(propiedad.ReciboCobro.IdReciboCobro +"-" + propiedad.ReciboCobro.Fecha.ToString("MMMM/yyyy")).Bold().FontColor("#607080").FontSize(10);
 
                                             tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                             .Padding(5).Text("Condominio Mes: "+ propiedad.ReciboCobro.Fecha.ToString("MMMM/yyyy")).FontColor("#607080").FontSize(10);
