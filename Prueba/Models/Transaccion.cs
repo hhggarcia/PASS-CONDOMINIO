@@ -19,7 +19,7 @@ public partial class Transaccion
 
     public string Documento { get; set; } = null!;
 
-    public string MontoTotal { get; set; } = null!;
+    public decimal MontoTotal { get; set; }
 
     public decimal Cancelado { get; set; }
 

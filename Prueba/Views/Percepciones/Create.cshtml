@@ -2,55 +2,6 @@
 
 @{
     ViewData["Title"] = "Create";
-// <<<<<<< HEAD
-}
-
-<h1>Create</h1>
-
-<h4>Percepcion</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Concepto" class="control-label"></label>
-                <input asp-for="Concepto" class="form-control" />
-                <span asp-validation-for="Concepto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Monto" class="control-label"></label>
-                <input asp-for="Monto" class="form-control" />
-                <span asp-validation-for="Monto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RefMonto" class="control-label"></label>
-                <input asp-for="RefMonto" class="form-control" />
-                <span asp-validation-for="RefMonto" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdEmpleado" class="control-label"></label>
-                <select asp-for="IdEmpleado" class ="form-control" asp-items="ViewBag.IdEmpleado"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-=======
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 
 }
@@ -81,12 +32,12 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="Monto" class="control-label"></label>
-                            <input asp-for="Monto" class="form-control" />
+                            <input type="number" asp-for="Monto" class="form-control" />
                             <span asp-validation-for="Monto" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="RefMonto" class="control-label"></label>
-                            <input asp-for="RefMonto" class="form-control" />
+                            <input type="number" asp-for="RefMonto" class="form-control" />
                             <span asp-validation-for="RefMonto" class="text-danger"></span>
                         </div>
                         <div class="form-group form-check">
@@ -112,5 +63,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
->>>>>>> DevAdminstradoras
 }

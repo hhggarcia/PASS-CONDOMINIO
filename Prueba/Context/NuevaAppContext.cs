@@ -1644,9 +1644,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Documento)
                 .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.MontoTotal)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.MontoTotal).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.NumDocumento).HasMaxLength(50);
 
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.TransaccionIdCodCuentaNavigations)
