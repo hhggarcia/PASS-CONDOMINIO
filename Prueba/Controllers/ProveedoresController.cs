@@ -149,7 +149,7 @@ namespace Prueba.Controllers
                 {
 
                     proveedor.IdRetencionIslr = null;
-                    proveedor.IdRetencionIva = null;
+                    //proveedor.IdRetencionIva = null;
                     _context.Add(proveedor);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -201,7 +201,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
                                      where c.Tarifa > 0
@@ -274,7 +274,7 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", proveedor.IdRetencionIva);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
                                      where c.Tarifa > 0

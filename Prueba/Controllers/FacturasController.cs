@@ -147,7 +147,7 @@ namespace Prueba.Controllers
                     Igtf = 0,
                     RetIva = montoRTIVA,
                     RetIslr = montoRTISLR,
-                    Monto = factura.MontoTotal,
+                    Monto = factura.MontoTotal - montoRTIVA - montoRTISLR,
                     NumComprobanteRet = 0,
                     FechaComprobanteRet = DateTime.Now
                 };

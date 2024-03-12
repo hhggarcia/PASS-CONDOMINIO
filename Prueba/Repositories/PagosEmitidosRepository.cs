@@ -382,7 +382,7 @@ namespace Prueba.Repositories
                         }
                     }
 
-                    factura.MontoTotal = itemLibroCompra.Monto;
+                    factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
                     using (var _dbContext = new NuevaAppContext())
                     {
@@ -566,20 +566,22 @@ namespace Prueba.Repositories
 
                     // si no es principal hacer el cambio
                     var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
                     // calcular monto referencia
                     if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
                     {
-                        return "No existen monedas registradas en el sistema!";
+                        return "No hay monedas registradas en el sistema!";
                     }
                     else if (moneda.First().Equals(monedaPrincipal.First()))
                     {
-                        montoReferencia = modelo.Monto;
+                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
                     }
                     else if (!moneda.First().Equals(monedaPrincipal.First()))
                     {
-                        var montoDolares = modelo.Monto * moneda.First().ValorDolar;
+                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
 
-                        montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                        //montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                        //montoReferencia = montoDolares;
                     }
 
                     // disminuir saldo de la cuenta de CAJA
@@ -689,7 +691,7 @@ namespace Prueba.Repositories
                         }
                     }
 
-                    factura.MontoTotal = itemLibroCompra.Monto;
+                    factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
                     using (var _dbContext = new NuevaAppContext())
                     {
