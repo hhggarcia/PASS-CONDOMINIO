@@ -102,14 +102,50 @@
                                             @Html.DisplayFor(modelItem => item.ContribuyenteEspecial)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
+                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
-                                        <td>
+                                        @* <td>
                                             @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Id)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Id)
-                                        </td>
+                                        </td> *@
+                                        @if (item.IdRetencionIslrNavigation != null)
+                                        {
+                                            <td>
+                                                @* @Html.DisplayFor(modelItem => item.IdRetencionIslrNavigation.Concepto) *@
+                                                @item.IdRetencionIslrNavigation.Concepto
+                                                @((item.IdRetencionIslrNavigation.Pjuridica) ? " PJ" : "")
+                                                @((item.IdRetencionIslrNavigation.Pnatural) ? " PN" : "")
+                                                @((item.IdRetencionIslrNavigation.Domiciliada) ? " Domiciliado" : "")
+                                                @((item.IdRetencionIslrNavigation.NoDomiciliada) ? " No Domiciliado" : "")
+                                                @((item.IdRetencionIslrNavigation.Residenciada) ? " Residenciada" : "")
+                                                @((item.IdRetencionIslrNavigation.NoResidenciada) ? " No Residenciada" : "")
+                                                @(item.IdRetencionIslrNavigation.Tarifa)
+                                                %
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                No aplica
+                                            </td>
+                                        }
+                                        @if (item.IdRetencionIvaNavigation != null)
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IdRetencionIvaNavigation.Descripcion)
+
+
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                No Aplica
+
+                                            </td>
+                                        }
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdCliente">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdCliente">Detalles</a> |

@@ -63,9 +63,25 @@ namespace Prueba.Controllers
         }
 
         // GET: FacturaEmitidas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var listFacturas = await(from f in _context.FacturaEmitida
+                                     join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
+                                     where c.IdCondominio == IdCondominio
+                                     select f).ToListAsync();
+
+            if (listFacturas.Count != 0)
+            {
+                ViewData["NumFactura"] = listFacturas[listFacturas.Count - 1].NumFactura;
+                ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
+            }
+
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
+            TempData.Keep();
             return View();
         }
 
@@ -74,8 +90,15 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso")] FacturaEmitida facturaEmitida)
+        public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdProducto,IdCodCuenta,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso")] FacturaEmitida facturaEmitida)
         {
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+            facturaEmitida.IdCodCuenta = idCodCuenta;
+            facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
+
+            ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
 
             if (ModelState.IsValid)

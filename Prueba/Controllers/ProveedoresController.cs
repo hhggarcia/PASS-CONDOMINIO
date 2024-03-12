@@ -248,7 +248,7 @@ namespace Prueba.Controllers
                     {
 
                         proveedor.IdRetencionIslr = null;
-                        proveedor.IdRetencionIva = null;
+                        //proveedor.IdRetencionIva = null;
                         _context.Update(proveedor);
                         await _context.SaveChangesAsync();
 

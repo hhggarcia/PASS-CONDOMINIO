@@ -41,6 +41,15 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+// culture
+//builder.Services.Configure<RequestLocalizationOptions>(options =>
+//{
+//    var supportedCultures = new[] { "en-US", "fr" };
+//    options.SetDefaultCulture(supportedCultures[0])
+//        .AddSupportedCultures(supportedCultures)
+//        .AddSupportedUICultures(supportedCultures);
+//});
+
 #region Authorization
 
 AddAuthorizationPolicies();
@@ -64,7 +73,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
 
 app.UseAuthorization();
 

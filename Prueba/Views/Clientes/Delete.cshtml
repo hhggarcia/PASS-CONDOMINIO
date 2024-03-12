@@ -66,19 +66,19 @@
                                     @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdCondominioNavigation.IdCondominio)
+                                    @Html.DisplayFor(model => model.IdCondominioNavigation.Nombre)
                                 </dd>
                                 <dt class="col-sm-2">
                                     @Html.DisplayNameFor(model => model.IdRetencionIslrNavigation)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdRetencionIslrNavigation.Id)
+                                    @Html.DisplayFor(model => model.IdRetencionIslrNavigation.Concepto)
                                 </dd>
                                 <dt class="col-sm-2">
                                     @Html.DisplayNameFor(model => model.IdRetencionIvaNavigation)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdRetencionIvaNavigation.Id)
+                                    @Html.DisplayFor(model => model.IdRetencionIvaNavigation.Descripcion)
                                 </dd>
                             </dl>
                             <form asp-action="Delete">

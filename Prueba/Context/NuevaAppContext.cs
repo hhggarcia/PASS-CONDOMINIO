@@ -159,7 +159,7 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Reserva> Reservas { get; set; }
 
     public virtual DbSet<SubCuenta> SubCuenta { get; set; }
-
+    
     public virtual DbSet<Transaccion> Transaccions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

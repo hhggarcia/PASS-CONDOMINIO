@@ -31,16 +31,16 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            //var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
-            //                          join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
-            //                          where c.IdCondominio == IdCondominio
-            //                          select f).ToListAsync();
+            var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
+                                      join c in _context.Proveedors on f.IdProveedor equals c.IdProveedor
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
 
-            var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
+            //var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
 
             TempData.Keep();
 
-            return View(nuevaAppContext);
+            return View(listFacturas);
         }
 
         // GET: Facturas/Details/5

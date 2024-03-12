@@ -47,6 +47,11 @@
                                     <input asp-for="Rif" class="form-control" />
                                     <span asp-validation-for="Rif" class="text-danger"></span>
                                 </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        @Html.CheckBox("check")  @Html.Label("No aplica Retenciones ISLR")
+                                    </label>
+                                </div>
                                 <div class="form-group">
                                     <label asp-for="IdRetencionIslr" class="control-label"></label>
                                     <select asp-for="IdRetencionIslr" class="form-control" asp-items="ViewBag.IdRetencionIslr"></select>
@@ -72,8 +77,9 @@
                                         <input class="form-check-input" asp-for="ContribuyenteEspecial" /> @Html.DisplayNameFor(model => model.ContribuyenteEspecial)
                                     </label>
                                 </div>
-                                <div class="form-group">
-                                    <input type="submit" value="Save" class="btn btn-primary" />
+                                <div class="form-group pt-2">
+                                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
                                 </div>
                             </form>
                         </div>

@@ -31,7 +31,7 @@ public partial class FacturaEmitida
 
     public bool EnProceso { get; set; }
 
-    public int? IdCodCuenta { get; set; }
+    public int IdCodCuenta { get; set; }
 
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 

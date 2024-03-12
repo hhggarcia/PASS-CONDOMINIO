@@ -17,9 +17,9 @@ public partial class Cliente
 
     public string Rif { get; set; } = null!;
 
-    public int IdRetencionIslr { get; set; }
+    public int? IdRetencionIslr { get; set; }
 
-    public int IdRetencionIva { get; set; }
+    public int? IdRetencionIva { get; set; }
 
     public decimal Saldo { get; set; }
 

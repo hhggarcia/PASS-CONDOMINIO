@@ -103,7 +103,7 @@ namespace Prueba.Controllers
             {
                 if (check)
                 {
-                    producto.IdRetencionIva = null;
+                    //producto.IdRetencionIva = null;
                     producto.IdRetencionIslr = null;                  
                 }
 
@@ -199,7 +199,7 @@ namespace Prueba.Controllers
                 {
                     if (check)
                     {
-                        producto.IdRetencionIva = null;
+                        //producto.IdRetencionIva = null;
                         producto.IdRetencionIslr = null;
                     }
 
