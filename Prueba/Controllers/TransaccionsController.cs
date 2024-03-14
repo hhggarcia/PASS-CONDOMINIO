@@ -25,7 +25,7 @@ namespace Prueba.Controllers
         // GET: Transaccions
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Transaccions.Include(t => t.IdCodCuentaBancoNavigation).Include(t => t.IdCodCuentaNavigation).Include(t => t.IdGrupoGastoNavigation).Include(t => t.IdPropiedadNavigation).Include(t => t.IdProveedorNavigation);
+            var nuevaAppContext = _context.Transaccions.Include(t => t.IdCodCuentaNavigation).Include(t => t.IdPropiedadNavigation).Include(t => t.IdProveedorNavigation);
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -38,9 +38,7 @@ namespace Prueba.Controllers
             }
 
             var transaccion = await _context.Transaccions
-                .Include(t => t.IdCodCuentaBancoNavigation)
                 .Include(t => t.IdCodCuentaNavigation)
-                .Include(t => t.IdGrupoGastoNavigation)
                 .Include(t => t.IdPropiedadNavigation)
                 .Include(t => t.IdProveedorNavigation)
                 .FirstOrDefaultAsync(m => m.IdTransaccion == id);
@@ -55,9 +53,7 @@ namespace Prueba.Controllers
         // GET: Transaccions/Create
         public IActionResult Create()
         {
-            ViewData["IdCodCuentaBanco"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto");
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad");
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor");
             return View();
@@ -68,7 +64,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,FormaPago,IdCodCuentaBanco,NumDocumento,IdGrupoGasto")] Transaccion transaccion)
+        public async Task<IActionResult> Create([Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,SimboloMoneda,SimboloRef,ValorDolar,MontoRef")] Transaccion transaccion)
         {
             if (ModelState.IsValid)
             {
@@ -76,9 +72,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCodCuentaBanco"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuentaBanco);
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", transaccion.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", transaccion.IdPropiedad);
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", transaccion.IdProveedor);
             return View(transaccion);
@@ -97,9 +91,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCodCuentaBanco"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuentaBanco);
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", transaccion.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", transaccion.IdPropiedad);
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", transaccion.IdProveedor);
             return View(transaccion);
@@ -110,7 +102,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,FormaPago,IdCodCuentaBanco,NumDocumento,IdGrupoGasto")] Transaccion transaccion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,SimboloMoneda,SimboloRef,ValorDolar,MontoRef")] Transaccion transaccion)
         {
             if (id != transaccion.IdTransaccion)
             {
@@ -137,9 +129,7 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCodCuentaBanco"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuentaBanco);
             ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", transaccion.IdCodCuenta);
-            ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "IdGrupoGasto", transaccion.IdGrupoGasto);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", transaccion.IdPropiedad);
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", transaccion.IdProveedor);
             return View(transaccion);
@@ -154,9 +144,7 @@ namespace Prueba.Controllers
             }
 
             var transaccion = await _context.Transaccions
-                .Include(t => t.IdCodCuentaBancoNavigation)
                 .Include(t => t.IdCodCuentaNavigation)
-                .Include(t => t.IdGrupoGastoNavigation)
                 .Include(t => t.IdPropiedadNavigation)
                 .Include(t => t.IdProveedorNavigation)
                 .FirstOrDefaultAsync(m => m.IdTransaccion == id);

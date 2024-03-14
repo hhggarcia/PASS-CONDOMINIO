@@ -23,6 +23,11 @@
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <input type="hidden" asp-for="IdDeduccion" />
                                 <div class="form-group">
+                                    <label asp-for="IdEmpleado" class="control-label"></label>
+                                    <select asp-for="IdEmpleado" class="form-control" asp-items="ViewBag.IdEmpleado"></select>
+                                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
                                     <label asp-for="Concepto" class="control-label"></label>
                                     <input asp-for="Concepto" class="form-control" />
                                     <span asp-validation-for="Concepto" class="text-danger"></span>
@@ -32,23 +37,20 @@
                                     <input type="number" asp-for="Monto" class="form-control" />
                                     <span asp-validation-for="Monto" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label asp-for="RefMonto" class="control-label"></label>
+                                @* <div class="form-group">
+                                    <label asp-for="RefMonto" class="control-label">Monto $</label>
                                     <input type="number" asp-for="RefMonto" class="form-control" />
                                     <span asp-validation-for="RefMonto" class="text-danger"></span>
-                                </div>
+                                </div> *@
                                 <div class="form-group form-check">
                                     <label class="form-check-label">
                                         <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
                                     </label>
                                 </div>
-                                <div class="form-group">
-                                    <label asp-for="IdEmpleado" class="control-label"></label>
-                                    <select asp-for="IdEmpleado" class="form-control" asp-items="ViewBag.IdEmpleado"></select>
-                                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-                                </div>
-                                <div class="form-group">
-                                    <input type="submit" value="Save" class="btn btn-primary" />
+                                
+                                <div class="form-group pt-2">
+                                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
                                 </div>
                             </form>
                         </div>
@@ -57,10 +59,6 @@
             </div>
         </div>
     </div>
-</div>
-                           
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

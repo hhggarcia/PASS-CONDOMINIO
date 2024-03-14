@@ -126,7 +126,7 @@ namespace Prueba.Repositories
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id del condominio</param>
         /// <returns></returns>
         public async Task<RegistroPagoVM> FormRegistrarPago(int id)
         {
@@ -875,6 +875,21 @@ namespace Prueba.Repositories
             return resultado;
         }
 
+
+        public async Task<PagoNominaVM> FormRegistrarPagoNomina(int id)
+        {
+            var modelo = new PagoNominaVM();
+
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
+            var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
+            var subcuentasModel = await _repoCuentas.ObtenerGastos(id);
+
+            var empleados = await _context.Empleados.Where(c => c).ToListAsync();
+
+            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+        }
         /// <summary>
         /// 
         /// </summary>

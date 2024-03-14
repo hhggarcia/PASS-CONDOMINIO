@@ -23,19 +23,15 @@ public partial class Transaccion
 
     public decimal Cancelado { get; set; }
 
-    public bool FormaPago { get; set; }
+    public string SimboloMoneda { get; set; } = null!;
 
-    public int IdCodCuentaBanco { get; set; }
+    public string SimboloRef { get; set; } = null!;
 
-    public string NumDocumento { get; set; } = null!;
+    public decimal ValorDolar { get; set; }
 
-    public int IdGrupoGasto { get; set; }
-
-    public virtual CodigoCuentasGlobal IdCodCuentaBancoNavigation { get; set; } = null!;
+    public decimal MontoRef { get; set; }
 
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
-
-    public virtual GrupoGasto IdGrupoGastoNavigation { get; set; } = null!;
 
     public virtual Propiedad? IdPropiedadNavigation { get; set; }
 

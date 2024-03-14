@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
@@ -15,17 +16,28 @@ namespace Prueba.Controllers
 
     public class DeduccionesController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public DeduccionesController(NuevaAppContext context)
+        public DeduccionesController(IMonedaRepository repoMoneda,
+            NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
         // GET: Deducciones
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var nuevaAppContext = _context.Deducciones.Include(d => d.IdEmpleadoNavigation);
+        //    return View(await nuevaAppContext.ToListAsync());
+        //}
+
+        // GET: Deducciones
+        public async Task<IActionResult> Index(int id)
         {
-            var nuevaAppContext = _context.Deducciones.Include(d => d.IdEmpleadoNavigation);
+            var nuevaAppContext = _context.Deducciones.Include(d => d.IdEmpleadoNavigation).Where(c => c.IdEmpleado == id);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -51,7 +63,7 @@ namespace Prueba.Controllers
         // GET: Deducciones/Create
         public IActionResult Create()
         {
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
             return View();
         }
 
@@ -66,11 +78,20 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
+
+                if (monedaPrincipal != null)
+                {
+                    deduccion.RefMonto = deduccion.Monto / monedaPrincipal.ValorDolar;
+                }
                 _context.Add(deduccion);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Empleados");
+
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
@@ -87,7 +108,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
@@ -108,6 +129,14 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
+
+                    if (monedaPrincipal != null)
+                    {
+                        deduccion.RefMonto = deduccion.Monto / monedaPrincipal.ValorDolar;
+                    }
                     _context.Update(deduccion);
                     await _context.SaveChangesAsync();
                 }
@@ -122,9 +151,10 @@ namespace Prueba.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("Index", "Empleados");
             }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Cedula", deduccion.IdEmpleado);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }
 
@@ -153,13 +183,14 @@ namespace Prueba.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var deduccion = await _context.Deducciones.FindAsync(id);
+            
             if (deduccion != null)
-            {
+            {                
                 _context.Deducciones.Remove(deduccion);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Empleados");
         }
 
         private bool DeduccionExists(int id)

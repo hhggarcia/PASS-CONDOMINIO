@@ -43,5 +43,7 @@ public partial class Proveedor
 
     public virtual ICollection<NotaDebito> NotaDebitos { get; set; } = new List<NotaDebito>();
 
+    public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();
+
     public virtual ICollection<Transaccion> Transaccions { get; set; } = new List<Transaccion>();
 }

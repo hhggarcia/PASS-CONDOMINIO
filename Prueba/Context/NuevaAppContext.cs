@@ -104,6 +104,8 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<NotaDebito> NotaDebitos { get; set; }
 
+    public virtual DbSet<OrdenPago> OrdenPagos { get; set; }
+
     public virtual DbSet<PagoAnticipo> PagoAnticipos { get; set; }
 
     public virtual DbSet<PagoEmitido> PagoEmitidos { get; set; }
@@ -159,12 +161,12 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Reserva> Reservas { get; set; }
 
     public virtual DbSet<SubCuenta> SubCuenta { get; set; }
-    
+
     public virtual DbSet<Transaccion> Transaccions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=CONDOMINIO;Database=nuevaApp;Integrated Security=false;MultipleActiveResultSets=true;TrustServerCertificate=true;User Id=CondominioApp;Password=Pass123456*");
+        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -319,6 +321,7 @@ public partial class NuevaAppContext : DbContext
             entity.ToTable("Cliente");
 
             entity.Property(e => e.Direccion).HasMaxLength(250);
+            entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Nombre).HasMaxLength(50);
             entity.Property(e => e.Representante).HasMaxLength(50);
             entity.Property(e => e.Rif).HasMaxLength(15);
@@ -332,12 +335,10 @@ public partial class NuevaAppContext : DbContext
 
             entity.HasOne(d => d.IdRetencionIslrNavigation).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.IdRetencionIslr)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cliente_islr");
 
             entity.HasOne(d => d.IdRetencionIvaNavigation).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.IdRetencionIva)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cliente_iva");
         });
 
@@ -542,8 +543,8 @@ public partial class NuevaAppContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CondominioNomina_Condominio");
 
-            entity.HasOne(d => d.IdReciboNominaNavigation).WithMany()
-                .HasForeignKey(d => d.IdReciboNomina)
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany()
+                .HasForeignKey(d => d.IdEmpleado)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CondominioNomina_Recibo_Nomina");
         });
@@ -763,8 +764,14 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.NumControl).HasMaxLength(20);
             entity.Property(e => e.SubTotal).HasColumnType("decimal(18, 2)");
 
+            entity.HasOne(d => d.IdClienteNavigation).WithMany(p => p.FacturaEmitida)
+                .HasForeignKey(d => d.IdCliente)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FacturaEmitida_Cliente");
+
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.FacturaEmitida)
                 .HasForeignKey(d => d.IdCodCuenta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacturaEmitida_CodigoCuentas_Global");
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.FacturaEmitida)
@@ -778,6 +785,8 @@ public partial class NuevaAppContext : DbContext
             entity.HasKey(e => e.IdFondo);
 
             entity.Property(e => e.IdFondo).HasColumnName("id_Fondo");
+            entity.Property(e => e.FechaFin).HasColumnType("datetime");
+            entity.Property(e => e.FechaInicio).HasColumnType("datetime");
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
             entity.Property(e => e.Porcentaje).HasColumnName("porcentaje");
             entity.Property(e => e.Saldo).HasColumnType("money");
@@ -1059,6 +1068,25 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdProveedor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NotaDebito_Proveedor");
+        });
+
+        modelBuilder.Entity<OrdenPago>(entity =>
+        {
+            entity.HasKey(e => e.IdOrdenPago);
+
+            entity.ToTable("OrdenPago");
+
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+
+            entity.HasOne(d => d.IdPagoEmitidoNavigation).WithMany(p => p.OrdenPagos)
+                .HasForeignKey(d => d.IdPagoEmitido)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrdenPago_Pago_Emitido");
+
+            entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.OrdenPagos)
+                .HasForeignKey(d => d.IdProveedor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrdenPago_Proveedor");
         });
 
         modelBuilder.Entity<PagoAnticipo>(entity =>
@@ -1407,6 +1435,8 @@ public partial class NuevaAppContext : DbContext
             entity.HasKey(e => e.IdProvision);
 
             entity.Property(e => e.IdProvision).HasColumnName("id_provision");
+            entity.Property(e => e.FechaFin).HasColumnType("datetime");
+            entity.Property(e => e.FechaInicio).HasColumnType("datetime");
             entity.Property(e => e.IdCodCuenta).HasColumnName("id_codCuenta");
             entity.Property(e => e.IdCodGasto).HasColumnName("id_codGasto");
             entity.Property(e => e.Monto)
@@ -1497,7 +1527,6 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Concepto).HasMaxLength(50);
             entity.Property(e => e.Entregado).HasColumnName("entregado");
             entity.Property(e => e.Fecha).HasColumnType("datetime");
-            entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
             entity.Property(e => e.PagoTotal).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.RefMonto).HasColumnType("money");
 
@@ -1644,23 +1673,16 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Documento)
                 .HasMaxLength(10)
                 .IsFixedLength();
+            entity.Property(e => e.MontoRef).HasColumnType("money");
             entity.Property(e => e.MontoTotal).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.NumDocumento).HasMaxLength(50);
+            entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
+            entity.Property(e => e.SimboloRef).HasMaxLength(2);
+            entity.Property(e => e.ValorDolar).HasColumnType("money");
 
-            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.TransaccionIdCodCuentaNavigations)
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Transaccions)
                 .HasForeignKey(d => d.IdCodCuenta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Transaccion_CodigoCuentas_Global");
-
-            entity.HasOne(d => d.IdCodCuentaBancoNavigation).WithMany(p => p.TransaccionIdCodCuentaBancoNavigations)
-                .HasForeignKey(d => d.IdCodCuentaBanco)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Transaccion_CodigoCuentas_Global1");
-
-            entity.HasOne(d => d.IdGrupoGastoNavigation).WithMany(p => p.Transaccions)
-                .HasForeignKey(d => d.IdGrupoGasto)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Transaccion_GrupoGastos");
 
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.Transaccions)
                 .HasForeignKey(d => d.IdPropiedad)

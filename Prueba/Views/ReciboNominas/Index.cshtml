@@ -1,15 +1,14 @@
-﻿@model IEnumerable<Prueba.Models.Percepcion>
+﻿@model IEnumerable<Prueba.Models.ReciboNomina>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3" asp-controller="Percepciones"
+        <a class="btn btn-light mb-3"
            asp-action="Create">
             Registrar
         </a>
@@ -38,7 +37,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Percepciones
+                        Recibos Nomina
                     </h6>
 
                 </div>
@@ -51,16 +50,22 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.Entregado)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Fecha)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Periodo)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Concepto)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Monto)
+                                        @Html.DisplayNameFor(model => model.PagoTotal)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.RefMonto)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Activo)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
@@ -75,24 +80,30 @@
                                     {
                                         <tr>
                                             <td>
+                                                @Html.DisplayFor(modelItem => item.Entregado)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Fecha)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Periodo)
+                                            </td>
+                                            <td>
                                                 @Html.DisplayFor(modelItem => item.Concepto)
                                             </td>
                                             <td>
-                                                @Html.DisplayFor(modelItem => item.Monto)
+                                                @Html.DisplayFor(modelItem => item.PagoTotal)
                                             </td>
                                             <td>
                                                 @Html.DisplayFor(modelItem => item.RefMonto)
                                             </td>
                                             <td>
-                                                @Html.DisplayFor(modelItem => item.Activo)
-                                            </td>
-                                            <td>
                                                 @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.Nombre)
                                             </td>
                                             <td>
-                                                <a asp-action="Edit" asp-route-id="@item.IdPercepcion">Editar</a> |
-                                                <a asp-action="Details" asp-route-id="@item.IdPercepcion">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.IdPercepcion">Eliminar</a>
+                                                <a asp-action="Edit" asp-route-id="@item.IdReciboNomina">Editar</a> |
+                                                <a asp-action="Details" asp-route-id="@item.IdReciboNomina">Detalles</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdReciboNomina">Eliminar</a>
                                             </td>
                                         </tr>
                                     }
@@ -119,3 +130,5 @@
         </div>
     </div>
 </div>
+
+

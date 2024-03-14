@@ -1,9 +1,8 @@
-﻿@model Prueba.Models.Percepcion
+﻿@model Prueba.Models.OrdenPago
 
 @{
     ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -13,7 +12,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Percepciones
+                        Ordenes de Pago
                     </h6>
                 </div>
                 <div class="card-body">
@@ -24,41 +23,29 @@
                                 <div class="col-md-12">
                                     <div class="card-body">
                                         <h6>Are you sure you want to delete this?</h6>
-
+                                        <hr />
                                         <dl class="row">
                                             <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Concepto)
+                                                @Html.DisplayNameFor(model => model.Fecha)
                                             </dt>
                                             <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Concepto)
+                                                @Html.DisplayFor(model => model.Fecha)
                                             </dd>
                                             <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Monto)
+                                                @Html.DisplayNameFor(model => model.IdPagoEmitidoNavigation)
                                             </dt>
                                             <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Monto)
+                                                @Html.DisplayFor(model => model.IdPagoEmitidoNavigation.IdPagoEmitido)
                                             </dd>
                                             <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.RefMonto)
+                                                @Html.DisplayNameFor(model => model.IdProveedorNavigation)
                                             </dt>
                                             <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.RefMonto)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Activo)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Activo)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.IdEmpleadoNavigation.Nombre)
+                                                @Html.DisplayFor(model => model.IdProveedorNavigation.Nombre)
                                             </dd>
                                         </dl>
                                         <form asp-action="Delete">
-                                            <input type="hidden" asp-for="IdPercepcion" />
+                                            <input type="hidden" asp-for="IdOrdenPago" />
                                             <input type="submit" value="Eliminar" class="btn btn-danger" />
                                             <a asp-action="Index" class="btn btn-secondary">Volver</a>
                                         </form>

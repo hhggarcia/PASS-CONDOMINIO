@@ -33,13 +33,17 @@ public partial class FacturaEmitida
 
     public int IdCodCuenta { get; set; }
 
+    public int IdCliente { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();
 
     public virtual ICollection<CuentasCobrar> CuentasCobrars { get; set; } = new List<CuentasCobrar>();
 
-    public virtual CodigoCuentasGlobal? IdCodCuentaNavigation { get; set; }
+    public virtual Cliente IdClienteNavigation { get; set; } = null!;
+
+    public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Producto IdProductoNavigation { get; set; } = null!;
 

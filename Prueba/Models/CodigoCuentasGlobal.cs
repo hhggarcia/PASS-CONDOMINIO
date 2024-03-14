@@ -51,7 +51,5 @@ public partial class CodigoCuentasGlobal
 
     public virtual ICollection<Provision> ProvisioneIdCodGastoNavigations { get; set; } = new List<Provision>();
 
-    public virtual ICollection<Transaccion> TransaccionIdCodCuentaBancoNavigations { get; set; } = new List<Transaccion>();
-
-    public virtual ICollection<Transaccion> TransaccionIdCodCuentaNavigations { get; set; } = new List<Transaccion>();
+    public virtual ICollection<Transaccion> Transaccions { get; set; } = new List<Transaccion>();
 }

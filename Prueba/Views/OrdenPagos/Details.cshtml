@@ -1,9 +1,8 @@
-﻿@model Prueba.Models.Percepcion
+﻿@model Prueba.Models.OrdenPago
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -13,7 +12,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Percepciones
+                        Ordenes de Pago
                     </h6>
                 </div>
                 <div class="card-body">
@@ -21,38 +20,26 @@
                         <div class="form-body">
                             <dl class="row">
                                 <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Concepto)
+                                    @Html.DisplayNameFor(model => model.Fecha)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Concepto)
+                                    @Html.DisplayFor(model => model.Fecha)
                                 </dd>
                                 <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Monto)
+                                    @Html.DisplayNameFor(model => model.IdPagoEmitidoNavigation)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Monto)
+                                    @Html.DisplayFor(model => model.IdPagoEmitidoNavigation.IdPagoEmitido)
                                 </dd>
                                 <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.RefMonto)
+                                    @Html.DisplayNameFor(model => model.IdProveedorNavigation)
                                 </dt>
                                 <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.RefMonto)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Activo)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Activo)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdEmpleadoNavigation.Nombre)
+                                    @Html.DisplayFor(model => model.IdProveedorNavigation.Nombre)
                                 </dd>
                             </dl>
                             <div class="col-md-12">
-                                <a asp-action="Edit" asp-route-id="@Model?.IdPercepcion" class="btn btn-primary">Editar</a>
+                                <a asp-action="Edit" asp-route-id="@Model?.IdOrdenPago" class="btn btn-primary">Editar</a>
                                 <a asp-action="Index" class="btn btn-secondary">Volver</a>
                             </div>
                         </div>

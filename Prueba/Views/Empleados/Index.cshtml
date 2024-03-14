@@ -13,6 +13,10 @@
            asp-action="Create">
             Registrar
         </a>
+        <a class="btn btn-light mb-3" asp-controller="Empleados"
+           asp-action="PagoNomina">
+            Pagar
+        </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -96,6 +100,9 @@
                                             @Html.DisplayFor(modelItem => item.RefMonto)
                                         </td>
                                         <td>
+                                            <a asp-action="VerDeducciones" asp-route-id="@item.IdEmpleado">Deducciones</a> |
+                                            <a asp-action="VerPercepciones" asp-route-id="@item.IdEmpleado">Percepciones</a> |
+                                            <a asp-action="VerRecibosNomina" asp-route-id="@item.IdEmpleado">Recibos</a> |
                                             <a asp-action="Edit" asp-route-id="@item.IdEmpleado">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdEmpleado">Detalles</a> |
                                             <a asp-action="Delete" asp-route-id="@item.IdEmpleado">Eliminar</a>

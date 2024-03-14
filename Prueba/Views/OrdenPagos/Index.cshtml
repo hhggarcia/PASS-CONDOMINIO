@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Prueba.Models.NotaDebito>
+﻿@model IEnumerable<Prueba.Models.OrdenPago>
 
 @{
     ViewData["Title"] = "Index";
@@ -33,7 +33,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Notas de Debito
+                        Ordenes de Pago
                     </h6>
 
                 </div>
@@ -46,13 +46,10 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.NumNotaDebito)
+                                        @Html.DisplayNameFor(model => model.Fecha)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Concepto)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Abonado)
+                                        @Html.DisplayNameFor(model => model.IdPagoEmitidoNavigation)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdProveedorNavigation)
@@ -65,21 +62,18 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.NumNotaDebito)
+                                            @Html.DisplayFor(modelItem => item.Fecha)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Concepto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Abonado)
+                                            @Html.DisplayFor(modelItem => item.IdPagoEmitidoNavigation.IdPagoEmitido)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
                                         </td>
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdNotaDebito">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdNotaDebito">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdNotaDebito">Eliminar</a>
+                                            <a asp-action="Edit" asp-route-id="@item.IdOrdenPago">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdOrdenPago">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdOrdenPago">Eliminar</a>
                                         </td>
                                     </tr>
                                 }
@@ -91,5 +85,4 @@
         </div>
     </div>
 </div>
-
 

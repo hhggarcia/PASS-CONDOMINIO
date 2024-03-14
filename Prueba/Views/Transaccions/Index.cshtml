@@ -61,19 +61,19 @@
                                         @Html.DisplayNameFor(model => model.Cancelado)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.FormaPago)
+                                        @Html.DisplayNameFor(model => model.SimboloMoneda)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.NumDocumento)
+                                        @Html.DisplayNameFor(model => model.SimboloRef)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdCodCuentaBancoNavigation)
+                                        @Html.DisplayNameFor(model => model.ValorDolar)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.MontoRef)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdGrupoGastoNavigation)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
@@ -104,25 +104,25 @@
                                             @Html.DisplayFor(modelItem => item.Cancelado)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.FormaPago)
+                                            @Html.DisplayFor(modelItem => item.SimboloMoneda)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.NumDocumento)
+                                            @Html.DisplayFor(modelItem => item.SimboloRef)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdCodCuentaBancoNavigation.IdCodCuenta)
+                                            @Html.DisplayFor(modelItem => item.ValorDolar)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MontoRef)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdGrupoGastoNavigation.IdGrupoGasto)
+                                            @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.Codigo)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.IdPropiedad)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.IdProveedor)
+                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
                                         </td>
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdTransaccion">Editar</a> |
@@ -133,6 +133,7 @@
                                 }
                             </tbody>
                         </table>
+
                     </div>
                 </div>
             </div>
