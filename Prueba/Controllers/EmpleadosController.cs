@@ -131,6 +131,13 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                    var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
+
+                    if (monedaPrincipal != null)
+                    {
+                        empleado.RefMonto = empleado.BaseSueldo / monedaPrincipal.ValorDolar;
+                    }
                     _context.Update(empleado);
                     await _context.SaveChangesAsync();
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.Services;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -15,17 +19,29 @@ namespace Prueba.Controllers
 
     public class OrdenPagosController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
+        private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly NuevaAppContext _context;
 
-        public OrdenPagosController(NuevaAppContext context)
+        public OrdenPagosController(IPDFServices servicesPDF,
+            IPagosEmitidosRepository repoPagosEmitidos,
+            NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
+            _repoPagosEmitidos = repoPagosEmitidos;
             _context = context;
         }
 
         // GET: OrdenPagos
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.OrdenPagos.Include(o => o.IdPagoEmitidoNavigation).Include(o => o.IdProveedorNavigation);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.OrdenPagos
+                .Include(o => o.IdPagoEmitidoNavigation)
+                .Include(o => o.IdProveedorNavigation)
+                .Where(c => c.IdProveedorNavigation.IdCondominio == idCondominio);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -165,9 +181,160 @@ namespace Prueba.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public IActionResult ConfirmarPago(OrdenPagoVM modelo)
+        {
+            return View(modelo);
+        }
+
+        public IActionResult Comprobante(OrdenPagoVM modelo)
+        {
+            return View(modelo);
+        }
+        public async Task<IActionResult> OrdenPago()
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            // cargar formulario
+            var modelo = await _repoPagosEmitidos.FormOrdenPago(idCondominio);
+            // usar el repositorio?
+
+            return View(modelo);
+        }
+        
+        public async Task<IActionResult> RegistrarPagosPost(OrdenPagoVM modelo)
+        {
+            try
+            {
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                {
+                    modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    if (modelo.Pagoforma == FormaPago.Transferencia)
+                    {
+                        var existPagoTransferencia = from pago in _context.PagoEmitidos
+                                                     join referencia in _context.ReferenciasPes
+                                                     on pago.IdPagoEmitido equals referencia.IdPagoEmitido
+                                                     where pago.IdCondominio == modelo.IdCondominio
+                                                     where referencia.NumReferencia == modelo.NumReferencia
+                                                     select new { pago, referencia };
+
+                        if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = "Ya existe un pago registrado con este número de referencia!"
+                            };
+
+                            return View("Error", modeloError);
+                        }
+                    }
+
+                    var resultado = await _repoPagosEmitidos.RegistrarOrdenPago(modelo);
+
+                    if (resultado == "exito")
+                    {
+                        var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
+
+                        var idSubCuenta = (from c in _context.CodigoCuentasGlobals
+                                           where c.IdCodCuenta == modelo.IdSubcuenta
+                                           select c.IdSubCuenta).First();
+
+                        var gasto = from c in _context.SubCuenta
+                                    where c.Id == idSubCuenta
+                                    select c;
+
+                        var comprobante = new ComprobanteOrdenPago()
+                        {
+                            Condominio = condominio,
+                            Concepto = modelo.Concepto,
+                            Pagoforma = modelo.Pagoforma,
+                            Mensaje = "¡Gracias por su pago!",
+                            Gasto = gasto.First()
+                        };
+
+                        if (modelo.Pagoforma == FormaPago.Transferencia)
+                        {
+                            var banco = from c in _context.SubCuenta
+                                        where c.Id == modelo.IdCodigoCuentaBanco
+                                        select c;
+
+                            comprobante.Banco = banco.First();
+                            comprobante.NumReferencia = modelo.NumReferencia;
+
+                        }
+                        else
+                        {
+                            var caja = from c in _context.SubCuenta
+                                       where c.Id == modelo.IdCodigoCuentaCaja
+                                       select c;
+
+                            comprobante.Caja = caja.First();
+                        }
+                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == modelo.IdProveedor).FirstAsync();
+
+                        comprobante.Pago.Monto = modelo.Monto;
+                        comprobante.Pago.Fecha = modelo.Fecha;
+                        comprobante.Beneficiario = proveedor.Nombre;
+
+                        TempData.Keep();
+
+                        return View("Comprobante", comprobante);
+                    }
+
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = resultado;
+                    //traer subcuentas del condominio
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    modelo = await _repoPagosEmitidos.FormOrdenPago(idCondominio);
+
+                    TempData.Keep();
+
+                    return View("OrdenPago", modelo);
+
+                }
+                //traer subcuentas del condominio
+                var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormOrdenPago(id);
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "Ha ocurrido un error inesperado";
+
+                return View("OrdenPago", modelo);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
         private bool OrdenPagoExists(int id)
         {
             return _context.OrdenPagos.Any(e => e.IdOrdenPago == id);
+        }
+
+        public ContentResult ComprobantePDF([FromBody] ComprobanteOrdenPago modelo)
+        {
+            try
+            {
+                var data = _servicesPDF.ComprobanteOrdenPagoPDF(modelo);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
     }
 }

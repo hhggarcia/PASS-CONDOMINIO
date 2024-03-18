@@ -1,0 +1,456 @@
+﻿@using Prueba.ViewModels
+
+@model OrdenPagoVM
+@{
+    ViewData["Title"] = "Pagos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+    </div>*@
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Reporte aquí los Pagos
+                    </h6>
+                </div>
+                <div class="card-body">
+
+                    @if (Model.SubCuentasBancos != null
+                    && Model.SubCuentasBancos.Count > 0
+                    && Model.SubCuentasCaja != null
+                    && Model.SubCuentasCaja.Count > 0
+                    && Model.SubCuentasGastos != null
+                    && Model.SubCuentasGastos.Count > 0)
+                    {
+                        <!-- Inicio -->
+
+                        <form class="form form-horizontal" asp-action="ConfirmarPago">
+                            @if (@ViewBag.FormaPago == "fallido")
+                            {
+                                <h6>@ViewBag.Mensaje</h6>
+                                <hr />
+                            }
+                            <div class="form-body">
+                                <div class="row">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                    <!-- Proveedor -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Proveedor</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="proveedorSelect" asp-for="IdProveedor">
+                                                        <option value="">Seleccione un proveedor</option>
+                                                        @foreach (var factura in Model.Proveedor)
+                                                        {
+                                                            <option value="@factura.Value">@factura.Text</option>
+                                                        }
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Monto -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Monto</label>
+                                            <span asp-validation-for="Monto" class="text-danger"></span>
+                                            <span id="validatonMonto" class="text-danger"></span>
+                                            <div class="position-relative">
+                                                @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
+                                                <input type="text"
+                                                       class="form-control"
+                                                       placeholder="Monto"
+                                                       id="montoInput"
+                                                       asp-for="Monto" /> <!-- Agregar el atributo disabled -->
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Fecha -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left">
+                                            <label for="last-name-column">Fecha</label>
+                                            <span asp-validation-for="Fecha" class="text-danger"></span>
+
+                                            <div class="position-relative">
+                                                <input class="form-control"
+                                                       placeholder="Fecha"
+                                                       id="first-name-icon"
+                                                       required
+                                                       value="@DateTime.Today"
+                                                       asp-for="Fecha" />
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-calendar-date"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Subcuentas -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Sub Cuentas</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-gro up">
+                                                    <select class="form-select" id="basicSelect"
+                                                            asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
+                                                        <option value="">Seleccione la Sub Cuenta a pagar</option>
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Concepto -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left">
+                                            <label for="last-name-column">Concepto</label>
+                                            <span asp-validation-for="Concepto" class="text-danger"></span>
+
+                                            <div class="position-relative">
+                                                <input type="text"
+                                                       class="form-control"
+                                                       placeholder="Concepto"
+                                                       id="concepto"
+                                                       required
+                                                       asp-for="Concepto" />
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-building"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Método de Pago</label>
+                                            <div class="position-relative">
+                                                <div class="tab-area">
+
+                                                    <div class="col-sm-5">
+
+                                                        <select asp-for="Pagoforma" id='mySelect' class="form-select nav-tabs-selector">
+
+                                                            <option value="0">
+                                                                Efectivo
+                                                            </option>
+                                                            <option value="1">
+                                                                Transferencia
+                                                            </option>
+                                                        </select>
+                                                    </div>
+
+                                                    <ul class="nav nav-tabs mt-3" id="myTab">
+                                                        <li class="active"><a href="#home"></a></li>
+                                                        <li><a href="#profile"></a></li>
+                                                        <li><a href="#messages"></a></li>
+                                                        <li><a href="#settings"></a></li>
+                                                    </ul>
+
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="home">
+                                                            <!-- Efectivo -->
+                                                            <div class="card-body">
+                                                                <div class="form form-horizontal">
+                                                                    <div class="form-body">
+                                                                        <div class="row">
+
+                                                                            <!-- Tipo de Banco -->
+                                                                            <div class="col-md-12 col-12">
+                                                                                <div class="form-group has-icon-left mandaory">
+                                                                                    @*                                                                        <label for="last-name-column">Banco</label>*@
+                                                                                    <div class="position-relative">
+                                                                                        <fieldset class="form-group">
+                                                                                            <select asp-for="IdCodigoCuentaCaja"
+                                                                                                    asp-items="Model.SubCuentasCaja"
+                                                                                                    class="form-select" id="basicSelect">
+                                                                                                <option value="0">Seleccione un tipo de efectivo</option>
+                                                                                            </select>
+                                                                                        </fieldset>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="profile">
+                                                            <!-- Transferencia -->
+                                                            <div class="card-body">
+                                                                <div class="form form-horizontal">
+                                                                    <div class="form-body">
+                                                                        <div class="row">
+                                                                            <!-- Pago Emitido -->
+                                                                            <div class="col-md-6 col-12">
+                                                                                <div class="form-group has-icon-left">
+                                                                                    <label for="last-name-column">Número de Referencia</label>
+                                                                                    <div class="position-relative">
+                                                                                        <input type="number" class="form-control"
+                                                                                               placeholder="Referencia" id="first-name-icon" required=""
+                                                                                               asp-for="NumReferencia">
+                                                                                        <div class="form-control-icon">
+                                                                                            <i class="bi bi-credit-card"></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!-- Tipo de Banco -->
+                                                                            <div class="col-md-6 col-12">
+                                                                                <div class="form-group has-icon-left mandaory">
+                                                                                    <label for="last-name-column">Banco</label>
+                                                                                    <div class="position-relative">
+                                                                                        <fieldset class="form-group">
+                                                                                            <select asp-for="IdCodigoCuentaBanco"
+                                                                                                    asp-items="Model.SubCuentasBancos"
+                                                                                                    class="form-select" id="basicSelect">
+                                                                                                <option value="0">Seleccione un banco</option>
+                                                                                            </select>
+                                                                                        </fieldset>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="tab-pane" id="messages">
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="submit"
+                                                class="btn btn-primary me-1 mb-1">
+                                            Enviar
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <h3>No se ha podido cargar el Formulario!</h3>
+
+                        <p> Registre sub-cuentas en Bancos y Caja. Contabilidad > Plan de Cuentas > Registrar SubCuenta </p>
+                        <p> Registre Monedas. Configuración > Monedas > Registrar </p>
+                        <p> Asigne una Moneda a las cuentas de Caja y Banco. Configuración > Cuentas > Registrar </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row -->
+</div>
+<!-- /.container-fluid -->
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    @* <script>
+        // $(document).on('change', '#facturaSelect', function () {
+        //     var facturaId = $(this).val();
+        //     console.log('ID de factura seleccionado:', facturaId); // Agrega esta línea para depurar
+
+        //     $.ajax({
+        //         url: '/PagosEmitidos/ObtenerFactura',
+        //         type: 'GET',
+        //         data: { facturaId: facturaId },
+        //         success: function (data) {
+        //             $('#montoInput').val(data.monto);
+        //             // Permitir la edición del campo de monto
+        //             $('#montoInput').prop('readonly', false);
+        //         },
+        //         error: function (error) {
+        //             console.error('Error al obtener las facturas: ', error);
+        //         }
+        //     });
+        // });
+        $(document).ready(function () {
+            var montoFacturaOriginal;
+            var montoAnticipo = 0;
+            var datAnticipo;
+            var selectOptionAnticipo = false;
+
+            $('.anticipo-group').hide();
+            $('#proveedorSelect').change(function () {
+                var proveedorId = $(this).val();
+
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerFacturasPorProveedor',
+                    type: 'GET',
+                    data: { proveedorId: proveedorId },
+                    success: function (data) {
+                        if (data.length > 0) {
+                            $('#facturaSelect').empty();
+                            $('#facturaSelect').append('<option value="">Seleccione una factura</option>');
+                            $.each(data, function (index, item) {
+                                $('#facturaSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+                            $('#facturaMessage').hide();
+                        } else {
+                            $('#facturaSelect').empty();
+                            $('#facturaMessage').show();
+                        }
+
+                        // $.each(data, function (index, item) {
+                        //     $('#facturaSelect').append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                        // });
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las facturas: ', error);
+                    }
+                });
+            });
+            $('#facturaSelect').change(function () {
+                var facturaId = $(this).val();
+
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerFactura',
+                    type: 'GET',
+                    data: { facturaId: facturaId },
+                    success: function (data) {
+                        montoFacturaOriginal = parseFloat(data.monto);
+                        if (montoAnticipo != 0 && selectOptionAnticipo) {
+                            var precioTotal = montoFacturaOriginal - montoAnticipo;
+                            $('#montoInput').val(precioTotal);
+                        } else {
+                            $('#montoInput').val(data.monto);
+                        }
+
+                        $('#concepto').val(data.descripcion);
+                        $('#RetIvaInput').val(data.iva);
+                        $('#RetIslrInput').val(data.islr);
+
+
+                        // Permitir la edición del campo de monto
+                        $('#montoInput').prop('disabled', false);
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las facturas: ', error);
+                    }
+                });
+            });
+            $('#montoInput').on('input', function () {
+                var montoInput = parseFloat($(this).val());
+                var montoTotal = montoInput + montoAnticipo;
+
+                // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
+                //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
+                //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                //     $(this).val(montoFacturaOriginal);
+                // }
+                if (montoFacturaOriginal < montoTotal) {
+                    $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                    // alert('El monto ingresado no puede ser mayor al monto de la factura.');
+                    if (montoAnticipo != 0 && selectOptionAnticipo) {
+                        var precioTotal = montoFacturaOriginal - montoAnticipo;
+                        $('#montoInput').val(precioTotal);
+                    } else {
+                        $(this).val(montoFacturaOriginal);
+                    }
+                } else {
+                    $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+                }
+                // if (montoAnticipo != 0 && montoInput != montoAnticipo){
+                //     alert('El monto ingresado no puede ser diferente al del anticipo.');
+                //     // $(this).val(montoAnticipo);
+                //     $('#montoInput').val(montoAnticipo);
+
+                // }
+            });
+
+            $('#basicSelectAnticipos').change(function () {
+                var opcionSeleccionada = $(this).val();
+
+                if (opcionSeleccionada === 'Si') {
+                    var proveedorId = $('#proveedorSelect').val();
+                    selectOptionAnticipo = true;
+
+                    obtenerAnticiposPorProveedor(proveedorId);
+                } else {
+                    selectOptionAnticipo = false;
+                    $('.anticipo-group').hide();
+                    $('#montoInput').val(montoFacturaOriginal);
+
+                    // Ocultar el grupo de anticipos
+                    // $('#montoInput').prop('readonly', false); // Deshabilitar el campo
+                }
+            });
+
+            function obtenerAnticiposPorProveedor(proveedorId) {
+                $.ajax({
+                    url: '/PagosEmitidos/ObtenerAnticiposPorProveedor',
+                    type: 'GET',
+                    data: { proveedorId: proveedorId },
+                    success: function (data) {
+                        datAnticipo = data;
+                        $('#basicSelect').empty();
+                        $('#basicSelect').append('<option value="">Seleccione un anticipo</option>');
+
+                        $.each(data, function (index, item) {
+                            $('#basicSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        });
+                        // $('#montoInput').val(data.saldo);
+                        // $('#montoInput').prop('disabled', true); // Deshabilitar el campo
+                        $('.anticipo-group').show();  // Mostrar el grupo de anticipos
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener los anticipos: ', error);
+                    }
+                });
+            }
+            $('#basicSelect').change(function () {
+                var opcionSeleccionada = $(this).val();
+                var selectedAnticipo = datAnticipo.find(item => item.value == opcionSeleccionada);
+                if (selectedAnticipo) {
+                    var precioSeleccionado = selectedAnticipo.precio;
+                    montoAnticipo = precioSeleccionado;
+                    if (montoAnticipo > montoFacturaOriginal) {
+                        $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                        // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                        $('#montoInput').val(montoFacturaOriginal);
+                        $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+                    } else {
+                        var precioTotal = montoFacturaOriginal - montoAnticipo;
+                        $('#montoInput').val(precioTotal);
+                        $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+
+                    }
+                    // $('#montoInput').prop('disabled', true);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $('.nav-tabs-selector').on('change', function (e) {
+            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+    </script> *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+

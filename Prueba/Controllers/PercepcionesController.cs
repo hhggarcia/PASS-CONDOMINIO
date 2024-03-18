@@ -83,7 +83,7 @@ namespace Prueba.Controllers
 
                 if (monedaPrincipal != null)
                 {
-                    percepcion.Monto = percepcion.RefMonto * monedaPrincipal.ValorDolar;
+                    percepcion.RefMonto = percepcion.Monto / monedaPrincipal.ValorDolar;
                 }
 
                 _context.Add(percepcion);
@@ -136,7 +136,7 @@ namespace Prueba.Controllers
 
                     if (monedaPrincipal != null)
                     {
-                        percepcion.Monto = percepcion.RefMonto * monedaPrincipal.ValorDolar;
+                        percepcion.RefMonto = percepcion.Monto / monedaPrincipal.ValorDolar;
                     }
 
                     _context.Update(percepcion);
