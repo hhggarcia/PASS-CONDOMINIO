@@ -534,16 +534,16 @@ public partial class NuevaAppContext : DbContext
 
         modelBuilder.Entity<CondominioNomina>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("CondominioNomina");
+            entity.HasKey(e => e.IdCondominioNomina);
 
-            entity.HasOne(d => d.IdCondominioNavigation).WithMany()
+            entity.ToTable("CondominioNomina");
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.CondominioNominas)
                 .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CondominioNomina_Condominio");
 
-            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany()
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.CondominioNominas)
                 .HasForeignKey(d => d.IdEmpleado)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CondominioNomina_Recibo_Nomina");
@@ -1190,7 +1190,6 @@ public partial class NuevaAppContext : DbContext
 
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.PagoRecibidos)
                 .HasForeignKey(d => d.IdPropiedad)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Pago_Recibido_Propiedad");
         });
 

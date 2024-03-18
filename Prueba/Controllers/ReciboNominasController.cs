@@ -19,13 +19,19 @@ namespace Prueba.Controllers
             _context = context;
         }
 
+        //// GET: ReciboNominas
+        //public async Task<IActionResult> Index()
+        //{
+        //    var nuevaAppContext = _context.ReciboNominas.Include(r => r.IdEmpleadoNavigation);
+        //    return View(await nuevaAppContext.ToListAsync());
+        //}
+
         // GET: ReciboNominas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id)
         {
-            var nuevaAppContext = _context.ReciboNominas.Include(r => r.IdEmpleadoNavigation);
+            var nuevaAppContext = _context.ReciboNominas.Include(r => r.IdEmpleadoNavigation).Where(c => c.IdEmpleado == id);
             return View(await nuevaAppContext.ToListAsync());
         }
-
         // GET: ReciboNominas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -149,6 +155,13 @@ namespace Prueba.Controllers
             var reciboNomina = await _context.ReciboNominas.FindAsync(id);
             if (reciboNomina != null)
             {
+                var pagosRecibos = await _context.PagosNominas.Where(c => c.IdReciboNomina == id).ToListAsync();
+
+                if (pagosRecibos != null)
+                {
+                    _context.PagosNominas.RemoveRange(pagosRecibos);
+                }
+
                 _context.ReciboNominas.Remove(reciboNomina);
             }
 

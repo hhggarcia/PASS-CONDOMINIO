@@ -31,6 +31,7 @@ namespace Prueba.Services
         byte[] EstadoDeResultadoPDF(EstadoResultadoVM estadoResultado);
         byte[] PagosEmitidosPDF(IndexPagosVM indexPagosVM);
         byte[] RelacionGastosPDF(RelacionDeGastosVM relacionDeGastos);
+        byte[] ComprobantePagosNominaPDF(ComprobantePagoNomina pagoNomina);
     }
     public class PDFServices : IPDFServices
     {
@@ -419,7 +420,6 @@ namespace Prueba.Services
             .GeneratePdf();
             return data;
         }
-
         public byte[] DetalleReciboPDF(DetalleReciboVM detalleReciboVM)
         {
             var data = Document.Create(container =>
@@ -740,7 +740,6 @@ namespace Prueba.Services
             .GeneratePdf();
             return data;
         }
-
         public byte[] ComprobantePDF(ComprobanteVM comprobanteVM)
         {
             var data = Document.Create(container =>
@@ -1304,8 +1303,6 @@ namespace Prueba.Services
             .GeneratePdf();
             return data;
         }
-
-
         public byte[] LibroDiarioPDF(LibroDiarioVM ldiarioGlobals)
         {
             var data = Document.Create(container =>
@@ -1457,7 +1454,6 @@ namespace Prueba.Services
             .GeneratePdf();
             return data;
         }
-
         public byte[] RelacionGastosPDF(RelacionDeGastosVM relacionDeGastos)
         {
             var data = Document.Create(container =>
@@ -1672,7 +1668,6 @@ namespace Prueba.Services
           .GeneratePdf();
             return data;
         }
-
         public byte[] EstadoDeResultadoPDF(EstadoResultadoVM estadoResultado)
         {
             var data = Document.Create(container =>
@@ -1906,7 +1901,6 @@ namespace Prueba.Services
         {
 
         }
-
         public byte[] PagosEmitidosPDF(IndexPagosVM indexPagosVM)
         {
             var data = Document.Create(container =>
@@ -2078,6 +2072,211 @@ namespace Prueba.Services
                 });
             })
          .GeneratePdf();
+            return data;
+        }
+
+        public byte[] ComprobantePagosNominaPDF(ComprobantePagoNomina pagoNomina)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Padding(15).Column(col =>
+                        {
+                            col.Item().Image("wwwroot/images/logo-1.png");
+                            col.Item().PaddingTop(10).Text("Fecha: " + DateTime.Today.ToString("MM/yyyy")).Bold().FontSize(14).FontColor("#004581").Bold();
+                            //col.Item().Text("FACTURA: " + comprobanteVM.Factura.NumControl).Bold().FontSize(14).FontColor("#004581").Bold();
+                            //col.Item().Text("Beneficiario").Bold().FontSize(14).FontColor("#004581").Bold();
+                            //col.Item().Text(comprobanteVM.Beneficiario).Bold().FontSize(14).FontColor("#004581");
+                            col.Item().Text("Concepto").Bold().FontSize(14).FontColor("#004581").Bold();
+                            col.Item().Text(pagoNomina.Concepto).Bold().FontSize(14).FontColor("#004581");
+
+                        });
+                        row.RelativeItem().Padding(15).Column(col =>
+                        {
+                            col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(20).FontColor("#004581").Bold();
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Spacing(10);
+                            x.Item().AlignCenter().Text("DATOS NOMINA").Bold();
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Cell().Padding(5).Text("Nombre y Apellido:").Bold();
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text(pagoNomina.Empleado.Nombre);
+                                tabla.Cell().Padding(5).Text(pagoNomina.Empleado.Apellido);
+
+                                tabla.Cell().Padding(5).Text("Ingreso:").Bold();
+                                tabla.Cell().Padding(5).Text(pagoNomina.Empleado.FechaIngreso.ToString("dd/MM/yyyy"));
+                                tabla.Cell().Padding(5).Text("Sueldo Base:").Bold();
+                                tabla.Cell().Padding(5).Text(pagoNomina.Empleado.BaseSueldo.ToString("N") + " Bs");
+
+                                if (pagoNomina.Percepciones.Any())
+                                {
+                                    tabla.Cell().Padding(5).Text("Percepciones").Bold();
+
+                                    tabla.Cell().Padding(5).Text("");
+                                    tabla.Cell().Padding(5).Text("");
+                                    tabla.Cell().Padding(5).Text("");
+
+                                    foreach (var percepcion in pagoNomina.Percepciones)
+                                    {
+                                        tabla.Cell().Padding(5).Text("Concepto:").Bold();
+                                        tabla.Cell().Padding(5).Text(percepcion.Concepto);
+                                        tabla.Cell().Padding(5).Text("Monto:").Bold();
+                                        tabla.Cell().Padding(5).Text("+"+percepcion.Monto.ToString("N")+" Bs");
+                                    }
+                                }
+
+                                if (pagoNomina.Deducciones.Any())
+                                {
+                                    tabla.Cell().Padding(5).Text("Deducciones").Bold();
+                                    tabla.Cell().Padding(5).Text("");
+                                    tabla.Cell().Padding(5).Text("");
+                                    tabla.Cell().Padding(5).Text("");
+                                    foreach (var deduccion in pagoNomina.Deducciones)
+                                    {
+                                        tabla.Cell().Padding(5).Text("Concepto:").Bold();
+                                        tabla.Cell().Padding(5).Text(deduccion.Concepto);
+                                        tabla.Cell().Padding(5).Text("Monto:").Bold();
+                                        tabla.Cell().Padding(5).Text("-"+deduccion.Monto.ToString("N")+" Bs");
+                                    }
+                                }
+
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("Total a pagar ").FontSize(12).Bold();
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text((pagoNomina.Pago.Monto).ToString("N") + " Bs").FontSize(12);
+
+                            });
+
+                            x.Item().AlignCenter().Text("DATOS PAGO").Bold();
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Cell()
+                               .Padding(5).Text("Forma de Pago");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                if (pagoNomina.Pagoforma == FormaPago.Transferencia)
+                                {
+                                    tabla.Cell().Padding(3).Text("Transferencia").FontSize(12);
+
+                                }
+                                else
+                                {
+                                    tabla.Cell().Padding(3).Text("Efectivo").FontSize(12);
+
+                                }
+
+                                tabla.Cell().Padding(5).Text("Fecha");
+
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text(pagoNomina.Pago.Fecha.ToString("dd/MM/yyyy")).FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("Cuenta");
+
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                if (pagoNomina.Pagoforma == FormaPago.Transferencia)
+                                {
+                                    tabla.Cell().Padding(5).Text(pagoNomina.Banco.Descricion).FontSize(12);
+
+                                }
+                                else
+                                {
+                                    tabla.Cell().Padding(5).Text(pagoNomina.Caja.Descricion).FontSize(12);
+
+                                }
+
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+
+                                tabla.Cell().Padding(5).Text("Monto").FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+
+
+                                tabla.Cell().Padding(5).Text((pagoNomina.Pago.Monto).ToString("N")+" Bs").FontSize(12);
+
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                                tabla.Cell().Padding(5).Text("").FontSize(8);
+                            });
+                            x.Item().PaddingTop(20).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+
+                                table.Cell().Padding(5).Text("Elaborado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("Revisado por:").Bold();
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("Karina Lopez");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("______________________");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("Roberto Villagras");
+                                table.Cell().Padding(5).Text("Massimo Ruggiero");
+
+
+
+                            });
+                        });
+
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Tecnology");
+                        });
+                });
+            })
+            .GeneratePdf();
             return data;
         }
     }

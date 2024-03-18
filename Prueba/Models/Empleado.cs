@@ -21,6 +21,8 @@ public partial class Empleado
 
     public decimal RefMonto { get; set; }
 
+    public virtual ICollection<CondominioNomina> CondominioNominas { get; set; } = new List<CondominioNomina>();
+
     public virtual ICollection<Deduccion> Deducciones { get; set; } = new List<Deduccion>();
 
     public virtual ICollection<Percepcion> Percepciones { get; set; } = new List<Percepcion>();
