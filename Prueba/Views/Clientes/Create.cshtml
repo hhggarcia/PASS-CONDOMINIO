@@ -49,6 +49,11 @@
                             <input asp-for="Rif" class="form-control" />
                             <span asp-validation-for="Rif" class="text-danger"></span>
                         </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
                         <div class="form-group form-check">
                             <label class="form-check-label">
                                 @Html.CheckBox("check")  @Html.Label("No aplica Retenciones ISLR")

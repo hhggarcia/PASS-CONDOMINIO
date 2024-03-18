@@ -91,7 +91,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
+        public async Task<IActionResult> Create([Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
         {
             ModelState.Remove(nameof(cliente.IdCondominioNavigation));
             ModelState.Remove(nameof(cliente.IdRetencionIslrNavigation));
@@ -182,7 +182,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
         {
             if (id != cliente.IdCliente)
             {
