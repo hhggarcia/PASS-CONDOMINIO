@@ -88,6 +88,7 @@ namespace Prueba.Repositories
                 var pagoNomina = await _context.PagosNominas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
                 var pagoNotaDebito = await _context.PagosNotaDebitos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
                 var pagoFactura = await _context.PagoFacturas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+                var ordenPagos = await _context.OrdenPagos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
 
                 if (pagoAnticipo != null)
                 {
@@ -104,6 +105,10 @@ namespace Prueba.Repositories
                 if (pagoNotaDebito != null)
                 {
                     _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
+                }
+                if (ordenPagos != null)
+                {
+                    _context.OrdenPagos.RemoveRange(ordenPagos);
                 }
                 if (pagoFactura != null)
                 {
@@ -392,10 +397,27 @@ namespace Prueba.Repositories
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
+                    // resgistrar transaccion
+                    // armar transaccion
+                    var transaccion = new Transaccion
+                    {
+                        TipoTransaccion = false,
+                        IdCodCuenta = modelo.IdSubcuenta,
+                        Descripcion = modelo.Concepto,
+                        MontoTotal = pago.Monto,
+                        Documento = factura.NumFactura.ToString(),
+                        Cancelado = pago.Monto,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = pago.MontoRef
+                    };
+
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
+                        _dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         if (modelo.IdAnticipo != 0)
@@ -1604,14 +1626,15 @@ namespace Prueba.Repositories
                 decimal montoReferencia = 0;
                 var cc = context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
                 modelo.IdSubcuenta = cc.IdCodCuenta;
+
                 
                 // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
                 // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
                 PagoEmitido pago = new PagoEmitido
                 {
-                    IdCondominio = modelo.IdCondominio,
-                    Fecha = modelo.Fecha,
-                    Monto = modelo.Monto
+                    IdCondominio = modelo.Pago.IdCondominio,
+                    Fecha = modelo.Pago.Fecha,
+                    Monto = modelo.Pago.Monto
                 };
 
                 var provisiones = from c in context.Provisiones
@@ -1626,7 +1649,7 @@ namespace Prueba.Repositories
                 var diarioCondominio = from a in context.LdiarioGlobals
                                        join c in context.CodigoCuentasGlobals
                                        on a.IdCodCuenta equals c.IdCodCuenta
-                                       where c.IdCondominio == modelo.IdCondominio
+                                       where c.IdCondominio == modelo.Pago.IdCondominio
                                        select a;
 
                 if (diarioCondominio.Count() > 0)
@@ -1650,7 +1673,7 @@ namespace Prueba.Repositories
                                      select m;
 
                         // si no es principal hacer el cambio
-                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.Pago.IdCondominio);
 
                         // calcular monto referencia
                         if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
@@ -1659,11 +1682,11 @@ namespace Prueba.Repositories
                         }
                         else if (moneda.First().Equals(monedaPrincipal.First()))
                         {
-                            montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                            montoReferencia = modelo.Pago.Monto / monedaPrincipal.First().ValorDolar;
                         }
                         else if (!moneda.First().Equals(monedaPrincipal.First()))
                         {
-                            montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                            montoReferencia = modelo.Pago.Monto / moneda.First().ValorDolar;
                         }
 
                         // disminuir saldo de la cuenta de CAJA
@@ -1671,7 +1694,7 @@ namespace Prueba.Repositories
                                             where m.IdCodCuenta == idCaja.IdCodCuenta
                                             select m).First();
 
-                        monedaCuenta.SaldoFinal -= modelo.Monto;
+                        monedaCuenta.SaldoFinal -= modelo.Pago.Monto;
 
                         pago.FormaPago = false;
                         pago.SimboloMoneda = moneda.First().Simbolo;
@@ -1718,7 +1741,7 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvision = new LdiarioGlobal
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
@@ -1731,9 +1754,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvisionCaja = new LdiarioGlobal
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
                                 NumAsiento = numAsiento + 1,
@@ -1745,9 +1768,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto - provisiones.First().Monto,
+                                Monto = modelo.Pago.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
                                 NumAsiento = numAsiento + 1,
@@ -1788,9 +1811,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoGasto = new LdiarioGlobal
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
                                 NumAsiento = numAsiento + 1,
@@ -1802,9 +1825,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoCaja = new LdiarioGlobal
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
                                 NumAsiento = numAsiento + 1,
@@ -1863,7 +1886,7 @@ namespace Prueba.Repositories
                                      select m;
 
                         // si no es principal hacer el cambio
-                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.Pago.IdCondominio);
 
                         // calcular monto referencia
                         if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
@@ -1872,11 +1895,11 @@ namespace Prueba.Repositories
                         }
                         else if (moneda.First().Equals(monedaPrincipal.First()))
                         {
-                            montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                            montoReferencia = modelo.Pago.Monto / monedaPrincipal.First().ValorDolar;
                         }
                         else if (!moneda.First().Equals(monedaPrincipal.First()))
                         {
-                            montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                            montoReferencia = modelo.Pago.Monto / moneda.First().ValorDolar;
                         }
 
                         // disminuir saldo de la cuenta de CAJA
@@ -1884,7 +1907,7 @@ namespace Prueba.Repositories
                                             where m.IdCodCuenta == idBanco.IdCodCuenta
                                             select m).First();
 
-                        monedaCuenta.SaldoFinal -= modelo.Monto;
+                        monedaCuenta.SaldoFinal -= modelo.Pago.Monto;
 
 
                         pago.MontoRef = montoReferencia;
@@ -1942,7 +1965,7 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvision = new LdiarioGlobal
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
@@ -1956,9 +1979,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvisionBanco = new LdiarioGlobal
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
                                 NumAsiento = numAsiento + 1,
@@ -1970,9 +1993,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoProvisionGasto = new LdiarioGlobal
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto - provisiones.First().Monto,
+                                Monto = modelo.Pago.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
                                 NumAsiento = numAsiento + 1,
@@ -2016,9 +2039,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoGasto = new LdiarioGlobal
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
                                 NumAsiento = numAsiento + 1,
@@ -2030,9 +2053,9 @@ namespace Prueba.Repositories
                             LdiarioGlobal asientoBanco = new LdiarioGlobal
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
-                                Fecha = modelo.Fecha,
+                                Fecha = modelo.Pago.Fecha,
                                 Concepto = modelo.Concepto,
-                                Monto = modelo.Monto,
+                                Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
                                 NumAsiento = numAsiento + 1,

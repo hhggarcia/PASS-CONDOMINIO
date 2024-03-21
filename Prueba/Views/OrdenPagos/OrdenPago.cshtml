@@ -1,6 +1,5 @@
-﻿@using Prueba.ViewModels
+﻿@model Prueba.ViewModels.OrdenPagoVM
 
-@model OrdenPagoVM
 @{
     ViewData["Title"] = "Pagos";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
@@ -65,15 +64,15 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
-                                            <span asp-validation-for="Monto" class="text-danger"></span>
+                                            <span asp-validation-for="Pago.Monto" class="text-danger"></span>
                                             <span id="validatonMonto" class="text-danger"></span>
                                             <div class="position-relative">
                                                 @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
-                                                <input type="text"
-                                                       class="form-control"
-                                                       placeholder="Monto"
-                                                       id="montoInput"
-                                                       asp-for="Monto" /> <!-- Agregar el atributo disabled -->
+                                                <input asp-for="Pago.Monto" lang="es" class="form-control" />
+                                                @* <input type="number"
+                                            class="form-control"
+                                            placeholder="Monto"
+                                            asp-for="Monto" /> *@
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
                                                 </div>
@@ -84,7 +83,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left">
                                             <label for="last-name-column">Fecha</label>
-                                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                                            <span asp-validation-for="Pago.Fecha" class="text-danger"></span>
 
                                             <div class="position-relative">
                                                 <input class="form-control"
@@ -92,7 +91,7 @@
                                                        id="first-name-icon"
                                                        required
                                                        value="@DateTime.Today"
-                                                       asp-for="Fecha" />
+                                                       asp-for="Pago.Fecha" />
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-calendar-date"></i>
                                                 </div>
@@ -267,7 +266,7 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
-    @* <script>
+@*     <script>
         // $(document).on('change', '#facturaSelect', function () {
         //     var facturaId = $(this).val();
         //     console.log('ID de factura seleccionado:', facturaId); // Agrega esta línea para depurar
@@ -452,5 +451,3 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-
-

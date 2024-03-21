@@ -1,6 +1,4 @@
-﻿
-
-using System.Web.WebPages.Html;
+﻿using System.Web.WebPages.Html;
 
 namespace Prueba.ViewModels
 {

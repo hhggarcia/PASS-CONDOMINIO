@@ -7,7 +7,7 @@ public partial class BalanceComprobacion
 {
     public int IdBalanceC { get; set; }
 
-    public decimal Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
     public decimal SaldoInicial { get; set; }
 

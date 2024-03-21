@@ -44,7 +44,7 @@ builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.Re
 // culture
 //builder.Services.Configure<RequestLocalizationOptions>(options =>
 //{
-//    var supportedCultures = new[] { "en-US", "fr" };
+//    var supportedCultures = new[] { "en-US" };
 //    options.SetDefaultCulture(supportedCultures[0])
 //        .AddSupportedCultures(supportedCultures)
 //        .AddSupportedUICultures(supportedCultures);
@@ -68,6 +68,11 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+//app.UseRequestLocalization(new RequestLocalizationOptions
+//{
+//    ApplyCurrentCultureToResponseHeaders = true
+//});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -117,6 +122,7 @@ void AddTransient()
     builder.Services.AddTransient<IRelacionGastoRepository, RelacionGastoRepository>();
     builder.Services.AddTransient<IReportesRepository, ReportesRepository>();
     builder.Services.AddTransient<IPagosEmitidosRepository, PagosEmitidosRepository>();
+    builder.Services.AddTransient<IPagosRecibidosRepository, PagosRecibidosRepository>();
     builder.Services.AddTransient<ILibroDiarioRepository, LibroDiarioRepository>();
     builder.Services.AddTransient<ICuentasContablesRepository, CuentasContablesRepository>();    
     builder.Services.AddTransient<IMonedaRepository, MonedaRepository>();

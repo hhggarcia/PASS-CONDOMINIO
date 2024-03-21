@@ -207,14 +207,14 @@ namespace Prueba.Controllers
             {
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
-                    modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                    modelo.Pago.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
                                                      join referencia in _context.ReferenciasPes
                                                      on pago.IdPagoEmitido equals referencia.IdPagoEmitido
-                                                     where pago.IdCondominio == modelo.IdCondominio
+                                                     where pago.IdCondominio == modelo.Pago.IdCondominio
                                                      where referencia.NumReferencia == modelo.NumReferencia
                                                      select new { pago, referencia };
 
@@ -233,7 +233,7 @@ namespace Prueba.Controllers
 
                     if (resultado == "exito")
                     {
-                        var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
+                        var condominio = await _context.Condominios.FindAsync(modelo.Pago.IdCondominio);
 
                         var idSubCuenta = (from c in _context.CodigoCuentasGlobals
                                            where c.IdCodCuenta == modelo.IdSubcuenta
@@ -272,8 +272,8 @@ namespace Prueba.Controllers
                         }
                         var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == modelo.IdProveedor).FirstAsync();
 
-                        comprobante.Pago.Monto = modelo.Monto;
-                        comprobante.Pago.Fecha = modelo.Fecha;
+                        comprobante.Pago.Monto = modelo.Pago.Monto;
+                        comprobante.Pago.Fecha = modelo.Pago.Fecha;
                         comprobante.Beneficiario = proveedor.Nombre;
 
                         TempData.Keep();

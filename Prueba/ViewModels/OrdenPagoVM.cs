@@ -3,7 +3,7 @@ using Prueba.Models;
 
 namespace Prueba.ViewModels
 {
-    public class OrdenPagoVM: PagoEmitido
+    public class OrdenPagoVM
     {
         public string? Descripcion { get; set; }
         public string? Concepto { get; set; }
@@ -13,6 +13,7 @@ namespace Prueba.ViewModels
         public int NumReferencia { get; set; }
         public int IdCodigoCuentaBanco { get; set; }
         public int IdCodigoCuentaCaja { get; set; }
+        public PagoEmitido Pago { get; set; } = new PagoEmitido();
         public IList<SelectListItem>? SubCuentasGastos { get; set; }
         public IList<SelectListItem>? Proveedor { get; set; }
         public IList<SelectListItem>? SubCuentasBancos { get; set; }

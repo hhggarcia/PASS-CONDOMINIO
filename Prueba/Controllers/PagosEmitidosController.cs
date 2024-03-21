@@ -48,7 +48,7 @@ namespace Prueba.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString()); 
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var modelo = await _repoPagosEmitidos.GetPagosEmitidos(idCondominio);
 
@@ -323,7 +323,7 @@ namespace Prueba.Controllers
                                                      on pago.IdPagoEmitido equals referencia.IdPagoEmitido
                                                      where pago.IdCondominio == modelo.IdCondominio
                                                      where referencia.NumReferencia == modelo.NumReferencia
-                                                     select new {  pago, referencia };
+                                                     select new { pago, referencia };
 
                         if (existPagoTransferencia != null && existPagoTransferencia.Any())
                         {
@@ -338,20 +338,20 @@ namespace Prueba.Controllers
 
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
-                    if (resultado == "exito") 
+                    if (resultado == "exito")
                     {
-                        var factura = await _context.Facturas.Where(c=>c.IdFactura == modelo.IdFactura).FirstAsync();    
+                        var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
                         var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
 
                         var idSubCuenta = (from c in _context.CodigoCuentasGlobals
-                                          join f in _context.Facturas
-                                          on c.IdCodCuenta equals f.IdCodCuenta
-                                          where f.IdFactura == modelo.IdFactura
-                                          select c.IdSubCuenta).First();
+                                           join f in _context.Facturas
+                                           on c.IdCodCuenta equals f.IdCodCuenta
+                                           where f.IdFactura == modelo.IdFactura
+                                           select c.IdSubCuenta).First();
 
                         var gasto = from c in _context.SubCuenta
                                     where c.Id == idSubCuenta
-                                    select c;       
+                                    select c;
 
                         var comprobante = new ComprobantePEVM()
                         {
@@ -380,7 +380,7 @@ namespace Prueba.Controllers
 
                             comprobante.Caja = caja.First();
                         }
-                        if(modelo.IdAnticipo!=0)
+                        if (modelo.IdAnticipo != 0)
                         {
                             var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                             comprobante.Anticipo = anticipo;
@@ -394,8 +394,16 @@ namespace Prueba.Controllers
                         var retIva = _context.Ivas.Where(c => c.Id == proveedor.IdRetencionIva).FirstOrDefault();
 
                         comprobante.Factura = factura;
-                        comprobante.Islr = factura.Subtotal * (retIslr.Tarifa / 100);                        
-                        comprobante.Iva = factura.Iva * (retIva.Porcentaje / 100);
+
+                        if (retIslr != null)
+                        {
+                            comprobante.Islr = factura.Subtotal * (retIslr.Tarifa / 100);
+                        }
+
+                        if (retIva != null)
+                        {
+                            comprobante.Iva = factura.Iva * (retIva.Porcentaje / 100);
+                        }
                         comprobante.Pago.Monto = modelo.Monto;
                         comprobante.Pago.Fecha = modelo.Fecha;
                         comprobante.Pago.ValorDolar = modelo.ValorDolar;
@@ -406,7 +414,7 @@ namespace Prueba.Controllers
                         comprobante.retencionesIslr = modelo.retencionesIslr;
                         comprobante.retencionesIva = modelo.retencionesIva;
 
-                        foreach(var item in condominio.MonedaConds)
+                        foreach (var item in condominio.MonedaConds)
                         {
                             comprobante.ValorDolar = item.ValorDolar;
                         }
@@ -423,7 +431,7 @@ namespace Prueba.Controllers
                     int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     modelo = await _repoPagosEmitidos.FormRegistrarPago(idCondominio);
-                    
+
                     TempData.Keep();
 
                     return View("RegistrarPagos", modelo);
@@ -488,7 +496,7 @@ namespace Prueba.Controllers
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> ObtenerFacturasPorProveedor(int proveedorId)
         {
@@ -503,7 +511,7 @@ namespace Prueba.Controllers
         }
         public async Task<IActionResult> ObtenerFactura(int facturaId)
         {
-            var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();            
+            var factura = await _context.Facturas.Where(c => c.IdFactura == facturaId).FirstAsync();
 
             var facturaMonto = new
             {
@@ -524,7 +532,7 @@ namespace Prueba.Controllers
            .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
            .ToListAsync();
 
-            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. "+f.Numero + " Saldo " + f.Saldo + " Bs" , Precio = f.Saldo}).ToList();
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. " + f.Numero + " Saldo " + f.Saldo + " Bs", Precio = f.Saldo }).ToList();
             return Json(anticiposItems);
         }
 

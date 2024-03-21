@@ -1,0 +1,261 @@
+﻿@model Prueba.ViewModels.ComprobantePagoFacEmitidaVM
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Comprobante</h1>*@
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        @* <button id="ComprobantePEVMPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button> *@
+
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 mb-4">
+
+
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Comprobante
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="form row text-center">
+
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <form method="post">
+
+                                    <h6>Condominio</h6>
+                                    @if (Model.Condominio != null)
+                                    {
+                                        <input type="hidden" asp-for="@Model.Condominio.Nombre" />
+                                        <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
+                                        <p><strong>RIF</strong>: @Model.Condominio.Rif</p>
+                                        @* <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>
+                                    <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>*@
+                                    }
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+
+                                @if (Model.Pago != null)
+                                {
+
+                                    @if (Model.Pagoforma == FormaPago.Transferencia)
+                                    {
+                                        <h6>Transferencia</h6>
+                                        <p><strong>Fecha</strong>: @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
+
+                                        <p><strong>Cuenta</strong>: @Model.Banco.Descricion.ToString()</p>
+                                        <p><strong>Referencia</strong>: @Model.NumReferencia</p>
+                                        <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
+                                        <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
+                                    }
+                                    else
+                                    {
+                                        <h6>Efectivo</h6>
+                                        <p><strong>Cuenta</strong>: @Model.Caja.Descricion</p>
+
+                                        <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
+                                        <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
+                                    }
+                                }
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mb-4">
+                    <h4 class="text-center">@Model.Mensaje</h4>
+
+                    <a asp-action="PagoFactura"
+                       class="btn btn-primary me-1 mb-1">
+                        Realizar otro pago
+                    </a>
+                    <a asp-action="Cobros"
+                       class="btn btn-primary me-1 mb-1">
+                        Finalizar
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@*PDF Configuración*@
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+@* <script>
+    (function () {
+        var
+            form = $('.form'),
+            cache_width = form.width(),
+            a3 = [820, 897]; // for a4 size paper width and height
+        //  a4 = [595.28, 841.89];
+        // Tamaños Hojas y tamaño alto y ancho del contenido
+
+
+        $('#create_pdf').on('click', function () {
+            $('body').scrollTop(0);
+            createPDF();
+        });
+        //create pdf
+        function createPDF() {
+            getCanvas().then(function (canvas) {
+                var
+                    img = canvas.toDataURL("image/png"),
+                    doc = new jsPDF({
+                        unit: 'px',
+                        format: 'a3'
+                    });
+
+                doc.setFontSize(22)
+                doc.text(20, 40, 'Comprobante')
+                doc.setLineWidth(0.7)
+                doc.line(20, 45, 80, 45)
+
+
+                doc.addImage(img, 'JPEG', 20, 60); // xx Margen left, xx Margen Top
+                // Nombre documento
+                doc.save('Comprobante.pdf');
+                form.width(cache_width);
+            });
+        }
+
+
+
+        // create canvas object
+        function getCanvas() {
+            form.width((a3[0] * 1.33333) - 80).css('max-width', 'none');
+            return html2canvas(form, {
+                imageTimeout: 2000,
+                removeContainer: true
+            });
+        }
+
+    }());
+</script>
+<script>
+    (function ($) {
+        $.fn.html2canvas = function (options) {
+            var date = new Date(),
+                $message = null,
+                timeoutTimer = false,
+                timer = date.getTime();
+            html2canvas.logging = options && options.logging;
+            html2canvas.Preload(this[0], $.extend({
+                complete: function (images) {
+                    var queue = html2canvas.Parse(this[0], images, options),
+                        $canvas = $(html2canvas.Renderer(queue, options)),
+                        finishTime = new Date();
+
+                    $canvas.css({ position: 'absolute', left: 0, top: 0 }).appendTo(document.body);
+                    $canvas.siblings().toggle();
+
+                    $(window).click(function () {
+                        if (!$canvas.is(':visible')) {
+                            $canvas.toggle().siblings().toggle();
+                            throwMessage("Canvas Render visible");
+                        } else {
+                            $canvas.siblings().toggle();
+                            $canvas.toggle();
+                            throwMessage("Canvas Render hidden");
+                        }
+                    });
+                    throwMessage('Screenshot created in ' + ((finishTime.getTime() - timer) / 1000) + " seconds<br />", 4000);
+                }
+            }, options));
+
+            function throwMessage(msg, duration) {
+                window.clearTimeout(timeoutTimer);
+                timeoutTimer = window.setTimeout(function () {
+                    $message.fadeOut(function () {
+                        $message.remove();
+                    });
+                }, duration || 2000);
+                if ($message)
+                    $message.remove();
+                $message = $('<div ></div>').html(msg).css({
+                    margin: 0,
+                    padding: 10,
+                    //background: "#000",
+                    //opacity: 0.7,
+                    position: "fixed",
+                    top: 10,
+                    right: 10,
+                    fontFamily: 'Tahoma',
+                    //color: '#fff',
+                    fontSize: 12,
+                    borderRadius: 12,
+                    width: 'auto',
+                    height: 'auto',
+                    textAlign: 'center',
+                    textDecoration: 'none'
+                }).hide().fadeIn().appendTo('body');
+            }
+        };
+    })(jQuery);
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#ComprobantePEVMPDF").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/PagosEmitidos/ComprobantePDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobante.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+    });
+</script> *@
+
+

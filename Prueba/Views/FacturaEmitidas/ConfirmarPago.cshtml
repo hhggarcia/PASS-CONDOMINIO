@@ -1,6 +1,6 @@
 ﻿@using Prueba.ViewModels
 
-@model OrdenPagoVM
+@model PagoFacturaEmitidaVM
 
 @{
     ViewData["Title"] = "Pagos";
@@ -37,16 +37,20 @@
                                 <input type="hidden" asp-for="IdCodigoCuentaCaja" />
                                 <input type="hidden" asp-for="Pagoforma" />
                                 <input type="hidden" asp-for="Concepto" />
-                                <input type="hidden" asp-for="Pago.Fecha" />
-                                @*<input type="hidden" asp-for="IdMonedaCond" />*@
-                                <input type="hidden" asp-for="Pago.Monto" />
+                                <input type="hidden" asp-for="Fecha" />
+                                <input type="hidden" asp-for="Monto" />
                                 <input type="hidden" asp-for="IdSubcuenta" />
-                                <input type="hidden" asp-for="IdProveedor" />
-                                
+                                <input type="hidden" asp-for="IdCliente" />
+                                <input type="hidden" asp-for="IdFactura" />
+                                <input type="hidden" asp-for="RetIva" />
+                                <input type="hidden" asp-for="RetIslr" />
+                                <input type="hidden" asp-for="RetencionesIva" />
+                                <input type="hidden" asp-for="RetencionesIslr" />
+
 
                                 <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
                                 <button class="btn btn-primary" type="submit">Si</button>
-                                <a asp-action="OrdenPago" class="btn">No</a>
+                                <a asp-action="RegistrarPagos" class="btn">No</a>
                             </form>
                         </div>
 

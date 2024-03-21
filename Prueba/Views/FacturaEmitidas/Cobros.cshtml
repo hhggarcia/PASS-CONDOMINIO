@@ -1,0 +1,146 @@
+﻿@model Prueba.ViewModels.IndexPagoFacturaEmitidaVM
+
+@{
+    ViewData["Title"] = "Facturas Emitidas";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
+        <a class="btn btn-light mb-3" asp-controller="FacturaEmitidas"
+           asp-action="PagoFactura">
+            Registrar
+        </a>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button>
+
+        <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Pagos Facturas Emitidas
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered form"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Tasa de Cambio</th>
+                                    <th>Monto ref</th>
+                                    <th>Forma de pago</th>
+                                    <th>Referencia</th>
+                                    <th>Banco</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            @*                            <tfoot>
+                            <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Forma de pago</th>
+                            <th>Referencia</th>
+                            <th>Banco</th>
+                            <th>Acciones</th>
+                            </tr>
+                            </tfoot>*@
+                            <tbody>
+                                @if (Model.PagosRecibidos != null && Model.PagosRecibidos.Count() > 0)
+                                {
+                                    foreach (var item in @Model.PagosRecibidos)
+                                    {
+                                        if (item.FormaPago)
+                                        {
+                                            if (Model.BancosCondominio != null && Model.BancosCondominio.Any()
+                                            && Model.Referencias != null && Model.Referencias.Any())
+                                            {
+                                                foreach (var referencia in Model.Referencias)
+                                                {
+                                                    if (item.IdPagoRecibido == referencia.IdPagoRecibido)
+                                                    {
+                                                        var idBanco = Convert.ToInt32(referencia.Banco);
+                                                        var banco = Model.BancosCondominio.Where(c => c.Id == idBanco).First();
+                                                        <tr class="tr_s">
+                                                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                                            <td>@(item.Monto.ToString("N")) @item.SimboloMoneda </td>
+                                                            <td>@item.ValorDolar.ToString("N")</td>
+                                                            <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
+                                                            <td>@FormaPago.Transferencia</td>
+                                                            <td>@referencia.NumReferencia</td>
+                                                            <td>@banco.Descricion</td>
+                                                            <td>
+                                                                @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
+                                                                @* <a asp-action="Details" asp-route-id="@item.IdPagoRecibido">Detalles</a> |
+                                                                <a asp-action="Delete" asp-route-id="@item.IdPagoRecibido">Eliminar</a> *@
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                }
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <tr class="tr_s">
+                                                <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                                <td>@(item.Monto.ToString("N")) @item.SimboloMoneda </td>
+                                                <td>@item.ValorDolar.ToString("N")</td>
+                                                <td>@(item.MontoRef.ToString("N")) @item.SimboloRef </td>
+                                                <td>@FormaPago.Efectivo</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
+                                                    @* <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a> *@
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    <tr class="tr_s">
+                                        <td>No</td>
+                                        <td>Existen</td>
+                                        <td>Datos</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

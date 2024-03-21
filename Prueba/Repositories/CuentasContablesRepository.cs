@@ -20,6 +20,8 @@ namespace Prueba.Repositories
         Task<ICollection<Proveedor>> ObtenerProveedores(int id);
         Task<ICollection<Factura>> ObtenerFacturas(ICollection<Proveedor> proveedores);
         Task<ICollection<Anticipo>> ObtenerAnticipos(ICollection<Proveedor> proveedores);
+        Task<ICollection<Cliente>> ObtenerClientes(int id);
+        Task<ICollection<SubCuenta>> ObtenerIngresos(int id);
     }
     public class CuentasContablesRepository : ICuentasContablesRepository
     {
@@ -98,6 +100,37 @@ namespace Prueba.Repositories
                         join cs in _context.SubCuenta
                         on c.IdSubCuenta equals cs.Id
                         where c.IdClase == 5
+                        select cs;
+
+
+            return model.ToList();
+        }
+
+        public async Task<ICollection<SubCuenta>> ObtenerIngresos(int id)
+        {
+            var cuentasCond = await ObtenerCuentasCond(id);
+
+            //var cuentasGastos = from g in _context.Grupos
+            //                    join c in _context.Cuenta
+            //                    on g.Id equals c.IdGrupo
+            //                    where g.IdClase == 5
+            //                    select c;
+
+            //var subcuentasGastos = from c in cuentasGastos
+            //                       join s in _context.SubCuenta
+            //                       on c.Id equals s.IdCuenta
+            //                       select s;
+
+            //var model = from s in subcuentasGastos.ToList()
+            //            join c in cuentasCond.ToList()
+            //            on s.Id equals c.IdCodigo
+            //            where s.Id == c.IdCodigo
+            //            select s;
+
+            var model = from c in cuentasCond.ToList()
+                        join cs in _context.SubCuenta
+                        on c.IdSubCuenta equals cs.Id
+                        where c.IdClase == 4
                         select cs;
 
 
@@ -451,6 +484,14 @@ namespace Prueba.Repositories
                               where p.IdCondominio == id
                               select p;
             return await proovedores.ToListAsync();
+        }
+
+        public async Task<ICollection<Cliente>> ObtenerClientes(int id)
+        {
+            var clientes = from c in _context.Clientes
+                           where c.IdCondominio == id
+                           select c;
+            return await clientes.ToListAsync();
         }
 
         public async Task<ICollection<Factura>> ObtenerFacturas(ICollection<Proveedor> proveedores)

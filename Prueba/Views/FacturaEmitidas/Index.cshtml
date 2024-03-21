@@ -54,6 +54,12 @@
                                         @Html.DisplayNameFor(model => model.NumControl)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdClienteNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdProductoNavigation)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Descripcion)
                                     </th>
                                     <th>
@@ -80,9 +86,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.EnProceso)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdProductoNavigation)
-                                    </th>
+                                   
                                     <th></th>
                                 </tr>
                             </thead>
@@ -95,6 +99,12 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.NumControl)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdClienteNavigation.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdProductoNavigation.Nombre)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Descripcion)
@@ -123,9 +133,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.EnProceso)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdProductoNavigation.Nombre)
-                                        </td>
+                                        
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdFacturaEmitida">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdFacturaEmitida">Detalles</a> |
