@@ -177,6 +177,7 @@ namespace Prueba.Repositories
             //var idCodCuenta = from c in _context.CodigoCuentasGlobals
             //                  where c.IdSubCuenta == modelo.IdSubcuenta
             //                  select c;
+            
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -189,6 +190,9 @@ namespace Prueba.Repositories
             Anticipo anticipo1 = new Anticipo();
 
             var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
+
+            //var cc = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == factura.IdCodCuenta).First();
+            //modelo.IdSubcuenta = cc.IdCodCuenta;
 
             var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
 
@@ -402,15 +406,15 @@ namespace Prueba.Repositories
                     var transaccion = new Transaccion
                     {
                         TipoTransaccion = false,
-                        IdCodCuenta = modelo.IdSubcuenta,
+                        IdCodCuenta = factura.IdCodCuenta,
                         Descripcion = modelo.Concepto,
-                        MontoTotal = pago.Monto,
+                        MontoTotal = factura.MontoTotal,
                         Documento = factura.NumFactura.ToString(),
-                        Cancelado = pago.Monto,
+                        Cancelado = factura.MontoTotal,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = pago.MontoRef
+                        MontoRef = montoReferencia
                     };
 
                     using (var _dbContext = new NuevaAppContext())

@@ -89,6 +89,9 @@ namespace Prueba.Repositories
             //                  where c.IdSubCuenta == modelo.IdSubcuenta
             //                  select c;
 
+            //var cc = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
+            //modelo.IdSubcuenta = cc.IdCodCuenta;
+
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
             PagoRecibido pago = new PagoRecibido
@@ -241,15 +244,15 @@ namespace Prueba.Repositories
                     var transaccion = new Transaccion
                     {
                         TipoTransaccion = true,
-                        IdCodCuenta = modelo.IdSubcuenta,
+                        IdCodCuenta = factura.IdCodCuenta,
                         Descripcion = modelo.Concepto,
-                        MontoTotal = pago.Monto,
+                        MontoTotal = factura.MontoTotal,
                         Documento = factura.NumFactura.ToString(),
-                        Cancelado = pago.Monto,
+                        Cancelado = factura.MontoTotal,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = pago.MontoRef
+                        MontoRef = montoReferencia
                     };
 
                     using (var _dbContext = new NuevaAppContext())

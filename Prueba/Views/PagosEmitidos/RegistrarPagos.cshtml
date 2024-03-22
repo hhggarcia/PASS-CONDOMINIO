@@ -369,27 +369,8 @@
 </div>
 <!-- /.container-fluid -->
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+    
     <script>
-        // $(document).on('change', '#facturaSelect', function () {
-        //     var facturaId = $(this).val();
-        //     console.log('ID de factura seleccionado:', facturaId); // Agrega esta línea para depurar
-
-        //     $.ajax({
-        //         url: '/PagosEmitidos/ObtenerFactura',
-        //         type: 'GET',
-        //         data: { facturaId: facturaId },
-        //         success: function (data) {
-        //             $('#montoInput').val(data.monto);
-        //             // Permitir la edición del campo de monto
-        //             $('#montoInput').prop('readonly', false);
-        //         },
-        //         error: function (error) {
-        //             console.error('Error al obtener las facturas: ', error);
-        //         }
-        //     });
-        // });
         $(document).ready(function () {
             var montoFacturaOriginal;
             var montoAnticipo = 0;
@@ -434,7 +415,7 @@
                     type: 'GET',
                     data: { facturaId: facturaId },
                     success: function (data) {
-                        montoFacturaOriginal = parseFloat(data.monto);
+                        montoFacturaOriginal = parseFloat(data.monto).toFixed(2);
                         if (montoAnticipo != 0 && selectOptionAnticipo) {
                             var precioTotal = montoFacturaOriginal - montoAnticipo;
                             $('#montoInput').val(precioTotal);
@@ -552,7 +533,4 @@
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
         });
     </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 }

@@ -104,7 +104,6 @@
                                                 @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
                                                 <input class="form-control"
                                                        placeholder="Monto"
-                                                       id="montoInput"
                                                        asp-for="Monto" /> <!-- Agregar el atributo disabled -->
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
@@ -310,8 +309,6 @@
 </div>
 <!-- /.container-fluid -->
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
     <script>
         // $(document).on('change', '#facturaSelect', function () {
         //     var facturaId = $(this).val();
@@ -377,47 +374,47 @@
                     success: function (data) {
                         montoFacturaOriginal = parseFloat(data.monto);
 
-                        $('#montoInput').val(data.monto);
+                        //$('#montoInput').val(data.monto);
                         $('#concepto').val(data.descripcion);
                         // $('#RetIvaInput').val(data.iva);
                         // $('#RetIslrInput').val(data.islr);
 
                         // Permitir la edición del campo de monto
-                        $('#montoInput').prop('disabled', false);
+                        //$('#montoInput').prop('disabled', false);
                     },
                     error: function (error) {
                         console.error('Error al obtener las facturas: ', error);
                     }
                 });
             });
-            $('#montoInput').on('input', function () {
-                var montoInput = parseFloat($(this).val());
-                var montoTotal = montoInput + montoAnticipo;
+            // $('#montoInput').on('input', function () {
+            //     var montoInput = parseFloat($(this).val());
+            //     var montoTotal = montoInput + montoAnticipo;
 
-                // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
-                //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
-                //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                //     $(this).val(montoFacturaOriginal);
-                // }
-                if (montoFacturaOriginal < montoTotal) {
-                    $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
-                    // alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                    if (montoAnticipo != 0 && selectOptionAnticipo) {
-                        var precioTotal = montoFacturaOriginal - montoAnticipo;
-                        $('#montoInput').val(precioTotal);
-                    } else {
-                        $(this).val(montoFacturaOriginal);
-                    }
-                } else {
-                    $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
-                }
-                // if (montoAnticipo != 0 && montoInput != montoAnticipo){
-                //     alert('El monto ingresado no puede ser diferente al del anticipo.');
-                //     // $(this).val(montoAnticipo);
-                //     $('#montoInput').val(montoAnticipo);
+            //     // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
+            //     //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
+            //     //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
+            //     //     $(this).val(montoFacturaOriginal);
+            //     // }
+            //     if (montoFacturaOriginal < montoTotal) {
+            //         $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+            //         // alert('El monto ingresado no puede ser mayor al monto de la factura.');
+            //         if (montoAnticipo != 0 && selectOptionAnticipo) {
+            //             var precioTotal = montoFacturaOriginal - montoAnticipo;
+            //             $('#montoInput').val(precioTotal);
+            //         } else {
+            //             $(this).val(montoFacturaOriginal);
+            //         }
+            //     } else {
+            //         $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+            //     }
+            //     // if (montoAnticipo != 0 && montoInput != montoAnticipo){
+            //     //     alert('El monto ingresado no puede ser diferente al del anticipo.');
+            //     //     // $(this).val(montoAnticipo);
+            //     //     $('#montoInput').val(montoAnticipo);
 
-                // }
-            });
+            //     // }
+            // });
         });
     </script>
 
@@ -426,7 +423,5 @@
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
         });
     </script>
-@*     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    } *@
+
 }
