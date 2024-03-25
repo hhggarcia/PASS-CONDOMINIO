@@ -17,5 +17,7 @@ public partial class Percepcion
 
     public int IdEmpleado { get; set; }
 
+    public int? IdCodCuenta { get; set; }
+
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 }

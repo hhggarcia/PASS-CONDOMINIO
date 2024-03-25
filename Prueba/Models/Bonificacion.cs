@@ -3,9 +3,13 @@ using System.Collections.Generic;
 
 namespace Prueba.Models;
 
-public partial class Deduccion
+public partial class Bonificacion
 {
-    public int IdDeduccion { get; set; }
+    public int IdBonificacion { get; set; }
+
+    public int IdEmpleado { get; set; }
+
+    public int IdCodCuenta { get; set; }
 
     public string Concepto { get; set; } = null!;
 
@@ -15,9 +19,7 @@ public partial class Deduccion
 
     public bool Activo { get; set; }
 
-    public int IdEmpleado { get; set; }
-
-    public int? IdCodCuenta { get; set; }
+    public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 }

@@ -414,7 +414,16 @@ namespace Prueba.Controllers
                 // recibo cuotas
                 var recibosCuotas = await _context.ReciboCuotas.Where(p => p.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                 // pago recibido
-                var pagoRecibidos = await _context.PagoRecibidos.Where(p => p.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                //var pagoRecibidos = await _context.PagoRecibidos.Where(p => p.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                //var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                var pagoRecibidos = await (from p in _context.PagoRecibidos
+                                   join cc in _context.PagosRecibos
+                                   on p.IdPagoRecibido equals cc.IdPago
+                                   join r in _context.ReciboCobros
+                                   on cc.IdRecibo equals r.IdReciboCobro
+                                   select p).ToListAsync();
 
                 _context.PropiedadesGrupos.RemoveRange(propiedadesGrupos);
                 _context.ReciboCobros.RemoveRange(recibosPropiedad);

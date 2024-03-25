@@ -50,7 +50,7 @@ namespace Prueba.Controllers
             IRelacionGastoRepository repoRelacionGasto,
             IReportesRepository repoReportes,
             IMonedaRepository repoMoneda,
-            ICuentasContablesRepository repoCuentas, 
+            ICuentasContablesRepository repoCuentas,
             IPDFServices PDFService,
             NuevaAppContext context)
         {
@@ -74,7 +74,7 @@ namespace Prueba.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            
+
             return View();
         }
 
@@ -96,8 +96,16 @@ namespace Prueba.Controllers
                 {
                     foreach (var item in propiedades)
                     {
-                        var listaPagosPorPropiedad = await _context.PagoRecibidos.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
-                        modelo.Add(item, listaPagosPorPropiedad);
+                        var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+
+                        var pagos = await (from p in _context.PagoRecibidos
+                                           join cc in _context.PagosRecibos
+                                           on p.IdPagoRecibido equals cc.IdPago
+                                           join r in recibos
+                                           on cc.IdRecibo equals r.IdReciboCobro
+                                           select p).ToListAsync();
+
+                        modelo.Add(item, pagos);
                     }
                 }
 
@@ -132,6 +140,8 @@ namespace Prueba.Controllers
                     //var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
                     var condominios = await _context.Condominios.Where(i => i.IdCondominio == propiedades.First().IdCondominio).ToListAsync();
                     var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
+
+                    TempData["idCondominio"] = condominios.First().IdCondominio.ToString();
                     return View(modelo);
                 }
 
@@ -232,7 +242,7 @@ namespace Prueba.Controllers
 
 
                     //modelo.Recibos = await recibos.ToListAsync();
-                    modelo.Recibos = await recibos.Where(c => (c.EnProceso == false && c.Pagado == false)|| (c.EnProceso == true && c.Pagado ==false)).ToListAsync();
+                    modelo.Recibos = await recibos.Where(c => (c.EnProceso == false && c.Pagado == false) || (c.EnProceso == true && c.Pagado == false)).ToListAsync();
                     //modelo.Recibos = await _context.ReciboCobros.FindAsync(valor);
                     modelo.Abonado = modelo.Recibos[0].Abonado;
 
@@ -278,6 +288,7 @@ namespace Prueba.Controllers
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
                     //*Inicio a como estaba antes*-------------------------------------------------------
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     var idRecibo = _context.ReciboCobros
                           .Where(c => c.IdPropiedad == modelo.IdPropiedad)
@@ -285,7 +296,7 @@ namespace Prueba.Controllers
                            .FirstOrDefault();
                     //var ejemplo = await _context.Propiedads.FindAsync()
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                    
+
                     if (propiedad != null)
                     {
                         // validar num referencia repetido
@@ -300,7 +311,7 @@ namespace Prueba.Controllers
                         var comprobante = new ComprobanteVM()
                         {
                             Propiedad = propiedad,
-                           // Inmueble = inmueble,
+                            // Inmueble = inmueble,
                             Condominio = condominio,
                             FechaComprobante = DateTime.Today
                         };
@@ -310,7 +321,6 @@ namespace Prueba.Controllers
                             var existPagoTransferencia = from p in _context.PagoRecibidos
                                                          join referencia in _context.ReferenciasPrs
                                                          on p.IdPagoRecibido equals referencia.IdPagoRecibido
-                                                         where p.IdPropiedad == propiedad.IdPropiedad
                                                          where referencia.NumReferencia == modelo.NumReferencia
                                                          select new { p, referencia };
 
@@ -337,7 +347,8 @@ namespace Prueba.Controllers
 
                             var pago = new PagoRecibido()
                             {
-                                IdPropiedad = modelo.IdPropiedad,
+                                //IdPropiedad = modelo.IdPropiedad,
+                                IdCondominio = idCondominio,
                                 Fecha = modelo.Fecha,
                                 IdSubCuenta = idBanco.IdCodCuenta,
                                 Concepto = modelo.Concepto,
@@ -360,7 +371,7 @@ namespace Prueba.Controllers
 
                             var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
                             if (recibo != null)
-                            {                                
+                            {
 
                                 var monto = recibo.Monto;
 
@@ -437,6 +448,8 @@ namespace Prueba.Controllers
 
                             }
 
+                            TempData.Keep();
+
                             return View("Comprobante", comprobante);
 
                         }
@@ -455,7 +468,7 @@ namespace Prueba.Controllers
 
                             var pago = new PagoRecibido()
                             {
-                                IdPropiedad = modelo.IdPropiedad,
+                                //IdPropiedad = modelo.IdPropiedad,
                                 Fecha = modelo.Fecha,
                                 IdSubCuenta = idCaja.IdCodCuenta,
                                 Concepto = modelo.Concepto
@@ -482,7 +495,7 @@ namespace Prueba.Controllers
                                 if (monto > 0)
                                 {
                                     pago.Monto = montoReferencia;
-                                    if(pago.Monto < recibo.Monto)
+                                    if (pago.Monto < recibo.Monto)
                                     {
                                         comprobante.Restante = recibo.Monto - (recibo.Abonado + pago.Monto);
                                     }
@@ -530,6 +543,9 @@ namespace Prueba.Controllers
                                 comprobante.PagoRecibido = pago;
                                 comprobante.Mensaje = "Gracias por su pago!";
                             }
+
+                            TempData.Keep();
+
                             return View("Comprobante", comprobante);
                         }
                     }
@@ -557,6 +573,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -583,7 +600,7 @@ namespace Prueba.Controllers
                         modelo.Add(item, listaRecibosPorPropiedad);
                     }
                 }
-                
+
                 TempData.Keep();
 
                 return View(modelo);
@@ -620,7 +637,7 @@ namespace Prueba.Controllers
             //    return NotFound();
             //}
             var modelo = await _repoRelacionGasto.DetalleRecibo(id);
-            var listaCuotas = await _context.CuotasEspeciales.Where(c=>c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio ).ToListAsync();
+            var listaCuotas = await _context.CuotasEspeciales.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).ToListAsync();
             var listaRecibos = await _context.ReciboCuotas.Where(c => c.IdPropiedad == modelo.Propiedad.IdPropiedad).ToListAsync();
 
             foreach (var cuotas in listaCuotas)
@@ -716,8 +733,16 @@ namespace Prueba.Controllers
             {
                 foreach (var item in propiedades)
                 {
-                    var listaPagosPorPropiedad = await _context.PagoRecibidos.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
-                    modelo.Add(item, listaPagosPorPropiedad);
+                    //var listaPagosPorPropiedad = await _context.PagoRecibidos.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+                    var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
+
+                    var pagos = await (from p in _context.PagoRecibidos
+                                       join cc in _context.PagosRecibos
+                                       on p.IdPagoRecibido equals cc.IdPago
+                                       join r in recibos
+                                       on cc.IdRecibo equals r.IdReciboCobro
+                                       select p).ToListAsync();
+                    modelo.Add(item, pagos);
                 }
             }
             var data = _servicePDF.HistorialPDF(modelo);
@@ -725,36 +750,36 @@ namespace Prueba.Controllers
             return File(stream, "application/pdf", "Historial.pdf");
         }
         [HttpGet]
-         async public Task<IActionResult> DetallePdf(int id)
+        async public Task<IActionResult> DetallePdf(int id)
         {
-         
-                var modelo = await _repoRelacionGasto.DetalleRecibo(id);
-                var listaCuotas = await _context.CuotasEspeciales.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).ToListAsync();
-                var listaRecibos = await _context.ReciboCuotas.Where(c => c.IdPropiedad == modelo.Propiedad.IdPropiedad).ToListAsync();
-                var condominio = await _context.Condominios.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).FirstAsync();
 
-                foreach (var cuotas in listaCuotas)
+            var modelo = await _repoRelacionGasto.DetalleRecibo(id);
+            var listaCuotas = await _context.CuotasEspeciales.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).ToListAsync();
+            var listaRecibos = await _context.ReciboCuotas.Where(c => c.IdPropiedad == modelo.Propiedad.IdPropiedad).ToListAsync();
+            var condominio = await _context.Condominios.Where(c => c.IdCondominio == modelo.Recibo.IdRgastosNavigation.IdCondominio).FirstAsync();
+
+            foreach (var cuotas in listaCuotas)
+            {
+                CuotasRecibosCobrosVM cuotasRecibosCobros = new CuotasRecibosCobrosVM()
+                {
+                    CuotasEspeciale = cuotas,
+                };
+                foreach (var recibos in listaRecibos)
+                {
+                    if (recibos.IdPropiedad == modelo.Propiedad.IdPropiedad)
                     {
-                        CuotasRecibosCobrosVM cuotasRecibosCobros = new CuotasRecibosCobrosVM()
-                        {
-                            CuotasEspeciale = cuotas,
-                        };
-                        foreach (var recibos in listaRecibos)
-                        {
-                            if (recibos.IdPropiedad == modelo.Propiedad.IdPropiedad)
-                            {
-                                cuotasRecibosCobros.ReciboCuota = recibos;
-                            }
-                        }
-                    modelo.CuotasRecibosCobros.Add(cuotasRecibosCobros);
+                        cuotasRecibosCobros.ReciboCuota = recibos;
+                    }
                 }
-                modelo.condominio = condominio;
+                modelo.CuotasRecibosCobros.Add(cuotasRecibosCobros);
+            }
+            modelo.condominio = condominio;
 
-                var data = _servicePDF.DetalleReciboPDF(modelo);
-                var base64 = Convert.ToBase64String(data);
-                Stream stream = new MemoryStream(data);
-                return File(stream, "application/pdf", "DetalleRecibo.pdf");
-          
+            var data = _servicePDF.DetalleReciboPDF(modelo);
+            var base64 = Convert.ToBase64String(data);
+            Stream stream = new MemoryStream(data);
+            return File(stream, "application/pdf", "DetalleRecibo.pdf");
+
         }
         [HttpPost]
         public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
@@ -783,7 +808,7 @@ namespace Prueba.Controllers
                 return Content(base64, "application/pdf");
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine($"Error generando PDF: {e.Message}");
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -807,7 +832,7 @@ namespace Prueba.Controllers
 
                 PagoRecibidoCuotaVM pagoRecibidoCuotaVM = new PagoRecibidoCuotaVM
                 {
-                    idRecibo= reciboCuota.IdReciboCuotas,
+                    idRecibo = reciboCuota.IdReciboCuotas,
                     ReciboCuotas = reciboCuota,
                     SubCuentasBancos = (IList<SelectListItem>)subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToList(),
                     SubCuentasCaja = (IList<SelectListItem>)subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() }).ToList()
@@ -827,7 +852,7 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> PagarCuotaEspeciales(PagoRecibidoCuotaVM modelo)
         {
@@ -835,10 +860,12 @@ namespace Prueba.Controllers
             {
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
                     decimal montoReferencia = 0;
                     var idRecibo = modelo.idRecibo;
-                    var reciboCuota = await _context.ReciboCuotas.Where(c=>c.IdReciboCuotas == idRecibo).FirstOrDefaultAsync();
-                    var cuotaEspecial = await _context.CuotasEspeciales.Where(c=>c.IdCuotaEspecial == reciboCuota.IdCuotaEspecial).FirstOrDefaultAsync();
+                    var reciboCuota = await _context.ReciboCuotas.Where(c => c.IdReciboCuotas == idRecibo).FirstOrDefaultAsync();
+                    var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == reciboCuota.IdCuotaEspecial).FirstOrDefaultAsync();
                     var propiedad = await _context.Propiedads.FindAsync(reciboCuota.IdPropiedad);
                     //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
                     var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
@@ -856,7 +883,6 @@ namespace Prueba.Controllers
                         var existPagoTransferencia = from p in _context.PagoRecibidos
                                                      join referencia in _context.ReferenciasPrs
                                                      on p.IdPagoRecibido equals referencia.IdPagoRecibido
-                                                     where p.IdPropiedad == propiedad.IdPropiedad
                                                      where referencia.NumReferencia == modelo.NumReferencia
                                                      select new { p, referencia };
 
@@ -892,7 +918,8 @@ namespace Prueba.Controllers
                         //};
                         var pago = new PagoRecibido()
                         {
-                            IdPropiedad = reciboCuota.IdPropiedad,
+                            //IdPropiedad = reciboCuota.IdPropiedad,
+                            IdCondominio = idCondominio,
                             Fecha = modelo.Fecha,
                             IdSubCuenta = idBanco.IdCodCuenta,
                             Confirmado = false,
@@ -994,6 +1021,7 @@ namespace Prueba.Controllers
                             comprobante.Mensaje = "Gracias por su pago!";
 
                         }
+                        TempData.Keep();
 
                         return View("ComprobanteCE", comprobante);
 
@@ -1022,9 +1050,10 @@ namespace Prueba.Controllers
                         //};
                         var pago = new PagoRecibido()
                         {
+                            IdCondominio = idCondominio,
                             IdSubCuenta = idCaja.IdCodCuenta,
                             Concepto = modelo.Concepto,
-                            IdPropiedad = reciboCuota.IdPropiedad,
+                            //IdPropiedad = reciboCuota.IdPropiedad,
                             Fecha = modelo.Fecha,
                             Confirmado = false
                         };
@@ -1052,7 +1081,7 @@ namespace Prueba.Controllers
                                 {
                                     comprobante.Restante = (decimal)(reciboCuota.SubCuotas - (reciboCuota.Abonado + pago.Monto));
                                 }
-                                else 
+                                else
                                 {
                                     comprobante.Abonado = (decimal)(pago.Monto - reciboCuota.SubCuotas);
                                 }
@@ -1064,6 +1093,8 @@ namespace Prueba.Controllers
                             else
                             {
                                 comprobante.Mensaje = "No existe deuda en la propiedad seleccionada";
+                                TempData.Keep();
+
                                 return View("ComprobanteCE", comprobante);
                             }
 
@@ -1103,6 +1134,8 @@ namespace Prueba.Controllers
                             comprobante.PagoRecibido = pago;
                             comprobante.Mensaje = "Gracias por su pago!";
                         }
+                        TempData.Keep();
+
                         return View("ComprobanteCE", comprobante);
                     }
                 }
@@ -1117,7 +1150,7 @@ namespace Prueba.Controllers
 
                     return View("Error", modeloError);
                 }
-              
+
             }
             catch (Exception ex)
             {
@@ -1125,6 +1158,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -1135,14 +1169,14 @@ namespace Prueba.Controllers
             {
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).Select(c=>c.IdPropiedad).ToListAsync();
+                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).Select(c => c.IdPropiedad).ToListAsync();
 
-                    if (idPropietario != null)
-                    {
+                if (idPropietario != null)
+                {
                     var recibosConCodigoPropiedad = from recibo in _context.ReciboCuotas
                                                     join propiedad in _context.Propiedads
                                                     on recibo.IdPropiedad equals propiedad.IdPropiedad
-                                                    where propiedades.Contains(recibo.IdPropiedad) 
+                                                    where propiedades.Contains(recibo.IdPropiedad)
                                                     select new ReciboCuotaVM
                                                     {
                                                         Codigo = propiedad.Codigo,
@@ -1151,11 +1185,11 @@ namespace Prueba.Controllers
                     List<ReciboCuotaVM> listaRecibosDelAdmin = recibosConCodigoPropiedad.ToList();
                     //var listaRecibosCuotas = await _context.ReciboCuotas.Where(c => propiedades.Contains(c.IdPropiedad)).ToListAsync();
 
-                        TempData.Keep();
+                    TempData.Keep();
 
-                        return View(listaRecibosDelAdmin);
-                    }
-                
+                    return View(listaRecibosDelAdmin);
+                }
+
                 var modeloError = new ErrorViewModel()
                 {
                     RequestId = "Este Usuario no tiene Propiedades en Condominios"
@@ -1176,16 +1210,16 @@ namespace Prueba.Controllers
         }
         public async Task<IActionResult> DetalleReciboCuotasEspeciales(int? id)
         {
-            if(id != null)
+            if (id != null)
             {
-              
+
                 var modelo = await _context.ReciboCuotas.Where(c => c.IdReciboCuotas == id).FirstOrDefaultAsync();
                 var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == modelo.IdCuotaEspecial).FirstOrDefaultAsync();
                 var detalleReciboCuotasVM = new DetalleReciboCuotasVM
                 {
                     reciboCuota = modelo,
                     cuotasEspeciale = cuotaEspecial,
-                    
+
                 };
 
 

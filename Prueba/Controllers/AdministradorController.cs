@@ -183,7 +183,7 @@ namespace Prueba.Controllers
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
                 //var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
-                
+
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
@@ -196,7 +196,7 @@ namespace Prueba.Controllers
                             var pagos = await (from c in _context.PagoRecibidos
                                                join d in _context.PagosRecibos
                                                on c.IdPagoRecibido equals d.IdPago
-                                               where c.IdPropiedad == propiedad.IdPropiedad
+                                               where c.IdCondominio == idCondominio
                                                select c).ToListAsync();
 
                             if (pagos != null && pagos.Count() > 0)
@@ -267,7 +267,14 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+                    //var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+
+                    var recibo = (from c in _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido)
+                                 join f in _context.ReciboCobros
+                                 on c.IdRecibo equals f.IdReciboCobro
+                                 select f).FirstOrDefault();
+
+                    var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
 
                     if (propiedad != null)
                     {
@@ -385,11 +392,18 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    // buscar propiedad
-                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+                    // buscar propiedad                   
 
-                    if (propiedad != null)
+                    var recibo = (from c in _context.PagosRecibos
+                                  join r in _context.ReciboCobros
+                                  on c.IdRecibo equals r.IdReciboCobro
+                                  where c.IdPago == pago.IdPagoRecibido
+                                  select r).FirstOrDefault();
+
+                    if (recibo != null)
                     {
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+
                         var relacion = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
 
                         var reciboActual = (from r in relacion
@@ -650,7 +664,10 @@ namespace Prueba.Controllers
 
                             return View("Error", error);
                         }
+
                     }
+
+
                 }
                 TempData.Keep();
                 return RedirectToAction("PagosRecibidos");
@@ -808,12 +825,16 @@ namespace Prueba.Controllers
                     propiedadesPorUsuario.Add(user, propiedades);
                     foreach (var propiedad in propiedades)
                     {
-                        var pagos = await _context.PagoRecibidos.Where(
-                            c => c.IdPropiedad == propiedad.IdPropiedad
-                            && c.Confirmado == false)
-                            .ToListAsync();
+                        var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
-                        if (pagos != null && pagos.Count() > 0)
+                        var pagos = await (from p in _context.PagoRecibidos
+                                    join cc in _context.PagosRecibos
+                                    on p.IdPagoRecibido equals cc.IdPago
+                                    join r in recibos
+                                    on cc.IdRecibo equals r.IdReciboCobro
+                                    select p).ToListAsync();
+
+                        if (pagos != null && pagos.Any())
                         {
                             pagosPorPropiedad.Add(propiedad, pagos);
                         }

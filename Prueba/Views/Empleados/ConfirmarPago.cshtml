@@ -10,48 +10,63 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Page Heading -->
-    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Confirmar Pago</h1>
-    </div>*@
 
     <!-- Content Row -->
     <div class="row justify-content-center">
-        <div class="col-lg-4 mb-4">
+        <div class="col-lg-6">
             <!-- Illustrations -->
             <!-- DataTales Example -->
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
+                        Confirmar Pago
                     </h6>
-
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            Seguro que quiere confirmar este pago?
-                        </h6>
+                        <h6>Seguro que quiere confirmar este pago?</h6>
+                        <h6>Al confirmar el pago se verá reflejado en el Libro diario</h6>
+                        <hr />
                         <div>
-                            <form asp-action="RegistrarPagosPost">
-                                <input type="hidden" asp-for="IdCodigoCuentaBanco" />
-                                <input type="hidden" asp-for="NumReferencia" />
-                                <input type="hidden" asp-for="IdCodigoCuentaCaja" />
-                                <input type="hidden" asp-for="Pagoforma" />
-                                <input type="hidden" asp-for="Concepto" />
-                                <input type="hidden" asp-for="Fecha" />
-                                <input type="hidden" asp-for="Monto" />
-                                <input type="hidden" asp-for="IdSubcuenta" />
-                                <input type="hidden" asp-for="IdEmpleado" />
-                                <input type="hidden" asp-for="deducciones" />
-                                <input type="hidden" asp-for="percepciones" />
-                                
+                            <div class="card-body">
+                                <div class="form form-horizontal">
+                                    <div class="form-body">
+                                        <dl class="row">
+                                            <form asp-action="RegistrarPagosPost">
+                                                <input type="hidden" asp-for="IdCodigoCuentaBanco" />
+                                                <input type="hidden" asp-for="IdCodigoCuentaCaja" />
+                                                <label class="control-label">Forma de pago</label>
+                                                @if (Model.Pagoforma == FormaPago.Efectivo)
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Efectivo" class="form-control" readonly />
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Transferencia" class="form-control" readonly />
+                                                    <label class="control-label">Numero de Referencia</label>
+                                                    <input type="text" asp-for="NumReferencia" class="form-control" readonly />
 
-                                <p>Al confirmar el pago se verá reflejado en el Libro diario</p>
-                                <button class="btn btn-primary" type="submit">Si</button>
-                                <a asp-action="RegistrarPagos" class="btn">No</a>
-                            </form>
+                                                }
+                                                <label class="control-label">Concepto</label>
+                                                <input type="text" asp-for="Concepto" class="form-control" readonly />
+                                                <label class="control-label">Fecha</label>
+                                                <input asp-for="Fecha" class="form-control" readonly />
+                                                <label class="control-label">Monto</label>
+                                                <input type="number" asp-for="Monto" class="form-control" readonly />
+                                                <input type="hidden" asp-for="IdSubcuenta" />
+                                                <input type="hidden" asp-for="IdEmpleado" />
+                                                <input type="hidden" asp-for="deducciones" />
+                                                <input type="hidden" asp-for="percepciones" />
+                                                <hr />
+                                                <button class="btn btn-primary" type="submit">Si</button>
+                                                <a asp-action="PagoNomina" class="btn btn-secondary">No</a>
+                                            </form>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                    </div>
+                    </div>                                     
                 </div>
             </div>
         </div>

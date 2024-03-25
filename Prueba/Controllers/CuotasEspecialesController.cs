@@ -119,7 +119,7 @@ namespace Prueba.Controllers
                     var revisionCuotas = from c in _context.CuotasEspeciales
                                          where c.Descripcion.Trim().ToLower() == modelo.Descripcion.Trim().ToLower()
                                          select c.Descripcion;
-                    if(revisionCuotas == null)
+                    if (revisionCuotas == null)
                     {
                         var modeloError = new ErrorViewModel()
                         {
@@ -157,7 +157,8 @@ namespace Prueba.Controllers
                         foreach (var c in listaPropiedades)
                         {
                             string email = await _context.AspNetUsers.Where(a => a.Id == c.IdUsuario).Select(c => c.Email).FirstAsync();
-                            var gastosCuotas = new GastosCuotasEmailVM() { 
+                            var gastosCuotas = new GastosCuotasEmailVM()
+                            {
                                 Propiedad = c,
                                 CuotasEspeciale = modelo,
                                 Email = email
@@ -183,14 +184,14 @@ namespace Prueba.Controllers
 
                         }
 
-                    if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
-                    {
-                        string password = TempData.Peek("Contrasena").ToString();
-                        var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
-                        _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, password);
-                        TempData["Contrasena"] = null;
-                    }
-                    await dbContext.SaveChangesAsync();
+                        if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                        {
+                            string password = TempData.Peek("Contrasena").ToString();
+                            var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                            _serviceEmail.EmailGastosCuotas(emailFrom, relacionGastosCuotas, password);
+                            TempData["Contrasena"] = null;
+                        }
+                        await dbContext.SaveChangesAsync();
                         TempData.Keep();
                     }
                     return RedirectToAction(nameof(Index));
@@ -217,10 +218,10 @@ namespace Prueba.Controllers
                 {
                     return NotFound();
                 }
-                var cuotaDetalles =  _context.CuotasEspeciales.Where(c=>c.IdCuotaEspecial == id).First();
+                var cuotaDetalles = _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == id).First();
                 DetalleCuotasVM detalleCuotasVM = new DetalleCuotasVM();
                 detalleCuotasVM.CuotasEspeciale = cuotaDetalles;
-                var cantidadPropiedades = _context.ReciboCuotas.Where(c=> c.IdCuotaEspecial==id).ToList().Count();
+                var cantidadPropiedades = _context.ReciboCuotas.Where(c => c.IdCuotaEspecial == id).ToList().Count();
                 detalleCuotasVM.TotalPropiedadesMensual = (decimal)(cuotaDetalles.SubCuotas / cantidadPropiedades);
                 return View(detalleCuotasVM);
             }
@@ -233,7 +234,8 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
-        public async Task<IActionResult> Editar(int? id){
+        public async Task<IActionResult> Editar(int? id)
+        {
             try
             {
                 if (id == null || _context.CuotasEspeciales == null)
@@ -274,7 +276,7 @@ namespace Prueba.Controllers
                     modelo.MontoMensual = modelo.MontoTotal / modelo.CantidadCuotas;
                     _context.Update(modelo);
                     _context.SaveChanges();
-          
+
                     using (var dbContext = new NuevaAppContext())
                     {
                         foreach (var c in listaRecibos)
@@ -303,7 +305,7 @@ namespace Prueba.Controllers
             }
 
         }
-         public async Task<IActionResult> Borrar(int? id)
+        public async Task<IActionResult> Borrar(int? id)
         {
             try
             {
@@ -332,7 +334,7 @@ namespace Prueba.Controllers
                 {
                     return NotFound();
                 }
-                
+
 
                 using (_context)
                 {
@@ -366,7 +368,7 @@ namespace Prueba.Controllers
 
                                 //if (pago.FormaPago = FormaPago.Transferencia)
                                 //{
-                                    
+
                                 //}
 
                                 _context.Remove(pago);
@@ -391,9 +393,9 @@ namespace Prueba.Controllers
 
                     await _context.SaveChangesAsync();
                 }
-                
+
                 return RedirectToAction(nameof(Index));
-               
+
             }
             catch (Exception ex)
             {
@@ -410,18 +412,18 @@ namespace Prueba.Controllers
         {
             try
             {
-              var recibosDelAdmin = from recibo in _context.ReciboCuotas
-                                    join cuota in _context.CuotasEspeciales
-                                        on recibo.IdCuotaEspecial equals cuota.IdCuotaEspecial
-                                    join propiedad in _context.Propiedads
-                                        on recibo.IdPropiedad equals propiedad.IdPropiedad
-                                    where cuota.IdCuotaEspecial == recibo.IdCuotaEspecial
-                                    select new ReciboCuotaVM
+                var recibosDelAdmin = from recibo in _context.ReciboCuotas
+                                      join cuota in _context.CuotasEspeciales
+                                          on recibo.IdCuotaEspecial equals cuota.IdCuotaEspecial
+                                      join propiedad in _context.Propiedads
+                                          on recibo.IdPropiedad equals propiedad.IdPropiedad
+                                      where cuota.IdCuotaEspecial == recibo.IdCuotaEspecial
+                                      select new ReciboCuotaVM
                                       {
                                           Nombre = cuota.Descripcion,
-                                          Codigo= propiedad.Codigo,
+                                          Codigo = propiedad.Codigo,
                                           ReciboCuota = recibo
-                                      }; 
+                                      };
                 List<ReciboCuotaVM> listaRecibosDelAdmin = recibosDelAdmin.ToList();
                 return View(listaRecibosDelAdmin);
             }
@@ -441,42 +443,52 @@ namespace Prueba.Controllers
             {
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
                 // propietarios
-                IList<ApplicationUser> listaPropietarios = await _signInManager.UserManager.Users.ToListAsync();
-                var listaPropiedades = await _context.Propiedads.ToListAsync();
+                //IList<ApplicationUser> listaPropietarios = await _signInManager.UserManager.Users.ToListAsync();
+                //var listaPropiedades = await _context.Propiedads.ToListAsync();
                 var resultado = (from a in _context.AspNetUsers
-                                 join p in _context.Propiedads on a.Id equals p.IdUsuario
+                                 join p in _context.Propiedads 
+                                 on a.Id equals p.IdUsuario
                                  orderby p.IdPropiedad
+                                 join r in _context.ReciboCuotas
+                                 on p.IdPropiedad equals r.IdPropiedad
                                  select new
                                  {
                                      IdPropiedad = p.IdPropiedad,
                                      NombreCompleto = a.FirstName + ' ' + a.LastName,
-                                     Codigo = p.Codigo
+                                     Codigo = p.Codigo,
+                                     Recibos = r
                                  }).ToList();
 
                 var idPagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
-                var relacionPagosRecibidosCuotas = await _context.PagosCuotas.ToListAsync();
+                var relacionPagosRecibidosCuotas = await (from c in _context.PagoRecibidos
+                                                          where c.IdCondominio == idCondominio
+                                                          join d in _context.PagosCuotas
+                                                          on c.IdPagoRecibido equals d.IdPagoRecibido
+                                                          select d).ToListAsync();
 
                 //var pagoRecibos = await _context.PagoRecibidos.Where(c => idPagosCuotas.Contains(c.IdPagoRecibido)).ToListAsync();
                 //var pagoRecibosCuotas = await _context.PagoReciboCuota.ToListAsync();
+                //var reciboActual = await _context.ReciboCuotas.FindAsync();
 
                 var auxilio = await (from c in _context.PagoRecibidos
-                              join d in _context.PagosCuotas
-                              on c.IdPagoRecibido equals d.IdPagoRecibido
-                              select c).ToListAsync();
+                                     where c.IdCondominio == idCondominio
+                                     join d in _context.PagosCuotas
+                                     on c.IdPagoRecibido equals d.IdPagoRecibido
+                                     select c).ToListAsync();
 
-                var cuotasEspeciales = await _context.CuotasEspeciales.ToListAsync();
+                var cuotasEspeciales = await _context.CuotasEspeciales.Where(c => c.IdCondominio == idCondominio).ToListAsync();
                 var datosCobro = new List<CobrarCuotasVM>();
-                foreach(var cuota in cuotasEspeciales)
+                foreach (var cuota in cuotasEspeciales)
                 {
-                    foreach(var pago in auxilio)
+                    foreach (var pago in auxilio)
                     {
                         foreach (var relacion in relacionPagosRecibidosCuotas)
                         {
-                            if(pago.IdPagoRecibido == relacion.IdPagoRecibido)
+                            if (pago.IdPagoRecibido == relacion.IdPagoRecibido)
                             {
                                 foreach (var usuario in resultado)
                                 {
-                                    if (usuario.IdPropiedad == pago.IdPropiedad)
+                                    if (usuario.Recibos.IdReciboCuotas == relacion.IdReciboCuota)
                                     {
                                         if (pago.Confirmado != true)
                                         {
@@ -495,33 +507,6 @@ namespace Prueba.Controllers
                         }
                     }
                 }
-                //foreach (var cuota in cuotasEspeciales)
-                //{
-                //   foreach(var pago  in pagoRecibos)
-                //    {
-                      
-                //        if (cuota.IdCuotaEspecial == pago.IdCuota)
-                //        {
-                //            foreach (var usuario in resultado)
-                //            {
-                //                if(usuario.IdPropiedad == pago.IdPropiedad)
-                //                {
-                //                   if(pago.Confirmado != true)
-                //                    {
-                //                        var cobrarCuotasVM = new CobrarCuotasVM
-                //                        {
-                //                            NombreUsuario = usuario.NombreCompleto,
-                //                            CodigoPropiedad = usuario.Codigo,
-                //                            PagoReciboCuota = pago,
-                //                            CuotasEspeciale = cuota
-                //                        };
-                //                        datosCobro.Add(cobrarCuotasVM);
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    } 
-                //}
 
                 return View(datosCobro);
             }
@@ -609,8 +594,8 @@ namespace Prueba.Controllers
 
                             if (pago.MontoRef == pagoMensual)
                             {
-                                reciboActual.SubCuotas = reciboActual.SubCuotas-pago.MontoRef;
-                                reciboActual.CuotasPagadas = reciboActual.CuotasPagadas +1;
+                                reciboActual.SubCuotas = reciboActual.SubCuotas - pago.MontoRef;
+                                reciboActual.CuotasPagadas = reciboActual.CuotasPagadas + 1;
                                 reciboActual.CuotasFaltantes = reciboActual.CuotasFaltantes - 1;
                                 reciboActual.Abonado = reciboActual.Abonado - pago.MontoRef;
                                 reciboActual.EnProceso = false;
@@ -626,7 +611,7 @@ namespace Prueba.Controllers
                                     reciboActual.Abonado = reciboActual.Abonado - pagoMensual;
                                 }
                             }
-                            else if (pago.MontoRef >pagoMensual)
+                            else if (pago.MontoRef > pagoMensual)
                             {
                                 reciboActual.EnProceso = false;
                                 reciboActual.SubCuotas = reciboActual.SubCuotas - pagoMensual;
@@ -634,11 +619,11 @@ namespace Prueba.Controllers
                                 reciboActual.CuotasFaltantes = reciboActual.CuotasFaltantes - 1;
                                 reciboActual.Abonado = reciboActual.Abonado - pagoMensual;
                             }
-                            if(reciboActual.CuotasFaltantes == 0)
+                            if (reciboActual.CuotasFaltantes == 0)
                             {
                                 reciboActual.Confirmado = true;
                             }
-                            
+
                             pago.Confirmado = true;
 
                             dbContext.Update(reciboActual);
@@ -791,23 +776,25 @@ namespace Prueba.Controllers
                         return View("Error", modeloError);
                     }
 
-                     if (pago.FormaPago)
-                        {
-                            var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
-                            _context.ReferenciasPrs.RemoveRange(referencia);
-                            _context.PagoRecibidos.Remove(pago);
-                     }else{
-                           _context.PagoRecibidos.Remove(pago);
-                     }
+                    if (pago.FormaPago)
+                    {
+                        var referencia = await _context.ReferenciasPrs.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                        _context.ReferenciasPrs.RemoveRange(referencia);
+                        _context.PagoRecibidos.Remove(pago);
+                    }
+                    else
+                    {
+                        _context.PagoRecibidos.Remove(pago);
+                    }
                     var relacionPagosCuotas = await _context.PagosCuotas.Where(c => c.IdReciboCuota == reciboActual.IdReciboCuotas).FirstAsync();
                     _context.RemoveRange(relacionPagosCuotas);
-                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+                    var propiedad = await _context.Propiedads.FindAsync(reciboActual.IdPropiedad);
                     reciboActual.EnProceso = false;
                     _context.ReciboCuotas.Update(reciboActual);
                     await _context.SaveChangesAsync();
 
                     var cuotaEspecial = await _context.CuotasEspeciales.Where(c => c.IdCuotaEspecial == reciboActual.IdCuotaEspecial).FirstAsync();
-                
+
                     if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
                     {
                         string password = TempData.Peek("Contrasena").ToString();

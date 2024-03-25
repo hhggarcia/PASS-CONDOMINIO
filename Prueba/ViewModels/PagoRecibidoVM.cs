@@ -17,7 +17,7 @@ namespace Prueba.ViewModels
         public decimal Abonado { get; set; }
         public IList<ReciboCobro>? Recibos { get; set; }
         public int IdRecibo { get; set; }
-        //public int IdSubcuenta { get; set; }
+        public int IdPropiedad { get; set; }
         public int NumReferencia { get; set; }
         public int IdCodigoCuentaBanco { get; set; }
         public int IdCodigoCuentaCaja { get; set; }

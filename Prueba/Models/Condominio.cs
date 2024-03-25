@@ -29,6 +29,8 @@ public partial class Condominio
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
+    public virtual ICollection<CobroTransito> CobroTransitos { get; set; } = new List<CobroTransito>();
+
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; } = new List<CodigoCuentasGlobal>();
 
     public virtual ICollection<CondominioNomina> CondominioNominas { get; set; } = new List<CondominioNomina>();
@@ -52,6 +54,8 @@ public partial class Condominio
     public virtual ICollection<MonedaCond> MonedaConds { get; set; } = new List<MonedaCond>();
 
     public virtual ICollection<PagoEmitido> PagoEmitidos { get; set; } = new List<PagoEmitido>();
+
+    public virtual ICollection<PagoRecibido> PagoRecibidos { get; set; } = new List<PagoRecibido>();
 
     public virtual ICollection<Producto> Productos { get; set; } = new List<Producto>();
 

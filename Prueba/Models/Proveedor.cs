@@ -27,6 +27,8 @@ public partial class Proveedor
 
     public bool ContribuyenteEspecial { get; set; }
 
+    public bool? Beneficiario { get; set; }
+
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();

@@ -256,21 +256,18 @@ namespace Prueba.Repositories
 
                 //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+               // IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
                 //var aux = propiedades.Concat(propiedad).ToList();
                 //propiedades = aux.ToList();
 
-                foreach (var propiedad in propiedades)
-                {
-                    var pagosMes = _context.PagoRecibidos
-                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad
+                var pagosMes = _context.PagoRecibidos
+                        .Where(c => c.IdCondominio == idCondominio
                         && c.Fecha.Month == mes
                         && c.Confirmado == true)
                         .Sum(c => c.MontoRef);
 
-                    ingresoMes += pagosMes;
-                }
+                ingresoMes += pagosMes;
             }
             return ingresoMes;
         }

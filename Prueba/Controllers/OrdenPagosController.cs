@@ -209,6 +209,7 @@ namespace Prueba.Controllers
                 {
                     modelo.Pago.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+                    // validar transferencia
                     if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
                         var existPagoTransferencia = from pago in _context.PagoEmitidos
@@ -220,14 +221,20 @@ namespace Prueba.Controllers
 
                         if (existPagoTransferencia != null && existPagoTransferencia.Any())
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = "Ya existe un pago registrado con este número de referencia!"
-                            };
+                            //var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                            return View("Error", modeloError);
+                            modelo = await _repoPagosEmitidos.FormOrdenPago(modelo.Pago.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este numero de referencia!";
+
+                            return View("OrdenPago", modelo);
                         }
                     }
+
+                    // validar monto 
 
                     var resultado = await _repoPagosEmitidos.RegistrarOrdenPago(modelo);
 

@@ -25,6 +25,8 @@ public partial class CodigoCuentasGlobal
 
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
+    public virtual ICollection<Bonificacion> Bonificaciones { get; set; } = new List<Bonificacion>();
+
     public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
 
     public virtual ICollection<FacturaEmitida> FacturaEmitida { get; set; } = new List<FacturaEmitida>();

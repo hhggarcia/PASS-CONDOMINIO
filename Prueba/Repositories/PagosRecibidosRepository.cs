@@ -96,6 +96,7 @@ namespace Prueba.Repositories
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
             PagoRecibido pago = new PagoRecibido
             {
+                IdCondominio = modelo.IdCondominio,
                 Fecha = modelo.Fecha,
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto,
