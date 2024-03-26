@@ -167,7 +167,6 @@
                             <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
                             <a class="collapse-item" asp-controller="LibroCompras" asp-action="Index">Libro de Compras</a>
                             <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a> 
-                            <a class="collapse-item" asp-controller="NotaDebitos" asp-action="Index">Notas de Debito</a>
                             <a class="collapse-item" asp-controller="OrdenPagos" asp-action="Index">Orden de Pago</a>
                             @* <a class="collapse-item" asp-controller="" asp-action="">Retenciones IVA e ISLR</a> *@
                         </div>
@@ -194,7 +193,6 @@
                             <a class="collapse-item" asp-controller="CuentasCobrar" asp-action="Index">Cuentas por Cobrar</a>
                             <a class="collapse-item" asp-controller="LibroVentas" asp-action="Index">Libro de Ventas</a>
                             <a class="collapse-item" asp-controller="Clientes" asp-action="Index">Clientes</a>
-                            <a class="collapse-item" asp-controller="NotaCreditos" asp-action="Index">Notas de Credito</a>
                             <a class="collapse-item" asp-controller="Productos" asp-action="Index">Productos y Servicios</a>
                         </div>
                     </div>
@@ -224,7 +222,14 @@
                         </div>
                     </div>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link collapsed"
+                       asp-controller="CobroTransitos" asp-action="Index"
+                       aria-expanded="true">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span>Cobros en Tránsito</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link collapsed"
                        asp-controller="Empleados" asp-action="Index"
@@ -300,7 +305,9 @@
                             <h6 class="collapse-header">Reportes:</h6>
                             <a class="collapse-item" asp-controller="" asp-action="">Transacciones del Mes</a>
                             <a class="collapse-item" asp-controller="" asp-action="">Listado de Montos</a>
-                            <a class="collapse-item" asp-controller="" asp-action="">Estado de Cuentas</a>                          
+                            <a class="collapse-item" asp-controller="" asp-action="">Estado de Cuentas</a>
+                            <a class="collapse-item" asp-controller="" asp-action="">Movimientos Caja y Bancos</a>
+                            <a class="collapse-item" asp-controller="" asp-action="">Conciliación</a>
                         </div>
                     </div>
                 </li>

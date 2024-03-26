@@ -299,12 +299,14 @@ namespace Prueba.Controllers
 
                         if (existPagoTransferencia != null && existPagoTransferencia.Any())
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = "Ya existe un pago registrado con este número de referencia!"
-                            };
+                            modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(modelo.IdCondominio);
 
-                            return View("Error", modeloError);
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este número de referencia!";
+
+                            return View("PagoNomina", modelo);
                         }
                     }
 

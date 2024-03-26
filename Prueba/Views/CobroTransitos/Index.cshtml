@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Prueba.Models.CompRetIva>
+﻿@model IEnumerable<Prueba.Models.CobroTransito>
 
 @{
     ViewData["Title"] = "Index";
@@ -23,7 +23,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Comprobante IVA
+                        Cobros en Tránsito
                     </h6>
 
                 </div>
@@ -36,46 +36,40 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.FechaEmision)
+                                        @Html.DisplayNameFor(model => model.FormaPago)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.TipoTransaccion)
+                                        @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.NumFacturaAfectada)
+                                        @Html.DisplayNameFor(model => model.Fecha)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.TotalCompraIva)
+                                        @Html.DisplayNameFor(model => model.Concepto)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.CompraSinCreditoIva)
+                                        @Html.DisplayNameFor(model => model.Factura)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.BaseImponible)
+                                        @Html.DisplayNameFor(model => model.Recibo)
+                                    </th>
+                                    @* <th>
+                                        @Html.DisplayNameFor(model => model.ValorDolar)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Alicuota)
+                                        @Html.DisplayNameFor(model => model.MontoRef)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.ImpIva)
+                                        @Html.DisplayNameFor(model => model.SimboloMoneda)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IvaRetenido)
+                                        @Html.DisplayNameFor(model => model.SimboloRef)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.TotalCompraRetIva)
-                                    </th>
+                                        @Html.DisplayNameFor(model => model.Asignado)
+                                    </th> *@
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdProveedorNavigation)
+                                        @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                     </th>
                                     <th></th>
                                 </tr>
@@ -85,51 +79,45 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.FechaEmision)
+                                            @Html.DisplayFor(modelItem => item.FormaPago)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TipoTransaccion)
+                                            @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
+                                            @Html.DisplayFor(modelItem => item.Fecha)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TotalCompraIva)
+                                            @Html.DisplayFor(modelItem => item.Concepto)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.CompraSinCreditoIva)
+                                            @Html.DisplayFor(modelItem => item.Factura)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.BaseImponible)
+                                            @Html.DisplayFor(modelItem => item.Recibo)
+                                        </td>
+                                        @* <td>
+                                            @Html.DisplayFor(modelItem => item.ValorDolar)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Alicuota)
+                                            @Html.DisplayFor(modelItem => item.MontoRef)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.ImpIva)
+                                            @Html.DisplayFor(modelItem => item.SimboloMoneda)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IvaRetenido)
+                                            @Html.DisplayFor(modelItem => item.SimboloRef)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.TotalCompraRetIva)
+                                            @Html.DisplayFor(modelItem => item.Asignado)
+                                        </td> *@
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFactura)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdNotaDebitoNavigation.IdNotaDebito)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.IdProveedor)
-                                        </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdComprobanteIva">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdComprobanteIva">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdComprobanteIva">Eliminar</a>
+                                            <a asp-action="Edit" asp-route-id="@item.IdCobroTransito">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdCobroTransito">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdCobroTransito">Eliminar</a>
                                         </td>
                                     </tr>
                                 }
@@ -141,4 +129,5 @@
         </div>
     </div>
 </div>
+
 

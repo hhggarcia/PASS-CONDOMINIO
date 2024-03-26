@@ -367,12 +367,16 @@ namespace Prueba.Controllers
 
                         if (existPagoTransferencia != null && existPagoTransferencia.Any())
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = "Ya existe un pago registrado con este número de referencia!"
-                            };
+                            //var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                            return View("Error", modeloError);
+                            modelo = await _repoPagoRecibido.FormPagoFacturaEmitida(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este número de referencia!";
+
+                            return View("PagoFactura", modelo);
                         }
                     }
 
@@ -470,7 +474,7 @@ namespace Prueba.Controllers
 
                     TempData.Keep();
 
-                    return View("RegistrarPagos", modelo);
+                    return View("PagoFactura", modelo);
 
                 }
                 //traer subcuentas del condominio
@@ -483,7 +487,7 @@ namespace Prueba.Controllers
                 ViewBag.FormaPago = "fallido";
                 ViewBag.Mensaje = "Ha ocurrido un error inesperado";
 
-                return View("RegistrarPagos", modelo);
+                return View("PagoFactura", modelo);
 
             }
             catch (Exception ex)

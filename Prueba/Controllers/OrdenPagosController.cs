@@ -228,7 +228,7 @@ namespace Prueba.Controllers
                             TempData.Keep();
 
                             ViewBag.FormaPago = "fallido";
-                            ViewBag.Mensaje = "Ya existe una transferencia con este numero de referencia!";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este número de referencia!";
 
                             return View("OrdenPago", modelo);
                         }
