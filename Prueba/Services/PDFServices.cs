@@ -194,7 +194,7 @@ namespace Prueba.Services
                     .AlignRight()
                     .Text(txt =>
                     {
-                        txt.Span("Software desarrollado por: Password Tecnology");
+                        txt.Span("Software desarrollado por: Password Technology");
                     });
                 });
             }).GeneratePdf();
@@ -423,7 +423,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -743,7 +743,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -851,7 +851,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -940,7 +940,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -1190,7 +1190,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -1306,7 +1306,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -1457,7 +1457,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -1671,7 +1671,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -1899,7 +1899,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -2077,7 +2077,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -2282,7 +2282,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -3035,7 +3035,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -3079,10 +3079,10 @@ namespace Prueba.Services
                                 });
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.IdComprobante.ToString()).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.IdComprobante.ToString()).FontColor("#607080").Bold().FontSize(10);
                             });
 
                             x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
@@ -3192,31 +3192,31 @@ namespace Prueba.Services
 
                                 });
                                 tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(comprobante.comprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+                                .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.IdFactura).FontColor("#607080").FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080").FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("00" + comprobante.comprobanteRetencion.IdFactura).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text("00" + comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.Descripcion).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.Descripcion).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.comprobanteRetencion.TotalImpuesto).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.TotalImpuesto).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.Retencion).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.Retencion).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                .Padding(5).Text("3.00").FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.Sustraendo).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.Sustraendo).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.comprobanteRetencion.ValorRetencion).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.ValorRetencion).FontColor("#607080").Bold().FontSize(10);
                             });
 
                             x.Item().Row(x =>
@@ -3226,7 +3226,7 @@ namespace Prueba.Services
                                 x.RelativeItem().Text("");
                                 x.RelativeItem().Text("");
                                 x.RelativeItem().Text("");
-                                x.RelativeItem().Text(comprobante.comprobanteRetencion.Retencion);
+                                x.RelativeItem().Text(comprobante.ComprobanteRetencion.Retencion);
                                 x.RelativeItem().Text("");
                                 x.RelativeItem().Text("");
                             });
@@ -3234,7 +3234,7 @@ namespace Prueba.Services
                             x.Item().Row(x =>
                             {
                                 x.RelativeItem().Text("TOTAL DE IMPUESTO RETENIDO =>");
-                                x.RelativeItem().Text(comprobante.comprobanteRetencion.ValorRetencion);
+                                x.RelativeItem().Text(comprobante.ComprobanteRetencion.ValorRetencion);
                             });
 
                             x.Item().Row(x =>
@@ -3255,7 +3255,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -3554,7 +3554,7 @@ namespace Prueba.Services
                         .Text(x =>
                         {
 
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -3766,7 +3766,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })
@@ -3933,7 +3933,7 @@ namespace Prueba.Services
                         .AlignLeft()
                         .Text(x =>
                         {
-                            x.Span("Software desarrollado por: Password Tecnology");
+                            x.Span("Software desarrollado por: Password Technology");
                         });
                 });
             })

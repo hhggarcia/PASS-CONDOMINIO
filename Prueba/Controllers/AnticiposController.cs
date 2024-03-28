@@ -16,7 +16,6 @@ using Prueba.ViewModels;
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
-
     public class AnticiposController : Controller
     {
         private readonly NuevaAppContext _context;

@@ -35,6 +35,10 @@ public partial class CompRetIva
 
     public decimal TotalCompraRetIva { get; set; }
 
+    public string NumCompRet { get; set; } = null!;
+
+    public int NumComprobante { get; set; }
+
     public virtual Factura IdFacturaNavigation { get; set; } = null!;
 
     public virtual NotaCredito? IdNotaCreditoNavigation { get; set; }

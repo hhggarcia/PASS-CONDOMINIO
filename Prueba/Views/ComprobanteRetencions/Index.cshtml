@@ -103,7 +103,9 @@
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdComprobante">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdComprobante">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a> |
+                                            <a asp-action="PrintComprobante" asp-route-id="@item.IdComprobante">Imprimir</a> |
+                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdComprobante">Descargar PDF</a>
                                         </td>
                                     </tr>
                                 }

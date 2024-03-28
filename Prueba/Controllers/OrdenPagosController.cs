@@ -328,6 +328,7 @@ namespace Prueba.Controllers
             return _context.OrdenPagos.Any(e => e.IdOrdenPago == id);
         }
 
+        [HttpPost]
         public ContentResult ComprobantePDF([FromBody] ComprobanteOrdenPago modelo)
         {
             try

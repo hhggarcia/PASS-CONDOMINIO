@@ -2,20 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Services;
+using Prueba.ViewModels;
+using ceTe.DynamicPDF.Printing;
+using System.Net;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class ComprobanteRetencionsController : Controller
     {
+        //private readonly IPrintServices _servicesPrint;
+        private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public ComprobanteRetencionsController(NuevaAppContext context)
+        public ComprobanteRetencionsController(IPDFServices servicesPDF,
+            NuevaAppContext context)
         {
+            //_servicesPrint = printServices;
+            _servicesPDF = servicesPDF;
             _context = context;
         }
 
@@ -166,5 +178,63 @@ namespace Prueba.Controllers
         {
             return _context.ComprobanteRetencions.Any(e => e.IdComprobante == id);
         }
+
+        public async Task<IActionResult> PrintComprobante(int id)
+        {
+            var comprobanteRetencion = await _context.ComprobanteRetencions.FindAsync(id);
+            if (comprobanteRetencion != null)
+            {
+                var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == comprobanteRetencion.IdProveedor).FirstOrDefaultAsync();
+                var condominio = await _context.Condominios.Where(c => c.IdCondominio == proveedor.IdCondominio).FirstOrDefaultAsync();
+                //_context.ComprobanteRetencions.Remove(comprobanteRetencion);
+                var modelo = new ComprobanteRetencionesISLRVM
+                {
+                    Condominio = condominio,
+                    Proveedor = proveedor,
+                    ComprobanteRetencion = comprobanteRetencion
+                };
+
+                var data = _servicesPDF.ComprobanteRetencionesISLR(modelo);
+
+                InputPdf input = new InputPdf(data);
+
+                PrintJob printJob = new PrintJob("HP Ink Tank 310 series", input);
+
+                // Imprimir el trabajo
+                printJob.Print();
+
+                return View("Index");
+            }
+
+            return View("Index");
+
+        }
+
+        public async Task<IActionResult> ComprobantePDF(int id)
+        {
+
+            var comprobanteRetencion = await _context.ComprobanteRetencions.FindAsync(id);
+            if (comprobanteRetencion != null)
+            {
+                var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == comprobanteRetencion.IdProveedor).FirstOrDefaultAsync();
+                var condominio = await _context.Condominios.Where(c => c.IdCondominio == proveedor.IdCondominio).FirstOrDefaultAsync();
+                //_context.ComprobanteRetencions.Remove(comprobanteRetencion);
+                var modelo = new ComprobanteRetencionesISLRVM
+                {
+                    Condominio = condominio,
+                    Proveedor = proveedor,
+                    ComprobanteRetencion = comprobanteRetencion
+                };
+                var data = _servicesPDF.ComprobanteRetencionesISLR(modelo);
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobanteRetencion.pdf");
+            }
+
+            return View("Index");
+
+        }
+
+
     }
 }

@@ -23,6 +23,14 @@ public partial class ComprobanteRetencion
 
     public decimal TotalImpuesto { get; set; }
 
+    public string NumCompRet { get; set; } = null!;
+
+    public int NumComprobante { get; set; }
+
+    public decimal TotalFactura { get; set; }
+
+    public decimal BaseImponible { get; set; }
+
     public virtual Factura IdFacturaNavigation { get; set; } = null!;
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;

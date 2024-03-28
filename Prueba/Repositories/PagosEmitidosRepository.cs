@@ -179,7 +179,7 @@ namespace Prueba.Repositories
             //var idCodCuenta = from c in _context.CodigoCuentasGlobals
             //                  where c.IdSubCuenta == modelo.IdSubcuenta
             //                  select c;
-            
+
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -197,6 +197,7 @@ namespace Prueba.Repositories
             //modelo.IdSubcuenta = cc.IdCodCuenta;
 
             var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+            var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstOrDefaultAsync();
 
             if (itemLibroCompra != null)
             {
@@ -205,17 +206,22 @@ namespace Prueba.Repositories
                     factura.MontoTotal -= itemLibroCompra.RetIva;
                     pago.Monto -= itemLibroCompra.RetIva;
 
+                    // comprobante de retencion de iva
                 }
                 else if (!modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIslr;
                     pago.Monto -= itemLibroCompra.RetIslr;
 
+                    // comprobante de retencion de islr
                 }
                 else if (modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
                     pago.Monto -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+
+                    // comprobante de retencion de iva
+                    // comprobante de retencion de islr
                 }
             }
 
@@ -405,6 +411,7 @@ namespace Prueba.Repositories
 
                     // resgistrar transaccion
                     // armar transaccion
+
                     var transaccion = new Transaccion
                     {
                         TipoTransaccion = false,
@@ -439,6 +446,200 @@ namespace Prueba.Repositories
                         IdFactura = modelo.IdFactura,
                         IdAnticipo = anticipo1.IdAnticipo > 0 ? anticipo1.IdAnticipo : null
                     };
+
+                    // registrar comprobantes
+                    if (modelo.retencionesIva && !modelo.retencionesIslr)
+                    {
+                        var compRetencionUltimo = from c in _context.CompRetIvas
+                                                         join p in _context.Proveedors
+                                                         on c.IdProveedor equals p.IdProveedor
+                                                         where p.IdCondominio == modelo.IdCondominio
+                                                         orderby c.IdComprobanteIva
+                                                         select c;
+
+                        var numRet = 1;
+
+                        if (compRetencionUltimo.Any())
+                        {
+                            numRet = compRetencionUltimo.Last().NumComprobante + 1;
+                        }
+
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                        var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                        var ceros = new string('0', diferenciaCeros);
+
+                        // comprobante de retencion de iva
+                        var comp = new CompRetIva
+                        {
+                            IdFactura = factura.IdFactura,
+                            IdProveedor = factura.IdProveedor,
+                            FechaEmision = DateTime.Now,
+                            TipoTransaccion = false,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            BaseImponible = factura.Subtotal,
+                            Alicuota = 16,
+                            ImpIva = factura.Iva,
+                            IvaRetenido = itemLibroCompra.RetIva,
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumComprobante = numRet
+                        };
+
+                        // actualizar itemLibroCompra
+                        itemLibroCompra.NumComprobanteRet = comp.NumComprobante;
+                        itemLibroCompra.FechaComprobanteRet = comp.FechaEmision;
+
+                        _context.CompRetIvas.Add(comp);
+                        _context.LibroCompras.Update(itemLibroCompra);
+
+                        await _context.SaveChangesAsync();
+
+                    }
+                    else if (!modelo.retencionesIva && modelo.retencionesIslr)
+                    {
+                        var islr = await _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefaultAsync();
+
+                        if (islr != null)
+                        {
+                            // comprobante de retencion de islr
+                            var compRetIslrUltimo = from c in _context.ComprobanteRetencions
+                                                           join p in _context.Proveedors
+                                                           on c.IdProveedor equals p.IdProveedor
+                                                           where p.IdCondominio == modelo.IdCondominio
+                                                           orderby c.IdComprobante
+                                                           select c;
+
+                            var numRet = 1;
+
+                            if (compRetIslrUltimo.Any())
+                            {
+                                numRet = compRetIslrUltimo.Last().NumComprobante + 1;
+                            }
+
+                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                            var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                            var ceros = new string('0', diferenciaCeros);
+
+                            var compIslr = new ComprobanteRetencion
+                            {
+                                IdFactura = factura.IdFactura,
+                                IdProveedor = factura.IdProveedor,
+                                Descripcion = islr.Concepto,
+                                Retencion = islr.Tarifa,
+                                TotalFactura = itemLibroCompra.Monto,
+                                BaseImponible = itemLibroCompra.BaseImponible,
+                                Sustraendo = islr.Sustraendo,
+                                ValorRetencion = itemLibroCompra.RetIslr,
+                                TotalImpuesto = itemLibroCompra.RetIslr,
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                                NumComprobante = numRet,
+                                FechaEmision = DateTime.Now
+                            };
+
+                            _context.ComprobanteRetencions.Add(compIslr);
+                            await _context.SaveChangesAsync();
+                        }
+
+                    }
+                    else if (modelo.retencionesIva && modelo.retencionesIslr)
+                    {
+                        // comprobante de retencion de iva
+                        var compRetencionUltimo = from c in _context.CompRetIvas
+                                                         join p in _context.Proveedors
+                                                         on c.IdProveedor equals p.IdProveedor
+                                                         where p.IdCondominio == modelo.IdCondominio
+                                                         orderby c.IdComprobanteIva
+                                                         select c;
+
+                        var numRet = 1;
+
+                        if (compRetencionUltimo.Any())
+                        {
+                            numRet = compRetencionUltimo.Last().NumComprobante + 1;
+                        }
+
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                        var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                        var ceros = new string('0', diferenciaCeros);
+
+                        // comprobante de retencion de iva
+                        var comp = new CompRetIva
+                        {
+                            IdFactura = factura.IdFactura,
+                            IdProveedor = factura.IdProveedor,
+                            FechaEmision = DateTime.Now,
+                            TipoTransaccion = false,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            BaseImponible = factura.Subtotal,
+                            Alicuota = 16,
+                            ImpIva = factura.Iva,
+                            IvaRetenido = itemLibroCompra.RetIva,
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumComprobante = numRet
+                        };
+
+                        // actualizar itemLibroCompra
+                        itemLibroCompra.NumComprobanteRet = comp.NumComprobante;
+                        itemLibroCompra.FechaComprobanteRet = comp.FechaEmision;
+
+                        
+                        
+                        // comprobante de retencion de islr
+
+                        var islr = await _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefaultAsync();
+
+                        if (islr != null)
+                        {
+                            // comprobante de retencion de islr
+                            var compRetIslrUltimo = from c in _context.ComprobanteRetencions
+                                                           join p in _context.Proveedors
+                                                           on c.IdProveedor equals p.IdProveedor
+                                                           where p.IdCondominio == modelo.IdCondominio
+                                                           orderby c.IdComprobante
+                                                           select c;
+
+                            var numRetIslr = 1;
+
+                            if (compRetIslrUltimo.Any())
+                            {
+                                numRetIslr = compRetIslrUltimo.Last().NumComprobante + 1;
+                            }
+
+                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                            var diferenciaCerosIslr = 14 - (numRetIslr.ToString().Length + stringNumRetFechaIslr.Length);
+
+                            var cerosIslr = new string('0', diferenciaCerosIslr);
+
+                            var compIslr = new ComprobanteRetencion
+                            {
+                                IdFactura = factura.IdFactura,
+                                IdProveedor = factura.IdProveedor,
+                                Descripcion = islr.Concepto,
+                                Retencion = islr.Tarifa,
+                                TotalFactura = itemLibroCompra.Monto,
+                                BaseImponible = itemLibroCompra.BaseImponible,
+                                Sustraendo = islr.Sustraendo,
+                                ValorRetencion = itemLibroCompra.RetIslr,
+                                TotalImpuesto = itemLibroCompra.RetIslr,
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumComprobante = numRetIslr,
+                                FechaEmision = DateTime.Now
+                            };
+
+                            _context.CompRetIvas.Add(comp);
+                            _context.LibroCompras.Update(itemLibroCompra);
+                            _context.ComprobanteRetencions.Add(compIslr);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
 
                     //verficar si existe una provision sobre la sub cuenta
                     if (provisiones != null && provisiones.Any())
@@ -513,6 +714,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             //_dbContext.Add(gastoProvision);
+                            _dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
                         resultado = "exito";
@@ -575,6 +777,7 @@ namespace Prueba.Repositories
                             _dbContext.SaveChanges();
 
                         }
+
                         resultado = "exito";
                     }
                 }
@@ -761,6 +964,181 @@ namespace Prueba.Repositories
                         _dbContext.Add(referencia);
                         _dbContext.SaveChanges();
                     }
+
+                    // registrar comprobantes
+                    if (modelo.retencionesIva && !modelo.retencionesIslr)
+                    {
+                        var compRetencionUltimo = await (from c in _context.CompRetIvas
+                                                         join p in _context.Proveedors
+                                                         on c.IdProveedor equals p.IdProveedor
+                                                         where p.IdCondominio == modelo.IdCondominio
+                                                         orderby c.IdComprobanteIva
+                                                         select c).LastAsync();
+
+                        var numRet = compRetencionUltimo.NumComprobante + 1;
+
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                        var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                        var ceros = new string('0', diferenciaCeros);
+
+                        // comprobante de retencion de iva
+                        var comp = new CompRetIva
+                        {
+                            IdFactura = factura.IdFactura,
+                            IdProveedor = factura.IdProveedor,
+                            FechaEmision = DateTime.Now,
+                            TipoTransaccion = false,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            BaseImponible = factura.Subtotal,
+                            Alicuota = 16,
+                            ImpIva = factura.Iva,
+                            IvaRetenido = itemLibroCompra.RetIva,
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumComprobante = numRet
+                        };
+
+                        // actualizar itemLibroCompra
+                        itemLibroCompra.NumComprobanteRet = comp.NumComprobante;
+                        itemLibroCompra.FechaComprobanteRet = comp.FechaEmision;
+
+                        _context.CompRetIvas.Add(comp);
+                        _context.LibroCompras.Update(itemLibroCompra);
+
+                        await _context.SaveChangesAsync();
+
+                    }
+                    else if (!modelo.retencionesIva && modelo.retencionesIslr)
+                    {
+                        var islr = await _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefaultAsync();
+
+                        if (islr != null)
+                        {
+                            // comprobante de retencion de islr
+                            var compRetIslrUltimo = await (from c in _context.ComprobanteRetencions
+                                                           join p in _context.Proveedors
+                                                           on c.IdProveedor equals p.IdProveedor
+                                                           where p.IdCondominio == modelo.IdCondominio
+                                                           orderby c.IdComprobante
+                                                           select c).LastAsync();
+
+                            var numRet = compRetIslrUltimo.NumComprobante + 1;
+
+                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                            var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                            var ceros = new string('0', diferenciaCeros);
+
+                            var compIslr = new ComprobanteRetencion
+                            {
+                                IdFactura = factura.IdFactura,
+                                IdProveedor = factura.IdProveedor,
+                                Descripcion = islr.Concepto,
+                                Retencion = islr.Tarifa,
+                                TotalFactura = itemLibroCompra.Monto,
+                                BaseImponible = itemLibroCompra.BaseImponible,
+                                Sustraendo = islr.Sustraendo,
+                                ValorRetencion = itemLibroCompra.RetIslr,
+                                TotalImpuesto = itemLibroCompra.RetIslr,
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                                NumComprobante = numRet,
+                                FechaEmision = DateTime.Now
+                            };
+
+                            _context.ComprobanteRetencions.Add(compIslr);
+                            await _context.SaveChangesAsync();
+                        }
+
+                    }
+                    else if (modelo.retencionesIva && modelo.retencionesIslr)
+                    {
+                        // comprobante de retencion de iva
+                        var compRetencionUltimo = await (from c in _context.CompRetIvas
+                                                         join p in _context.Proveedors
+                                                         on c.IdProveedor equals p.IdProveedor
+                                                         where p.IdCondominio == modelo.IdCondominio
+                                                         orderby c.IdComprobanteIva
+                                                         select c).LastAsync();
+
+                        var numRet = compRetencionUltimo.NumComprobante + 1;
+
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                        var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
+
+                        var ceros = new string('0', diferenciaCeros);
+
+                        // comprobante de retencion de iva
+                        var comp = new CompRetIva
+                        {
+                            IdFactura = factura.IdFactura,
+                            IdProveedor = factura.IdProveedor,
+                            FechaEmision = DateTime.Now,
+                            TipoTransaccion = false,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            BaseImponible = factura.Subtotal,
+                            Alicuota = 16,
+                            ImpIva = factura.Iva,
+                            IvaRetenido = itemLibroCompra.RetIva,
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumComprobante = numRet
+                        };
+
+                        // actualizar itemLibroCompra
+                        itemLibroCompra.NumComprobanteRet = comp.NumComprobante;
+                        itemLibroCompra.FechaComprobanteRet = comp.FechaEmision;
+
+
+
+                        // comprobante de retencion de islr
+
+                        var islr = await _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefaultAsync();
+
+                        if (islr != null)
+                        {
+                            // comprobante de retencion de islr
+                            var compRetIslrUltimo = await (from c in _context.ComprobanteRetencions
+                                                           join p in _context.Proveedors
+                                                           on c.IdProveedor equals p.IdProveedor
+                                                           where p.IdCondominio == modelo.IdCondominio
+                                                           orderby c.IdComprobante
+                                                           select c).LastAsync();
+
+                            var numRetIslr = compRetIslrUltimo.NumComprobante + 1;
+
+                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+
+                            var diferenciaCerosIslr = 14 - (numRetIslr.ToString().Length + stringNumRetFechaIslr.Length);
+
+                            var cerosIslr = new string('0', diferenciaCerosIslr);
+
+                            var compIslr = new ComprobanteRetencion
+                            {
+                                IdFactura = factura.IdFactura,
+                                IdProveedor = factura.IdProveedor,
+                                Descripcion = islr.Concepto,
+                                Retencion = islr.Tarifa,
+                                TotalFactura = itemLibroCompra.Monto,
+                                BaseImponible = itemLibroCompra.BaseImponible,
+                                Sustraendo = islr.Sustraendo,
+                                ValorRetencion = itemLibroCompra.RetIslr,
+                                TotalImpuesto = itemLibroCompra.RetIslr,
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumComprobante = numRetIslr,
+                                FechaEmision = DateTime.Now
+                            };
+
+                            _context.CompRetIvas.Add(comp);
+                            _context.LibroCompras.Update(itemLibroCompra);
+                            _context.ComprobanteRetencions.Add(compIslr);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
                     if (provisiones != null && provisiones.Any())
                     {
                         LdiarioGlobal asientoProvision = new LdiarioGlobal
@@ -1632,7 +2010,7 @@ namespace Prueba.Repositories
                 var cc = context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
                 modelo.IdSubcuenta = cc.IdCodCuenta;
 
-                
+
                 // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
                 // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
                 PagoEmitido pago = new PagoEmitido
@@ -2090,7 +2468,7 @@ namespace Prueba.Repositories
 
                             context.Add(gasto);
                             context.Add(activo);
-                            await context.SaveChangesAsync();                            
+                            await context.SaveChangesAsync();
 
                             return "exito";
                         }

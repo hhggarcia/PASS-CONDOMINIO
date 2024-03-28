@@ -34,7 +34,7 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<BalanceComprobacion> BalanceComprobacions { get; set; }
 
-    public virtual DbSet<Bonificacion> Bonificaciones { get; set; }
+    public virtual DbSet<Bonificacione> Bonificaciones { get; set; }
 
     public virtual DbSet<Clase> Clases { get; set; }
 
@@ -85,6 +85,8 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Grupo> Grupos { get; set; }
 
     public virtual DbSet<GrupoGasto> GrupoGastos { get; set; }
+
+    public virtual DbSet<Impresora> Impresoras { get; set; }
 
     public virtual DbSet<Ingreso> Ingresos { get; set; }
 
@@ -310,7 +312,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Balance_Comprobacion_Condominio");
         });
 
-        modelBuilder.Entity<Bonificacion>(entity =>
+        modelBuilder.Entity<Bonificacione>(entity =>
         {
             entity.HasKey(e => e.IdBonificacion);
 
@@ -437,6 +439,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.FechaEmision).HasColumnType("datetime");
             entity.Property(e => e.ImpIva).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.IvaRetenido).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.NumCompRet).HasMaxLength(50);
             entity.Property(e => e.NumFacturaAfectada).HasMaxLength(50);
             entity.Property(e => e.TotalCompraIva).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TotalCompraRetIva).HasColumnType("decimal(18, 2)");
@@ -474,6 +477,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.FechaEmision).HasColumnType("datetime");
             entity.Property(e => e.ImpIva).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.IvaRetenido).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.NumCompRet).HasMaxLength(50);
             entity.Property(e => e.NumFacturaAfectada).HasMaxLength(50);
             entity.Property(e => e.TotalCompraIva).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TotalCompraRetIva).HasColumnType("decimal(18, 2)");
@@ -503,10 +507,13 @@ public partial class NuevaAppContext : DbContext
 
             entity.ToTable("ComprobanteRetencion");
 
+            entity.Property(e => e.BaseImponible).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Descripcion).HasMaxLength(250);
             entity.Property(e => e.FechaEmision).HasColumnType("datetime");
+            entity.Property(e => e.NumCompRet).HasMaxLength(50);
             entity.Property(e => e.Retencion).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Sustraendo).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalFactura).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TotalImpuesto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.ValorRetencion).HasColumnType("decimal(18, 2)");
 
@@ -527,10 +534,13 @@ public partial class NuevaAppContext : DbContext
 
             entity.ToTable("ComprobanteRetencionCliente");
 
+            entity.Property(e => e.BaseImponible).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Description).HasMaxLength(250);
             entity.Property(e => e.FechaEmision).HasColumnType("datetime");
+            entity.Property(e => e.NumCompRet).HasMaxLength(50);
             entity.Property(e => e.Retencion).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Sustraendo).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalFactura).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TotalImpuesto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.ValorRetencion).HasColumnType("decimal(18, 2)");
 
@@ -871,6 +881,20 @@ public partial class NuevaAppContext : DbContext
             entity.HasKey(e => e.IdGrupoGasto);
 
             entity.Property(e => e.NombreGrupo).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Impresora>(entity =>
+        {
+            entity.HasKey(e => e.IdImpresora);
+
+            entity.ToTable("Impresora");
+
+            entity.Property(e => e.Nombre).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Impresoras)
+                .HasForeignKey(d => d.IdCondominio)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Impresora_Condominio");
         });
 
         modelBuilder.Entity<Ingreso>(entity =>

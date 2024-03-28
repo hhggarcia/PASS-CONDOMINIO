@@ -47,6 +47,8 @@ public partial class Condominio
 
     public virtual AspNetUser IdAdministradorNavigation { get; set; } = null!;
 
+    public virtual ICollection<Impresora> Impresoras { get; set; } = new List<Impresora>();
+
     public virtual ICollection<LibroCompra> LibroCompras { get; set; } = new List<LibroCompra>();
 
     public virtual ICollection<LibroVenta> LibroVenta { get; set; } = new List<LibroVenta>();
