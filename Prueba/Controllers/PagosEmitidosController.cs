@@ -134,8 +134,6 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            //if (ModelState.IsValid)
-            //{
             try
             {
                 // cambiar montoRef, simbolo ref, valor dolar si cambiaron el tipo de moneda

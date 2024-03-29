@@ -3049,8 +3049,9 @@ namespace Prueba.Services
             {
                 container.Page(page =>
                 {
-                    page.Size(PageSizes.A4);
+                    page.Size(PageSizes.A4.Landscape());
                     page.Margin(1, Unit.Centimetre);
+
                     page.Content()
                         .PaddingVertical(1, Unit.Centimetre)
                         .Column(x =>
