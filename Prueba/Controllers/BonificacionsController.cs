@@ -8,23 +8,31 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
     public class BonificacionsController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public BonificacionsController(NuevaAppContext context)
+        public BonificacionsController(IMonedaRepository repoMoneda,
+            NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _context = context;
         }
 
         // GET: Bonificacions
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id)
         {
-            var nuevaAppContext = _context.Bonificaciones.Include(b => b.IdCodCuentaNavigation).Include(b => b.IdEmpleadoNavigation);
+            var nuevaAppContext = _context.Bonificaciones
+                .Include(b => b.IdCodCuentaNavigation)
+                .Include(b => b.IdEmpleadoNavigation)
+                .Where(c => c.IdEmpleado == id);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -51,8 +59,8 @@ namespace Prueba.Controllers
         // GET: Bonificacions/Create
         public IActionResult Create()
         {
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado");
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
             return View();
         }
 
@@ -61,18 +69,33 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdBonificacion,IdEmpleado,IdCodCuenta,Concepto,Monto,RefMonto,Activo")] Bonificacion bonificacion)
+        public async Task<IActionResult> Create([Bind("IdBonificacion,IdEmpleado,IdCodCuenta,Concepto,Monto,Activo")] Bonificacion bonificacion)
         {
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == bonificacion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+            bonificacion.IdCodCuenta = idCodCuenta;
+           
+            ModelState.Remove(nameof(bonificacion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(bonificacion.IdEmpleadoNavigation));
 
             if (ModelState.IsValid)
             {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
+
+                if (monedaPrincipal != null)
+                {
+                    bonificacion.RefMonto = bonificacion.Monto / monedaPrincipal.ValorDolar;
+                }
                 _context.Add(bonificacion);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Empleados");
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", bonificacion.IdCodCuenta);
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", bonificacion.IdEmpleado);
+
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
             return View(bonificacion);
         }
 
@@ -89,8 +112,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", bonificacion.IdCodCuenta);
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", bonificacion.IdEmpleado);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
             return View(bonificacion);
         }
 
@@ -99,19 +122,33 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdBonificacion,IdEmpleado,IdCodCuenta,Concepto,Monto,RefMonto,Activo")] Bonificacion bonificacion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdBonificacion,IdEmpleado,IdCodCuenta,Concepto,Monto,Activo")] Bonificacion bonificacion)
         {
             if (id != bonificacion.IdBonificacion)
             {
                 return NotFound();
             }
 
+            ModelState.Remove(nameof(bonificacion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(bonificacion.IdEmpleadoNavigation));
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == bonificacion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                    bonificacion.IdCodCuenta = idCodCuenta;
+
+                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
+
+                    if (monedaPrincipal != null)
+                    {
+                        bonificacion.RefMonto = bonificacion.Monto / monedaPrincipal.ValorDolar;
+                    }
+
                     _context.Update(bonificacion);
                     await _context.SaveChangesAsync();
                 }
@@ -126,10 +163,10 @@ namespace Prueba.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Empleados");
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", bonificacion.IdCodCuenta);
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "IdEmpleado", bonificacion.IdEmpleado);
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", bonificacion.IdCodCuenta);
+            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
             return View(bonificacion);
         }
 
@@ -165,7 +202,7 @@ namespace Prueba.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Empleados");
         }
 
         private bool BonificacionExists(int id)

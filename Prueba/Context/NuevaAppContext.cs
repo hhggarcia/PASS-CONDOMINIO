@@ -34,7 +34,7 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<BalanceComprobacion> BalanceComprobacions { get; set; }
 
-    public virtual DbSet<Bonificacione> Bonificaciones { get; set; }
+    public virtual DbSet<Bonificacion> Bonificaciones { get; set; }
 
     public virtual DbSet<Clase> Clases { get; set; }
 
@@ -113,6 +113,8 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<OrdenPago> OrdenPagos { get; set; }
 
     public virtual DbSet<PagoAnticipo> PagoAnticipos { get; set; }
+
+    public virtual DbSet<PagoCobroTransito> PagoCobroTransitos { get; set; }
 
     public virtual DbSet<PagoEmitido> PagoEmitidos { get; set; }
 
@@ -312,7 +314,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Balance_Comprobacion_Condominio");
         });
 
-        modelBuilder.Entity<Bonificacione>(entity =>
+        modelBuilder.Entity<Bonificacion>(entity =>
         {
             entity.HasKey(e => e.IdBonificacion);
 
@@ -705,6 +707,10 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Concepto).HasMaxLength(50);
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.RefMonto).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Deducciones)
+                .HasForeignKey(d => d.IdCodCuenta)
+                .HasConstraintName("FK_Deducciones_CodigoCuentas_Global");
 
             entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.Deducciones)
                 .HasForeignKey(d => d.IdEmpleado)
@@ -1171,6 +1177,23 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoAnticipo_Pago_Emitido");
         });
 
+        modelBuilder.Entity<PagoCobroTransito>(entity =>
+        {
+            entity.HasKey(e => e.IdPagoCobroTransito);
+
+            entity.ToTable("PagoCobroTransito");
+
+            entity.HasOne(d => d.IdCobroTransitoNavigation).WithMany(p => p.PagoCobroTransitos)
+                .HasForeignKey(d => d.IdCobroTransito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoCobroTransito_CobroTransito");
+
+            entity.HasOne(d => d.IdPagoRecibidoNavigation).WithMany(p => p.PagoCobroTransitos)
+                .HasForeignKey(d => d.IdPagoRecibido)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoCobroTransito_Pago_Recibido");
+        });
+
         modelBuilder.Entity<PagoEmitido>(entity =>
         {
             entity.HasKey(e => e.IdPagoEmitido);
@@ -1376,6 +1399,10 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Concepto).HasMaxLength(50);
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.RefMonto).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Percepciones)
+                .HasForeignKey(d => d.IdCodCuenta)
+                .HasConstraintName("FK_Percepciones_CodigoCuentas_Global");
 
             entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.Percepciones)
                 .HasForeignKey(d => d.IdEmpleado)

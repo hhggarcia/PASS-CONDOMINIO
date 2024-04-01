@@ -9,8 +9,10 @@ namespace Prueba.Repositories
 {
     public interface IPagosRecibidosRepository
     {
+        Task<CobroTransitoVM> FormCobroTransito(int id);
         Task<PagoFacturaEmitidaVM> FormPagoFacturaEmitida(int id);
         Task<IndexPagoFacturaEmitidaVM> GetPagosFacturasEmitidas(int id);
+        Task<string> RegistrarCobroTransito(CobroTransitoVM modelo);
         Task<string> RegistrarPago(PagoFacturaEmitidaVM modelo);
     }
     public class PagosRecibidosRepository : IPagosRecibidosRepository
@@ -78,7 +80,6 @@ namespace Prueba.Repositories
 
             return modelo;
         }
-
         public async Task<string> RegistrarPago(PagoFacturaEmitidaVM modelo)
         {
             var resultado = string.Empty;
@@ -511,6 +512,414 @@ namespace Prueba.Repositories
                         _dbContext.Add(ingreso);
                         _dbContext.Add(activo);
                         _dbContext.Add(pagoFactura);
+                        _dbContext.SaveChanges();
+                    }
+
+                    return "exito";
+
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+            }
+
+            return resultado;
+        }
+
+        public async Task<CobroTransitoVM> FormCobroTransito(int id)
+        {
+            var modelo = new CobroTransitoVM();
+
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
+            var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
+            var subcuentasModel = await _repoCuentas.ObtenerSubcuentas(id);
+
+            //var clientes = await _repoCuentas.ObtenerClientes(id);
+
+            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+
+            //modelo.Clientes = clientes.Select(c => new SelectListItem(c.Nombre, c.IdCliente.ToString())).ToList();
+            // ENVIAR MODELO
+
+            return modelo;
+        }
+
+        public async Task<string> RegistrarCobroTransito(CobroTransitoVM modelo)
+        {
+            var resultado = string.Empty;
+            decimal montoReferencia = 0;
+
+            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
+            //var idCodCuenta = from c in _context.CodigoCuentasGlobals
+            //                  where c.IdSubCuenta == modelo.IdSubcuenta
+            //                  select c;
+
+            var cc = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
+            modelo.IdSubcuenta = cc.IdCodCuenta;
+
+            // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
+            // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
+            PagoRecibido pago = new PagoRecibido
+            {
+                IdCondominio = modelo.IdCondominio,
+                Fecha = modelo.Fecha,
+                Monto = modelo.Monto,
+                Concepto = modelo.Concepto,
+                Confirmado = true,
+            };
+
+            //var provisiones = from c in _context.Provisiones
+            //                  where c.IdCodGasto == modelo.IdSubcuenta
+            //                  select c;
+
+            var diario = from l in _context.LdiarioGlobals
+                         select l;
+
+            int numAsiento = 0;
+
+            var diarioCondominio = from a in _context.LdiarioGlobals
+                                   join c in _context.CodigoCuentasGlobals
+                                   on a.IdCodCuenta equals c.IdCodCuenta
+                                   where c.IdCondominio == modelo.IdCondominio
+                                   select a;
+
+            if (diarioCondominio.Count() > 0)
+            {
+                numAsiento = diarioCondominio.ToList().Last().NumAsiento;
+            }
+
+            if (modelo.Pagoforma == FormaPago.Efectivo)
+            {
+                try
+                {
+                    var idCaja = (from c in _context.CodigoCuentasGlobals
+                                  where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
+                                  select c).First();
+
+                    // buscar moneda asigna a la subcuenta
+                    var moneda = from m in _context.MonedaConds
+                                 join mc in _context.MonedaCuenta
+                                 on m.IdMonedaCond equals mc.IdMoneda
+                                 where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                 select m;
+
+                    // si no es principal hacer el cambio
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
+                    // calcular monto referencia
+                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                    {
+                        return "No hay monedas registradas en el sistema!";
+                    }
+                    else if (moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                    }
+                    else if (!moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+
+                        //montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+                        //montoReferencia = montoDolares;
+                    }
+
+                    // disminuir saldo de la cuenta de CAJA
+                    var monedaCuenta = (from m in _context.MonedaCuenta
+                                        where m.IdCodCuenta == idCaja.IdCodCuenta
+                                        select m).First();
+
+                    monedaCuenta.SaldoFinal -= modelo.Monto;
+                    // añadir al pago
+
+                    pago.FormaPago = false;
+                    pago.SimboloMoneda = moneda.First().Simbolo;
+                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    pago.SimboloRef = "$";
+                    pago.MontoRef = montoReferencia;
+
+
+                    // registrar cobro en transito
+                    var cobroTransito = new CobroTransito
+                    {
+                        IdCondominio = modelo.IdCondominio,
+                        FormaPago = false,
+                        Monto = pago.Monto,
+                        Fecha = pago.Fecha,
+                        Concepto = modelo.Concepto,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = montoReferencia,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        Asignado = false
+                    };
+
+                    // registrar transaccion
+                    // armar transaccion
+                    var transaccion = new Transaccion
+                    {
+                        TipoTransaccion = true,
+                        IdCodCuenta = modelo.IdSubcuenta,
+                        Descripcion = modelo.Concepto,
+                        MontoTotal = pago.Monto,
+                        Documento = "",
+                        Cancelado = pago.Monto,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = pago.MontoRef
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+
+                        _dbContext.Add(pago);
+                        _dbContext.Add(cobroTransito);
+                        _dbContext.Add(transaccion);
+                        _dbContext.Update(monedaCuenta);
+
+                        _dbContext.SaveChanges();
+                    }
+
+                    // relacion cobro transito <-> pago recibido
+                    var pagoCobrotransito = new PagoCobroTransito
+                    {
+                        IdCobroTransito = cobroTransito.IdCobroTransito,
+                        IdPagoRecibido = pago.IdPagoRecibido
+                    };
+
+                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
+                    {
+                        IdCodCuenta = modelo.IdSubcuenta,
+                        Fecha = modelo.Fecha,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        MontoRef = montoReferencia,
+                        TipoOperacion = false,
+                        NumAsiento = numAsiento + 1,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = moneda.First().Simbolo,
+                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                    };
+                    LdiarioGlobal asientoCaja = new LdiarioGlobal
+                    {
+                        IdCodCuenta = idCaja.IdCodCuenta,
+                        Fecha = modelo.Fecha,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        MontoRef = montoReferencia,
+                        TipoOperacion = true,
+                        NumAsiento = numAsiento + 1,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = moneda.First().Simbolo,
+                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+                        _dbContext.Add(asientoCaja);
+                        _dbContext.Add(asientoIngreso);
+
+                        //_dbContext.Add(pagoFactura);
+                        _dbContext.SaveChanges();
+                    }
+
+                    //REGISTRAR ASIENTO EN LA TABLA Ingresos
+                    Ingreso ingreso = new Ingreso
+                    {
+                        IdAsiento = asientoIngreso.IdAsiento
+                    };
+                    //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                    Activo activo = new Activo
+                    {
+                        IdAsiento = asientoCaja.IdAsiento
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+                        _dbContext.Add(ingreso);
+                        _dbContext.Add(activo);
+                        _dbContext.Add(pagoCobrotransito);
+                        _dbContext.SaveChanges();
+
+                    }
+                    resultado = "exito";
+
+                }
+                catch (Exception ex)
+                {
+                    return ex.Message;
+                }
+
+            }
+            else if (modelo.Pagoforma == FormaPago.Transferencia)
+            {
+                try
+                {
+
+                    var idBanco = (from c in _context.CodigoCuentasGlobals
+                                   where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
+                                   select c).First();
+
+                    // buscar moneda asigna a la subcuenta
+                    var moneda = from m in _context.MonedaConds
+                                 join mc in _context.MonedaCuenta
+                                 on m.IdMonedaCond equals mc.IdMoneda
+                                 where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                 select m;
+
+                    // si no es principal hacer el cambio
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
+                    // calcular monto referencia
+                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                    {
+                        return "No hay monedas registradas en el sistema!";
+                    }
+                    else if (moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                    }
+                    else if (!moneda.First().Equals(monedaPrincipal.First()))
+                    {
+                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                    }
+
+                    // disminuir saldo de la cuenta de CAJA
+                    var monedaCuenta = (from m in _context.MonedaCuenta
+                                        where m.IdCodCuenta == idBanco.IdCodCuenta
+                                        select m).First();
+
+                    monedaCuenta.SaldoFinal -= modelo.Monto;
+
+                    pago.MontoRef = montoReferencia;
+                    pago.FormaPago = true;
+                    pago.SimboloMoneda = moneda.First().Simbolo;
+                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    pago.MontoRef = montoReferencia;
+                    pago.SimboloRef = "$";
+
+                    // registrar cobro en transito
+                    var cobroTransito = new CobroTransito
+                    {
+                        IdCondominio = modelo.IdCondominio,
+                        FormaPago = true,
+                        Monto = pago.Monto,
+                        Fecha = pago.Fecha,
+                        Concepto = modelo.Concepto,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = montoReferencia,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        Asignado = false
+                    };
+
+                    // registrar transaccion
+                    // armar transaccion
+                    var transaccion = new Transaccion
+                    {
+                        TipoTransaccion = true,
+                        IdCodCuenta = modelo.IdSubcuenta,
+                        Descripcion = modelo.Concepto,
+                        MontoTotal = pago.Monto,
+                        Documento = "",
+                        Cancelado = pago.Monto,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = pago.MontoRef
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+
+                        _dbContext.Add(pago);
+                        _dbContext.Add(cobroTransito);
+                        _dbContext.Add(transaccion);
+                        _dbContext.Update(monedaCuenta);
+
+                        _dbContext.SaveChanges();
+                    }
+
+                    // relacion cobro transito <-> pago recibido
+                    var pagoCobrotransito = new PagoCobroTransito
+                    {
+                        IdCobroTransito = cobroTransito.IdCobroTransito,
+                        IdPagoRecibido = pago.IdPagoRecibido
+                    };
+
+                    ReferenciasPr referencia = new ReferenciasPr
+                    {
+                        IdPagoRecibido = pago.IdPagoRecibido,
+                        NumReferencia = modelo.NumReferencia,
+                        Banco = modelo.IdCodigoCuentaBanco.ToString()
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+                        _dbContext.Add(referencia);
+                        _dbContext.SaveChanges();
+                    }
+
+                    //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
+                    //buscar el id en codigo de cuentas global de la subcuenta seleccionada
+
+                    LdiarioGlobal asientoGasto = new LdiarioGlobal
+                    {
+                        IdCodCuenta = modelo.IdSubcuenta,
+                        Fecha = modelo.Fecha,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        MontoRef = montoReferencia,
+                        TipoOperacion = false,
+                        NumAsiento = numAsiento + 1,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = moneda.First().Simbolo,
+                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                    };
+                    LdiarioGlobal asientoBanco = new LdiarioGlobal
+                    {
+                        IdCodCuenta = idBanco.IdCodCuenta,
+                        Fecha = modelo.Fecha,
+                        Concepto = modelo.Concepto,
+                        Monto = modelo.Monto,
+                        MontoRef = montoReferencia,
+                        TipoOperacion = true,
+                        NumAsiento = numAsiento + 1,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = moneda.First().Simbolo,
+                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+                        _dbContext.Add(asientoBanco);
+                        _dbContext.Add(asientoGasto);
+                        _dbContext.SaveChanges();
+                    }
+
+                    //REGISTRAR ASIENTO EN LA TABLA GASTOS
+                    Ingreso ingreso = new Ingreso
+                    {
+                        IdAsiento = asientoGasto.IdAsiento
+                    };
+                    //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                    Activo activo = new Activo
+                    {
+                        IdAsiento = asientoBanco.IdAsiento
+                    };
+
+                    using (var _dbContext = new NuevaAppContext())
+                    {
+                        _dbContext.Add(ingreso);
+                        _dbContext.Add(activo);
+                        _dbContext.Add(pagoCobrotransito);
                         _dbContext.SaveChanges();
                     }
 

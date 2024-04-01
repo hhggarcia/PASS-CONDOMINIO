@@ -251,6 +251,16 @@ namespace Prueba.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id">Id del empleado a consultar bonos</param>
+        /// <returns></returns>
+        public IActionResult VerBonos(int id)
+        {
+            return RedirectToAction("Index", "Bonificacions", new { id });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="Id">Id del empleado a consultar recibos de nomina</param>
         /// <returns></returns>
         public IActionResult VerRecibosNomina(int id)
@@ -310,6 +320,57 @@ namespace Prueba.Controllers
                         }
                     }
 
+                    if (modelo.deducciones)
+                    {
+                        var deducciones = await _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+
+                        if (!deducciones.Any())
+                        {
+                            modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El empleado no tiene deducciones!";
+
+                            return View("PagoNomina", modelo);
+                        }
+                    }
+
+                    if (modelo.percepciones)
+                    {
+                        var deducciones = await _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+
+                        if (!deducciones.Any())
+                        {
+                            modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El empleado no tiene percepciones!";
+
+                            return View("PagoNomina", modelo);
+                        }
+                    }
+
+                    if (modelo.Bonos)
+                    {
+                        var deducciones = await _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+
+                        if (!deducciones.Any())
+                        {
+                            modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El empleado no tiene bonificaciones!";
+
+                            return View("PagoNomina", modelo);
+                        }
+                    }
+
                     var resultado = await _repoPagosEmitidos.RegistrarPagoNomina(modelo);
 
                     if (resultado == "exito")
@@ -327,7 +388,7 @@ namespace Prueba.Controllers
                         var empleado = await _context.Empleados.FindAsync(modelo.IdEmpleado);
                         var deducciones = new List<Deduccion>();
                         var percepciones = new List<Percepcion>();
-                        
+                        var bonos = new List<Bonificacion>();
                         if (empleado == null)
                         {
                             return NotFound();
@@ -345,7 +406,12 @@ namespace Prueba.Controllers
                         {
                             deducciones = await _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
                             percepciones = await _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
-                        }                       
+                        }
+
+                        if (modelo.Bonos)
+                        {
+                            bonos = await _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+                        }
 
                         var comprobante = new ComprobantePagoNomina()
                         {
@@ -356,7 +422,8 @@ namespace Prueba.Controllers
                             Gasto = gasto.First(),
                             Percepciones = percepciones,
                             Deducciones = deducciones,
-                            Empleado = empleado
+                            Empleado = empleado,
+                            Bonos = bonos
                         };
 
                         if (modelo.Pagoforma == FormaPago.Transferencia)
@@ -384,7 +451,8 @@ namespace Prueba.Controllers
                         {
                             comprobante.Pago.Monto = modelo.Monto + percepciones.Sum(c => c.Monto);
 
-                        } else if (!modelo.percepciones && modelo.deducciones)
+                        }
+                        else if (!modelo.percepciones && modelo.deducciones)
                         {
                             comprobante.Pago.Monto = modelo.Monto - deducciones.Sum(c => c.Monto);
 
@@ -398,7 +466,7 @@ namespace Prueba.Controllers
                         {
                             comprobante.Pago.Monto = modelo.Monto;
                         }
-                        
+
                         comprobante.Pago.Fecha = modelo.Fecha;
                         TempData.Keep();
 
@@ -447,6 +515,23 @@ namespace Prueba.Controllers
             try
             {
                 var data = _servicesPDF.ComprobantePagosNominaPDF(modelo);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        [HttpPost]
+        public ContentResult ComprobanteBonosPDF([FromBody] ComprobantePagoNomina modelo)
+        {
+            try
+            {
+                var data = _servicesPDF.ComprobanteBonosPDF(modelo);
                 var base64 = Convert.ToBase64String(data);
                 return Content(base64, "application/pdf");
             }

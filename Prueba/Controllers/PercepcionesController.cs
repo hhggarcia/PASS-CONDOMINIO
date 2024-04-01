@@ -36,7 +36,10 @@ namespace Prueba.Controllers
         // GET: Percepciones
         public async Task<IActionResult> Index(int id)
         {
-            var nuevaAppContext = _context.Percepciones.Include(p => p.IdEmpleadoNavigation).Where(c => c.IdEmpleado == id);
+            var nuevaAppContext = _context.Percepciones.Include(b => b.IdCodCuentaNavigation)
+                .Include(b => b.IdCodCuentaNavigation)
+                .Include(p => p.IdEmpleadoNavigation)
+                .Where(c => c.IdEmpleado == id);
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -49,6 +52,7 @@ namespace Prueba.Controllers
             }
 
             var percepcion = await _context.Percepciones
+                .Include(b => b.IdCodCuentaNavigation)
                 .Include(p => p.IdEmpleadoNavigation)
                 .FirstOrDefaultAsync(m => m.IdPercepcion == id);
             if (percepcion == null)
@@ -62,6 +66,7 @@ namespace Prueba.Controllers
         // GET: Percepciones/Create
         public IActionResult Create()
         {
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
             return View();
         }
@@ -71,12 +76,18 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPercepcion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Percepcion percepcion)
+        public async Task<IActionResult> Create([Bind("IdPercepcion,Concepto,Monto,RefMonto,Activo,IdEmpleado,IdCodCuenta")] Percepcion percepcion)
         {
             ModelState.Remove(nameof(percepcion.IdEmpleadoNavigation));
+            ModelState.Remove(nameof(percepcion.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
+                var idCuenta = _context.SubCuenta.Where(c => c.Id == percepcion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                percepcion.IdCodCuenta = idCodCuenta;
+
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
@@ -90,6 +101,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index), "Empleados");
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", percepcion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }
@@ -107,6 +119,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", percepcion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }
@@ -116,7 +129,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPercepcion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Percepcion percepcion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPercepcion,Concepto,Monto,RefMonto,Activo,IdEmpleado,IdCodCuenta")] Percepcion percepcion)
         {
             if (id != percepcion.IdPercepcion)
             {
@@ -124,12 +137,17 @@ namespace Prueba.Controllers
             }
 
             ModelState.Remove(nameof(percepcion.IdEmpleadoNavigation));
-
+            ModelState.Remove(nameof(percepcion.IdCodCuentaNavigation));
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == percepcion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                    percepcion.IdCodCuenta = idCodCuenta;
+
                     var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
@@ -156,6 +174,7 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index), "Empleados");
 
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", percepcion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", percepcion.IdEmpleado);
             return View(percepcion);
         }

@@ -483,7 +483,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -535,7 +535,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
                                 FechaEmision = DateTime.Now
                             };
@@ -581,7 +581,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -629,7 +629,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
                                 FechaEmision = DateTime.Now
                             };
@@ -996,7 +996,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -1043,7 +1043,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
                                 FechaEmision = DateTime.Now
                             };
@@ -1084,7 +1084,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -1127,7 +1127,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Year.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
                                 FechaEmision = DateTime.Now
                             };
@@ -1396,6 +1396,25 @@ namespace Prueba.Repositories
                         pago.SimboloRef = "$";
                         pago.MontoRef = montoReferencia;
 
+                        // verificar bono
+                        if (modelo.Bonos)
+                        {
+                            var bonos = (await _context.Bonificaciones
+                                .Where(c => c.IdEmpleado == modelo.IdEmpleado)
+                                .ToListAsync()).Sum(c => c.Monto);
+
+                            pago.Monto += bonos;
+
+                            if (moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
+                            }
+                            else if (!moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
+                            }
+                        }
+
                         // calcular el pago con las deducciones/percepciones o no
                         if (modelo.percepciones && !modelo.deducciones)
                         {
@@ -1443,6 +1462,7 @@ namespace Prueba.Repositories
                                 .ToListAsync()).Sum(c => c.Monto);
 
                             pago.Monto += percepciones - deducciones;
+
                             if (moneda.First().Equals(monedaPrincipal.First()))
                             {
                                 pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
@@ -1560,6 +1580,75 @@ namespace Prueba.Repositories
 
                             };
 
+                            if (modelo.percepciones)
+                            {
+                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoPercepcion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)percepcion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = percepcion.Concepto,
+                                        Monto = percepcion.Monto,
+                                        MontoRef = percepcion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoPercepcion);
+                                }
+                            }
+
+                            if (modelo.deducciones)
+                            {
+                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoDeduccion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)deduccion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = deduccion.Concepto,
+                                        Monto = deduccion.Monto,
+                                        MontoRef = deduccion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoDeduccion);
+                                }
+                            }
+
+                            if (modelo.Bonos)
+                            {
+                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoBono = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = bono.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = bono.Concepto,
+                                        Monto = bono.Monto,
+                                        MontoRef = bono.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoBono);
+                                }
+                            }
+
                             context.Add(asientoProvisionGasto);
                             context.Add(asientoProvision);
                             context.Add(asientoProvisionCaja);
@@ -1592,6 +1681,77 @@ namespace Prueba.Repositories
                         }
                         else
                         {
+                            // asientos para deducciones y percepciones
+                            // calcular el pago con las deducciones/percepciones o no
+                            if (modelo.percepciones)
+                            {
+                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoPercepcion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)percepcion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = percepcion.Concepto,
+                                        Monto = percepcion.Monto,
+                                        MontoRef = percepcion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoPercepcion);
+                                }                                
+                            }
+
+                            if (modelo.deducciones)
+                            {
+                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoDeduccion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)deduccion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = deduccion.Concepto,
+                                        Monto = deduccion.Monto,
+                                        MontoRef = deduccion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoDeduccion);
+                                }
+                            }
+
+                            if (modelo.Bonos)
+                            {
+                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoBono = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = bono.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = bono.Concepto,
+                                        Monto = bono.Monto,
+                                        MontoRef = bono.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoBono);
+                                }
+                            }
+
                             LdiarioGlobal asientoGasto = new LdiarioGlobal
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
@@ -1621,12 +1781,12 @@ namespace Prueba.Repositories
 
                             };
 
-
                             context.Add(asientoGasto);
                             context.Add(asientoCaja);
                             //_dbContext.Add(pagoFactura);
                             context.SaveChanges();
 
+                            
 
                             //REGISTRAR ASIENTO EN LA TABLA GASTOS
                             Gasto gasto = new Gasto
@@ -1872,6 +2032,75 @@ namespace Prueba.Repositories
 
                             };
 
+                            if (modelo.percepciones)
+                            {
+                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoPercepcion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)percepcion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = percepcion.Concepto,
+                                        Monto = percepcion.Monto,
+                                        MontoRef = percepcion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoPercepcion);
+                                }
+                            }
+
+                            if (modelo.deducciones)
+                            {
+                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoDeduccion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)deduccion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = deduccion.Concepto,
+                                        Monto = deduccion.Monto,
+                                        MontoRef = deduccion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoDeduccion);
+                                }
+                            }
+
+                            if (modelo.Bonos)
+                            {
+                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoBono = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = bono.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = bono.Concepto,
+                                        Monto = bono.Monto,
+                                        MontoRef = bono.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoBono);
+                                }
+                            }
+
                             context.Add(asientoProvisionGasto);
                             context.Add(asientoProvision);
                             context.Add(asientoProvisionBanco);
@@ -1904,6 +2133,75 @@ namespace Prueba.Repositories
                         }
                         else
                         {
+                            if (modelo.percepciones)
+                            {
+                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoPercepcion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)percepcion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = percepcion.Concepto,
+                                        Monto = percepcion.Monto,
+                                        MontoRef = percepcion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoPercepcion);
+                                }
+                            }
+
+                            if (modelo.deducciones)
+                            {
+                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoDeduccion = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = (int)deduccion.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = deduccion.Concepto,
+                                        Monto = deduccion.Monto,
+                                        MontoRef = deduccion.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoDeduccion);
+                                }
+                            }
+
+                            if (modelo.Bonos)
+                            {
+                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                {
+                                    LdiarioGlobal asientoBono = new LdiarioGlobal
+                                    {
+                                        IdCodCuenta = bono.IdCodCuenta,
+                                        Fecha = modelo.Fecha,
+                                        Concepto = bono.Concepto,
+                                        Monto = bono.Monto,
+                                        MontoRef = bono.RefMonto,
+                                        TipoOperacion = true,
+                                        NumAsiento = numAsiento + 1,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = moneda.First().Simbolo,
+                                        SimboloRef = monedaPrincipal.First().Simbolo
+
+                                    };
+
+                                    context.Add(asientoBono);
+                                }
+                            }
+
                             //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
                             //buscar el id en codigo de cuentas global de la subcuenta seleccionada
 

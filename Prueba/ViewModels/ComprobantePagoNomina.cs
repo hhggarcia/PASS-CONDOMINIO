@@ -20,5 +20,6 @@ namespace Prueba.ViewModels
         public string SimboloRef { get; set; } = null!;
         public IList<Percepcion> Percepciones { get; set; } = new List<Percepcion>();
         public IList<Deduccion> Deducciones { get; set; } = new List<Deduccion>();
+        public IList<Bonificacion> Bonos { get; set; } = new List<Bonificacion>();
     }
 }

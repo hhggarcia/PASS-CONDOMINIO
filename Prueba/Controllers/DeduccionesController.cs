@@ -36,7 +36,10 @@ namespace Prueba.Controllers
         // GET: Deducciones
         public async Task<IActionResult> Index(int id)
         {
-            var nuevaAppContext = _context.Deducciones.Include(d => d.IdEmpleadoNavigation).Where(c => c.IdEmpleado == id);
+            var nuevaAppContext = _context.Deducciones
+                .Include(b => b.IdCodCuentaNavigation)
+                .Include(d => d.IdEmpleadoNavigation)
+                .Where(c => c.IdEmpleado == id);
 
             return View(await nuevaAppContext.ToListAsync());
         }
@@ -50,6 +53,7 @@ namespace Prueba.Controllers
             }
 
             var deduccion = await _context.Deducciones
+                .Include(b => b.IdCodCuentaNavigation)
                 .Include(d => d.IdEmpleadoNavigation)
                 .FirstOrDefaultAsync(m => m.IdDeduccion == id);
             if (deduccion == null)
@@ -63,6 +67,7 @@ namespace Prueba.Controllers
         // GET: Deducciones/Create
         public IActionResult Create()
         {
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
             return View();
         }
@@ -72,12 +77,18 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdDeduccion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Deduccion deduccion)
+        public async Task<IActionResult> Create([Bind("IdDeduccion,Concepto,Monto,Activo,IdEmpleado,IdCodCuenta")] Deduccion deduccion)
         {
+            ModelState.Remove(nameof(deduccion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(deduccion.IdEmpleadoNavigation));
 
             if (ModelState.IsValid)
             {
+                var idCuenta = _context.SubCuenta.Where(c => c.Id == deduccion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                deduccion.IdCodCuenta = idCodCuenta;
+
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
@@ -91,6 +102,7 @@ namespace Prueba.Controllers
                 return RedirectToAction("Index", "Empleados");
 
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", deduccion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }
@@ -108,6 +120,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", deduccion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }
@@ -117,18 +130,25 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdDeduccion,Concepto,Monto,RefMonto,Activo,IdEmpleado")] Deduccion deduccion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdDeduccion,Concepto,Monto,Activo,IdEmpleado,IdCodCuenta")] Deduccion deduccion)
         {
             if (id != deduccion.IdDeduccion)
             {
                 return NotFound();
             }
+
+            ModelState.Remove(nameof(deduccion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(deduccion.IdEmpleadoNavigation));
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == deduccion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                    deduccion.IdCodCuenta = idCodCuenta;
+
                     var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
@@ -154,6 +174,7 @@ namespace Prueba.Controllers
 
                 return RedirectToAction("Index", "Empleados");
             }
+            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", deduccion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", deduccion.IdEmpleado);
             return View(deduccion);
         }

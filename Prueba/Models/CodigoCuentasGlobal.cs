@@ -25,9 +25,11 @@ public partial class CodigoCuentasGlobal
 
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
-    public virtual ICollection<Bonificacione> Bonificaciones { get; set; } = new List<Bonificacione>();
+    public virtual ICollection<Bonificacion> Bonificaciones { get; set; } = new List<Bonificacion>();
 
     public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
+
+    public virtual ICollection<Deduccion> Deducciones { get; set; } = new List<Deduccion>();
 
     public virtual ICollection<FacturaEmitida> FacturaEmitida { get; set; } = new List<FacturaEmitida>();
 
@@ -48,6 +50,8 @@ public partial class CodigoCuentasGlobal
     public virtual ICollection<LdiarioGlobal> LdiarioGlobals { get; set; } = new List<LdiarioGlobal>();
 
     public virtual ICollection<MonedaCuenta> MonedaCuenta { get; set; } = new List<MonedaCuenta>();
+
+    public virtual ICollection<Percepcion> Percepciones { get; set; } = new List<Percepcion>();
 
     public virtual ICollection<Provision> ProvisioneIdCodCuentaNavigations { get; set; } = new List<Provision>();
 

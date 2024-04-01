@@ -1,4 +1,4 @@
-﻿@model Prueba.ViewModels.PagoNominaVM
+﻿@model Prueba.ViewModels.CobroTransitoVM
 
 @{
     ViewData["Title"] = "Pagos";
@@ -19,7 +19,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Reporte aquí los Pagos de Nomina
+                        Reporte aquí los Pagos
                     </h6>
                 </div>
                 <div class="card-body">
@@ -33,7 +33,7 @@
                     {
                         <!-- Inicio -->
 
-                        <form class="form form-horizontal" asp-action="ConfirmarPago">
+                        <form class="form form-horizontal" asp-action="CobroTransito">
                             @if (@ViewBag.FormaPago == "fallido")
                             {
                                 <h6>@ViewBag.Mensaje</h6>
@@ -43,23 +43,57 @@
                                 <div class="row">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                                    <!-- Proveedor -->
-                                    <div class="col-md-6 col-12">
+                                    <!-- Cliente -->
+                                    @* <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Proveedor</label>
+                                            <label for="last-name-column">Cliente</label>
                                             <div class="position-relative">
                                                 <fieldset class="form-group">
-                                                    <select class="form-select" id="proveedorSelect" asp-for="IdEmpleado">
-                                                        <option value="">Seleccione un empleado</option>
-                                                        @foreach (var factura in Model.Empleados)
+                                                    <select class="form-select" id="clienteSelect" asp-for="IdCliente">
+                                                        <option value="">Seleccione un cliente</option>
+                                                        @foreach (var client in Model.Clientes)
                                                         {
-                                                            <option value="@factura.Value">@factura.Text</option>
+                                                            <option value="@client.Value">@client.Text</option>
                                                         }
                                                     </select>
                                                 </fieldset>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> *@
+
+                                    <!-- Facturas -->
+                                    @* <div class="col-md-6 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <label for="last-name-column">Facturas</label>
+                                            <div class="position-relative">
+                                                <fieldset class="form-group">
+                                                    <select class="form-select" id="facturaSelect" asp-for="IdFactura">
+                                                        <option value="">Seleccione una factura</option>
+                                                        <!-- Mantén esta opción manual al cargar la página -->
+                                                    </select>
+                                                    <span id="facturaMessage" class="text-danger" style="display:none;">No hay facturas disponibles.</span>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div> *@
+
+                                    @* <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Facturas</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
+                                <select class="form-select" id="facturaSelect" asp-for="IdFactura">
+                                <option value="">Seleccione una factura</option>
+                                @foreach (var factura in Model.Facturas)
+                                {
+                                <option value="@factura.Value">@factura.Text</option>
+                                }
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
+                                </div> *@
+
                                     <!-- Monto -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
@@ -68,19 +102,15 @@
                                             <span id="validatonMonto" class="text-danger"></span>
                                             <div class="position-relative">
                                                 @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
-                                                <input asp-for="Monto" class="form-control" />
-                                                @* <input type="number"
-                                                       class="form-control"
+                                                <input class="form-control"
                                                        placeholder="Monto"
-                                                       asp-for="Monto" />  *@
+                                                       asp-for="Monto" /> <!-- Agregar el atributo disabled -->
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-
                                     <!-- Fecha -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left">
@@ -239,19 +269,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group form-check">
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="deducciones" /> Aplicar Deducciones
-                                            </label>
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="percepciones" /> Aplicar Percepciones
-                                            </label>
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="Bonos" /> Aplicar Bonificaciones
-                                            </label>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="col-12 d-flex justify-content-end">
                                         <button type="submit"
                                                 class="btn btn-primary me-1 mb-1">

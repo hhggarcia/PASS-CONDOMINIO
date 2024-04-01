@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -16,12 +17,15 @@ namespace Prueba.Controllers
 
     public class CobroTransitosController : Controller
     {
+        private readonly IPagosRecibidosRepository _repoPagosRecibidos;
         private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public CobroTransitosController(IMonedaRepository repoMoneda,
+        public CobroTransitosController(IPagosRecibidosRepository repoPagosRecibidos,
+            IMonedaRepository repoMoneda,
             NuevaAppContext context)
         {
+            _repoPagosRecibidos = repoPagosRecibidos;
             _repoMoneda = repoMoneda;
             _context = context;
         }
@@ -61,7 +65,7 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios.Where(c => c.IdCondominio == IdCondominio), "IdCondominio", "Nombre");    
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios.Where(c => c.IdCondominio == IdCondominio), "IdCondominio", "Nombre");
             TempData.Keep();
 
             return View();
@@ -180,6 +184,96 @@ namespace Prueba.Controllers
         private bool CobroTransitoExists(int id)
         {
             return _context.CobroTransitos.Any(e => e.IdCobroTransito == id);
+        }
+
+        public async Task<IActionResult> CobroTransito()
+        {
+            try
+            {
+                //traer subcuentas del condominio
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var modelo = await _repoPagosRecibidos.FormCobroTransito(idCondominio);
+
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CobroTransito(CobroTransitoVM modelo)
+        {
+            try
+            {
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                {
+                    modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    if (modelo.Pagoforma == FormaPago.Transferencia)
+                    {
+                        var existPagoTransferencia = from pago in _context.PagoRecibidos
+                                                     join referencia in _context.ReferenciasPrs
+                                                     on pago.IdPagoRecibido equals referencia.IdPagoRecibido
+                                                     where referencia.NumReferencia == modelo.NumReferencia
+                                                     select new { pago, referencia };
+
+                        if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                        {
+                            //var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                            modelo = await _repoPagosRecibidos.FormCobroTransito(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este número de referencia!";
+
+                            return View("CobroTransito", modelo);
+                        }
+                    }
+
+                    var resultado = await _repoPagosRecibidos.RegistrarCobroTransito(modelo);
+
+                    if (resultado == "exito")
+                    {
+                        TempData.Keep();
+
+                        return RedirectToAction("Index");
+                    }
+
+                    modelo = await _repoPagosRecibidos.FormCobroTransito(modelo.IdCondominio);
+
+                    TempData.Keep();
+
+                    return View("CobroTransito", modelo);
+                }
+
+                modelo = await _repoPagosRecibidos.FormCobroTransito(modelo.IdCondominio);
+
+                TempData.Keep();
+
+                return View("CobroTransito", modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
         }
     }
 }

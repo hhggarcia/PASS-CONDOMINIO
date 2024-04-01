@@ -17,6 +17,7 @@ namespace Prueba.ViewModels
         public FormaPago Pagoforma { get; set; }
         public bool deducciones { get; set; }
         public bool percepciones { get; set; }
+        public bool Bonos { get; set; }
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
         public decimal ValorDolar { get; set; }

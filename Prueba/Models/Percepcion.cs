@@ -19,5 +19,7 @@ public partial class Percepcion
 
     public int? IdCodCuenta { get; set; }
 
+    public virtual CodigoCuentasGlobal? IdCodCuentaNavigation { get; set; }
+
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 }
