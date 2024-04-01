@@ -19,14 +19,15 @@ namespace Prueba.Controllers
 
     public class ComprobanteRetencionsController : Controller
     {
-        //private readonly IPrintServices _servicesPrint;
+        private readonly IPrintServices _printServices;
         private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public ComprobanteRetencionsController(IPDFServices servicesPDF,
+        public ComprobanteRetencionsController(IPrintServices printServices,
+            IPDFServices servicesPDF,
             NuevaAppContext context)
         {
-            //_servicesPrint = printServices;
+            _printServices = printServices;
             _servicesPDF = servicesPDF;
             _context = context;
         }
@@ -34,7 +35,10 @@ namespace Prueba.Controllers
         // GET: ComprobanteRetencions
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.ComprobanteRetencions.Include(c => c.IdFacturaNavigation).Include(c => c.IdProveedorNavigation);
+            var nuevaAppContext = _context.ComprobanteRetencions
+                .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdProveedorNavigation);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -181,6 +185,8 @@ namespace Prueba.Controllers
 
         public async Task<IActionResult> PrintComprobante(int id)
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             var comprobanteRetencion = await _context.ComprobanteRetencions.FindAsync(id);
             if (comprobanteRetencion != null)
             {
@@ -196,17 +202,14 @@ namespace Prueba.Controllers
 
                 var data = _servicesPDF.ComprobanteRetencionesISLR(modelo);
 
-                InputPdf input = new InputPdf(data);
+                var resultado = _printServices.PrintCompRetencionIva(data, idCondominio);
 
-                PrintJob printJob = new PrintJob("HP Ink Tank 310 series", input);
+                TempData.Keep();
 
-                // Imprimir el trabajo
-                printJob.Print();
-
-                return View("Index");
+                return RedirectToAction("Index");
             }
 
-            return View("Index");
+            return RedirectToAction("Index");
 
         }
 

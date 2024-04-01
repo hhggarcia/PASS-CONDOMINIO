@@ -114,6 +114,7 @@ void AddScoped()
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddScoped<IPDFServices, PDFServices>();
+    builder.Services.AddScoped<IPrintServices, PrintServices>();
 }
 
 void AddTransient()
