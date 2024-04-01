@@ -5,7 +5,6 @@ namespace Prueba.ViewModels
 {
     public class PagoFacturaEmitidaVM: PagoRecibido
     {
-        public int IdCondominio { get; set; }
         public string? Descripcion { get; set; }
         public FormaPago Pagoforma { get; set; }
         public IList<SelectListItem>? SubCuentasGastos { get; set; }
@@ -24,5 +23,9 @@ namespace Prueba.ViewModels
         public decimal RetIslr { get; set; }
         public bool RetencionesIva { get; set; }
         public bool RetencionesIslr { get; set; }
+        public DateTime FechaEmisionRetIva { get; set; }
+        public string NumComprobanteRetIva { get; set; } = string.Empty;
+        public DateTime FechaEmisionIslr { get; set; }
+        public string NumComprobanteRetIslr { get; set; } = string.Empty;
     }
 }

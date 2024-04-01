@@ -275,11 +275,29 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="RetencionesIva" /> Aplicar las retenciones IVA
+                                                <input id="retIva" class="form-check-input" asp-for="RetencionesIva" /> Aplicar las retenciones IVA
                                             </label>
+                                            <div id="inputsContainerIva" style="display: none;">
+                                                <label for="fechaInput">Fecha de Emisión:</label>
+                                                <input asp-for="FechaEmisionRetIva" class="form-control" type="date" id="fechaEmisionRetIva">
+                                                <br>
+                                                <label for="numeroInput">Número de Comprobante:</label>
+                                                <input asp-for="NumComprobanteRetIva" class="form-control" type="text" id="numComprobanteRetIva">
+                                                <br>
+                                                
+                                            </div>
                                             <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="RetencionesIslr" /> Aplicar las retenciones ISLR
+                                                <input id="retIslr" class="form-check-input" asp-for="RetencionesIslr" /> Aplicar las retenciones ISLR
                                             </label>
+                                            <div id="inputsContainerIslr" style="display: none;">
+                                                <label for="fechaInput">Fecha de Emisión:</label>
+                                                <input asp-for="FechaEmisionIslr" class="form-control" type="date" id="fechaEmisionIslr">
+                                                <br>
+                                                <label for="numeroInput">Número de Comprobante:</label>
+                                                <input asp-for="NumComprobanteRetIslr" class="form-control" type="text" id="numComprobanteRetIslr">
+                                                <br>
+
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end">
@@ -387,34 +405,20 @@
                     }
                 });
             });
-            // $('#montoInput').on('input', function () {
-            //     var montoInput = parseFloat($(this).val());
-            //     var montoTotal = montoInput + montoAnticipo;
 
-            //     // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
-            //     //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
-            //     //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
-            //     //     $(this).val(montoFacturaOriginal);
-            //     // }
-            //     if (montoFacturaOriginal < montoTotal) {
-            //         $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
-            //         // alert('El monto ingresado no puede ser mayor al monto de la factura.');
-            //         if (montoAnticipo != 0 && selectOptionAnticipo) {
-            //             var precioTotal = montoFacturaOriginal - montoAnticipo;
-            //             $('#montoInput').val(precioTotal);
-            //         } else {
-            //             $(this).val(montoFacturaOriginal);
-            //         }
-            //     } else {
-            //         $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
-            //     }
-            //     // if (montoAnticipo != 0 && montoInput != montoAnticipo){
-            //     //     alert('El monto ingresado no puede ser diferente al del anticipo.');
-            //     //     // $(this).val(montoAnticipo);
-            //     //     $('#montoInput').val(montoAnticipo);
+            const checkboxIva = document.getElementById("retIva");
+            const checkboxIslr = document.getElementById("retIslr");
+            const inputsContainerIva = document.getElementById("inputsContainerIva");
+            const inputsContainerIslr = document.getElementById("inputsContainerIslr");
 
-            //     // }
-            // });
+            checkboxIva.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIva.style.display = checkboxIva.checked ? "block" : "none";
+            });
+            checkboxIslr.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIslr.style.display = checkboxIslr.checked ? "block" : "none";
+            });
         });
     </script>
 

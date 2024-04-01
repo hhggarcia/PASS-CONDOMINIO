@@ -197,6 +197,7 @@ namespace Prueba.Repositories
             //modelo.IdSubcuenta = cc.IdCodCuenta;
 
             var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+            var itemCuentasPagar = await _context.CuentasPagars.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
             var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstOrDefaultAsync();
 
             if (itemLibroCompra != null)
@@ -337,6 +338,7 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
                             }
                             else
                             {
@@ -355,6 +357,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -381,6 +385,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto + anticipo1.Saldo;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -399,6 +405,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -433,6 +441,7 @@ namespace Prueba.Repositories
                         _dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _dbContext.Update(itemCuentasPagar);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);
@@ -860,6 +869,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -878,6 +889,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -904,6 +917,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto + anticipo1.Saldo;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -922,6 +937,8 @@ namespace Prueba.Repositories
                                 factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
+                                itemCuentasPagar.Status = "Cancelada";
+
                             }
                             else
                             {
@@ -938,6 +955,7 @@ namespace Prueba.Repositories
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _dbContext.Update(itemCuentasPagar);
                         if (modelo.IdAnticipo != 0)
                         {
                             _dbContext.Update(anticipo1);

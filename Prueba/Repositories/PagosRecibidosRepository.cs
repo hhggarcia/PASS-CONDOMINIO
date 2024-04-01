@@ -109,6 +109,8 @@ namespace Prueba.Repositories
 
             var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
 
+            var itemCuentaCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
+
             if (itemLibroVenta != null)
             {
                 if (modelo.RetencionesIva && !modelo.RetencionesIslr)
@@ -212,6 +214,7 @@ namespace Prueba.Repositories
                             factura.Abonado += pago.Monto;
                             factura.EnProceso = false;
                             factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
                         }
                         else
                         {
@@ -230,6 +233,7 @@ namespace Prueba.Repositories
                             factura.Abonado += pago.Monto;
                             factura.EnProceso = false;
                             factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
                         }
                         else
                         {
@@ -257,6 +261,66 @@ namespace Prueba.Repositories
                         MontoRef = montoReferencia
                     };
 
+                    // validar retenciones
+
+                    if (modelo.RetencionesIva)
+                    {
+                        var retIva = new CompRetIvaCliente
+                        {
+                            IdFactura = modelo.IdFactura,
+                            IdCliente = modelo.IdCliente,
+                            FechaEmision = modelo.FechaEmisionRetIva,
+                            TipoTransaccion = true,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            CompraSinCreditoIva = 0,
+                            BaseImponible = itemLibroVenta.BaseImponible,
+                            Alicuota = 16,
+                            ImpIva = itemLibroVenta.Iva,
+                            IvaRetenido = itemLibroVenta.RetIva,
+                            TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                            NumCompRet = modelo.NumComprobanteRetIva,
+                            NumComprobante = 1
+                        };
+
+                        itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+
+                        _context.Update(itemLibroVenta);
+                        _context.Add(retIva);
+                    }
+
+                    if (modelo.RetencionesIslr)
+                    {
+                        var ret = (from c in _context.Clientes
+                                  join v in _context.Islrs
+                                  on c.IdRetencionIslr equals v.Id
+                                  select v).FirstOrDefault();
+                        if (ret != null)
+                        {
+                            var retIslr = new ComprobanteRetencionCliente
+                            {
+                                IdCliente = modelo.IdCliente,
+                                IdFactura = modelo.IdFactura,
+                                FechaEmision = modelo.FechaEmisionIslr,
+                                Description = ret.Concepto,
+                                Retencion = ret.Tarifa,
+                                Sustraendo = ret.Sustraendo,
+                                ValorRetencion = itemLibroVenta.RetIslr,
+                                TotalImpuesto = itemLibroVenta.RetIslr,
+                                NumCompRet = modelo.NumComprobanteRetIslr,
+                                NumComprobante = 1,
+                                TotalFactura = factura.MontoTotal,
+                                BaseImponible = itemLibroVenta.BaseImponible
+                            };
+
+                            itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+
+                            _context.Update(itemLibroVenta);
+                            _context.Add(retIslr);
+
+                        }
+                    }
+
                     using (var _dbContext = new NuevaAppContext())
                     {
 
@@ -264,6 +328,7 @@ namespace Prueba.Repositories
                         _dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _context.Update(itemCuentaCobrar);
 
                         _dbContext.SaveChanges();
                     }
@@ -401,6 +466,7 @@ namespace Prueba.Repositories
                             factura.Abonado += pago.Monto;
                             factura.EnProceso = false;
                             factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
                         }
                         else
                         {
@@ -419,6 +485,7 @@ namespace Prueba.Repositories
                             factura.Abonado += pago.Monto;
                             factura.EnProceso = false;
                             factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
                         }
                         else
                         {
@@ -428,12 +495,73 @@ namespace Prueba.Repositories
 
                     factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
 
+                    // validar retenciones
+
+                    if (modelo.RetencionesIva)
+                    {
+                        var retIva = new CompRetIvaCliente
+                        {
+                            IdFactura = modelo.IdFactura,
+                            IdCliente = modelo.IdCliente,
+                            FechaEmision = modelo.FechaEmisionRetIva,
+                            TipoTransaccion = true,
+                            NumFacturaAfectada = factura.NumFactura.ToString(),
+                            TotalCompraIva = factura.MontoTotal,
+                            CompraSinCreditoIva = 0,
+                            BaseImponible = itemLibroVenta.BaseImponible,
+                            Alicuota = 16,
+                            ImpIva = itemLibroVenta.Iva,
+                            IvaRetenido = itemLibroVenta.RetIva,
+                            TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                            NumCompRet = modelo.NumComprobanteRetIva,
+                            NumComprobante = 1
+                        };
+
+                        itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+
+                        _context.Update(itemLibroVenta);
+                        _context.Add(retIva);
+                    }
+
+                    if (modelo.RetencionesIslr)
+                    {
+                        var ret = (from c in _context.Clientes
+                                   join v in _context.Islrs
+                                   on c.IdRetencionIslr equals v.Id
+                                   select v).FirstOrDefault();
+                        if (ret != null)
+                        {
+                            var retIslr = new ComprobanteRetencionCliente
+                            {
+                                IdCliente = modelo.IdCliente,
+                                IdFactura = modelo.IdFactura,
+                                FechaEmision = modelo.FechaEmisionIslr,
+                                Description = ret.Concepto,
+                                Retencion = ret.Tarifa,
+                                Sustraendo = ret.Sustraendo,
+                                ValorRetencion = itemLibroVenta.RetIslr,
+                                TotalImpuesto = itemLibroVenta.RetIslr,
+                                NumCompRet = modelo.NumComprobanteRetIslr,
+                                NumComprobante = 1,
+                                TotalFactura = factura.MontoTotal,
+                                BaseImponible = itemLibroVenta.BaseImponible
+                            };
+
+                            itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+
+                            _context.Update(itemLibroVenta);
+                            _context.Add(retIslr);
+
+                        }
+                    }
+
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
+                        _context.Update(itemCuentaCobrar);
 
                         _dbContext.SaveChanges();
                     }
