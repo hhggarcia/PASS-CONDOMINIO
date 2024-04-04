@@ -202,7 +202,7 @@ namespace Prueba.Controllers
 
                 var data = _servicesPDF.ComprobanteRetencionesISLR(modelo);
 
-                var resultado = _printServices.PrintCompRetencionIva(data, idCondominio);
+                var resultado = _printServices.PrintCompRetencion(data, idCondominio);
 
                 TempData.Keep();
 
@@ -229,6 +229,7 @@ namespace Prueba.Controllers
                     ComprobanteRetencion = comprobanteRetencion
                 };
                 var data = _servicesPDF.ComprobanteRetencionesISLR(modelo);
+                //var data = _servicesPDF.Ejemplo2();
 
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "ComprobanteRetencion.pdf");

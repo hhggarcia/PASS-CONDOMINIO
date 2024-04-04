@@ -43,6 +43,7 @@ namespace Prueba.Services
         byte[] RetencionesIva(List<ListaRetencionesIVAVM> listaRetencionesIVAVM);
         byte[] ComprobanteAnticipoPDF(ComprobanteAnticipoVM modelo);
         byte[] ComprobanteBonosPDF(ComprobantePagoNomina pagoNomina);
+        byte[] Ejemplo2();
     }
     public class PDFServices : IPDFServices
     {
@@ -1064,7 +1065,7 @@ namespace Prueba.Services
                                     tabla.Cell().Padding(5).Text("");
                                     tabla.Cell().Padding(5).Text("");
                                     tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000");
-                                }             
+                                }
                             });
 
                             x.Item().AlignCenter().Text("DATOS PAGO");
@@ -1086,7 +1087,8 @@ namespace Prueba.Services
                                 {
                                     tabla.Cell().Padding(3).Text("Transferencia");
 
-                                } else
+                                }
+                                else
                                 {
                                     tabla.Cell().Padding(3).Text("Efectivo");
 
@@ -2120,7 +2122,7 @@ namespace Prueba.Services
                                         tabla.Cell().Padding(5).Text("Concepto:").Bold();
                                         tabla.Cell().Padding(5).Text(percepcion.Concepto);
                                         tabla.Cell().Padding(5).Text("Monto:").Bold();
-                                        tabla.Cell().Padding(5).Text("+"+percepcion.Monto.ToString("N")+" Bs");
+                                        tabla.Cell().Padding(5).Text("+" + percepcion.Monto.ToString("N") + " Bs");
                                     }
                                 }
 
@@ -2135,7 +2137,7 @@ namespace Prueba.Services
                                         tabla.Cell().Padding(5).Text("Concepto:").Bold();
                                         tabla.Cell().Padding(5).Text(deduccion.Concepto);
                                         tabla.Cell().Padding(5).Text("Monto:").Bold();
-                                        tabla.Cell().Padding(5).Text("-"+deduccion.Monto.ToString("N")+" Bs");
+                                        tabla.Cell().Padding(5).Text("-" + deduccion.Monto.ToString("N") + " Bs");
                                     }
                                 }
 
@@ -2211,7 +2213,7 @@ namespace Prueba.Services
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
 
 
-                                tabla.Cell().Padding(5).Text((pagoNomina.Pago.Monto).ToString("N")+" Bs").FontSize(12);
+                                tabla.Cell().Padding(5).Text((pagoNomina.Pago.Monto).ToString("N") + " Bs").FontSize(12);
 
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
                                 tabla.Cell().Padding(5).Text("").FontSize(8);
@@ -2496,7 +2498,7 @@ namespace Prueba.Services
                                 tabla.Cell().Padding(5).Text("Beneficiario:").Bold();
                                 tabla.Cell().Padding(5).Text("");
                                 tabla.Cell().Padding(5).Text("");
-                                tabla.Cell().Padding(5).Text(modelo.Beneficiario);                           
+                                tabla.Cell().Padding(5).Text(modelo.Beneficiario);
 
                                 tabla.Cell().Padding(5).Text("");
                                 tabla.Cell().Padding(5).Text("");
@@ -2774,6 +2776,60 @@ namespace Prueba.Services
             .GeneratePdf();
             return data;
         }
+
+        public byte[] Ejemplo2()
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+
+                    page.Content().PaddingVertical(1, Unit.Centimetre).Column(x =>
+                    {
+                        // Título
+                        x.Item().AlignRight().Text("Comprobante de Retención de Impuesto Sobre La Renta")
+                            .Bold();
+
+                        // Información adicional
+                        x.Item().AlignRight().Text("Decreto Retenciones vigente N° 1.808, Gaceta Oficial 36.203 de fecha 12-05-1997")
+                            .Bold();
+
+                        //x.Spacing(10);
+
+                        // Tabla de detalles
+                        x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                        {
+                            tabla.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            tabla.Header(header =>
+                            {
+                                header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+
+                                header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
+                            });
+
+                            // Datos de la retención (debes reemplazar estos valores con los reales)
+                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("10/02/24").FontColor("#607080").Bold().FontSize(10);
+
+                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("001896F OO·001896F").FontColor("#607080").Bold().FontSize(10);
+                        });
+                    });
+                });
+            }).GeneratePdf();
+
+            return data;                
+        }
+    
         // CRISTHIAN
         public byte[] Transacciones(TransaccionVM transaccion)
         {
@@ -3216,10 +3272,10 @@ namespace Prueba.Services
                         .PaddingVertical(1, Unit.Centimetre)
                         .Column(x =>
                         {
-                            x.Item().AlignRight().Text("Comprobante de Retención de Impuesto Sobre La Renta").Bold().FontSize(18).FontColor("#004581");
-                            x.Item().AlignRight().Text("Decreto Retenciones vigente N° 1.808, Gaceta Oficial 36.203 de fecha 12-05-1997").Bold().FontSize(18).FontColor("#004581");
+                            x.Item().AlignRight().Text("Comprobante de Retención de Impuesto Sobre La Renta").Bold();
+                            x.Item().AlignRight().Text("Decreto Retenciones vigente N° 1.808, Gaceta Oficial 36.203 de fecha 12-05-1997").FontSize(6);
 
-                            x.Spacing(20);
+                            x.Spacing(10);
 
                             x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
                             {
@@ -3227,23 +3283,37 @@ namespace Prueba.Services
                                 {
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
                                 });
 
                                 tabla.Header(header =>
                                 {
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).AlignMiddle()
+                                    .Padding(5).Text("Fecha");
 
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("N° Comprobante").FontColor("#607080").Bold().FontSize(10);
+                                    header.Cell().Border(0.5f).AlignMiddle()
+                                   .Padding(5).Text("N° Comprobante");
 
                                 });
 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text("");
+
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.ComprobanteRetencion.IdComprobante.ToString()).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy"));
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.NumCompRet.ToString());
                             });
 
                             x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
@@ -3251,10 +3321,10 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
+                                    columns.RelativeColumn();
                                 });
 
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                  .Padding(5).Text("DATOS DEL AGENTE DE RETENCIÓN").FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -3280,7 +3350,7 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
+                                    columns.RelativeColumn();
                                 });
 
                                 tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -3304,6 +3374,7 @@ namespace Prueba.Services
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                .Padding(5).Text(comprobante.Proveedor.Rif).FontColor("#607080").Bold().FontSize(10);
                             });
+
                             x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
                             {
                                 tabla.ColumnsDefinition(columns =>
@@ -3317,67 +3388,64 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
                                 });
                                 tabla.Header(header =>
                                 {
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Fecha Emisión").FontColor("#607080").Bold().FontSize(10);
+                                    .Padding(5).Text("Fecha Emisión").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Factura").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Nro. Factura").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Nro. Control").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Nro. Control").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Descripción Retención").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Descripción Retención").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Monto Total").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Monto Total").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Base Retención").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Base Retención").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("% Retención").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("% Retención").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Sustraendo").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Sustraendo").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Valor Retención").FontColor("#607080").Bold().FontSize(10);
+                                   .Padding(5).Text("Valor Retención").FontColor("#607080").Bold().FontSize(8);
 
                                 });
-                                tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(10);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080").FontSize(10);
+                                .Padding(5).Text(comprobante.ComprobanteRetencion.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text("00" + comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.ComprobanteRetencion.Descripcion).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text("00" + comprobante.ComprobanteRetencion.IdFactura).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                                 .Padding(5).Text(comprobante.ComprobanteRetencion.TotalImpuesto).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.Descripcion).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.ComprobanteRetencion.Retencion).FontColor("#607080").Bold().FontSize(10);
+                                 .Padding(5).Text(comprobante.ComprobanteRetencion.TotalImpuesto).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text("3.00").FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.Retencion).FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.ComprobanteRetencion.Sustraendo).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text("3.00").FontColor("#607080");
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(comprobante.ComprobanteRetencion.ValorRetencion).FontColor("#607080").Bold().FontSize(10);
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.Sustraendo).FontColor("#607080");
+
+                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(comprobante.ComprobanteRetencion.ValorRetencion).FontColor("#607080");
                             });
 
                             x.Item().Row(x =>
@@ -3385,29 +3453,39 @@ namespace Prueba.Services
                                 x.RelativeItem().Text("");
                                 x.RelativeItem().Text("");
                                 x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text(comprobante.ComprobanteRetencion.Retencion);
-                                x.RelativeItem().Text("");
-                                x.RelativeItem().Text("");
-                            });
-
-                            x.Item().Row(x =>
-                            {
                                 x.RelativeItem().Text("TOTAL DE IMPUESTO RETENIDO =>");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
                                 x.RelativeItem().Text(comprobante.ComprobanteRetencion.ValorRetencion);
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+
                             });
 
                             x.Item().Row(x =>
                             {
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
                                 x.RelativeItem().Text("____________________________");
-                                x.RelativeItem().Text("CONDOMINIO " + " sdas");
+                                x.RelativeItem().Text("CONDOMINIO");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
                             });
 
                             x.Item().Row(x =>
                             {
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
+                                x.RelativeItem().Text("");
                                 x.RelativeItem().Text("____________________________");
                                 x.RelativeItem().Text("Firma del Beneficiario");
+                                x.RelativeItem().Text("");
                             });
                         });
 
@@ -3421,6 +3499,7 @@ namespace Prueba.Services
                 });
             })
          .GeneratePdf();
+
             return data;
         }
         public byte[] ComprobanteRetencionesIVA(ComprobanteRetencionesIVAVM retencionesIVAVM)
@@ -3473,7 +3552,7 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
+                                    columns.RelativeColumn();
                                 });
 
                                 tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -3502,7 +3581,7 @@ namespace Prueba.Services
                                 tabla.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn(100);
+                                    columns.RelativeColumn();
                                 });
 
                                 tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
@@ -3692,7 +3771,7 @@ namespace Prueba.Services
                                 .Padding(5).Text(retencionesIVAVM.compRetIva.TotalCompraIva).Bold().FontColor("#607080").FontSize(10);
 
                             });
-                            x.Spacing(60);
+                            x.Spacing(10);
 
                             x.Item().Row(x =>
                             {
@@ -4131,7 +4210,8 @@ namespace Prueba.Services
                          x.Item().AlignRight().Text("AVISO DE COBRO").Bold().FontSize(20).FontColor("#004581");
                          x.Item().Row(x =>
                          {
-                             x.RelativeItem().Column(x => {
+                             x.RelativeItem().Column(x =>
+                             {
                                  x.Item().AlignLeft().Text("OFICINA: " + item.propiedad.Codigo).FontSize(16).FontColor("#004581");
                                  x.Item().AlignLeft().Text("Propietario: " + item.AspNetUser.FirstName + " " + item.AspNetUser.LastName).FontSize(16).FontColor("#004581");
                              });

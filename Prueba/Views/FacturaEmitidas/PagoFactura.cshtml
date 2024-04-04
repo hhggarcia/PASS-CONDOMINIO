@@ -102,7 +102,7 @@
                                             <span id="validatonMonto" class="text-danger"></span>
                                             <div class="position-relative">
                                                 @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
-                                                <input class="form-control"
+                                                <input id="montoInput" class="form-control"
                                                        placeholder="Monto"
                                                        asp-for="Monto" /> <!-- Agregar el atributo disabled -->
                                                 <div class="form-control-icon">
@@ -279,7 +279,7 @@
                                             </label>
                                             <div id="inputsContainerIva" style="display: none;">
                                                 <label for="fechaInput">Fecha de Emisión:</label>
-                                                <input asp-for="FechaEmisionRetIva" class="form-control" type="date" id="fechaEmisionRetIva">
+                                                <input asp-for="FechaEmisionRetIva" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionRetIva">
                                                 <br>
                                                 <label for="numeroInput">Número de Comprobante:</label>
                                                 <input asp-for="NumComprobanteRetIva" class="form-control" type="text" id="numComprobanteRetIva">
@@ -291,12 +291,11 @@
                                             </label>
                                             <div id="inputsContainerIslr" style="display: none;">
                                                 <label for="fechaInput">Fecha de Emisión:</label>
-                                                <input asp-for="FechaEmisionIslr" class="form-control" type="date" id="fechaEmisionIslr">
+                                                <input asp-for="FechaEmisionIslr" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionIslr">
                                                 <br>
                                                 <label for="numeroInput">Número de Comprobante:</label>
                                                 <input asp-for="NumComprobanteRetIslr" class="form-control" type="text" id="numComprobanteRetIslr">
                                                 <br>
-
                                             </div>
                                         </div>
                                     </div>
@@ -392,7 +391,7 @@
                     success: function (data) {
                         montoFacturaOriginal = parseFloat(data.monto);
 
-                        //$('#montoInput').val(data.monto);
+                        $('#montoInput').val(data.monto);
                         $('#concepto').val(data.descripcion);
                         // $('#RetIvaInput').val(data.iva);
                         // $('#RetIslrInput').val(data.islr);

@@ -38,6 +38,7 @@ namespace Prueba.Controllers
             var nuevaAppContext = _context.CobroTransitos.Include(c => c.IdCondominioNavigation).Where(c => c.IdCondominio == IdCondominio);
 
             TempData.Keep();
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -174,6 +175,12 @@ namespace Prueba.Controllers
             var cobroTransito = await _context.CobroTransitos.FindAsync(id);
             if (cobroTransito != null)
             {
+                var pagosCobros = _context.PagoCobroTransitos.Where(c => c.IdCobroTransito == id).ToList();
+
+                if (pagosCobros.Any())
+                {
+                    _context.PagoCobroTransitos.RemoveRange(pagosCobros);
+                }
                 _context.CobroTransitos.Remove(cobroTransito);
             }
 
@@ -274,6 +281,16 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
+        }
+
+        public IActionResult AsignarFactura()
+        {
+            return View();
+        }
+
+        public IActionResult AsignarRecibo()
+        {
+            return View();
         }
     }
 }

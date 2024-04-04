@@ -117,16 +117,16 @@ namespace Prueba.Controllers
 
                 // calcular retenciones al producto/servicio
 
-                var producto = await _context.Productos.FindAsync(facturaEmitida.IdProducto);
+                var cliente = await _context.Clientes.FindAsync(facturaEmitida.IdCliente);
 
-                if (producto == null)
+                if (cliente == null)
                 {
                     return NotFound();
                 }
 
-                var rtiva = await _context.Ivas.FindAsync(producto.IdRetencionIva);
+                var rtiva = await _context.Ivas.FindAsync(cliente.IdRetencionIva);
 
-                var rtislr = await _context.Islrs.FindAsync(producto.IdRetencionIslr);
+                var rtislr = await _context.Islrs.FindAsync(cliente.IdRetencionIslr);
 
                 decimal montoRTIVA = 0;
                 decimal montoRTISLR = 0;

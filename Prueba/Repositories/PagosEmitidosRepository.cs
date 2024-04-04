@@ -759,13 +759,12 @@ namespace Prueba.Repositories
 
                         };
 
-                        using (var _dbContext = new NuevaAppContext())
-                        {
-                            _dbContext.Add(asientoGasto);
-                            _dbContext.Add(asientoCaja);
+                        
+                            _context.LdiarioGlobals.Add(asientoGasto);
+                            _context.LdiarioGlobals.Add(asientoCaja);
                             //_dbContext.Add(pagoFactura);
-                            _dbContext.SaveChanges();
-                        }
+                            _context.SaveChanges();
+                        
 
                         //REGISTRAR ASIENTO EN LA TABLA GASTOS
                         Gasto gasto = new Gasto
@@ -949,10 +948,28 @@ namespace Prueba.Repositories
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
+                    // resgistrar transaccion
+                    // armar transaccion
+
+                    var transaccion = new Transaccion
+                    {
+                        TipoTransaccion = false,
+                        IdCodCuenta = factura.IdCodCuenta,
+                        Descripcion = modelo.Concepto,
+                        MontoTotal = factura.MontoTotal,
+                        Documento = factura.NumFactura.ToString(),
+                        Cancelado = factura.MontoTotal,
+                        SimboloMoneda = pago.SimboloMoneda,
+                        SimboloRef = pago.SimboloRef,
+                        ValorDolar = pago.ValorDolar,
+                        MontoRef = montoReferencia
+                    };
+
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
+                        _dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
@@ -986,14 +1003,19 @@ namespace Prueba.Repositories
                     // registrar comprobantes
                     if (modelo.retencionesIva && !modelo.retencionesIslr)
                     {
-                        var compRetencionUltimo = await (from c in _context.CompRetIvas
-                                                         join p in _context.Proveedors
-                                                         on c.IdProveedor equals p.IdProveedor
-                                                         where p.IdCondominio == modelo.IdCondominio
-                                                         orderby c.IdComprobanteIva
-                                                         select c).LastAsync();
+                        var compRetencionUltimo = from c in _context.CompRetIvas
+                                                  join p in _context.Proveedors
+                                                  on c.IdProveedor equals p.IdProveedor
+                                                  where p.IdCondominio == modelo.IdCondominio
+                                                  orderby c.IdComprobanteIva
+                                                  select c;
 
-                        var numRet = compRetencionUltimo.NumComprobante + 1;
+                        var numRet = 1;
+
+                        if (compRetencionUltimo.Any())
+                        {
+                            numRet = compRetencionUltimo.Last().NumComprobante + 1;
+                        }
 
                         var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
 
@@ -1035,14 +1057,19 @@ namespace Prueba.Repositories
                         if (islr != null)
                         {
                             // comprobante de retencion de islr
-                            var compRetIslrUltimo = await (from c in _context.ComprobanteRetencions
-                                                           join p in _context.Proveedors
-                                                           on c.IdProveedor equals p.IdProveedor
-                                                           where p.IdCondominio == modelo.IdCondominio
-                                                           orderby c.IdComprobante
-                                                           select c).LastAsync();
+                            var compRetIslrUltimo = from c in _context.ComprobanteRetencions
+                                                    join p in _context.Proveedors
+                                                    on c.IdProveedor equals p.IdProveedor
+                                                    where p.IdCondominio == modelo.IdCondominio
+                                                    orderby c.IdComprobante
+                                                    select c;
 
-                            var numRet = compRetIslrUltimo.NumComprobante + 1;
+                            var numRet = 1;
+
+                            if (compRetIslrUltimo.Any())
+                            {
+                                numRet = compRetIslrUltimo.Last().NumComprobante + 1;
+                            }
 
                             var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
 
@@ -1074,14 +1101,19 @@ namespace Prueba.Repositories
                     else if (modelo.retencionesIva && modelo.retencionesIslr)
                     {
                         // comprobante de retencion de iva
-                        var compRetencionUltimo = await (from c in _context.CompRetIvas
-                                                         join p in _context.Proveedors
-                                                         on c.IdProveedor equals p.IdProveedor
-                                                         where p.IdCondominio == modelo.IdCondominio
-                                                         orderby c.IdComprobanteIva
-                                                         select c).LastAsync();
+                        var compRetencionUltimo = from c in _context.CompRetIvas
+                                                  join p in _context.Proveedors
+                                                  on c.IdProveedor equals p.IdProveedor
+                                                  where p.IdCondominio == modelo.IdCondominio
+                                                  orderby c.IdComprobanteIva
+                                                  select c;
 
-                        var numRet = compRetencionUltimo.NumComprobante + 1;
+                        var numRet = 1;
+
+                        if (compRetencionUltimo.Any())
+                        {
+                            numRet = compRetencionUltimo.Last().NumComprobante + 1;
+                        }
 
                         var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
 
@@ -1119,14 +1151,19 @@ namespace Prueba.Repositories
                         if (islr != null)
                         {
                             // comprobante de retencion de islr
-                            var compRetIslrUltimo = await (from c in _context.ComprobanteRetencions
-                                                           join p in _context.Proveedors
-                                                           on c.IdProveedor equals p.IdProveedor
-                                                           where p.IdCondominio == modelo.IdCondominio
-                                                           orderby c.IdComprobante
-                                                           select c).LastAsync();
+                            var compRetIslrUltimo = from c in _context.ComprobanteRetencions
+                                                    join p in _context.Proveedors
+                                                    on c.IdProveedor equals p.IdProveedor
+                                                    where p.IdCondominio == modelo.IdCondominio
+                                                    orderby c.IdComprobante
+                                                    select c;
 
-                            var numRetIslr = compRetIslrUltimo.NumComprobante + 1;
+                            var numRetIslr = 1;
+
+                            if (compRetIslrUltimo.Any())
+                            {
+                                numRetIslr = compRetIslrUltimo.Last().NumComprobante + 1;
+                            }
 
                             var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
 
@@ -1412,95 +1449,7 @@ namespace Prueba.Repositories
                         pago.SimboloMoneda = moneda.First().Simbolo;
                         pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = montoReferencia;
-
-                        // verificar bono
-                        if (modelo.Bonos)
-                        {
-                            var bonos = (await _context.Bonificaciones
-                                .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                                .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto += bonos;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-                        }
-
-                        // calcular el pago con las deducciones/percepciones o no
-                        if (modelo.percepciones && !modelo.deducciones)
-                        {
-                            percepciones = (await _context.Percepciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto += percepciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-
-                        }
-                        else if (!modelo.percepciones && modelo.deducciones)
-                        {
-                            deducciones = (await _context.Deducciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto -= deducciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-                        }
-                        else if (modelo.percepciones && modelo.deducciones)
-                        {
-                            deducciones = (await _context.Deducciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            percepciones = (await _context.Percepciones
-                                .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                                .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto += percepciones - deducciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-                        }
-                        else
-                        {
-                            var empleado = await _context.Empleados.FindAsync(modelo.IdEmpleado);
-                            if (empleado != null)
-                            {
-                                if (pago.Monto > empleado.BaseSueldo)
-                                {
-                                    return "El monto a pagar excede la base del sueldo de este empleado";
-                                }
-                            }
-                        }
+                        pago.MontoRef = montoReferencia;                       
 
                         // armar Recibo Nomina
                         var reciboNomina = new ReciboNomina
@@ -1598,10 +1547,13 @@ namespace Prueba.Repositories
 
                             };
 
+                            // asientos para deducciones y percepciones
+                            // calcular el pago con las deducciones/percepciones o no
                             if (modelo.percepciones)
                             {
-                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idPercepcion in modelo.ListPercepcionesIDs)
                                 {
+                                    var percepcion = _context.Percepciones.Find(idPercepcion);
                                     LdiarioGlobal asientoPercepcion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)percepcion.IdCodCuenta,
@@ -1623,8 +1575,10 @@ namespace Prueba.Repositories
 
                             if (modelo.deducciones)
                             {
-                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idDeduccion in modelo.ListDeduccionesIDs)
                                 {
+                                    var deduccion = _context.Deducciones.Find(idDeduccion);
+
                                     LdiarioGlobal asientoDeduccion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)deduccion.IdCodCuenta,
@@ -1646,8 +1600,10 @@ namespace Prueba.Repositories
 
                             if (modelo.Bonos)
                             {
-                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idBono in modelo.ListBonosIDs)
                                 {
+                                    var bono = _context.Bonificaciones.Find(idBono);
+
                                     LdiarioGlobal asientoBono = new LdiarioGlobal
                                     {
                                         IdCodCuenta = bono.IdCodCuenta,
@@ -1703,8 +1659,9 @@ namespace Prueba.Repositories
                             // calcular el pago con las deducciones/percepciones o no
                             if (modelo.percepciones)
                             {
-                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idPercepcion in modelo.ListPercepcionesIDs)
                                 {
+                                    var percepcion = _context.Percepciones.Find(idPercepcion);
                                     LdiarioGlobal asientoPercepcion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)percepcion.IdCodCuenta,
@@ -1726,8 +1683,10 @@ namespace Prueba.Repositories
 
                             if (modelo.deducciones)
                             {
-                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idDeduccion in modelo.ListDeduccionesIDs)
                                 {
+                                    var deduccion = _context.Deducciones.Find(idDeduccion);
+
                                     LdiarioGlobal asientoDeduccion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)deduccion.IdCodCuenta,
@@ -1749,8 +1708,10 @@ namespace Prueba.Repositories
 
                             if (modelo.Bonos)
                             {
-                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idBono in modelo.ListBonosIDs)
                                 {
+                                    var bono = _context.Bonificaciones.Find(idBono);
+
                                     LdiarioGlobal asientoBono = new LdiarioGlobal
                                     {
                                         IdCodCuenta = bono.IdCodCuenta,
@@ -1889,63 +1850,7 @@ namespace Prueba.Repositories
                         pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
-                        // calcular el pago con las deducciones/percepciones o no
-                        if (modelo.percepciones && !modelo.deducciones)
-                        {
-                            percepciones = (await _context.Percepciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto += percepciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-
-                        }
-                        else if (!modelo.percepciones && modelo.deducciones)
-                        {
-                            deducciones = (await _context.Deducciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto -= deducciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-                        }
-                        else
-                        {
-                            deducciones = (await _context.Deducciones
-                            .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                            .ToListAsync()).Sum(c => c.Monto);
-
-                            percepciones = (await _context.Percepciones
-                                .Where(c => c.IdEmpleado == modelo.IdEmpleado)
-                                .ToListAsync()).Sum(c => c.Monto);
-
-                            pago.Monto += percepciones - deducciones;
-
-                            if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                pago.MontoRef = pago.Monto / moneda.First().ValorDolar;
-                            }
-                        }
+                        
 
                         // armar Recibo Nomina
                         var reciboNomina = new ReciboNomina
@@ -2050,10 +1955,13 @@ namespace Prueba.Repositories
 
                             };
 
+                            // asientos para deducciones y percepciones
+                            // calcular el pago con las deducciones/percepciones o no
                             if (modelo.percepciones)
                             {
-                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idPercepcion in modelo.ListPercepcionesIDs)
                                 {
+                                    var percepcion = _context.Percepciones.Find(idPercepcion);
                                     LdiarioGlobal asientoPercepcion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)percepcion.IdCodCuenta,
@@ -2075,8 +1983,10 @@ namespace Prueba.Repositories
 
                             if (modelo.deducciones)
                             {
-                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idDeduccion in modelo.ListDeduccionesIDs)
                                 {
+                                    var deduccion = _context.Deducciones.Find(idDeduccion);
+
                                     LdiarioGlobal asientoDeduccion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)deduccion.IdCodCuenta,
@@ -2098,8 +2008,10 @@ namespace Prueba.Repositories
 
                             if (modelo.Bonos)
                             {
-                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idBono in modelo.ListBonosIDs)
                                 {
+                                    var bono = _context.Bonificaciones.Find(idBono);
+
                                     LdiarioGlobal asientoBono = new LdiarioGlobal
                                     {
                                         IdCodCuenta = bono.IdCodCuenta,
@@ -2151,10 +2063,13 @@ namespace Prueba.Repositories
                         }
                         else
                         {
+                            // asientos para deducciones y percepciones
+                            // calcular el pago con las deducciones/percepciones o no
                             if (modelo.percepciones)
                             {
-                                foreach (var percepcion in _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idPercepcion in modelo.ListPercepcionesIDs)
                                 {
+                                    var percepcion = _context.Percepciones.Find(idPercepcion);
                                     LdiarioGlobal asientoPercepcion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)percepcion.IdCodCuenta,
@@ -2176,8 +2091,10 @@ namespace Prueba.Repositories
 
                             if (modelo.deducciones)
                             {
-                                foreach (var deduccion in _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idDeduccion in modelo.ListDeduccionesIDs)
                                 {
+                                    var deduccion = _context.Deducciones.Find(idDeduccion);
+
                                     LdiarioGlobal asientoDeduccion = new LdiarioGlobal
                                     {
                                         IdCodCuenta = (int)deduccion.IdCodCuenta,
@@ -2199,8 +2116,10 @@ namespace Prueba.Repositories
 
                             if (modelo.Bonos)
                             {
-                                foreach (var bono in _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToList())
+                                foreach (var idBono in modelo.ListBonosIDs)
                                 {
+                                    var bono = _context.Bonificaciones.Find(idBono);
+
                                     LdiarioGlobal asientoBono = new LdiarioGlobal
                                     {
                                         IdCodCuenta = bono.IdCodCuenta,
@@ -2274,7 +2193,6 @@ namespace Prueba.Repositories
                             context.Add(activo);
                             //_dbContext.Add(pagoFactura);
                             await context.SaveChangesAsync();
-
 
                             return "exito";
                         }

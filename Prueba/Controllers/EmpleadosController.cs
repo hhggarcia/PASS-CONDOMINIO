@@ -185,6 +185,7 @@ namespace Prueba.Controllers
             {
                 var deducciones = _context.Deducciones.Where(d => d.IdEmpleado == id).ToList();
                 var percepciones = _context.Percepciones.Where(d => d.IdEmpleado == id).ToList();
+                var bonos = _context.Bonificaciones.Where(d => d.IdEmpleado == id).ToList();
                 var condNomina = _context.CondominioNominas.Where(d => d.IdEmpleado == id).ToList();
 
                 if (deducciones.Any())
@@ -200,6 +201,11 @@ namespace Prueba.Controllers
                 if (condNomina.Any())
                 {
                     _context.CondominioNominas.RemoveRange(condNomina);
+                }
+
+                if (bonos.Any())
+                {
+                    _context.Bonificaciones.RemoveRange(bonos);
                 }
 
                 var recibos = _context.ReciboNominas.Where(d => d.IdEmpleado == id).ToList();
@@ -276,10 +282,81 @@ namespace Prueba.Controllers
             var modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
             // usar el repositorio?
 
+            TempData.Keep();
             return View(modelo);
         }
-        public IActionResult ConfirmarPago(PagoNominaVM modelo)
+        public async Task<IActionResult> ConfirmarPago(PagoNominaVM modelo)
         {
+            decimal monto = 0;
+
+            // calcular monto
+            if (modelo.Bonos)
+            {
+                foreach (var item in modelo.ListBonosIDs)
+                {
+                    var bono = _context.Bonificaciones.Find(item);
+
+                    if (bono != null)
+                    {
+                        monto += bono.Monto;
+                    }
+                }
+            }
+            if (modelo.percepciones)
+            {
+                foreach (var item in modelo.ListPercepcionesIDs)
+                {
+                    var percepcion = _context.Percepciones.Find(item);
+
+                    if (percepcion != null)
+                    {
+                        monto += percepcion.Monto;
+                    }
+                }
+            }
+            if (modelo.deducciones)
+            {
+                foreach (var item in modelo.ListDeduccionesIDs)
+                {
+                    var deduccion = _context.Deducciones.Find(item);
+
+                    if (deduccion != null)
+                    {
+                        monto -= deduccion.Monto;
+                    }
+                }
+            }
+
+            if (modelo.deducciones && !modelo.percepciones && !modelo.Bonos)
+            {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "No es posible seleccionar solo las deducciones!";
+
+                return View("PagoNomina", modelo);
+            }
+
+            if (monto < 0)
+            {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "El pago no puede ser un negativo!";
+
+                return View("PagoNomina", modelo);
+            }
+
+            modelo.Monto = monto;
+
             return View(modelo);
         }
 
@@ -389,28 +466,48 @@ namespace Prueba.Controllers
                         var deducciones = new List<Deduccion>();
                         var percepciones = new List<Percepcion>();
                         var bonos = new List<Bonificacion>();
+
                         if (empleado == null)
                         {
                             return NotFound();
                         }
 
-                        if (modelo.percepciones && !modelo.deducciones)
+                        if (modelo.percepciones)
                         {
-                            percepciones = await _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
-                        }
-                        else if (!modelo.percepciones && modelo.deducciones)
-                        {
-                            deducciones = await _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
-                        }
-                        else if (modelo.percepciones && modelo.deducciones)
-                        {
-                            deducciones = await _context.Deducciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
-                            percepciones = await _context.Percepciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
-                        }
+                            foreach (var item in modelo.ListPercepcionesIDs)
+                            {
+                                var percepcion = _context.Percepciones.Find(item);
 
+                                if (percepcion != null)
+                                {
+                                    percepciones.Add(percepcion);
+                                }
+                            }
+                        }
+                        if ( modelo.deducciones)
+                        {
+                            foreach (var item in modelo.ListDeduccionesIDs)
+                            {
+                                var deduccion = _context.Deducciones.Find(item);
+
+                                if (deduccion != null)
+                                {
+                                    deducciones.Add(deduccion);
+                                }
+                            }
+                        }
+                       
                         if (modelo.Bonos)
                         {
-                            bonos = await _context.Bonificaciones.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+                            foreach (var item in modelo.ListBonosIDs)
+                            {
+                                var bono = _context.Bonificaciones.Find(item);
+
+                                if (bono != null)
+                                {
+                                    bonos.Add(bono);
+                                }
+                            }
                         }
 
                         var comprobante = new ComprobantePagoNomina()
@@ -445,28 +542,7 @@ namespace Prueba.Controllers
                             comprobante.Caja = caja.First();
                         }
 
-                        // validar deducciones y percepciones
-
-                        if (modelo.percepciones && !modelo.deducciones)
-                        {
-                            comprobante.Pago.Monto = modelo.Monto + percepciones.Sum(c => c.Monto);
-
-                        }
-                        else if (!modelo.percepciones && modelo.deducciones)
-                        {
-                            comprobante.Pago.Monto = modelo.Monto - deducciones.Sum(c => c.Monto);
-
-                        }
-                        else if (modelo.percepciones && modelo.deducciones)
-                        {
-                            comprobante.Pago.Monto = modelo.Monto + percepciones.Sum(c => c.Monto) - deducciones.Sum(c => c.Monto);
-
-                        }
-                        else
-                        {
-                            comprobante.Pago.Monto = modelo.Monto;
-                        }
-
+                        comprobante.Pago.Monto = modelo.Monto;
                         comprobante.Pago.Fecha = modelo.Fecha;
                         TempData.Keep();
 
@@ -507,6 +583,54 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
+        }
+
+        public async Task<IActionResult> ObtenerDeducciones(int empleadoId)
+        {
+            var empleado = await _context.Empleados.Where(c => c.IdEmpleado == empleadoId).FirstAsync();
+
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            var deducciones = await _context.Deducciones.Where(c => c.IdEmpleado == empleado.IdEmpleado).ToListAsync();
+
+            IList<SelectListItem> selectList = deducciones.Select(c => new SelectListItem(c.Concepto + " " + c.Monto.ToString() + "Bs", c.IdDeduccion.ToString())).ToList();
+
+            return Json(selectList);
+        }
+        
+        public async Task<IActionResult> ObtenerPercepciones(int empleadoId)
+        {
+            var empleado = await _context.Empleados.Where(c => c.IdEmpleado == empleadoId).FirstAsync();
+
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            var percepciones = await _context.Percepciones.Where(c => c.IdEmpleado == empleado.IdEmpleado).ToListAsync();
+
+            IList<SelectListItem> selectList = percepciones.Select(c => new SelectListItem(c.Concepto + " " + c.Monto.ToString() + "Bs", c.IdPercepcion.ToString())).ToList();            
+
+            return Json(selectList);
+        }
+
+        public async Task<IActionResult> ObtenerBonos(int empleadoId)
+        {
+            var empleado = await _context.Empleados.Where(c => c.IdEmpleado == empleadoId).FirstAsync();
+
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            var bonos = await _context.Bonificaciones.Where(c => c.IdEmpleado == empleado.IdEmpleado).ToListAsync();
+
+            IList<SelectListItem> selectList = bonos.Select(c => new SelectListItem(c.Concepto + " " + c.Monto.ToString() +"Bs", c.IdBonificacion.ToString())).ToList();
+
+            return Json(selectList);
         }
 
         [HttpPost]

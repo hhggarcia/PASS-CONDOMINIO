@@ -24,10 +24,16 @@ namespace Prueba.ViewModels
         public decimal MontoRef { get; set; }
         public string SimboloMoneda { get; set; } = null!;
         public string SimboloRef { get; set; } = null!;
-        public IList<SelectListItem>? Empleados { get; set; }
-        public IList<SelectListItem>? SubCuentasGastos { get; set; }
-        public IList<SelectListItem>? SubCuentasBancos { get; set; }
-        public IList<SelectListItem>? SubCuentasCaja { get; set; }
-        public IList<SelectListItem>? ReferenciasDolar { get; set; }
+        public IList<SelectListItem>? Empleados { get; set; } = new List<SelectListItem>();
+        public IList<SelectListItem>? SubCuentasGastos { get; set; } = new List<SelectListItem>();
+        public IList<SelectListItem>? SubCuentasBancos { get; set; } = new List<SelectListItem>();
+        public IList<SelectListItem>? SubCuentasCaja { get; set; } = new List<SelectListItem>();
+        //public IList<SelectListItem>? ReferenciasDolar { get; set; }
+        public IList<SelectListItem>? ListDeducciones { get; set; } = new List<SelectListItem>();
+        public IList<int>? ListDeduccionesIDs { get; set; } = new List<int>();
+        public IList<SelectListItem>? ListPercepciones { get; set; } = new List<SelectListItem>();
+        public IList<int>? ListPercepcionesIDs { get; set; } = new List<int>();
+        public IList<SelectListItem>? ListBonos { get; set; } = new List<SelectListItem>(); 
+        public IList<int>? ListBonosIDs { get; set; } = new List<int>();
     }
 }

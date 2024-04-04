@@ -3,6 +3,11 @@
 @{
     ViewData["Title"] = "Pagos";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+    void limpiarDeducciones()
+    {
+        Model.ListDeducciones.Clear();
+    }
 }
 
 <!-- Begin Page Content -->
@@ -43,13 +48,13 @@
                                 <div class="row">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                                    <!-- Proveedor -->
+                                    <!-- Empleado -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Proveedor</label>
+                                            <label for="last-name-column">Empleado</label>
                                             <div class="position-relative">
                                                 <fieldset class="form-group">
-                                                    <select class="form-select" id="proveedorSelect" asp-for="IdEmpleado">
+                                                    <select class="form-select" id="empleadoSelect" asp-for="IdEmpleado">
                                                         <option value="">Seleccione un empleado</option>
                                                         @foreach (var factura in Model.Empleados)
                                                         {
@@ -61,24 +66,19 @@
                                         </div>
                                     </div>
                                     <!-- Monto -->
-                                    <div class="col-md-6 col-12">
+                                    @* <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
                                             <span asp-validation-for="Monto" class="text-danger"></span>
                                             <span id="validatonMonto" class="text-danger"></span>
                                             <div class="position-relative">
-                                                @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
-                                                <input asp-for="Monto" class="form-control" />
-                                                @* <input type="number"
-                                                       class="form-control"
-                                                       placeholder="Monto"
-                                                       asp-for="Monto" />  *@
+                                                <input id="montoInput" asp-for="Monto" class="form-control" />                                                
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> *@
 
 
                                     <!-- Fecha -->
@@ -239,17 +239,62 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group form-check">
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="deducciones" /> Aplicar Deducciones
-                                            </label>
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="percepciones" /> Aplicar Percepciones
-                                            </label>
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="Bonos" /> Aplicar Bonificaciones
-                                            </label>
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-group has-icon-left mandaory">
+                                            <div class="col-sm-5">
+                                                <label class="form-check-label">
+                                                    <input id="deduccionesCheck" class="form-check-input" asp-for="deducciones" /> Aplicar Deducciones
+                                                </label>
+                                            </div>
+                                            <div id="inputsContainerDeducciones" style="display: none;">
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group has-icon-left mandaory">
+                                                        <div class="position-relative">
+                                                            <fieldset class="form-group">
+                                                                <select name="ListDeduccionesIDs" class="form-select" id="deduccionesSelect" multiple="multiple">
+                                                                </select>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <label class="form-check-label">
+                                                    <input id="percepcionesCheck" class="form-check-input" asp-for="percepciones" /> Aplicar Percepciones
+                                                </label>
+                                            </div>
+
+                                            <div id="inputsContainerPercepciones" style="display: none;">
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group has-icon-left mandaory">
+                                                        <div class="position-relative">
+                                                            <fieldset class="form-group">
+                                                                <select name="ListPercepcionesIDs" class="form-select" id="percepcionSelect" multiple="multiple">
+                                                                </select>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-5">
+                                                <label class="form-check-label">
+                                                    <input id="bonosCheck" class="form-check-input" asp-for="Bonos" /> Aplicar Bonificaciones
+                                                </label>
+                                            </div>
+
+                                            <div id="inputsContainerBonos" style="display: none;">
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group has-icon-left mandaory">
+                                                        <div class="position-relative">
+                                                            <fieldset class="form-group">
+                                                                <select name="ListBonosIDs" class="form-select" id="bonoSelect" multiple="multiple">
+                                                                </select>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end">
@@ -277,3 +322,138 @@
     </div>
     <!-- Content Row -->
 </div>
+
+@section Scripts {
+    <script>
+        function buscarDeducciones() {
+            var dedu = document.getElementById('deduccionesCheck');
+
+            if (dedu.checked) {
+                var idEmpleado = $("#empleadoSelect").val();
+                const contenedorCheckboxes = document.getElementById('inputsContainerDeducciones');
+
+                //contenedorCheckboxes.innerHTML = '';
+
+                $.ajax({
+                    url: '/Empleados/ObtenerDeducciones',
+                    type: 'GET',
+                    data: { empleadoId: idEmpleado },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length > 0) {
+                            $('#deduccionesSelect').empty();
+                            $.each(data, function (index, item) {
+                                $('#deduccionesSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+
+                        } else {
+                            $('#deduccionesSelect').empty();
+                            //$('#facturaMessage').show();
+                        }
+
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las percepciones: ', error);
+                    }
+                });
+
+                dedu.addEventListener("change", function () {
+                    // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                    contenedorCheckboxes.style.display = dedu.checked ? "block" : "none";
+                });
+            }
+        }
+
+        function buscarPercepciones() {
+            var perc = document.getElementById('percepcionesCheck');
+
+            if (perc.checked) {
+                var idEmpleado = $("#empleadoSelect").val();
+                const contenedorCheckboxes = document.getElementById('inputsContainerPercepciones');
+
+                //contenedorCheckboxes.innerHTML = '';
+
+                $.ajax({
+                    url: '/Empleados/ObtenerPercepciones',
+                    type: 'GET',
+                    data: { empleadoId: idEmpleado },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length > 0) {
+                            $('#percepcionSelect').empty();
+                            $.each(data, function (index, item) {
+                                $('#percepcionSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+
+                        } else {
+                            $('#percepcionSelect').empty();
+                            //$('#facturaMessage').show();
+                        }
+
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las percepciones: ', error);
+                    }
+                });
+
+                perc.addEventListener("change", function () {
+                    // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                    contenedorCheckboxes.style.display = perc.checked ? "block" : "none";
+                });
+            } else {
+                contenedorCheckboxes.innerHTML = '';
+            }
+        }
+
+        function buscarBonos() {
+            var perc = document.getElementById('bonosCheck');
+
+            if (perc.checked) {
+                var idEmpleado = $("#empleadoSelect").val();
+                const contenedorCheckboxes = document.getElementById('inputsContainerBonos');
+
+                //contenedorCheckboxes.innerHTML = '';
+
+                $.ajax({
+                    url: '/Empleados/ObtenerBonos',
+                    type: 'GET',
+                    data: { empleadoId: idEmpleado },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length > 0) {
+                            $('#bonoSelect').empty();
+                            $.each(data, function (index, item) {
+                                $('#bonoSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+
+                        } else {
+                            $('#bonoSelect').empty();
+                            //$('#facturaMessage').show();
+                        }
+
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las percepciones: ', error);
+                    }
+                });
+
+                perc.addEventListener("change", function () {
+                    // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                    contenedorCheckboxes.style.display = perc.checked ? "block" : "none";
+                });
+            } else {
+                contenedorCheckboxes.innerHTML = '';
+            }
+        }
+
+        var dedu = document.getElementById('deduccionesCheck');
+        dedu.addEventListener('click', buscarDeducciones);
+
+        var perc = document.getElementById('percepcionesCheck');
+        perc.addEventListener('click', buscarPercepciones);
+
+        var bon = document.getElementById('bonosCheck');
+        bon.addEventListener('click', buscarBonos);
+    </script>
+
+}
