@@ -417,6 +417,14 @@ namespace Prueba.Repositories
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
+
+                    // buscar grupo de la cuenta
+                    var grupo = await (from g in _context.GrupoGastos
+                                join cg in _context.CuentasGrupos
+                                on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                where factura.IdCodCuenta == cg.IdCodCuenta
+                                select g).FirstOrDefaultAsync();
+
                     // resgistrar transaccion
                     // armar transaccion
 
@@ -431,7 +439,9 @@ namespace Prueba.Repositories
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia
+                        MontoRef = montoReferencia,
+                        Fecha = DateTime.Today,
+                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                     };
 
                     using (var _dbContext = new NuevaAppContext())
@@ -948,6 +958,12 @@ namespace Prueba.Repositories
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
+                    // buscar grupo de la cuenta
+                    var grupo = await (from g in _context.GrupoGastos
+                                       join cg in _context.CuentasGrupos
+                                       on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                       where factura.IdCodCuenta == cg.IdCodCuenta
+                                       select g).FirstOrDefaultAsync();
                     // resgistrar transaccion
                     // armar transaccion
 
@@ -962,7 +978,9 @@ namespace Prueba.Repositories
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia
+                        MontoRef = montoReferencia,
+                        Fecha = DateTime.Today,
+                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                     };
 
                     using (var _dbContext = new NuevaAppContext())
@@ -1463,6 +1481,12 @@ namespace Prueba.Repositories
                             Periodo = true
                         };
 
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -1475,7 +1499,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago emitido
@@ -1864,6 +1890,12 @@ namespace Prueba.Repositories
                             Periodo = true
                         };
 
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -1876,7 +1908,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago emitido
@@ -2226,7 +2260,10 @@ namespace Prueba.Repositories
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
 
-            modelo.Proveedor = proveedores.Select(c => new SelectListItem(c.Nombre, c.IdProveedor.ToString())).ToList();
+            modelo.Proveedor = proveedores
+                .Where(c => c.Beneficiario)
+                .Select(c => new SelectListItem(c.Nombre, c.IdProveedor.ToString()))
+                .ToList();
             //modelo.Facturas = facturas.Select(c => new SelectListItem(c.Descripcion, c.IdFactura.ToString())).ToList();
             //modelo.Anticipos = anticipos.Select(c => new SelectListItem(c.Detalle, c.IdAnticipo.ToString())).ToList();
             // ENVIAR MODELO
@@ -2319,7 +2356,12 @@ namespace Prueba.Repositories
                         pago.SimboloRef = "$";
                         pago.MontoRef = montoReferencia;
 
-                        // resgistrar transaccion
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -2332,7 +2374,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago
@@ -2534,7 +2578,12 @@ namespace Prueba.Repositories
                         pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
-                        // resgistrar transaccion
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -2547,7 +2596,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago
@@ -2824,7 +2875,12 @@ namespace Prueba.Repositories
                         pago.SimboloRef = "$";
                         pago.MontoRef = montoReferencia;
 
-                        // resgistrar transaccion
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -2837,7 +2893,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago
@@ -3044,7 +3102,12 @@ namespace Prueba.Repositories
                         pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
-                        // resgistrar transaccion
+                        // buscar grupo de la cuenta
+                        var grupo = await (from g in _context.GrupoGastos
+                                           join cg in _context.CuentasGrupos
+                                           on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                           where modelo.IdSubcuenta == cg.IdCodCuenta
+                                           select g).FirstOrDefaultAsync();
                         // armar transaccion
                         var transaccion = new Transaccion
                         {
@@ -3057,7 +3120,9 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef
+                            MontoRef = pago.MontoRef,
+                            Fecha = DateTime.Today,
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         };
 
                         // registrar pago

@@ -46,6 +46,9 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.Fecha)
+                                    </th
+                                    <th>
                                         @Html.DisplayNameFor(model => model.TipoTransaccion)
                                     </th>
                                     <th>
@@ -88,6 +91,9 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Fecha)
+                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TipoTransaccion)
                                         </td>

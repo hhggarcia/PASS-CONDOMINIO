@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.Formula.Functions;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
@@ -16,10 +17,13 @@ namespace Prueba.Controllers
 
     public class CuentasGruposController : Controller
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
 
-        public CuentasGruposController(NuevaAppContext context)
+        public CuentasGruposController(ICuentasContablesRepository repoCuentas,
+            NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _context = context;
         }
 
@@ -51,12 +55,17 @@ namespace Prueba.Controllers
         }
 
         // GET: CuentasGrupos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+           
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
             ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo");
+
+            TempData.Keep();
+
             return View();
         }
 
@@ -80,10 +89,15 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "GrupoGastos");
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
-            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
 
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
             ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
+
+            TempData.Keep();
             
             return View(cuentasGrupo);
         }
@@ -101,10 +115,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
-            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
             ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
+
+            TempData.Keep();
             return View(cuentasGrupo);
         }
 
@@ -148,10 +166,14 @@ namespace Prueba.Controllers
                 return RedirectToAction("Index", "GrupoGastos");
 
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
-            //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", cuentasGrupo.IdCodCuenta);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", cuentasGrupo.IdCodCuenta);
             ViewData["IdGrupoGasto"] = new SelectList(_context.GrupoGastos, "IdGrupoGasto", "NombreGrupo", cuentasGrupo.IdGrupoGasto);
+
+            TempData.Keep();
             return View(cuentasGrupo);
         }
 

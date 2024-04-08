@@ -15,12 +15,15 @@ namespace Prueba.Controllers
     [Authorize(Policy = "RequireAdmin")]
     public class BonificacionsController : Controller
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public BonificacionsController(IMonedaRepository repoMoneda,
+        public BonificacionsController(ICuentasContablesRepository repoCuentas,
+            IMonedaRepository repoMoneda,
             NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _repoMoneda = repoMoneda;
             _context = context;
         }
@@ -57,10 +60,17 @@ namespace Prueba.Controllers
         }
 
         // GET: Bonificacions/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);            
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre");
+
+            TempData.Keep();
+
             return View();
         }
 
@@ -78,10 +88,10 @@ namespace Prueba.Controllers
            
             ModelState.Remove(nameof(bonificacion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(bonificacion.IdEmpleadoNavigation));
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             if (ModelState.IsValid)
             {
-                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
 
@@ -94,8 +104,13 @@ namespace Prueba.Controllers
                 return RedirectToAction("Index", "Empleados");
             }
 
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
+
+            TempData.Keep();
             return View(bonificacion);
         }
 
@@ -112,8 +127,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
+
+            TempData.Keep();
             return View(bonificacion);
         }
 
@@ -131,6 +152,7 @@ namespace Prueba.Controllers
 
             ModelState.Remove(nameof(bonificacion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(bonificacion.IdEmpleadoNavigation));
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             if (ModelState.IsValid)
             {
@@ -140,7 +162,6 @@ namespace Prueba.Controllers
                     var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
                     bonificacion.IdCodCuenta = idCodCuenta;
 
-                    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                     var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
 
@@ -165,8 +186,13 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction("Index", "Empleados");
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", bonificacion.IdCodCuenta);
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
+
+            TempData.Keep();
             return View(bonificacion);
         }
 

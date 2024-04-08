@@ -17,14 +17,17 @@ namespace Prueba.Controllers
 
     public class FacturaEmitidasController : Controller
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IPagosRecibidosRepository _repoPagoRecibido;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturaEmitidasController(IPagosRecibidosRepository repoPagoRecibido,
+        public FacturaEmitidasController(ICuentasContablesRepository repoCuentas,
+            IPagosRecibidosRepository repoPagoRecibido,
             IFiltroFechaRepository filtroFechaRepository, 
             NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _repoPagoRecibido = repoPagoRecibido;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
@@ -84,9 +87,12 @@ namespace Prueba.Controllers
                 ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
             }
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
+
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre");
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
             TempData.Keep();
             return View();
@@ -108,6 +114,7 @@ namespace Prueba.Controllers
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             if (ModelState.IsValid)
             {
@@ -145,8 +152,6 @@ namespace Prueba.Controllers
 
                 // registrar en libro de ventas
 
-                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
                 var itemLibroVenta = new LibroVenta
                 {
                     IdCondominio = IdCondominio,
@@ -178,9 +183,14 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(facturaEmitida);
         }
@@ -199,9 +209,15 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(facturaEmitida);
         }
@@ -217,6 +233,12 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+            facturaEmitida.IdCodCuenta = idCodCuenta;
+            facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
 
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
@@ -243,9 +265,15 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(facturaEmitida);
         }
@@ -424,11 +452,7 @@ namespace Prueba.Controllers
 
                             comprobante.Caja = caja.First();
                         }
-                        
-                        //var proovedores = from p in _context.Proveedors
-                        //                  where p.IdCondominio == modelo.IdCondominio
-                        //                  select p;
-                        //var proveedor =  await proovedores.ToListAsync();
+
                         var cliente = await _context.Clientes.Where(c => c.IdCliente == factura.IdCliente).FirstAsync();
                         var retIslr = _context.Islrs.Where(c => c.Id == cliente.IdRetencionIslr).FirstOrDefault();
                         var retIva = _context.Ivas.Where(c => c.Id == cliente.IdRetencionIva).FirstOrDefault();
@@ -437,7 +461,7 @@ namespace Prueba.Controllers
 
                         if (retIslr != null)
                         {
-                            comprobante.Islr = factura.SubTotal * (retIslr.Tarifa / 100);
+                            comprobante.Islr = (factura.SubTotal * (retIslr.Tarifa / 100)) - retIslr.Sustraendo;
                         }
 
                         if (retIva != null)
@@ -464,7 +488,6 @@ namespace Prueba.Controllers
                         return View("Comprobante", comprobante);
                     }
 
-                    //}
                     ViewBag.FormaPago = "fallido";
                     ViewBag.Mensaje = resultado;
                     //traer subcuentas del condominio

@@ -29,6 +29,12 @@ public partial class ReciboCobro
 
     public string SimboloRef { get; set; } = null!;
 
+    public decimal MontoMora { get; set; }
+
+    public decimal MontoIndexacion { get; set; }
+
+    public decimal Acumulado { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

@@ -170,7 +170,7 @@ namespace Prueba.Repositories
                         where cs.Descripcion.Trim().ToUpper() == "PROVISIONES"
                         select c;
 
-            var model = from c in _context.SubCuenta
+            var model = from c in _context.SubCuenta.ToList()
                         join cs in cuentaProvision.ToList()
                         on c.Id equals cs.IdSubCuenta
                         select c;
@@ -353,7 +353,7 @@ namespace Prueba.Repositories
             //                 on c.Id equals s.IdCuenta
             //                 select s;
 
-            var model = from s in _context.SubCuenta
+            var model = from s in _context.SubCuenta.ToList()
                         join c in cuentasCond.ToList()
                         on s.Id equals c.IdSubCuenta
                         where c.IdClase == 3

@@ -137,7 +137,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check)
+        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check, bool checkBeneficiario)
         {
             ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
             ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
@@ -155,13 +155,22 @@ namespace Prueba.Controllers
                     return RedirectToAction(nameof(Index));
                     
                 }
+                if (checkBeneficiario)
+                {
+                    proveedor.IdRetencionIslr = null;
+                    proveedor.IdRetencionIva = null;
+                    proveedor.Beneficiario = true;
+                    _context.Add(proveedor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
                 else
                 {
                     _context.Add(proveedor);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                
+
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);

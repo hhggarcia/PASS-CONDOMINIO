@@ -247,19 +247,20 @@ namespace Prueba.Repositories
 
                     // resgistrar transaccion
                     // armar transaccion
-                    var transaccion = new Transaccion
-                    {
-                        TipoTransaccion = true,
-                        IdCodCuenta = factura.IdCodCuenta,
-                        Descripcion = modelo.Concepto,
-                        MontoTotal = factura.MontoTotal,
-                        Documento = factura.NumFactura.ToString(),
-                        Cancelado = factura.MontoTotal,
-                        SimboloMoneda = pago.SimboloMoneda,
-                        SimboloRef = pago.SimboloRef,
-                        ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia
-                    };
+                    //var transaccion = new Transaccion
+                    //{
+                    //    TipoTransaccion = true,
+                    //    IdCodCuenta = factura.IdCodCuenta,
+                    //    Descripcion = modelo.Concepto,
+                    //    MontoTotal = factura.MontoTotal,
+                    //    Documento = factura.NumFactura.ToString(),
+                    //    Cancelado = factura.MontoTotal,
+                    //    SimboloMoneda = pago.SimboloMoneda,
+                    //    SimboloRef = pago.SimboloRef,
+                    //    ValorDolar = pago.ValorDolar,
+                    //    MontoRef = montoReferencia,
+                    //    Fecha = DateTime.Today
+                    //};
 
                     // validar retenciones
 
@@ -325,7 +326,7 @@ namespace Prueba.Repositories
                     {
 
                         _dbContext.Add(pago);
-                        _dbContext.Add(transaccion);
+                        //_dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _context.Update(itemCuentaCobrar);
@@ -786,26 +787,27 @@ namespace Prueba.Repositories
 
                     // registrar transaccion
                     // armar transaccion
-                    var transaccion = new Transaccion
-                    {
-                        TipoTransaccion = true,
-                        IdCodCuenta = modelo.IdSubcuenta,
-                        Descripcion = modelo.Concepto,
-                        MontoTotal = pago.Monto,
-                        Documento = "",
-                        Cancelado = pago.Monto,
-                        SimboloMoneda = pago.SimboloMoneda,
-                        SimboloRef = pago.SimboloRef,
-                        ValorDolar = pago.ValorDolar,
-                        MontoRef = pago.MontoRef
-                    };
+                    //var transaccion = new Transaccion
+                    //{
+                    //    TipoTransaccion = true,
+                    //    IdCodCuenta = modelo.IdSubcuenta,
+                    //    Descripcion = modelo.Concepto,
+                    //    MontoTotal = pago.Monto,
+                    //    Documento = "",
+                    //    Cancelado = pago.Monto,
+                    //    SimboloMoneda = pago.SimboloMoneda,
+                    //    SimboloRef = pago.SimboloRef,
+                    //    ValorDolar = pago.ValorDolar,
+                    //    MontoRef = pago.MontoRef,
+                    //    Fecha = DateTime.Today
+                    //};
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Add(cobroTransito);
-                        _dbContext.Add(transaccion);
+                        //_dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
 
                         _dbContext.SaveChanges();
@@ -948,26 +950,28 @@ namespace Prueba.Repositories
 
                     // registrar transaccion
                     // armar transaccion
-                    var transaccion = new Transaccion
-                    {
-                        TipoTransaccion = true,
-                        IdCodCuenta = modelo.IdSubcuenta,
-                        Descripcion = modelo.Concepto,
-                        MontoTotal = pago.Monto,
-                        Documento = "",
-                        Cancelado = pago.Monto,
-                        SimboloMoneda = pago.SimboloMoneda,
-                        SimboloRef = pago.SimboloRef,
-                        ValorDolar = pago.ValorDolar,
-                        MontoRef = pago.MontoRef
-                    };
+                    //var transaccion = new Transaccion
+                    //{
+                    //    TipoTransaccion = true,
+                    //    IdCodCuenta = modelo.IdSubcuenta,
+                    //    Descripcion = modelo.Concepto,
+                    //    MontoTotal = pago.Monto,
+                    //    Documento = "",
+                    //    Cancelado = pago.Monto,
+                    //    SimboloMoneda = pago.SimboloMoneda,
+                    //    SimboloRef = pago.SimboloRef,
+                    //    ValorDolar = pago.ValorDolar,
+                    //    MontoRef = pago.MontoRef,
+                    //    Fecha = DateTime.Today
+
+                    //};
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
                         _dbContext.Add(cobroTransito);
-                        _dbContext.Add(transaccion);
+                       // _dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
 
                         _dbContext.SaveChanges();

@@ -19,16 +19,19 @@ namespace Prueba.Controllers
     public class AnticiposController : Controller
     {
         private readonly NuevaAppContext _context;
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IPDFServices _servicesPDF;
         private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
 
 
-        public AnticiposController(IPDFServices servicesPDF,
+        public AnticiposController(ICuentasContablesRepository repoCuentas,
+            IPDFServices servicesPDF,
             IPagosEmitidosRepository repoPagosEmitidos,
             IFiltroFechaRepository filtroFechaRepository, 
             NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _servicesPDF = servicesPDF;
             _repoPagosEmitidos = repoPagosEmitidos;
             _reposFiltroFecha = filtroFechaRepository;
@@ -69,10 +72,16 @@ namespace Prueba.Controllers
         }
 
         // GET: Anticipos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            TempData.Keep();
+
             return View();
         }
 
@@ -97,8 +106,15 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(anticipo);
         }
@@ -116,8 +132,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(anticipo);
         }
@@ -162,9 +184,14 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(anticipo);
         }
 

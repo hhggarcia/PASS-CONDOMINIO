@@ -68,8 +68,14 @@ namespace Prueba.Controllers
         // GET: OrdenPagos/Create
         public IActionResult Create()
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido");
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor");
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors
+                .Where(c => c.IdCondominio == idCondominio)
+                .Where(c => c.Beneficiario == true), "IdProveedor", "Nombre");
+
+            TempData.Keep();
             return View();
         }
 
@@ -105,7 +111,8 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido", ordenPago.IdPagoEmitido);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", ordenPago.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors
+                .Where(c => c.Beneficiario), "IdProveedor", "Nombre", ordenPago.IdProveedor);
             return View(ordenPago);
         }
 

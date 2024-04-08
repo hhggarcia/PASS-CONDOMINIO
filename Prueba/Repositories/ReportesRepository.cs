@@ -379,7 +379,7 @@ namespace Prueba.Repositories
                 var modelo = new RecibosCreadosVM
                 {
                     Propiedades = listaPropiedadesCondominio,
-                    Propietarios = await propietarios.ToListAsync(),
+                    //Propietarios = await propietarios.ToListAsync(),
                     Recibos = recibosCobroCond,
                     //Inmuebles = await inmueblesCondominio.ToListAsync()
                 };

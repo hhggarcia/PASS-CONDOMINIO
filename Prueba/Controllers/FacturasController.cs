@@ -17,11 +17,15 @@ namespace Prueba.Controllers
 
     public class FacturasController : Controller
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturasController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
+        public FacturasController(ICuentasContablesRepository repoCuentas,
+            IFiltroFechaRepository filtroFechaRepository, 
+            NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
@@ -78,8 +82,11 @@ namespace Prueba.Controllers
                 ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
             }
 
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
             TempData.Keep();
             return View();
@@ -100,6 +107,7 @@ namespace Prueba.Controllers
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             if (ModelState.IsValid)
             {
@@ -135,7 +143,6 @@ namespace Prueba.Controllers
 
                 // registrar libro de compras
 
-                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var itemLibroCompra = new LibroCompra
                 {
@@ -169,9 +176,14 @@ namespace Prueba.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
 
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(factura);
         }
 
@@ -193,8 +205,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cc.IdSubCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(factura);
         }
@@ -238,9 +256,14 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(factura);
         }
 

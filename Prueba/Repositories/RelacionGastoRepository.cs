@@ -10,13 +10,19 @@ namespace Prueba.Repositories
 {
     public interface IRelacionGastoRepository
     {
+        Task<List<CodigoCuentasGlobal>> BuscarCuentasGlobalGrupo(int id, int idGrupo);
+        Task<List<CuentasGrupo>> BuscarCuentasGrupo(int id, int idGrupo);
+        Task<List<CodigoCuentasGlobal>> BuscarCuentasGrupoPropiedad(int id, int idPropiedad);
+        Task<List<GrupoGasto>> BuscarGruposGastos(int id);
         Task<bool> DeleteRecibosCobroRG(int idRG);
         Task<DetalleReciboVM> DetalleRecibo(int id);
         Task<RelacionDeGastosVM> LoadDataRelacionGastos(int id);
         Task<RelacionDeGastosVM> LoadDataRelacionGastosMes(int? idRG);
+        Task<TransaccionVM> LoadTransacciones(int id);
+        Task<TransaccionVM> LoadTransaccionesMes(int? idRg);
         bool RelacionGastoExists(int id);
     }
-    public class RelacionGastoRepository: IRelacionGastoRepository
+    public class RelacionGastoRepository : IRelacionGastoRepository
     {
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
@@ -43,7 +49,7 @@ namespace Prueba.Repositories
 
             var condominio = await _context.Condominios.FindAsync(id);
 
-            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals 
+            var cuentasContablesCond = from c in _context.CodigoCuentasGlobals
                                        where c.IdCondominio == condominio.IdCondominio && c.IdClase == 5
                                        select c;
 
@@ -224,6 +230,398 @@ namespace Prueba.Repositories
                     }
                 }
                 modelo.SubCuentasFondos = subcuentasFondosModel;
+            }
+
+            return modelo;
+        }
+
+
+        public async Task<TransaccionVM> LoadTransacciones(int id)
+        {
+            var modelo = new TransaccionVM();
+
+            var condominio = await _context.Condominios.FindAsync(id);
+
+            var gruposGastos = await (from c in _context.GrupoGastos
+                                      join e in _context.CuentasGrupos
+                                      on c.IdGrupoGasto equals e.IdGrupoGasto
+                                      join cc in _context.CodigoCuentasGlobals
+                                      on e.IdCodCuenta equals cc.IdCodCuenta
+                                      where cc.IdCondominio == id
+                                      select c).ToListAsync();
+
+            var transacciones = await (from t in _context.Transaccions
+                                       join cc in _context.CodigoCuentasGlobals
+                                       on t.IdCodCuenta equals cc.IdCodCuenta
+                                       where cc.IdCondominio == id
+                                       where t.Fecha.Month == DateTime.Today.Month
+                                       select t).ToListAsync();
+
+            var transaccionesInd = await (from t in _context.Transaccions
+                                          join cc in _context.CodigoCuentasGlobals
+                                          on t.IdCodCuenta equals cc.IdCodCuenta
+                                          where t.Fecha.Month == DateTime.Today.Month
+                                          where cc.IdCondominio == id
+                                          where t.IdPropiedad != null
+                                          select t).ToListAsync();
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(id);
+            // BUSCAR PROVISIONES en los asientos del diario
+            DateTime fechaActual = DateTime.Now;
+
+            var proviciones = from p in _context.Provisiones
+                              join c in _context.CodigoCuentasGlobals
+                              on p.IdCodCuenta equals c.IdCodCuenta
+                              where c.IdCondominio == id
+                              where DateTime.Compare(fechaActual, p.FechaFin) < 0 && DateTime.Compare(fechaActual, p.FechaInicio) >= 0
+                              select p;
+            // BUSCAR FONDOS
+            var fondos = from f in _context.Fondos
+                         join c in _context.CodigoCuentasGlobals
+                         on f.IdCodCuenta equals c.IdCodCuenta
+                         where c.IdCondominio == id
+                         where DateTime.Compare(fechaActual, f.FechaFin) < 0 && DateTime.Compare(fechaActual, f.FechaInicio) >= 0
+                         select f;
+
+            decimal totalIngresos = 0;
+            decimal totalEgresos = 0;
+            decimal totalEgresosInd = 0;
+            decimal totalIngresoInd = 0;
+
+            foreach (var item in transacciones)
+            {
+                if (item.TipoTransaccion && item.IdPropiedad == null)
+                {
+                    totalIngresos += item.MontoTotal;
+                }
+                else if (!item.TipoTransaccion && item.IdPropiedad == null)
+                {
+                    totalEgresos += item.MontoTotal;
+
+                }
+
+                if (item.TipoTransaccion && item.IdPropiedad != null)
+                {
+                    totalIngresoInd += item.MontoTotal;
+                }
+                else if (!item.TipoTransaccion && item.IdPropiedad != null)
+                {
+                    totalEgresosInd += item.MontoTotal;
+                }
+            }
+
+            modelo.Condominio = condominio;
+            modelo.Fecha = DateTime.Today;
+            modelo.GruposGastos = gruposGastos;
+            modelo.Transaccions = transacciones;
+            modelo.TransaccionesIndividuales = transaccionesInd;
+            modelo.TotalIngresos = totalIngresos;
+            modelo.TotalGastos = totalEgresos;
+            modelo.TotalIngresoIndividual = totalIngresoInd;
+            modelo.TotalEgresoIndividual = totalEgresosInd;
+            modelo.Total = totalEgresos - totalIngresos;
+            modelo.TotalIndividual = totalEgresosInd - totalIngresoInd;
+            modelo.TotalGeneral = modelo.Total + modelo.TotalIndividual;
+
+            if (proviciones.Any() && fondos.Any())
+            {
+                modelo.Provisiones = await proviciones.ToListAsync();
+                modelo.Fondos = await fondos.ToListAsync();
+
+
+                IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                foreach (var provision in modelo.Provisiones)
+                {
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+
+                    modelo.CCProvisiones.Add(idcc);
+
+                    if (subcuentaProvision.Any())
+                    {
+                        SubCuenta aux = subcuentaProvision.First();
+                        if (aux != null)
+                        {
+                            //modelo.SubTotal += provision.Monto;
+                            modelo.Total += provision.Monto;
+                            subcuentasProvisionesModel.Add(aux);
+                        }
+                    }
+                }
+
+                IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+                foreach (var fondo in modelo.Fondos)
+                {
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+
+                    modelo.CCFondos.Add(idcc);
+
+                    if (subcuentaFondo.Any())
+                    {
+                        SubCuenta aux = subcuentaFondo.First();
+                        if (aux != null)
+                        {
+                            modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                            subcuentasFondosModel.Add(aux);
+                        }
+                    }
+                }
+
+                modelo.SubCuentasFondos = subcuentasFondosModel;
+                modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
+            }
+            else if (proviciones.Any() && !fondos.Any())
+            {
+                modelo.Provisiones = await proviciones.ToListAsync();
+
+                IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                foreach (var provision in modelo.Provisiones)
+                {
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+                    var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                    modelo.CCProvisiones.Add(idcc);
+
+                    if (subcuentaProvision.Any())
+                    {
+                        SubCuenta aux = subcuentaProvision.First();
+                        if (aux != null)
+                        {
+                            //modelo.SubTotal += provision.MontoRef;
+                            modelo.Total += provision.Monto;
+                            subcuentasProvisionesModel.Add(aux);
+                        }
+                    }
+                }
+
+                modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
+
+            }
+            else if (!proviciones.Any() && fondos.Any())
+            {
+                modelo.Fondos = await fondos.ToListAsync();
+                IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+
+                foreach (var fondo in modelo.Fondos)
+                {
+                    var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                    modelo.CCFondos.Add(idcc);
+
+                    if (subcuentaFondo.Any())
+                    {
+                        SubCuenta aux = subcuentaFondo.First();
+                        if (aux != null)
+                        {
+                            modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                            subcuentasFondosModel.Add(aux);
+                        }
+                    }
+                }
+                modelo.SubCuentasFondos = subcuentasFondosModel;
+            }
+
+            return modelo;
+        }
+
+        public async Task<TransaccionVM> LoadTransaccionesMes(int? idRg)
+        {
+            var modelo = new TransaccionVM();
+
+            var rg = await _context.RelacionGastos.FindAsync(idRg);
+
+            if (rg != null)
+            {
+                var condominio = await _context.Condominios.FindAsync(rg.IdCondominio);
+
+                var gruposGastos = await (from c in _context.GrupoGastos
+                                          join e in _context.CuentasGrupos
+                                          on c.IdGrupoGasto equals e.IdGrupoGasto
+                                          join cc in _context.CodigoCuentasGlobals
+                                          on e.IdCodCuenta equals cc.IdCodCuenta
+                                          where cc.IdCondominio == condominio.IdCondominio
+                                          select c).ToListAsync();
+
+                var transacciones = await (from t in _context.Transaccions
+                                           join cc in _context.CodigoCuentasGlobals
+                                           on t.IdCodCuenta equals cc.IdCodCuenta
+                                           join tt in _context.RelacionGastoTransaccions
+                                           on t.IdTransaccion equals tt.IdTransaccion
+                                           where cc.IdCondominio == condominio.IdCondominio
+                                           where t.Fecha.Month == rg.Fecha.Month
+                                           where tt.IdRelacionGasto == rg.IdRgastos
+                                           select t).ToListAsync();
+
+                var transaccionesInd = await (from t in _context.Transaccions
+                                              join cc in _context.CodigoCuentasGlobals
+                                              on t.IdCodCuenta equals cc.IdCodCuenta
+                                              join tt in _context.RelacionGastoTransaccions
+                                              on t.IdTransaccion equals tt.IdTransaccion
+                                              where t.Fecha.Month == rg.Fecha.Month
+                                              where cc.IdCondominio == condominio.IdCondominio
+                                              where t.IdPropiedad != null
+                                              where tt.IdRelacionGasto == rg.IdRgastos
+                                              select t).ToListAsync();
+
+                var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);
+                // BUSCAR PROVISIONES en los asientos del diario
+                DateTime fechaActual = DateTime.Now;
+
+                var proviciones = from p in _context.Provisiones
+                                  join c in _context.CodigoCuentasGlobals
+                                  on p.IdCodCuenta equals c.IdCodCuenta
+                                  where c.IdCondominio == condominio.IdCondominio
+                                  where DateTime.Compare(fechaActual, p.FechaFin) < 0 && DateTime.Compare(fechaActual, p.FechaInicio) >= 0
+                                  select p;
+                // BUSCAR FONDOS
+                var fondos = from f in _context.Fondos
+                             join c in _context.CodigoCuentasGlobals
+                             on f.IdCodCuenta equals c.IdCodCuenta
+                             where c.IdCondominio == condominio.IdCondominio
+                             where DateTime.Compare(fechaActual, f.FechaFin) < 0 && DateTime.Compare(fechaActual, f.FechaInicio) >= 0
+                             select f;
+
+                decimal totalIngresos = 0;
+                decimal totalEgresos = 0;
+                decimal totalEgresosInd = 0;
+                decimal totalIngresoInd = 0;
+
+                foreach (var item in transacciones)
+                {
+                    if (item.TipoTransaccion && item.IdPropiedad == null)
+                    {
+                        totalIngresos += item.MontoTotal;
+                    }
+                    else if (!item.TipoTransaccion && item.IdPropiedad == null)
+                    {
+                        totalEgresos += item.MontoTotal;
+
+                    }
+
+                    if (item.TipoTransaccion && item.IdPropiedad != null)
+                    {
+                        totalIngresoInd += item.MontoTotal;
+                    }
+                    else if (!item.TipoTransaccion && item.IdPropiedad != null)
+                    {
+                        totalEgresosInd += item.MontoTotal;
+                    }
+                }
+
+                modelo.Condominio = condominio;
+                modelo.Fecha = DateTime.Today;
+                modelo.GruposGastos = gruposGastos;
+                modelo.Transaccions = transacciones;
+                modelo.TransaccionesIndividuales = transaccionesInd;
+                modelo.TotalIngresos = totalIngresos;
+                modelo.TotalGastos = totalEgresos;
+                modelo.TotalIngresoIndividual = totalIngresoInd;
+                modelo.TotalEgresoIndividual = totalEgresosInd;
+                modelo.Total = totalEgresos - totalIngresos;
+                modelo.TotalIndividual = totalEgresosInd - totalIngresoInd;
+                modelo.TotalGeneral = modelo.Total + modelo.TotalIndividual;
+
+                if (proviciones.Any() && fondos.Any())
+                {
+                    modelo.Provisiones = await proviciones.ToListAsync();
+                    modelo.Fondos = await fondos.ToListAsync();
+
+
+                    IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                    foreach (var provision in modelo.Provisiones)
+                    {
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+
+                        modelo.CCProvisiones.Add(idcc);
+
+                        if (subcuentaProvision.Any())
+                        {
+                            SubCuenta aux = subcuentaProvision.First();
+                            if (aux != null)
+                            {
+                                //modelo.SubTotal += provision.Monto;
+                                modelo.Total += provision.Monto;
+                                subcuentasProvisionesModel.Add(aux);
+                            }
+                        }
+                    }
+
+                    IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+                    foreach (var fondo in modelo.Fondos)
+                    {
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+
+                        modelo.CCFondos.Add(idcc);
+
+                        if (subcuentaFondo.Any())
+                        {
+                            SubCuenta aux = subcuentaFondo.First();
+                            if (aux != null)
+                            {
+                                modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                                subcuentasFondosModel.Add(aux);
+                            }
+                        }
+                    }
+
+                    modelo.SubCuentasFondos = subcuentasFondosModel;
+                    modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
+                }
+                else if (proviciones.Any() && !fondos.Any())
+                {
+                    modelo.Provisiones = await proviciones.ToListAsync();
+
+                    IList<SubCuenta> subcuentasProvisionesModel = new List<SubCuenta>();
+                    foreach (var provision in modelo.Provisiones)
+                    {
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(provision.IdCodCuenta);
+                        var subcuentaProvision = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                        modelo.CCProvisiones.Add(idcc);
+
+                        if (subcuentaProvision.Any())
+                        {
+                            SubCuenta aux = subcuentaProvision.First();
+                            if (aux != null)
+                            {
+                                //modelo.SubTotal += provision.MontoRef;
+                                modelo.Total += provision.Monto;
+                                subcuentasProvisionesModel.Add(aux);
+                            }
+                        }
+                    }
+
+                    modelo.SubCuentasProvisiones = subcuentasProvisionesModel;
+
+                }
+                else if (!proviciones.Any() && fondos.Any())
+                {
+                    modelo.Fondos = await fondos.ToListAsync();
+                    IList<SubCuenta> subcuentasFondosModel = new List<SubCuenta>();
+
+                    foreach (var fondo in modelo.Fondos)
+                    {
+                        var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
+                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                        modelo.CCFondos.Add(idcc);
+
+                        if (subcuentaFondo.Any())
+                        {
+                            SubCuenta aux = subcuentaFondo.First();
+                            if (aux != null)
+                            {
+                                modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                                subcuentasFondosModel.Add(aux);
+                            }
+                        }
+                    }
+                    modelo.SubCuentasFondos = subcuentasFondosModel;
+                }
             }
 
             return modelo;
@@ -499,7 +897,7 @@ namespace Prueba.Repositories
                             _context.PagosRecibos.Remove(item);
                         }
                     }
-                    
+
                 }
 
                 await _context.SaveChangesAsync();
@@ -535,19 +933,91 @@ namespace Prueba.Repositories
                 if (propiedad != null)
                 {
                     var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-                    if (usuario != null) 
+                    if (usuario != null)
                     {
                         modelo.Recibo = recibo;
                         modelo.Propiedad = propiedad;
                         modelo.Propietario = usuario;
                         modelo.RelacionGastos = await LoadDataRelacionGastosMes(recibo.IdRgastos);
                     }
-                    
+
                 }
 
             }
 
             return modelo;
+        }
+
+        public async Task<List<GrupoGasto>> BuscarGruposGastos(int id)
+        {
+            var gruposGastos = await (from c in _context.GrupoGastos
+                                      join e in _context.CuentasGrupos
+                                      on c.IdGrupoGasto equals e.IdGrupoGasto
+                                      join cc in _context.CodigoCuentasGlobals
+                                      on e.IdCodCuenta equals cc.IdCodCuenta
+                                      where cc.IdCondominio == id
+                                      select c).ToListAsync();
+
+            return gruposGastos;
+        }
+
+        public async Task<List<CuentasGrupo>> BuscarCuentasGrupo(int id, int idGrupo)
+        {
+            var cuentasGrupo = await (from c in _context.GrupoGastos
+                                      where c.IdGrupoGasto == idGrupo
+                                      join e in _context.CuentasGrupos
+                                      on c.IdGrupoGasto equals e.IdGrupoGasto
+                                      join cc in _context.CodigoCuentasGlobals
+                                      on e.IdCodCuenta equals cc.IdCodCuenta
+                                      where cc.IdCondominio == id
+                                      select e).ToListAsync();
+
+            return cuentasGrupo;
+        }
+
+        public async Task<List<CodigoCuentasGlobal>> BuscarCuentasGlobalGrupo(int id, int idGrupo)
+        {
+            var cuentasGrupo = await (from c in _context.GrupoGastos
+                                      where c.IdGrupoGasto == idGrupo
+                                      join e in _context.CuentasGrupos
+                                      on c.IdGrupoGasto equals e.IdGrupoGasto
+                                      join cc in _context.CodigoCuentasGlobals
+                                      on e.IdCodCuenta equals cc.IdCodCuenta
+                                      where cc.IdCondominio == id
+                                      select cc).ToListAsync();
+
+            return cuentasGrupo;
+        }
+
+        /// <summary>
+        /// Buscar todas las cuentas de todos los grupos 
+        /// a los que pertenece una propiedad
+        /// </summary>
+        /// <param name="id">Id del condominio</param>
+        /// <param name="idPropiedad">id de la propiedad</param>
+        /// <returns>Lista de Cuentas Globales</returns>
+        public async Task<List<CodigoCuentasGlobal>> BuscarCuentasGrupoPropiedad(int id, int idPropiedad)
+        {
+            List<CodigoCuentasGlobal> cuentas = new List<CodigoCuentasGlobal>();
+
+            var cuentasGruposIds = from gp in _context.GrupoGastos
+                         join cc in _context.PropiedadesGrupos.Where(c => c.IdPropiedad == idPropiedad)
+                         on gp.IdGrupoGasto equals cc.IdGrupoGasto
+                         join cuentaGrupo in _context.CuentasGrupos
+                         on cc.IdGrupoGasto equals cuentaGrupo.IdGrupoGasto
+                         select cuentaGrupo;
+
+            if (cuentasGruposIds != null)
+            {
+                cuentas = await (from cuentaGrupo in cuentasGruposIds
+                          join cc in _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == id)
+                          on cuentaGrupo.IdCodCuenta equals cc.IdCodCuenta
+                          select cc).ToListAsync();
+
+                return cuentas;
+            }
+
+            return cuentas;
         }
     }
 }

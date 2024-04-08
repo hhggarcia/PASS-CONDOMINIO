@@ -395,7 +395,7 @@ namespace Prueba.Controllers
 
                         if (retIslr != null)
                         {
-                            comprobante.Islr = factura.Subtotal * (retIslr.Tarifa / 100);
+                            comprobante.Islr = (factura.Subtotal * (retIslr.Tarifa / 100)) - retIslr.Sustraendo;
                         }
 
                         if (retIva != null)

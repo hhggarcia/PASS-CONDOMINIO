@@ -1,0 +1,82 @@
+﻿@model Prueba.ViewModels.TransaccionVM
+
+@{
+    ViewData["Title"] = "Transacciones de Mes";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @if ((Model.Transaccions != null && Model.Transaccions.Any())
+    && (Model.GruposGastos != null && Model.GruposGastos.Any()))
+    {
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <a class="btn btn-light mb-3" asp-action="Index">Volver</a>
+
+            <a asp-action="RecibosCobroTransacciones"
+               class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+                Generar
+                Recibo de Cobro
+            </a>
+            <a asp-action="Create" asp-controller="Fondos"
+               class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+                Agregar Fondo
+            </a>
+            <a asp-action="Create" asp-controller="Provisiones"
+               class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+                Agregar Provisión
+            </a>
+        </div>
+
+        <div class="d-sm-flex align-items-center justify-content-around mb-4">
+            @*    <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+            <a type="button" asp-action="ReciboPdf" asp-controller="RelacionGastos" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</a>
+
+            <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> Generar
+                Excel
+            </a>
+        </div>
+    }
+    else
+    {
+        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="RelacionGastosPDF">Crear pdf</button>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Al realizar pagos se podrá generar la Relación de Gastos y los Recibos de Cobro</h1>
+        </div>
+    }
+
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Relación de Gastos.
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+
+                                        <partial name="_DetalleTransacciones" model="Model" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

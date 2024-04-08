@@ -1,6 +1,6 @@
 ﻿@using Prueba.ViewModels
 
-@model RelacionDeGastosVM
+@model TransaccionVM
 
 @{
     ViewData["Title"] = "Detalles";
@@ -16,17 +16,12 @@
     </div>
 
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-  @*       <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generar
-            PDF
-        </a> *@
-@*          <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="DetalleRelacionGasto">Crear pdf</button>
- *@        <a type="button" asp-action="RelacionGastosPDF" asp-controller="RelacionGastos" asp-route-id="@Model.IdDetail" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</a>
+        @* <a type="button" asp-action="RelacionGastosPDF" asp-controller="RelacionGastos" asp-route-id="@Model.IdDetail" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</a>
 
         <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Excel
-        </a>
+        </a> *@
     </div>
 
     <div class="row">
@@ -35,7 +30,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Detalles relación de Gastos.
+                        Detalles Relación de Gastos.
                     </h6>
                 </div>
                 <div class="card-body">
@@ -71,7 +66,7 @@
                             </dl>
 
                             </div>*@
-                            <partial name="_DetalleRelacionGasto" model="Model" />
+                            <partial name="_DetalleTransacciones" model="Model" />
 
                         </div>
                     </div>
@@ -198,7 +193,7 @@
 
 </script>
 
-@section scripts{
+@section scripts {
     <script>
         function fnExcelReport() {
             var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";

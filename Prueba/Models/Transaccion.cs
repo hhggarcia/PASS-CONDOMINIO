@@ -31,6 +31,10 @@ public partial class Transaccion
 
     public decimal MontoRef { get; set; }
 
+    public DateTime Fecha { get; set; }
+
+    public int IdGrupo { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Propiedad? IdPropiedadNavigation { get; set; }
