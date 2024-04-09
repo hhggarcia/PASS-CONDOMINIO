@@ -13,7 +13,6 @@
             Crear
         </a>
         <a class="btn btn-light mb-3" asp-action="Index" asp-controller="Transaccions">Transacciones</a>
-
     </div>
 
     <!-- Content Row -->
@@ -94,6 +93,7 @@
                                                                 @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
                                                             </td>*@
                                                             <td>
+                                                                <a asp-action="VerRecibos" asp-route-id="@item.IdRgastos">Ver Recibos</a> |
                                                                 <a asp-action="Edit" asp-route-id="@item.IdRgastos">Editar</a> |
                                                                 <a asp-action="Details" asp-route-id="@item.IdRgastos">Detalles</a> |
                                                                 <a asp-action="Delete" asp-route-id="@item.IdRgastos">Eliminar</a>

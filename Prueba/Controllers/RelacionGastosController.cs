@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.Intrinsics.X86;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,7 @@ using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Models;
-using Prueba.Repositories;
+using Prueba.Repositories;  
 using Prueba.Services;
 using Prueba.ViewModels;
 
@@ -150,7 +151,31 @@ namespace Prueba.Controllers
             //return View(relacionGasto);
             return View(modelo);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del recibo a buscar el detalle</param>
+        /// <returns></returns>
+        public async Task<IActionResult> DetalleReciboTransacciones(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
 
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+            }
+
+            return View(modelo);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -663,6 +688,33 @@ namespace Prueba.Controllers
             var aux = new RecibosCreadosVM();
             return View(aux);
         }
+
+        /// <summary>
+        /// Muestra los recibos de cada propiedad 
+        /// de una relacion de gastos especificos
+        /// </summary>
+        /// <param name="id">Id relacion de gastos</param>
+        /// <returns></returns>
+        public async Task<IActionResult> VerRecibos(int id)
+        {
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            var modelo = new RecibosCreadosVM();
+
+            if (rg != null)
+            {
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var propiedades = await _context.Propiedads.Where(c => c.IdCondominio == rg.IdCondominio).ToListAsync();
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                modelo.RelacionGasto = rg;
+                modelo.RelacionGastosTransacciones = transacciones;
+                modelo.Recibos = recibos;
+                modelo.Propiedades = propiedades;
+            }
+
+            return View("RecibosCreados", modelo);
+        }
+
         [HttpGet]
         public async Task<IActionResult> ReciboPdf()
         {

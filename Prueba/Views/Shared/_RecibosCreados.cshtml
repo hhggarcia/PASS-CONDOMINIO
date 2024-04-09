@@ -17,7 +17,7 @@
                     <td>@Model.RelacionGasto.Fecha.ToString("dd/MM/yyyy")</td>
                     <td>@Model.RelacionGasto.TotalMensual.ToString("N") Bs</td>
                     <td>@Model.RelacionGasto.MontoRef.ToString("N") $</td>
-                    <td><a asp-route-id="@Model.RelacionGasto.IdRgastos" asp-action="">Detalles</a></td>
+                    <td><a asp-route-id="@Model.RelacionGasto.IdRgastos" asp-controller="RelacionGastos" asp-action="Details">Detalles</a></td>
                 </tr>
             }
             else
@@ -77,7 +77,7 @@
                             <td>@recibo.Abonado.ToString("N")</td>
                             <td>@recibo.MontoMora.ToString("N")</td>
                             <td>@recibo.MontoIndexacion.ToString("N")</td>
-                            <td><a asp-route-id="@recibo.IdReciboCobro" asp-action="">Detalles</a></td>
+                            <td><a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransacciones">Detalles</a></td>
                         </tr>
                     }
                     else

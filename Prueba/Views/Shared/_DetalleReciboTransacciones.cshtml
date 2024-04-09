@@ -1,0 +1,309 @@
+﻿@model Prueba.ViewModels.DetalleReciboTransaccionesVM
+
+<div class="table-responsive text-center" id="DetalleReciboTabla ">
+    <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Total $</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RelacionGasto != null)
+            {
+                <tr class="tr_s">
+                    <td>@Model.RelacionGasto.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@Model.RelacionGasto.TotalMensual.ToString("N") Bs</td>
+                    <td>@Model.RelacionGasto.MontoRef.ToString("N") $</td>
+                    <td><a asp-route-id="@Model.RelacionGasto.IdRgastos" asp-controller="RelacionGastos" asp-action="Details">Detalles</a></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <table class="table text-center"
+           width="100%"
+           cellspacing="0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Documento</th>
+                <th>Egresos</th>
+                <th>Ingresos</th>
+                <th>Alicuota</th>
+                <th>Monto a Pagar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            
+            @{
+                decimal total1 = 0;
+            }
+
+            @if ((Model.Transacciones.Transaccions != null && Model.Transacciones.Transaccions.Any())
+            && (Model.Transacciones.GruposGastos != null && Model.Transacciones.GruposGastos.Any()))
+            {
+                <tr class="tr_s">
+                    <td></td>
+                    <td><h6>Ordinarias</h6></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                foreach (var transaccion in Model.Transacciones.Transaccions)
+                {
+                    if (transaccion.IdPropiedad == null)
+                    {
+                        var grupo = Model.GruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                        <tr class="tr_s">
+                            <td>@transaccion.Fecha</td>
+                            <td>@transaccion.Descripcion</td>
+                            <td>@transaccion.Documento</td>
+                            @if (transaccion.TipoTransaccion)
+                            {
+                                <td></td>
+                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                <td>@grupo.Alicuota</td>
+                                <td>- @((transaccion.MontoTotal * (grupo.Alicuota / 100)).ToString("N")) Bs</td>
+                                total1 -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                            }
+                            else
+                            {
+                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                <td></td>
+                                <td>@grupo.Alicuota</td>
+                                <td>@((transaccion.MontoTotal * (grupo.Alicuota / 100)).ToString("N")) Bs</td>
+                                total1 += transaccion.MontoTotal * (grupo.Alicuota / 100);
+
+
+                            }
+                        </tr>
+                    }
+                }
+
+            }
+            else
+            {
+                <tr class="tr_s">
+                    <td class="text-bold-500">No</td>
+                    <td>hay</td>
+                    <td class="text-bold-500">Transacciones</td>
+                    <td>:D</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+
+
+
+            @if (Model.Transacciones.Provisiones != null && Model.Transacciones.Provisiones.Any()
+            && Model.Transacciones.SubCuentasProvisiones != null && Model.Transacciones.SubCuentasProvisiones.Any()
+            && Model.Transacciones.CCProvisiones != null && Model.Transacciones.CCProvisiones.Any())
+            {
+                @foreach (var provisiones in Model.Transacciones.Provisiones)
+                {
+                    var idcc = Model.Transacciones.CCProvisiones.Where(c => c.IdSubCuenta == provisiones.IdCodCuenta);
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.Transacciones.SubCuentasProvisiones.Where(c => idcc.First().IdSubCuenta == c.Id).ToList();
+
+                        <tr class="tr_s">
+                            <td></td>
+                            <td>@subcuenta.First().Descricion</td>
+                            <td>@provisiones.Monto.ToString("N") @provisiones.SimboloMoneda</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Editar</a> |
+                                <a asp-action="Details" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Detalles</a> |
+                                <a asp-action="Delete" asp-controller="Provisiones" asp-route-id="@provisiones.IdProvision">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            }
+
+            @* <tr>
+            <th></th>
+            <th>Sub Total </th>
+            <th></th>
+            <th></th>
+            <th>@Model.SubTotal.ToString("N")</th>
+            <th></th>
+            </tr> *@
+
+            @if (Model.Transacciones.Fondos != null && Model.Transacciones.Fondos.Any()
+            && Model.Transacciones.SubCuentasFondos != null && Model.Transacciones.SubCuentasFondos.Any()
+            && Model.Transacciones.CCFondos != null && Model.Transacciones.CCFondos.Any())
+            {
+                @foreach (var fondo in Model.Transacciones.Fondos)
+                {
+                    var idcc = Model.Transacciones.CCFondos.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).ToList();
+
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.Transacciones.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
+
+                        <tr class="tr_s">
+                            <td></td>
+                            <td>@subcuenta.First().Descricion - @fondo.Porcentaje % </td>
+
+                            <td>@((Model.Transacciones.Total * fondo.Porcentaje / 100).ToString("N")) </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                                <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                                <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+
+                }
+            }
+
+
+            <tr class="tr_s">
+                <td></td>
+                <td>Total Ordinarias</td>
+                <td></td>
+                <td>@Model.Transacciones.TotalGastos.ToString("N") Bs</td>
+                <td>@Model.Transacciones.TotalIngresos.ToString("N") Bs</td>
+                <td></td>
+                <td>@total1.ToString("N") Bs</td>
+            </tr>
+
+
+
+            @if (Model.Transacciones.TransaccionesIndividuales != null && Model.Transacciones.TransaccionesIndividuales.Any())
+            {
+                decimal total2 = 0;
+                <tr class="tr_s">
+                    <td></td>
+                    <td><h6>Individual</h6></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                foreach (var transaccion in Model.Transacciones.TransaccionesIndividuales)
+                {
+                    var grupo = Model.GruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                    if (Model.Propiedad.IdPropiedad == transaccion.IdPropiedad)
+                    {
+                        <tr class="tr_s">
+                            <td>@transaccion.Fecha</td>
+                            <td>@transaccion.Descripcion</td>
+                            <td>@transaccion.Documento</td>
+                            
+                            @if (transaccion.TipoTransaccion)
+                            {
+                                <td></td>
+                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                <td>@grupo.Alicuota</td>
+                                <td>- @transaccion.MontoTotal.ToString("N") Bs</td>
+                                total2 -= transaccion.MontoTotal;
+
+                            }
+                            else
+                            {
+                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                <td></td>
+                                <td>@grupo.Alicuota</td>
+                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                total2 += transaccion.MontoTotal;
+                            }
+                        </tr>
+                    }
+                    
+                }
+
+                <tr class="tr_s">
+                    <td></td>
+                    <td>Total Individual</td>
+                    <td></td>
+                    <td>@Model.Transacciones.TotalEgresoIndividual.ToString("N") Bs</td>
+                    <td>@Model.Transacciones.TotalIngresoIndividual.ToString("N") Bs</td>
+                    <td></td>
+                    <td>@total2.ToString("N") Bs</td>
+                </tr>
+            }
+
+            @* <tr class="tr_s">
+                <td></td>
+                <td>Total General</td>
+                <td></td>
+                <td></td>
+                <td>@((Model.Transacciones.TotalEgresoIndividual + Model.Transacciones.TotalGastos).ToString("N")) Bs</td>
+                <td>@((Model.Transacciones.TotalIngresoIndividual + Model.Transacciones.TotalIngresos).ToString("N")) Bs</td>
+                <td>@Model.Transacciones.TotalGeneral.ToString("N") Bs</td>
+                <td></td>
+            </tr> *@
+        </tbody>
+    </table>
+
+    <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+        <thead>
+            <tr>
+                <th>Cuota del Mes</th>                
+                <th>Interés de Mora</th>                
+                <th>Indexación</th>                
+                <th>Total Cuetas del Mes</th>                
+                <th>Saldo Ant Cuotas</th>                
+                <th>Acumulado</th>                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Recibo != null && Model.Propiedad != null)
+            {
+                <tr class="tr_s">
+                    <td>@Model.Recibo.Monto.ToString("N")</td>
+                    <td>@Model.Propiedad.MontoIntereses.ToString("N")</td>
+                    <td>@(((int)Model.Propiedad.MontoMulta).ToString("N"))</td>
+                    <td>@((Model.Recibo.Monto + Model.Propiedad.MontoIntereses + (int)Model.Propiedad.MontoMulta).ToString("N"))</td>
+                    <td>@Model.Propiedad.Deuda.ToString("N")</td>
+                    <td>@((Model.Recibo.Monto + Model.Propiedad.MontoIntereses + (int)Model.Propiedad.MontoMulta + Model.Propiedad.Deuda).ToString("N"))</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
