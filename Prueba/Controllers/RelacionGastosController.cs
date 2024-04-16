@@ -15,7 +15,7 @@ using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Core.Repositories;
 using Prueba.Models;
-using Prueba.Repositories;  
+using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
 
@@ -568,18 +568,42 @@ namespace Prueba.Controllers
                                     var gruposPropiedad = await _context.PropiedadesGrupos
                                         .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
                                         .ToListAsync();
-                                    
+
                                     // -----> recorrer transacciones si grupoCuenta == transaccionCuenta
                                     foreach (var transaccion in transaccionesDelMes.Transaccions)
                                     {
                                         // por cada transaccion 
                                         // revisar si esta entre los grupos de la propiedad
-
-                                        if (gruposPropiedad.Exists(c => c.IdGrupoGasto == transaccion.IdGrupo))
+                                        if (transaccion.IdPropiedad == null && gruposPropiedad.Exists(c => c.IdGrupoGasto == transaccion.IdGrupo))
                                         {
+
                                             var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
 
                                             monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                        }
+                                    }
+
+                                    // buscar fondosd 
+
+                                    // aplicar con la alicuota de la propiedad
+                                    // BUSCAR FONDOS
+                                    var fondos = from f in _context.Fondos
+                                                 join c in _context.CodigoCuentasGlobals
+                                                 on f.IdCodCuenta equals c.IdCodCuenta
+                                                 where c.IdCondominio == condominio.IdCondominio
+                                                 //where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                                 select f;
+
+                                    foreach (var fondo in fondos)
+                                    {
+                                        if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                        {
+                                            monto += (transaccionesDelMes.Total * (decimal)fondo.Porcentaje / 100) * (propiedad.Alicuota / 100);
+                                        }
+
+                                        if (fondo.Monto != null && fondo.Monto > 0)
+                                        {
+                                            monto += (decimal)fondo.Monto * (propiedad.Alicuota / 100);
                                         }
                                     }
 
@@ -730,28 +754,88 @@ namespace Prueba.Controllers
         [HttpGet]
         public async Task<IActionResult> RelacionGastosPDF(int id)
         {
-            var modelo = await _repoRelacionGastos.LoadDataRelacionGastosMes(id);
-            var data = _servicePDF.RelacionGastosPDF(modelo);
-            Stream stream = new MemoryStream(data);
-            return File(stream, "application/pdf", "Recibo.pdf");
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            if (rg != null)
+            {
+                var modelo = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var data = _servicePDF.Transacciones(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "RelacionGasto.pdf");
+            }
+
+            return RedirectToAction("Index");
+
         }
 
-        //[HttpPost]
-        //public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
-        //{
-        //    try
-        //    {
-        //        var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
-        //        var base64 = Convert.ToBase64String(data);
-        //        return Content(base64, "application/pdf");
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del recibo a consultar</param>
+        /// <returns></returns>
+        public async Task<IActionResult> DetalleReciboTransaccionesPDF(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
 
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"Error generando PDF: {e.Message}");
-        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
-        //    }
-        //}
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+
+                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "Recibo.pdf");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id de la relacion de gastos</param>
+        /// <returns></returns>
+        public async Task<IActionResult> TodosRecibosTransaccionesPDF(int id)
+        {
+            var modelo = new List<DetalleReciboTransaccionesVM>();
+
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            if (rg != null)
+            {
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                foreach (var recibo in recibos)
+                {
+                    var item = new DetalleReciboTransaccionesVM();
+                    if (recibo != null)
+                    {
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                        //var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                        var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                        var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+
+                        item.Recibo = recibo;
+                        item.Propiedad = propiedad;
+                        item.GruposPropiedad = gruposPropiedad;
+                        item.RelacionGasto = rg;
+                        item.Transacciones = transacciones;
+                    }
+
+                    modelo.Add(item);
+                }
+
+                var data = _servicePDF.TodosRecibosTransaccionesPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "RecibosCondominio.pdf");
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -77,7 +77,9 @@
                             <td>@recibo.Abonado.ToString("N")</td>
                             <td>@recibo.MontoMora.ToString("N")</td>
                             <td>@recibo.MontoIndexacion.ToString("N")</td>
-                            <td><a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransacciones">Detalles</a></td>
+                            <td><a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransacciones">Detalles</a> |
+                                <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransaccionesPDF">PDF</a>
+                            </td>
                         </tr>
                     }
                     else
@@ -92,7 +94,6 @@
                             <td></td>
                             <td></td>
                         </tr>
-
                     }
                 }
             }

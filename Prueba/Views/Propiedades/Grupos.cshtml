@@ -41,7 +41,7 @@
                                                     @Html.HiddenFor(h => @Model[i].Text)
                                                 </div>
                                                 @Html.LabelFor(l => @Model[i].Alicuota, "Alicuota", new { @class = "control-label" })
-                                                <input asp-for="@Model[i].Alicuota" class="form-control" />
+                                                <input type="number" asp-for="@Model[i].Alicuota" class="form-control" />
                                             </div>                                            
                                         }
                                     </div>

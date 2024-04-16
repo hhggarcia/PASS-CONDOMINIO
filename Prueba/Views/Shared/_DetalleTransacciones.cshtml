@@ -15,7 +15,7 @@
                 <th>Egresos</th>
                 <th>Ingresos</th>
                 <th>Saldo</th>
-                <th>Acciones</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -38,14 +38,14 @@
                     if (transaccion.IdPropiedad == null)
                     {
                         <tr class="tr_s">
-                            <td>@transaccion.Fecha</td>
+                            <td>@transaccion.Fecha.ToString("dd/MM/yyyy")</td>
                             <td>@transaccion.Descripcion</td>
                             <td>@transaccion.Documento</td>
                             <td>@transaccion.IdPropiedad</td>
                             @if (transaccion.TipoTransaccion)
                             {
                                 <td></td>
-                                <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                                <td> - @transaccion.MontoTotal.ToString("N") Bs</td>
                             }
                             else
                             {
@@ -75,7 +75,7 @@
 
 
 
-            @if (Model.Provisiones != null && Model.Provisiones.Any()
+            @* @if (Model.Provisiones != null && Model.Provisiones.Any()
             && Model.SubCuentasProvisiones != null && Model.SubCuentasProvisiones.Any()
             && Model.CCProvisiones != null && Model.CCProvisiones.Any())
             {
@@ -104,7 +104,7 @@
                     }
                 }
 
-            }
+            } *@
 
             @* <tr>
                 <th></th>
@@ -115,46 +115,16 @@
                 <th></th>
             </tr> *@
 
-            @if (Model.Fondos != null && Model.Fondos.Any()
-            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any()
-            && Model.CCFondos != null && Model.CCFondos.Any())
-            {
-                @foreach (var fondo in Model.Fondos)
-                {
-                    var idcc = Model.CCFondos.Where(c => c.IdSubCuenta == fondo.IdCodCuenta).ToList();
+            
 
-                    if (idcc != null && idcc.Any())
-                    {
-                        var subcuenta = Model.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
-
-                        <tr class="tr_s">
-                            <td></td>
-                            <td>@subcuenta.First().Descricion - @fondo.Porcentaje % </td>
-
-                            <td>@((Model.Total * fondo.Porcentaje / 100).ToString("N")) </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
-                                <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
-                                <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>
-                            </td>
-                        </tr>
-                    }
-
-                }
-            }
             <tr class="tr_s">
                 <td></td>
-                <td>Total Ordinarias</td>
+                <td><strong>Total Ordinarias</strong></td>
                 <td></td>
                 <td></td>
-                <td>@Model.TotalGastos.ToString("N") Bs</td>
-                <td>@Model.TotalIngresos.ToString("N") Bs</td>
-                <td>@Model.Total.ToString("N") Bs</td>
+                <td> <strong>@Model.TotalGastos.ToString("N") Bs</strong></td>
+                <td><strong>- @Model.TotalIngresos.ToString("N") Bs</strong> </td>
+                <td><strong>@((Model.TotalGastos - Model.TotalIngresos).ToString("N")) Bs</strong></td>
                 <td></td>
             </tr>
 
@@ -182,7 +152,7 @@
                         @if (transaccion.TipoTransaccion)
                         {
                             <td></td>
-                            <td>@transaccion.MontoTotal.ToString("N") Bs</td>
+                            <td>- @transaccion.MontoTotal.ToString("N") Bs</td>
                         }
                         else
                         {
@@ -196,25 +166,104 @@
 
                 <tr class="tr_s">
                     <td></td>
-                    <td>Total Individual</td>
+                    <td><strong>Total Individual</strong></td>
                     <td></td>
                     <td></td>
-                    <td>@Model.TotalEgresoIndividual.ToString("N") Bs</td>
-                    <td>@Model.TotalIngresoIndividual.ToString("N") Bs</td>
-                    <td>@Model.TotalIndividual.ToString("N") Bs</td>
+                    <td> <strong>@Model.TotalEgresoIndividual.ToString("N") Bs</strong></td>
+                    <td><strong>- @Model.TotalIngresoIndividual.ToString("N") Bs</strong></td>
+                    <td><strong>@Model.TotalIndividual.ToString("N") Bs</strong></td>
                     <td></td>
                 </tr>
             }
 
+            @{
+                decimal totalFondos = 0;
+            }
+            @if (Model.Fondos != null && Model.Fondos.Any()
+            && Model.SubCuentasFondos != null && Model.SubCuentasFondos.Any()
+            && Model.CCFondos != null && Model.CCFondos.Any())
+            {
+                <tr class="tr_s">
+                    <td></td>
+                    <td><h6>Fondos</h6></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @foreach (var fondo in Model.Fondos)
+                {
+                    var idcc = Model.CCFondos.Where(c => c.IdCodCuenta == fondo.IdCodCuenta).ToList();
+
+                    if (idcc != null && idcc.Any())
+                    {
+                        var subcuenta = Model.SubCuentasFondos.Where(c => c.Id == idcc.First().IdSubCuenta).ToList();
+                        if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                        {
+                            <tr class="tr_s">
+                                <td></td>
+                                <td>@subcuenta.First().Descricion - @fondo.Porcentaje % </td>
+                                <td></td>
+                                <td></td>
+                                <td>@((Model.Total * (decimal)fondo.Porcentaje / 100).ToString("N")) </td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    @* <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                    <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                    <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a> *@
+                                </td>
+                            </tr>
+
+                            totalFondos += Model.Total * (decimal)fondo.Porcentaje / 100;
+                        }
+
+                        if (fondo.Monto != null && fondo.Monto > 0)
+                        {
+                            <tr class="tr_s">
+                                <td></td>
+                                <td>@subcuenta.First().Descricion - @fondo.Monto </td>
+                                <td></td>
+                                <td></td>
+                                <td>@(((decimal)fondo.Monto).ToString("N")) </td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    @* <a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
+                    <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
+                    <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a> *@
+                                </td>
+                            </tr>
+
+                            totalFondos += (decimal)fondo.Monto;
+                        }
+                    }
+
+                }
+            }
+
             <tr class="tr_s">
                 <td></td>
-                <td>Total General</td>
+                <td><strong>Total Fondos</strong></td>
                 <td></td>
                 <td></td>
-                <td>@((Model.TotalEgresoIndividual + Model.TotalGastos).ToString("N")) Bs</td>
-                <td>@((Model.TotalIngresoIndividual + Model.TotalIngresos).ToString("N")) Bs</td>
-                <td>@Model.TotalGeneral.ToString("N") Bs</td>
+                <td><strong>@totalFondos.ToString("N") Bs</strong></td>
                 <td></td>
+                <td><strong>@totalFondos.ToString("N") Bs</strong></td>
+                <td></td>
+            </tr>
+
+            <tr class="tr_s">
+                <td></td>
+                <td><strong>Total General</strong></td>
+                <td></td>
+                <td></td>
+                <td>@* <strong>@((Model.TotalEgresoIndividual + Model.TotalGastos).ToString("N")) Bs</strong> *@</td>
+                <td>@* <strong>- @((Model.TotalIngresoIndividual + Model.TotalIngresos).ToString("N")) Bs</strong> *@</td>
+                <td><strong>@(Model.TotalGeneral.ToString("N")) Bs</strong></td>
+                <td></td> 
             </tr>
         </tbody>
     </table>

@@ -9,9 +9,15 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
+
         <a class="btn btn-light mb-3"
            asp-action="Create">
             Crear Nuevo
+        </a>
+        <a class="btn btn-light mb-3"
+        asp-controller="RelacionGastos"
+           asp-action="TransaccionesDelMes">
+            Volver
         </a>
     </div>
 
@@ -24,7 +30,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">
                         Fondos
                     </h6>
-
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -33,6 +38,9 @@
                                 <tr>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Porcentaje)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.FechaInicio)
@@ -52,6 +60,9 @@
                                     <tr>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Porcentaje)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.FechaInicio)

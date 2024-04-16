@@ -5,8 +5,17 @@
 }
 <div class="container-fluid">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        <a asp-action="Index">Volver</a>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-action="Index">Volver</a>
+
+        <a asp-route-id="@Model.RelacionGasto.IdRgastos" asp-action="TodosRecibosTransaccionesPDF"
+           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+            Generar PDF
+        </a>
+        <a asp-action=""
+           class="d-none d-sm-inline-block btn btn-light mb-3 shadow-sm">
+            Enviar Correos
+        </a>
     </div>
     <!-- Content Row -->
     <div class="row">

@@ -124,7 +124,7 @@
                             <th></th>
                             <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
 
-                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                            <th>@((Model.SubTotal * (int)fondo.Porcentaje / 100).ToString("N")) </th>
                             <th></th>
                             <th></th>
                             <th>

@@ -163,17 +163,25 @@ namespace Prueba.Repositories
                 foreach (var fondo in modelo.Fondos)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
-
+                    var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCFondos.Add(idcc);
 
-                    if (subcuentaFondo.Any())
+                    if (subcuentaFondo != null)
                     {
-                        SubCuenta aux = subcuentaFondo.First();
+                        SubCuenta aux = subcuentaFondo;
                         if (aux != null)
                         {
-                            modelo.Total += modelo.SubTotal * fondo.Porcentaje / 100;
+                            if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                            {
+                                modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                            }
+
+                            if (fondo.Monto != null && fondo.Monto > 0)
+                            {
+                                modelo.Total += (int)fondo.Monto;
+                            }
+
                             subcuentasFondosModel.Add(aux);
                         }
                     }
@@ -216,15 +224,25 @@ namespace Prueba.Repositories
                 foreach (var fondo in modelo.Fondos)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                    var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCFondos.Add(idcc);
 
-                    if (subcuentaFondo.Any())
+                    if (subcuentaFondo != null)
                     {
-                        SubCuenta aux = subcuentaFondo.First();
+                        SubCuenta aux = subcuentaFondo;
                         if (aux != null)
                         {
-                            modelo.Total += modelo.SubTotal * fondo.Porcentaje / 100;
+                            if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                            {
+                                modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                            }
+
+                            if (fondo.Monto != null && fondo.Monto > 0)
+                            {
+                                modelo.Total += (int)fondo.Monto;
+                            }
+
                             subcuentasFondosModel.Add(aux);
                         }
                     }
@@ -287,6 +305,7 @@ namespace Prueba.Repositories
             decimal totalEgresos = 0;
             decimal totalEgresosInd = 0;
             decimal totalIngresoInd = 0;
+            decimal totalFondos = 0;
 
             foreach (var item in transacciones)
             {
@@ -321,7 +340,6 @@ namespace Prueba.Repositories
             modelo.TotalEgresoIndividual = totalEgresosInd;
             modelo.Total = totalEgresos - totalIngresos;
             modelo.TotalIndividual = totalEgresosInd - totalIngresoInd;
-            modelo.TotalGeneral = modelo.Total + modelo.TotalIndividual;
 
             if (proviciones.Any() && fondos.Any())
             {
@@ -354,17 +372,25 @@ namespace Prueba.Repositories
                 foreach (var fondo in modelo.Fondos)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
-
+                    var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCFondos.Add(idcc);
 
-                    if (subcuentaFondo.Any())
+                    if (subcuentaFondo != null)
                     {
-                        SubCuenta aux = subcuentaFondo.First();
+                        SubCuenta aux = subcuentaFondo;
                         if (aux != null)
                         {
-                            modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                            if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                            {
+                                modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                            }
+
+                            if (fondo.Monto != null && fondo.Monto > 0)
+                            {
+                                modelo.Total += (int)fondo.Monto;
+                            }
+
                             subcuentasFondosModel.Add(aux);
                         }
                     }
@@ -407,21 +433,33 @@ namespace Prueba.Repositories
                 foreach (var fondo in modelo.Fondos)
                 {
                     var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-                    var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                    var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                     modelo.CCFondos.Add(idcc);
 
-                    if (subcuentaFondo.Any())
+                    if (subcuentaFondo != null)
                     {
-                        SubCuenta aux = subcuentaFondo.First();
+                        SubCuenta aux = subcuentaFondo;
                         if (aux != null)
                         {
-                            modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                            if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                            {
+                                totalFondos += modelo.Total * (decimal)fondo.Porcentaje / 100;
+
+                            }
+
+                            if (fondo.Monto != null && fondo.Monto > 0)
+                            {
+                                totalFondos += (decimal)fondo.Monto;
+                            }
+
                             subcuentasFondosModel.Add(aux);
                         }
                     }
                 }
                 modelo.SubCuentasFondos = subcuentasFondosModel;
             }
+
+            modelo.TotalGeneral = modelo.Total + totalFondos + modelo.TotalIndividual;
 
             return modelo;
         }
@@ -521,7 +559,6 @@ namespace Prueba.Repositories
                 modelo.TotalEgresoIndividual = totalEgresosInd;
                 modelo.Total = totalEgresos - totalIngresos;
                 modelo.TotalIndividual = totalEgresosInd - totalIngresoInd;
-                modelo.TotalGeneral = modelo.Total + modelo.TotalIndividual;
 
                 if (proviciones.Any() && fondos.Any())
                 {
@@ -554,17 +591,25 @@ namespace Prueba.Repositories
                     foreach (var fondo in modelo.Fondos)
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
-
+                        var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCFondos.Add(idcc);
 
-                        if (subcuentaFondo.Any())
+                        if (subcuentaFondo != null)
                         {
-                            SubCuenta aux = subcuentaFondo.First();
+                            SubCuenta aux = subcuentaFondo;
                             if (aux != null)
                             {
-                                modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                                if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                {
+                                    modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                                }
+
+                                if (fondo.Monto != null && fondo.Monto > 0)
+                                {
+                                    modelo.Total += (int)fondo.Monto;
+                                }
+
                                 subcuentasFondosModel.Add(aux);
                             }
                         }
@@ -607,21 +652,34 @@ namespace Prueba.Repositories
                     foreach (var fondo in modelo.Fondos)
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                        var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCFondos.Add(idcc);
 
-                        if (subcuentaFondo.Any())
+                        if (subcuentaFondo != null)
                         {
-                            SubCuenta aux = subcuentaFondo.First();
+                            SubCuenta aux = subcuentaFondo;
                             if (aux != null)
                             {
-                                modelo.Total += modelo.Total * fondo.Porcentaje / 100;
+                                if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                {
+                                    modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                                }
+
+                                if (fondo.Monto != null && fondo.Monto > 0)
+                                {
+                                    modelo.Total += (int)fondo.Monto;
+                                }
+
                                 subcuentasFondosModel.Add(aux);
                             }
                         }
                     }
                     modelo.SubCuentasFondos = subcuentasFondosModel;
                 }
+
+                modelo.TotalGeneral = modelo.Total + modelo.TotalIndividual;
+
             }
 
             return modelo;
@@ -760,17 +818,25 @@ namespace Prueba.Repositories
                     foreach (var fondo in modelo.Fondos)
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
-
+                        var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCFondos.Add(idcc);
 
-                        if (subcuentaFondo.Any())
+                        if (subcuentaFondo != null)
                         {
-                            SubCuenta aux = subcuentaFondo.First();
+                            SubCuenta aux = subcuentaFondo;
                             if (aux != null)
                             {
-                                modelo.Total += modelo.SubTotal * fondo.Porcentaje / 100;
+                                if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                {
+                                    modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                                }
+
+                                if (fondo.Monto != null && fondo.Monto > 0)
+                                {
+                                    modelo.Total += (int)fondo.Monto;
+                                }
+
                                 subcuentasFondosModel.Add(aux);
                             }
                         }
@@ -811,16 +877,25 @@ namespace Prueba.Repositories
                     foreach (var fondo in modelo.Fondos)
                     {
                         var idcc = await _context.CodigoCuentasGlobals.FindAsync(fondo.IdCodCuenta);
-
-                        var subcuentaFondo = subcuentas.Where(c => idcc.IdSubCuenta == c.Id);
+                        var subcuentaFondo = subcuentas.FirstOrDefault(c => idcc.IdSubCuenta == c.Id);
                         modelo.CCFondos.Add(idcc);
 
-                        if (subcuentaFondo.Any())
+                        if (subcuentaFondo != null)
                         {
-                            SubCuenta aux = subcuentaFondo.First();
+                            SubCuenta aux = subcuentaFondo;
                             if (aux != null)
                             {
-                                modelo.Total += modelo.SubTotal * fondo.Porcentaje / 100;
+                                if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                {
+                                    modelo.Total += modelo.Total * (int)fondo.Porcentaje / 100;
+
+                                }
+
+                                if (fondo.Monto != null && fondo.Monto > 0)
+                                {
+                                    modelo.Total += (int)fondo.Monto;
+                                }
+
                                 subcuentasFondosModel.Add(aux);
                             }
                         }
@@ -1001,18 +1076,18 @@ namespace Prueba.Repositories
             List<CodigoCuentasGlobal> cuentas = new List<CodigoCuentasGlobal>();
 
             var cuentasGruposIds = from gp in _context.GrupoGastos
-                         join cc in _context.PropiedadesGrupos.Where(c => c.IdPropiedad == idPropiedad)
-                         on gp.IdGrupoGasto equals cc.IdGrupoGasto
-                         join cuentaGrupo in _context.CuentasGrupos
-                         on cc.IdGrupoGasto equals cuentaGrupo.IdGrupoGasto
-                         select cuentaGrupo;
+                                   join cc in _context.PropiedadesGrupos.Where(c => c.IdPropiedad == idPropiedad)
+                                   on gp.IdGrupoGasto equals cc.IdGrupoGasto
+                                   join cuentaGrupo in _context.CuentasGrupos
+                                   on cc.IdGrupoGasto equals cuentaGrupo.IdGrupoGasto
+                                   select cuentaGrupo;
 
             if (cuentasGruposIds != null)
             {
                 cuentas = await (from cuentaGrupo in cuentasGruposIds
-                          join cc in _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == id)
-                          on cuentaGrupo.IdCodCuenta equals cc.IdCodCuenta
-                          select cc).ToListAsync();
+                                 join cc in _context.CodigoCuentasGlobals.Where(c => c.IdCondominio == id)
+                                 on cuentaGrupo.IdCodCuenta equals cc.IdCodCuenta
+                                 select cc).ToListAsync();
 
                 return cuentas;
             }
