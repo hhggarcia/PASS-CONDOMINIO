@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
 using Prueba.Areas.Identity.Data;
@@ -32,9 +33,11 @@ namespace Prueba.Controllers
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPDFServices _servicePDF;
+        private readonly IEmailService _emailService;
         private readonly NuevaAppContext _context;
 
-        public RelacionGastosController(IUnitOfWork unitOfWork,
+        public RelacionGastosController(IEmailService emailService,
+            IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
@@ -51,6 +54,7 @@ namespace Prueba.Controllers
             _repoRelacionGastos = repoRelacionGastos;
             _repoMoneda = repoMoneda;
             _servicePDF = PDFService;
+            _emailService = emailService;
         }
 
         // GET: RelacionGastos
@@ -835,6 +839,85 @@ namespace Prueba.Controllers
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "RecibosCondominio.pdf");
             }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DataEmail(int id)
+        {
+            TempData["IdReciboCobro"] = id.ToString();
+
+            TempData.Keep();
+
+            return View();
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> ConfirmSendEmailRecibo(EmailAttachmentPdf email)
+        {
+            int idRecibo = Convert.ToInt32(TempData.Peek("IdReciboCobro").ToString());
+
+            var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+
+                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+
+                email.From = modelo.Transacciones.Condominio.Email;
+                email.To = usuario.Email;
+                email.Pdf = data;
+                email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+
+                var result = await _emailService.SendEmailRG(email);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> DetalleReciboEmail(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+
+                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+
+                var email = new EmailAttachmentPdf()
+                {
+                    From = modelo.Transacciones.Condominio.Email,
+                    Password = "",
+                    To = usuario.Email,
+                    Subject = "",
+                    Body = "",
+                    Pdf = data,
+                    FileName = ""
+                };
+            }
+
             return RedirectToAction("Index");
         }
     }

@@ -35,6 +35,7 @@
                                             <form asp-action="RegistrarPagosPost">
                                                 <input type="hidden" asp-for="IdCodigoCuentaBanco" />
                                                 <input type="hidden" asp-for="IdCodigoCuentaCaja" />
+                                                <input type="hidden" asp-for="RelacionGasto" />
                                                 <label class="control-label">Forma de pago</label>
                                                 @if (Model.Pagoforma == FormaPago.Efectivo)
                                                 {

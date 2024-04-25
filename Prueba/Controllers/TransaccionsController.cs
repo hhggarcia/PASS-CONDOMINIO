@@ -81,7 +81,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdTransaccion,TipoTransaccion,IdPropiedad,Fecha,IdCodCuenta,Descripcion,Documento,MontoTotal,Cancelado")] Transaccion transaccion, bool check)
+        public async Task<IActionResult> Create([Bind("IdTransaccion,TipoTransaccion,IdPropiedad,Fecha,IdCodCuenta,Descripcion,Documento,MontoTotal,Cancelado,Activo")] Transaccion transaccion, bool check, bool checkActivo)
         {
             ModelState.Remove(nameof(transaccion.IdCodCuentaNavigation));
             ModelState.Remove(nameof(transaccion.IdPropiedadNavigation));
@@ -102,6 +102,8 @@ namespace Prueba.Controllers
 
                 transaccion.IdCodCuenta = idCodCuenta;
                 transaccion.IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0;
+                transaccion.Activo = checkActivo;
+
 
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
 
@@ -165,7 +167,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Fecha,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,SimboloMoneda,SimboloRef,ValorDolar,MontoRef")] Transaccion transaccion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdTransaccion,TipoTransaccion,IdPropiedad,IdCodCuenta,Fecha,Descripcion,IdProveedor,Documento,MontoTotal,Cancelado,Activo")] Transaccion transaccion, bool check, bool checkActivo)
         {
             if (id != transaccion.IdTransaccion)
             {
@@ -192,6 +194,8 @@ namespace Prueba.Controllers
 
                     transaccion.IdCodCuenta = idCodCuenta;
                     transaccion.IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0;
+                    transaccion.Activo = checkActivo;
+
 
                     var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
 
@@ -201,6 +205,11 @@ namespace Prueba.Controllers
                         transaccion.ValorDolar = monedaPrincipal.ValorDolar;
                         transaccion.SimboloMoneda = "Bs";
                         transaccion.SimboloRef = "$";
+                    }
+
+                    if (check)
+                    {
+                        transaccion.IdPropiedad = null;
                     }
 
                     _context.Update(transaccion);

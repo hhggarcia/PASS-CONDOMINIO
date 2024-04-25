@@ -24,21 +24,30 @@
                 <div class="card-body">
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @* <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Activo" /> Agregar a Relación de Gastos
+                            </label>
+                        </div>
+                        <hr /> *@
                         <div class="form-group form-check">
                             <label class="form-check-label">
                                 <input class="form-check-input" asp-for="TipoTransaccion" /> Ingreso
                             </label>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="Fecha" class="control-label"></label>
-                            <input asp-for="Fecha" class="form-control" />
-                            <span asp-validation-for="Fecha" class="text-danger"></span>
-                        </div>
+                        <hr />
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                @Html.CheckBox("check")  @Html.Label("No Aplicar Propiedad")
+                                @Html.CheckBox("checkActivo", new { @class = "form-check-input" })  @Html.Label("Agregar a Relación de Gastos")
                             </label>
                         </div>
+                        <hr />
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                @Html.CheckBox("check", new { @class = "form-check-input" })  @Html.Label("No Aplicar Propiedad")
+                            </label>
+                        </div>
+                        <hr />
                         <div class="form-group">
                             <label asp-for="IdPropiedad" class="control-label"></label>
                             <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
@@ -46,6 +55,11 @@
                         <div class="form-group">
                             <label asp-for="IdCodCuenta" class="control-label"></label>
                             <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Fecha" class="control-label"></label>
+                            <input asp-for="Fecha" class="form-control" />
+                            <span asp-validation-for="Fecha" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Descripcion" class="control-label"></label>
@@ -63,34 +77,15 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="MontoTotal" class="control-label"></label>
-                            <input asp-for="MontoTotal" class="form-control" />
+                            <input type="number" asp-for="MontoTotal" class="form-control" />
                             <span asp-validation-for="MontoTotal" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Cancelado" class="control-label"></label>
-                            <input asp-for="Cancelado" class="form-control" />
+                            <input type="number" asp-for="Cancelado" class="form-control" />
                             <span asp-validation-for="Cancelado" class="text-danger"></span>
                         </div>
-                        @* <div class="form-group">
-                            <label asp-for="SimboloMoneda" class="control-label"></label>
-                            <input asp-for="SimboloMoneda" class="form-control" />
-                            <span asp-validation-for="SimboloMoneda" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="SimboloRef" class="control-label"></label>
-                            <input asp-for="SimboloRef" class="form-control" />
-                            <span asp-validation-for="SimboloRef" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="ValorDolar" class="control-label"></label>
-                            <input asp-for="ValorDolar" class="form-control" />
-                            <span asp-validation-for="ValorDolar" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="MontoRef" class="control-label"></label>
-                            <input asp-for="MontoRef" class="form-control" />
-                            <span asp-validation-for="MontoRef" class="text-danger"></span>
-                        </div> *@
+                        
                         <div class="form-group">
                             <input type="submit" value="Create" class="btn btn-primary" />
                         </div>

@@ -35,6 +35,8 @@ public partial class Transaccion
 
     public int IdGrupo { get; set; }
 
+    public bool? Activo { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Propiedad? IdPropiedadNavigation { get; set; }

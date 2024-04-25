@@ -3220,8 +3220,7 @@ namespace Prueba.Services
                                 {
                                     var grupo = modelo.GruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == item.IdGrupo);
                                     if (grupo != null)
-                                    {
-                                        
+                                    {                                
 
                                         if (item.TipoTransaccion && item.IdPropiedad == null)
                                         {
@@ -3247,7 +3246,7 @@ namespace Prueba.Services
                                             .Padding(5).Text(grupo.Alicuota.ToString("N") + "%").FontColor("#607080").FontSize(6);
 
                                             tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
-                                            .Padding(5).Text((item.MontoTotal * (grupo.Alicuota / 100)).ToString("N")).FontColor("#607080").FontSize(6);
+                                            .Padding(5).Text("-"+(item.MontoTotal * (grupo.Alicuota / 100)).ToString("N")).FontColor("#607080").FontSize(6);
 
                                             total1 -= item.MontoTotal * (grupo.Alicuota / 100);
                                         }
@@ -3710,8 +3709,7 @@ namespace Prueba.Services
                                     {
                                         var grupo = reciboDetalle.GruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == item.IdGrupo);
                                         if (grupo != null)
-                                        {
-                                            
+                                        {                                       
 
                                             if (item.TipoTransaccion && item.IdPropiedad == null)
                                             {
@@ -3737,7 +3735,7 @@ namespace Prueba.Services
                                                 .Padding(5).Text(grupo.Alicuota.ToString("N") + "%").FontColor("#607080").FontSize(6);
 
                                                 tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
-                                                .Padding(5).Text((item.MontoTotal * (grupo.Alicuota / 100)).ToString("N")).FontColor("#607080").FontSize(6);
+                                                .Padding(5).Text("-"+(item.MontoTotal * (grupo.Alicuota / 100)).ToString("N")).FontColor("#607080").FontSize(6);
 
                                                 total1 -= item.MontoTotal * (grupo.Alicuota / 100);
                                             }
@@ -4068,7 +4066,6 @@ namespace Prueba.Services
             return data;
         }
         #endregion
-
 
         public byte[] ComprobanteRetencionesISLR(ComprobanteRetencionesISLRVM comprobante)
         {
@@ -4506,8 +4503,8 @@ namespace Prueba.Services
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                .Padding(5).Text(retencionesIVAVM.compRetIva.TotalCompraIva.ToString("N")).FontColor("#607080").FontSize(6);
 
-                                tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
-                               .Padding(5).Text(retencionesIVAVM.compRetIva.CompraSinCreditoIva.ToString("N")).FontColor("#607080").FontSize(6);
+                               // tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
+                               //.Padding(5).Text(retencionesIVAVM.compRetIva.CompraSinCreditoIva.ToString("N")).FontColor("#607080").FontSize(6);
 
                                 tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignMiddle()
                                .Padding(5).Text(retencionesIVAVM.compRetIva.BaseImponible.ToString("N")).FontColor("#607080").FontSize(6);
@@ -4541,7 +4538,7 @@ namespace Prueba.Services
                         .Text(x =>
                         {
 
-                            x.Span("Software desarrollado por: Password Technology");
+                            x.Span("Software desarrollado por: Password Technology").FontSize(6);
                         });
                 });
             })

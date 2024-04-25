@@ -432,7 +432,7 @@ namespace Prueba.Repositories
                     {
                         TipoTransaccion = false,
                         IdCodCuenta = factura.IdCodCuenta,
-                        Descripcion = modelo.Concepto,
+                        Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
                         MontoTotal = factura.MontoTotal,
                         Documento = factura.NumFactura.ToString(),
                         Cancelado = factura.MontoTotal,
@@ -441,7 +441,8 @@ namespace Prueba.Repositories
                         ValorDolar = pago.ValorDolar,
                         MontoRef = montoReferencia,
                         Fecha = DateTime.Today,
-                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                        Activo = true
                     };
 
                     using (var _dbContext = new NuevaAppContext())
@@ -494,7 +495,7 @@ namespace Prueba.Repositories
                         {
                             IdFactura = factura.IdFactura,
                             IdProveedor = factura.IdProveedor,
-                            FechaEmision = DateTime.Now,
+                            FechaEmision = modelo.Fecha,
                             TipoTransaccion = false,
                             NumFacturaAfectada = factura.NumFactura.ToString(),
                             TotalCompraIva = factura.MontoTotal,
@@ -556,7 +557,7 @@ namespace Prueba.Repositories
                                 TotalImpuesto = itemLibroCompra.RetIslr,
                                 NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
-                                FechaEmision = DateTime.Now
+                                FechaEmision = modelo.Fecha
                             };
 
                             _context.ComprobanteRetencions.Add(compIslr);
@@ -592,7 +593,7 @@ namespace Prueba.Repositories
                         {
                             IdFactura = factura.IdFactura,
                             IdProveedor = factura.IdProveedor,
-                            FechaEmision = DateTime.Now,
+                            FechaEmision = modelo.Fecha,
                             TipoTransaccion = false,
                             NumFacturaAfectada = factura.NumFactura.ToString(),
                             TotalCompraIva = factura.MontoTotal,
@@ -650,7 +651,7 @@ namespace Prueba.Repositories
                                 TotalImpuesto = itemLibroCompra.RetIslr,
                                 NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
-                                FechaEmision = DateTime.Now
+                                FechaEmision = modelo.Fecha
                             };
 
                             _context.CompRetIvas.Add(comp);
@@ -809,7 +810,6 @@ namespace Prueba.Repositories
             {
                 try
                 {
-
                     var idBanco = (from c in _context.CodigoCuentasGlobals
                                    where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
                                    select c).First();
@@ -971,7 +971,7 @@ namespace Prueba.Repositories
                     {
                         TipoTransaccion = false,
                         IdCodCuenta = factura.IdCodCuenta,
-                        Descripcion = modelo.Concepto,
+                        Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
                         MontoTotal = factura.MontoTotal,
                         Documento = factura.NumFactura.ToString(),
                         Cancelado = factura.MontoTotal,
@@ -980,7 +980,8 @@ namespace Prueba.Repositories
                         ValorDolar = pago.ValorDolar,
                         MontoRef = montoReferencia,
                         Fecha = DateTime.Today,
-                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                        Activo = true
                     };
 
                     using (var _dbContext = new NuevaAppContext())
@@ -1046,7 +1047,7 @@ namespace Prueba.Repositories
                         {
                             IdFactura = factura.IdFactura,
                             IdProveedor = factura.IdProveedor,
-                            FechaEmision = DateTime.Now,
+                            FechaEmision = modelo.Fecha,
                             TipoTransaccion = false,
                             NumFacturaAfectada = factura.NumFactura.ToString(),
                             TotalCompraIva = factura.MontoTotal,
@@ -1108,7 +1109,7 @@ namespace Prueba.Repositories
                                 TotalImpuesto = itemLibroCompra.RetIslr,
                                 NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
-                                FechaEmision = DateTime.Now
+                                FechaEmision = modelo.Fecha
                             };
 
                             _context.ComprobanteRetencions.Add(compIslr);
@@ -1144,7 +1145,7 @@ namespace Prueba.Repositories
                         {
                             IdFactura = factura.IdFactura,
                             IdProveedor = factura.IdProveedor,
-                            FechaEmision = DateTime.Now,
+                            FechaEmision = modelo.Fecha,
                             TipoTransaccion = false,
                             NumFacturaAfectada = factura.NumFactura.ToString(),
                             TotalCompraIva = factura.MontoTotal,
@@ -1202,7 +1203,7 @@ namespace Prueba.Repositories
                                 TotalImpuesto = itemLibroCompra.RetIslr,
                                 NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
-                                FechaEmision = DateTime.Now
+                                FechaEmision = modelo.Fecha
                             };
 
                             _context.CompRetIvas.Add(comp);
@@ -1389,7 +1390,7 @@ namespace Prueba.Repositories
             {
                 var cc = context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
                 modelo.IdSubcuenta = cc.IdCodCuenta;
-
+                var empleado = await _context.Empleados.FindAsync(modelo.IdEmpleado);
                 var resultado = string.Empty;
                 decimal montoReferencia = 0;
                 decimal deducciones = 0;
@@ -1492,7 +1493,7 @@ namespace Prueba.Repositories
                         {
                             TipoTransaccion = false,
                             IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
+                            Descripcion = modelo.Concepto + " - " + empleado.Nombre,
                             MontoTotal = pago.Monto,
                             Documento = "",
                             Cancelado = pago.Monto,
@@ -1501,7 +1502,8 @@ namespace Prueba.Repositories
                             ValorDolar = pago.ValorDolar,
                             MontoRef = pago.MontoRef,
                             Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                            Activo = true
                         };
 
                         // registrar pago emitido
@@ -1901,7 +1903,7 @@ namespace Prueba.Repositories
                         {
                             TipoTransaccion = false,
                             IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
+                            Descripcion = modelo.Concepto + " - " + empleado.Nombre,
                             MontoTotal = pago.Monto,
                             Documento = "",
                             Cancelado = pago.Monto,
@@ -1910,7 +1912,8 @@ namespace Prueba.Repositories
                             ValorDolar = pago.ValorDolar,
                             MontoRef = pago.MontoRef,
                             Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                            Activo = true
                         };
 
                         // registrar pago emitido
@@ -2248,7 +2251,7 @@ namespace Prueba.Repositories
 
             var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
             var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
-            var subcuentasModel = await _repoCuentas.ObtenerGastos(id);
+            var subcuentasModel = await _repoCuentas.ObtenerSubcuentas(id);
 
             var proveedores = await _repoCuentas.ObtenerProveedores(id);
             //var facturas = await _repoCuentas.ObtenerFacturas(proveedores);
@@ -2280,7 +2283,7 @@ namespace Prueba.Repositories
                 decimal montoReferencia = 0;
                 var cc = context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
                 modelo.IdSubcuenta = cc.IdCodCuenta;
-
+                var beneficiario = await _context.Proveedors.FindAsync(modelo.IdProveedor);
 
                 // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
                 // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -2367,7 +2370,7 @@ namespace Prueba.Repositories
                         {
                             TipoTransaccion = false,
                             IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
+                            Descripcion = modelo.Concepto + " - " + beneficiario.Nombre,
                             MontoTotal = pago.Monto,
                             Documento = "",
                             Cancelado = pago.Monto,
@@ -2376,7 +2379,8 @@ namespace Prueba.Repositories
                             ValorDolar = pago.ValorDolar,
                             MontoRef = pago.MontoRef,
                             Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                            Activo = modelo.RelacionGasto
                         };
 
                         // registrar pago
@@ -2589,7 +2593,7 @@ namespace Prueba.Repositories
                         {
                             TipoTransaccion = false,
                             IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
+                            Descripcion = modelo.Concepto + " - " + beneficiario.Nombre,
                             MontoTotal = pago.Monto,
                             Documento = "",
                             Cancelado = pago.Monto,
@@ -2598,7 +2602,8 @@ namespace Prueba.Repositories
                             ValorDolar = pago.ValorDolar,
                             MontoRef = pago.MontoRef,
                             Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                            Activo = modelo.RelacionGasto
                         };
 
                         // registrar pago
@@ -2882,25 +2887,25 @@ namespace Prueba.Repositories
                                            where modelo.IdSubcuenta == cg.IdCodCuenta
                                            select g).FirstOrDefaultAsync();
                         // armar transaccion
-                        var transaccion = new Transaccion
-                        {
-                            TipoTransaccion = false,
-                            IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
-                            MontoTotal = pago.Monto,
-                            Documento = "",
-                            Cancelado = pago.Monto,
-                            SimboloMoneda = pago.SimboloMoneda,
-                            SimboloRef = pago.SimboloRef,
-                            ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
-                            Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
-                        };
+                        //var transaccion = new Transaccion
+                        //{
+                        //    TipoTransaccion = false,
+                        //    IdCodCuenta = modelo.IdSubcuenta,
+                        //    Descripcion = modelo.Concepto,
+                        //    MontoTotal = pago.Monto,
+                        //    Documento = "",
+                        //    Cancelado = pago.Monto,
+                        //    SimboloMoneda = pago.SimboloMoneda,
+                        //    SimboloRef = pago.SimboloRef,
+                        //    ValorDolar = pago.ValorDolar,
+                        //    MontoRef = pago.MontoRef,
+                        //    Fecha = DateTime.Today,
+                        //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                        //};
 
                         // registrar pago
                         context.PagoEmitidos.Add(pago);
-                        context.Transaccions.Add(transaccion);
+                        //context.Transaccions.Add(transaccion);
                         await context.SaveChangesAsync();
 
                         // registrar la Anticipo
@@ -3109,21 +3114,21 @@ namespace Prueba.Repositories
                                            where modelo.IdSubcuenta == cg.IdCodCuenta
                                            select g).FirstOrDefaultAsync();
                         // armar transaccion
-                        var transaccion = new Transaccion
-                        {
-                            TipoTransaccion = false,
-                            IdCodCuenta = modelo.IdSubcuenta,
-                            Descripcion = modelo.Concepto,
-                            MontoTotal = pago.Monto,
-                            Documento = "",
-                            Cancelado = pago.Monto,
-                            SimboloMoneda = pago.SimboloMoneda,
-                            SimboloRef = pago.SimboloRef,
-                            ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
-                            Fecha = DateTime.Today,
-                            IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
-                        };
+                        //var transaccion = new Transaccion
+                        //{
+                        //    TipoTransaccion = false,
+                        //    IdCodCuenta = modelo.IdSubcuenta,
+                        //    Descripcion = modelo.Concepto,
+                        //    MontoTotal = pago.Monto,
+                        //    Documento = "",
+                        //    Cancelado = pago.Monto,
+                        //    SimboloMoneda = pago.SimboloMoneda,
+                        //    SimboloRef = pago.SimboloRef,
+                        //    ValorDolar = pago.ValorDolar,
+                        //    MontoRef = pago.MontoRef,
+                        //    Fecha = DateTime.Today,
+                        //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
+                        //};
 
                         // registrar pago
                         context.PagoEmitidos.Add(pago);
@@ -3152,7 +3157,7 @@ namespace Prueba.Repositories
 
                         context.Add(referencia);
                         context.Anticipos.Add(anticipo);
-                        context.Transaccions.Add(transaccion);
+                        //context.Transaccions.Add(transaccion);
 
                         await context.SaveChangesAsync();
 

@@ -273,6 +273,7 @@ namespace Prueba.Repositories
                                        on t.IdCodCuenta equals cc.IdCodCuenta
                                        where cc.IdCondominio == id
                                        where t.Fecha.Month == DateTime.Today.Month
+                                       where t.Activo != null && (bool)t.Activo
                                        select t).ToListAsync();
 
             var transaccionesInd = await (from t in _context.Transaccions
@@ -281,6 +282,7 @@ namespace Prueba.Repositories
                                           where t.Fecha.Month == DateTime.Today.Month
                                           where cc.IdCondominio == id
                                           where t.IdPropiedad != null
+                                          where t.Activo != null && (bool)t.Activo
                                           select t).ToListAsync();
 
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(id);
@@ -490,6 +492,7 @@ namespace Prueba.Repositories
                                            where cc.IdCondominio == condominio.IdCondominio
                                            where t.Fecha.Month == rg.Fecha.Month
                                            where tt.IdRelacionGasto == rg.IdRgastos
+                                           where t.Activo != null && (bool)t.Activo
                                            select t).ToListAsync();
 
                 var transaccionesInd = await (from t in _context.Transaccions
@@ -501,6 +504,7 @@ namespace Prueba.Repositories
                                               where cc.IdCondominio == condominio.IdCondominio
                                               where t.IdPropiedad != null
                                               where tt.IdRelacionGasto == rg.IdRgastos
+                                              where t.Activo != null && (bool)t.Activo
                                               select t).ToListAsync();
 
                 var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);

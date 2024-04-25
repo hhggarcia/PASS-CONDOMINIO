@@ -19,5 +19,6 @@ namespace Prueba.ViewModels
         public IList<SelectListItem>? SubCuentasBancos { get; set; }
         public IList<SelectListItem>? SubCuentasCaja { get; set; }
         public IList<SelectListItem>? ReferenciasDolar { get; set; }
+        public bool RelacionGasto { get; set; }
     }
 }

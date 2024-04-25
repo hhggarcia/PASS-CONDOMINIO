@@ -15,5 +15,7 @@ namespace Prueba.ViewModels
         public SubCuenta? Caja { get; set; }
         public string Mensaje { get; set; } = string.Empty;
         public string Beneficiario { get; set; } = string.Empty;
+        public bool RelacionGasto { get; set; }
+
     }
 }

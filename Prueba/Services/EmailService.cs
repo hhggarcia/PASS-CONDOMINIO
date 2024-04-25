@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.DotNet.Scaffolding.Shared.Project;
 using MimeKit;
 using MimeKit.Text;
 using Prueba.Models;
@@ -16,6 +17,7 @@ namespace Prueba.Services
         void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
         void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
         void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
+        Task<string> SendEmailRG(EmailAttachmentPdf model);
     }
     public class EmailService: IEmailService
     {
@@ -38,13 +40,13 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password)
+        public void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password) 
         {
 
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
             email.To.Add(MailboxAddress.Parse(EmailTo));
-            email.Subject = "Conformación de pago";
+            email.Subject = "Confirmación de pago";
             email.Body = new TextPart(TextFormat.Html) {
             Text =
                     $@"
@@ -323,6 +325,44 @@ namespace Prueba.Services
                 smtp.Authenticate(EmailFrom, password);
                 smtp.Send(email);
                 smtp.Disconnect(true);
+            }
+        }
+
+        public async Task<string> SendEmailRG(EmailAttachmentPdf model)
+        {
+            try
+            {
+                var result = string.Empty;
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(model.From)); // Cambia esto al remitente deseado
+                email.To.Add(MailboxAddress.Parse(model.To));
+                email.Subject = model.Subject;
+
+                var pdfAttachment = new MimePart("application", "pdf")
+                {
+                    Content = new MimeContent(new MemoryStream(model.Pdf)),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = model.FileName + ".pdf"
+                };
+
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.Attachments.Add(pdfAttachment);
+                email.Body = bodyBuilder.ToMessageBody();
+
+                using var smtpClient = new SmtpClient();
+                await smtpClient.ConnectAsync(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                await smtpClient.AuthenticateAsync(model.From, model.Password);
+                result = await smtpClient.SendAsync(email);
+                await smtpClient.DisconnectAsync(true);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                // Maneja el error según tus necesidades (registra, notifica, etc.)
+                return $"Error al enviar el correo: {ex.Message}";
             }
         }
     }

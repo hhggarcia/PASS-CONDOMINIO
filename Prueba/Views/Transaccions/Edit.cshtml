@@ -21,11 +21,30 @@
                             <form asp-action="Edit">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <input type="hidden" asp-for="IdTransaccion" />
-                                <div class="form-group form-check">
+                                @* <div class="form-group form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" asp-for="TipoTransaccion" /> @Html.DisplayNameFor(model => model.TipoTransaccion)
+                                        <input class="form-check-input" asp-for="Activo" /> Agregar a Relación de Gastos
                                     </label>
                                 </div>
+                                <hr /> *@
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" asp-for="TipoTransaccion" /> Ingreso
+                                    </label>
+                                </div>
+                                <hr />
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        @Html.CheckBox("checkActivo", new { @class = "form-check-input" })  @Html.Label("Agregar a Relación de Gastos")
+                                    </label>
+                                </div>
+                                <hr />
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        @Html.CheckBox("check", new { @class = "form-check-input" })  @Html.Label("No Aplicar Propiedad")
+                                    </label>
+                                </div>
+                                <hr />
                                 <div class="form-group">
                                     <label asp-for="IdPropiedad" class="control-label"></label>
                                     <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
@@ -46,11 +65,11 @@
                                     <input asp-for="Descripcion" class="form-control" />
                                     <span asp-validation-for="Descripcion" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
+                                @* <div class="form-group">
                                     <label asp-for="IdProveedor" class="control-label"></label>
                                     <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
                                     <span asp-validation-for="IdProveedor" class="text-danger"></span>
-                                </div>
+                                </div> *@
                                 <div class="form-group">
                                     <label asp-for="Documento" class="control-label"></label>
                                     <input asp-for="Documento" class="form-control" />

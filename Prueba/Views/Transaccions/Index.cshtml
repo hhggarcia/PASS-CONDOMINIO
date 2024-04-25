@@ -47,7 +47,10 @@
                                 <tr>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Fecha)
-                                    </th
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Activo)
+                                    </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.TipoTransaccion)
                                     </th>
@@ -94,9 +97,28 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Fecha)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TipoTransaccion)
-                                        </td>
+                                        @if (item.Activo != null)
+                                        {
+                                            <td>
+                                                @((bool)item.Activo ? "Activo" : "Inactivo")
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+
+                                        @if (item.TipoTransaccion)
+                                        {
+                                            <td>
+                                                Ingreso
+                                            </td>
+                                        }else
+                                        {
+                                            <td>
+                                                Egreso
+                                            </td>
+                                        }
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Descripcion)
                                         </td>
