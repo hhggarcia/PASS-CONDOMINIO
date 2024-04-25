@@ -267,6 +267,16 @@ namespace Prueba.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id">Id del empleado a consultar bonos</param>
+        /// <returns></returns>
+        public IActionResult VerAnticipos(int id)
+        {
+            return RedirectToAction("Index", "AnticipoNominas", new { id });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="Id">Id del empleado a consultar recibos de nomina</param>
         /// <returns></returns>
         public IActionResult VerRecibosNomina(int id)

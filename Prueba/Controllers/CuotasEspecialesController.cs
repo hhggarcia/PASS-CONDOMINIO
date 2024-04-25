@@ -18,7 +18,7 @@ using Prueba.Services;
 using Prueba.Utils;
 using Prueba.Validates;
 using Prueba.ViewModels;
-using SkiaSharp;
+//using SkiaSharp;
 using System.Collections.Generic;
 using System.Linq;
 

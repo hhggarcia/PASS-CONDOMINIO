@@ -1,5 +1,5 @@
 ﻿using Prueba.Models;
-using SkiaSharp;
+//using SkiaSharp;
 
 namespace Prueba.ViewModels
 {

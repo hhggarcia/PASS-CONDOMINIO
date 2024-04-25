@@ -20,6 +20,8 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Anticipo> Anticipos { get; set; }
 
+    public virtual DbSet<AnticipoNomina> AnticipoNominas { get; set; }
+
     public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
 
     public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
@@ -174,7 +176,7 @@ public partial class NuevaAppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=CONDOMINIO;Database=nuevaApp;Integrated Security=false;MultipleActiveResultSets=true;TrustServerCertificate=true;User Id=CondominioApp;Password=Pass123456*");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -212,6 +214,21 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdProveedor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Anticipo_Proveedor");
+        });
+
+        modelBuilder.Entity<AnticipoNomina>(entity =>
+        {
+            entity.HasKey(e => e.IdAnticipoNomina);
+
+            entity.ToTable("AnticipoNomina");
+
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.AnticipoNominas)
+                .HasForeignKey(d => d.IdEmpleado)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AnticipoNomina_Empleado");
         });
 
         modelBuilder.Entity<AspNetRole>(entity =>
@@ -1484,7 +1501,7 @@ public partial class NuevaAppContext : DbContext
         {
             entity.HasKey(e => e.IdPropiedadGrupo);
 
-            entity.Property(e => e.Alicuota).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.Alicuota).HasColumnType("decimal(18, 6)");
 
             entity.HasOne(d => d.IdGrupoGastoNavigation).WithMany(p => p.PropiedadesGrupos)
                 .HasForeignKey(d => d.IdGrupoGasto)
