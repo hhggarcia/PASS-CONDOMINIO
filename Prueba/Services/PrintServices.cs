@@ -28,9 +28,10 @@ namespace Prueba.Services
 
                 PrintJob printJob = new PrintJob(impresora.Nombre, input);
 
-                resultado = printJob.Status.ToString();
                 // Imprimir el trabajo
                 printJob.Print();
+
+                resultado = printJob.Status.ToString();
 
                 return resultado;
 

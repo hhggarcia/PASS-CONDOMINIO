@@ -272,14 +272,14 @@ namespace Prueba.Repositories
                                        join cc in _context.CodigoCuentasGlobals
                                        on t.IdCodCuenta equals cc.IdCodCuenta
                                        where cc.IdCondominio == id
-                                       where t.Fecha.Month == DateTime.Today.Month
+                                       where t.Fecha.Month == (DateTime.Today.Month - 1) || t.Fecha.Month == DateTime.Today.Month
                                        where t.Activo != null && (bool)t.Activo
                                        select t).ToListAsync();
 
             var transaccionesInd = await (from t in _context.Transaccions
                                           join cc in _context.CodigoCuentasGlobals
                                           on t.IdCodCuenta equals cc.IdCodCuenta
-                                          where t.Fecha.Month == DateTime.Today.Month
+                                          where t.Fecha.Month == (DateTime.Today.Month - 1) || t.Fecha.Month == DateTime.Today.Month
                                           where cc.IdCondominio == id
                                           where t.IdPropiedad != null
                                           where t.Activo != null && (bool)t.Activo
@@ -490,7 +490,7 @@ namespace Prueba.Repositories
                                            join tt in _context.RelacionGastoTransaccions
                                            on t.IdTransaccion equals tt.IdTransaccion
                                            where cc.IdCondominio == condominio.IdCondominio
-                                           where t.Fecha.Month == rg.Fecha.Month
+                                           where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
                                            where tt.IdRelacionGasto == rg.IdRgastos
                                            where t.Activo != null && (bool)t.Activo
                                            select t).ToListAsync();
@@ -500,7 +500,7 @@ namespace Prueba.Repositories
                                               on t.IdCodCuenta equals cc.IdCodCuenta
                                               join tt in _context.RelacionGastoTransaccions
                                               on t.IdTransaccion equals tt.IdTransaccion
-                                              where t.Fecha.Month == rg.Fecha.Month
+                                              where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
                                               where cc.IdCondominio == condominio.IdCondominio
                                               where t.IdPropiedad != null
                                               where tt.IdRelacionGasto == rg.IdRgastos
@@ -956,6 +956,8 @@ namespace Prueba.Repositories
                         {
                             // si es viejo restar de la deuda -= Monto
                             propiedad.Deuda -= recibo.Monto;
+                            propiedad.MontoIntereses -= recibo.MontoMora;
+                            propiedad.MontoMulta -= recibo.MontoIndexacion;
 
                             // verificar solvencia de la propiedad
                             if (propiedad.Deuda == 0 && propiedad.Saldo == 0)

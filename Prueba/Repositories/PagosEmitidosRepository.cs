@@ -276,9 +276,6 @@ namespace Prueba.Repositories
                     else if (!moneda.First().Equals(monedaPrincipal.First()))
                     {
                         montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-
-                        //montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
-                        //montoReferencia = montoDolares;
                     }
 
                     // disminuir saldo de la cuenta de CAJA
@@ -289,38 +286,11 @@ namespace Prueba.Repositories
                     monedaCuenta.SaldoFinal -= modelo.Monto;
                     // añadir al pago
 
-                    // CRISTHIAN
-                    //if (modelo.IdAnticipo != 0)
-                    //{
-                    //    var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                    //    anticipo1 = anticipos;
-                    //    pago.MontoRef = anticipos.Saldo;
-                    //    anticipo1.Activo = false;
-                    //}
-                    //else
-                    //{
-                    //    pago.MontoRef = montoReferencia;
-                    //}
-
                     pago.FormaPago = false;
                     pago.SimboloMoneda = moneda.First().Simbolo;
                     pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = "$";
                     pago.MontoRef = montoReferencia;
-
-                    // CRISTHIAN 
-
-                    //if (factura.Abonado == 0)
-                    //{
-                    //    factura.Abonado = pago.MontoRef;
-                    //}
-                    //else
-                    //{
-                    //    var montototal = factura.Abonado + pago.MontoRef;
-                    //    factura.Abonado = montototal;
-                    //}
-                    //factura.Pagada = true;
-                    //factura.EnProceso = false;
 
                     // validar si existe anticipo
                     if (modelo.IdAnticipo == 0)
@@ -428,28 +398,28 @@ namespace Prueba.Repositories
                     // resgistrar transaccion
                     // armar transaccion
 
-                    var transaccion = new Transaccion
-                    {
-                        TipoTransaccion = false,
-                        IdCodCuenta = factura.IdCodCuenta,
-                        Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
-                        MontoTotal = factura.MontoTotal,
-                        Documento = factura.NumFactura.ToString(),
-                        Cancelado = factura.MontoTotal,
-                        SimboloMoneda = pago.SimboloMoneda,
-                        SimboloRef = pago.SimboloRef,
-                        ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia,
-                        Fecha = DateTime.Today,
-                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
-                        Activo = true
-                    };
+                    //var transaccion = new Transaccion
+                    //{
+                    //    TipoTransaccion = false,
+                    //    IdCodCuenta = factura.IdCodCuenta,
+                    //    Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
+                    //    MontoTotal = factura.MontoTotal,
+                    //    Documento = factura.NumFactura.ToString(),
+                    //    Cancelado = factura.MontoTotal,
+                    //    SimboloMoneda = pago.SimboloMoneda,
+                    //    SimboloRef = pago.SimboloRef,
+                    //    ValorDolar = pago.ValorDolar,
+                    //    MontoRef = montoReferencia,
+                    //    Fecha = DateTime.Today,
+                    //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                    //    Activo = true
+                    //};
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
-                        _dbContext.Add(transaccion);
+                        //_dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
@@ -959,36 +929,36 @@ namespace Prueba.Repositories
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
 
                     // buscar grupo de la cuenta
-                    var grupo = await (from g in _context.GrupoGastos
-                                       join cg in _context.CuentasGrupos
-                                       on g.IdGrupoGasto equals cg.IdGrupoGasto
-                                       where factura.IdCodCuenta == cg.IdCodCuenta
-                                       select g).FirstOrDefaultAsync();
+                    //var grupo = await (from g in _context.GrupoGastos
+                    //                   join cg in _context.CuentasGrupos
+                    //                   on g.IdGrupoGasto equals cg.IdGrupoGasto
+                    //                   where factura.IdCodCuenta == cg.IdCodCuenta
+                    //                   select g).FirstOrDefaultAsync();
                     // resgistrar transaccion
                     // armar transaccion
 
-                    var transaccion = new Transaccion
-                    {
-                        TipoTransaccion = false,
-                        IdCodCuenta = factura.IdCodCuenta,
-                        Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
-                        MontoTotal = factura.MontoTotal,
-                        Documento = factura.NumFactura.ToString(),
-                        Cancelado = factura.MontoTotal,
-                        SimboloMoneda = pago.SimboloMoneda,
-                        SimboloRef = pago.SimboloRef,
-                        ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia,
-                        Fecha = DateTime.Today,
-                        IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
-                        Activo = true
-                    };
+                    //var transaccion = new Transaccion
+                    //{
+                    //    TipoTransaccion = false,
+                    //    IdCodCuenta = factura.IdCodCuenta,
+                    //    Descripcion = modelo.Concepto + " - " + proveedor.Nombre,
+                    //    MontoTotal = factura.MontoTotal,
+                    //    Documento = factura.NumFactura.ToString(),
+                    //    Cancelado = factura.MontoTotal,
+                    //    SimboloMoneda = pago.SimboloMoneda,
+                    //    SimboloRef = pago.SimboloRef,
+                    //    ValorDolar = pago.ValorDolar,
+                    //    MontoRef = montoReferencia,
+                    //    Fecha = DateTime.Today,
+                    //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                    //    Activo = true
+                    //};
 
                     using (var _dbContext = new NuevaAppContext())
                     {
 
                         _dbContext.Add(pago);
-                        _dbContext.Add(transaccion);
+                        //_dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);

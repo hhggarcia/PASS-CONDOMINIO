@@ -17,14 +17,17 @@ namespace Prueba.Controllers
 
     public class FacturasController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturasController(ICuentasContablesRepository repoCuentas,
+        public FacturasController(IMonedaRepository repoMoneda,
+            ICuentasContablesRepository repoCuentas,
             IFiltroFechaRepository filtroFechaRepository, 
             NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _repoCuentas = repoCuentas;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
@@ -112,17 +115,40 @@ namespace Prueba.Controllers
             if (ModelState.IsValid)
             {
                 factura.EnProceso = true;
-                _context.Add(factura);
-                await _context.SaveChangesAsync();
-
-                // calcular retenciones al proveedor
-
                 var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
 
                 if (proveedor == null)
                 {
                     return NotFound();
                 }
+                var grupo = await (from g in _context.GrupoGastos
+                                   join cg in _context.CuentasGrupos
+                                   on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                   where factura.IdCodCuenta == cg.IdCodCuenta
+                                   select g).FirstOrDefaultAsync();
+                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(IdCondominio);
+                var transaccion = new Transaccion
+                {
+                    TipoTransaccion = false,
+                    IdCodCuenta = factura.IdCodCuenta,
+                    Descripcion = factura.Descripcion + " - " + proveedor.Nombre,
+                    MontoTotal = factura.MontoTotal,
+                    Documento = factura.NumFactura.ToString(),
+                    Cancelado = factura.MontoTotal,
+                    SimboloMoneda = monedaPrincipal.First().Simbolo,
+                    SimboloRef = "$",
+                    ValorDolar = monedaPrincipal.First().ValorDolar,
+                    MontoRef = factura.MontoTotal / monedaPrincipal.First().ValorDolar,
+                    Fecha = DateTime.Today,
+                    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                    Activo = true
+                };
+
+                _context.Transaccions.Add(transaccion);
+                _context.Add(factura);
+                await _context.SaveChangesAsync();
+
+                // calcular retenciones al proveedor                
 
                 var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
 

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -17,16 +18,22 @@ namespace Prueba.Controllers
 
     public class FacturaEmitidasController : Controller
     {
+        private readonly IPrintServices _printServices;
+        private readonly IPDFServices _servicesPDF;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IPagosRecibidosRepository _repoPagoRecibido;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturaEmitidasController(ICuentasContablesRepository repoCuentas,
+        public FacturaEmitidasController(IPrintServices printServices,
+            IPDFServices servicesPDF,
+            ICuentasContablesRepository repoCuentas,
             IPagosRecibidosRepository repoPagoRecibido,
             IFiltroFechaRepository filtroFechaRepository, 
             NuevaAppContext context)
         {
+            _printServices = printServices;
+            _servicesPDF = servicesPDF; 
             _repoCuentas = repoCuentas;
             _repoPagoRecibido = repoPagoRecibido;
             _reposFiltroFecha = filtroFechaRepository;
@@ -559,6 +566,36 @@ namespace Prueba.Controllers
             };
 
             return Json(facturaMonto);
+        }
+
+        public async Task<IActionResult> FacturaEmitidaPDF(int id)
+        {
+            var factura = await _context.FacturaEmitida.FindAsync(id);
+
+            if (factura != null)
+            {
+                var data = await _servicesPDF.FacturaDeVentaPDF(factura);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "FacturaVenta.pdf");
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> PrintFacturaEmitida(int id)
+        {
+            var factura = await _context.FacturaEmitida.FindAsync(id);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            if (factura != null)
+            {
+                var data = await _servicesPDF.FacturaDeVentaPDF(factura);
+                var resultado = _printServices.PrintCompRetencion(data, idCondominio);
+                //Stream stream = new MemoryStream(data);
+                //return File(stream, "application/pdf", "Recibo.pdf");
+                TempData.Keep();
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
         }
     }
 }

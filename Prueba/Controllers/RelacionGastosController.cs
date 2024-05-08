@@ -155,6 +155,7 @@ namespace Prueba.Controllers
             //return View(relacionGasto);
             return View(modelo);
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -180,6 +181,7 @@ namespace Prueba.Controllers
 
             return View(modelo);
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -580,10 +582,18 @@ namespace Prueba.Controllers
                                         // revisar si esta entre los grupos de la propiedad
                                         if (transaccion.IdPropiedad == null && gruposPropiedad.Exists(c => c.IdGrupoGasto == transaccion.IdGrupo))
                                         {
+                                            if (!transaccion.TipoTransaccion)
+                                            {
+                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
 
-                                            var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+                                                monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
+                                            else
+                                            {
+                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
 
-                                            monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                                monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
                                         }
                                     }
 
@@ -636,9 +646,15 @@ namespace Prueba.Controllers
 
                                         // mora para cada recibo y sumar a la propiedad
                                         // indexacion por cada recibo y sumar a la propiedad
+                                        decimal mora = 0;
+                                        decimal indexacion = 0;
 
-                                        var mora = recibosAnt.Sum(c => c.MontoMora);
-                                        var indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                        if (recibosAnt.Any())
+                                        {
+                                            mora = recibosAnt.Sum(c => c.MontoMora);
+                                            indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                        }
+                                        
 
                                         propiedad.MontoIntereses += mora;
                                         propiedad.MontoMulta += indexacion;
@@ -795,7 +811,7 @@ namespace Prueba.Controllers
 
                 var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
                 Stream stream = new MemoryStream(data);
-                return File(stream, "application/pdf", "Recibo.pdf");
+                return File(stream, "application/pdf", "Recibo_" + propiedad.Codigo+ "_"+ recibo.Fecha.ToString("dd/MM/yyyy") + ".pdf");
             }
 
             return RedirectToAction("Index");
@@ -851,6 +867,20 @@ namespace Prueba.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"> Id de realcion de gastos</param>
+        /// <returns></returns>
+        public IActionResult DataEmailPropiedades(int id)
+        {
+            TempData["IdRG"] = id.ToString();
+
+            TempData.Keep();
+
+            return View();
+        }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> ConfirmSendEmailRecibo(EmailAttachmentPdf email)
@@ -880,45 +910,69 @@ namespace Prueba.Controllers
                 email.Pdf = data;
                 email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
 
-                var result = await _emailService.SendEmailRG(email);
+                var result = _emailService.SendEmailRG(email);
+
+                if (!result.Contains("OK"))
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = result
+                    };
+
+                    return View("Error", modeloError);
+                }
             }
 
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> DetalleReciboEmail(int id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmSendEmailTodosRecibos(EmailAttachmentPdf email)
         {
-            var recibo = await _context.ReciboCobros.FindAsync(id);
-            var modelo = new DetalleReciboTransaccionesVM();
-            if (recibo != null)
+            int idRg = Convert.ToInt32(TempData.Peek("IdRG").ToString());
+
+            var rg = await _context.RelacionGastos.FindAsync(idRg);
+
+            if (rg != null)
             {
-                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
-                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
-                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
-                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
-                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
 
-                modelo.Recibo = recibo;
-                modelo.Propiedad = propiedad;
-                modelo.GruposPropiedad = gruposPropiedad;
-                modelo.RelacionGasto = rg;
-                modelo.Transacciones = transacciones;
-
-                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
-
-                var email = new EmailAttachmentPdf()
+                if (recibos.Any())
                 {
-                    From = modelo.Transacciones.Condominio.Email,
-                    Password = "",
-                    To = usuario.Email,
-                    Subject = "",
-                    Body = "",
-                    Pdf = data,
-                    FileName = ""
-                };
+                    foreach (var recibo in recibos)
+                    {
+                        //var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                        var modelo = new DetalleReciboTransaccionesVM();
+
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                        //var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                        var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                        var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                        var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                        modelo.Recibo = recibo;
+                        modelo.Propiedad = propiedad;
+                        modelo.GruposPropiedad = gruposPropiedad;
+                        modelo.RelacionGasto = rg;
+                        modelo.Transacciones = transacciones;
+
+                        var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+
+                        email.From = modelo.Transacciones.Condominio.Email;
+                        email.To = usuario.Email;
+                        email.Pdf = data;
+                        email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+
+                        var result = _emailService.SendEmailRG(email);
+
+                    }
+                }
             }
 
             return RedirectToAction("Index");
+
         }
     }
 }

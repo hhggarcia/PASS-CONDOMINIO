@@ -29,7 +29,7 @@ public partial class PagoRecibido
 
     public string SimboloRef { get; set; } = null!;
 
-    public byte[]? Imagen { get; set; }
+    public string? Imagen { get; set; }
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 

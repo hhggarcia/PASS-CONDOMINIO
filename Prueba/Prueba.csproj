@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\PruebaMigrations\" />
+    <Folder Include="wwwroot\ComprobantesPU\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

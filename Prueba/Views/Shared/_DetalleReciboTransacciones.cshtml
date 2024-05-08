@@ -286,7 +286,7 @@
                                 <td>@(((decimal)fondo.Monto).ToString("N")) Bs</td>
                                 <td></td>
                                 <td>@Model.Propiedad.Alicuota %</td>
-                                <td>@(((decimal)fondo.Monto * Model.Propiedad.Alicuota).ToString("N")) Bs</td>
+                                <td>@(((decimal)fondo.Monto * Model.Propiedad.Alicuota / 100).ToString("N")) Bs</td>
                             </tr>
 
                             totalFondos += (decimal)fondo.Monto;
@@ -297,10 +297,10 @@
                     <td></td>
                     <td><strong>Total Fondos</strong></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
                     <td><strong>@totalFondos.ToString("N") Bs</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             }
         </tbody>

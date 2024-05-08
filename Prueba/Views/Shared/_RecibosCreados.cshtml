@@ -79,7 +79,7 @@
                             <td>@recibo.MontoIndexacion.ToString("N")</td>
                             <td><a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransacciones">Detalles</a> |
                                 <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransaccionesPDF">PDF</a> |
-                                <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboEmail">Correo</a>
+                                <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DataEmail">Correo</a>
                             </td>
                         </tr>
                     }

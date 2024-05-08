@@ -340,14 +340,21 @@ namespace Prueba.Repositories
             //                          where c.IdCondominio == idCondominio
             //                          select c;
             var propiedades = from c in _context.Propiedads
-                              where c.Solvencia == false
+                              where c.IdCondominio == idCondominio
+                              where !c.Solvencia
                               select c;
+
             var propietarios = from c in _context.AspNetUsers
+                               join p in propiedades
+                               on c.Id equals p.IdUsuario
                                select c;
+
             var relacionesGastos = from c in _context.RelacionGastos
                                    where c.IdCondominio == idCondominio
                                    select c;
             var recibosCobro = from c in _context.ReciboCobros
+                               join p in propiedades
+                               on c.IdPropiedad equals p.IdPropiedad
                                select c;
 
             if (propiedades != null && propiedades.Any()
@@ -379,7 +386,7 @@ namespace Prueba.Repositories
                 var modelo = new RecibosCreadosVM
                 {
                     Propiedades = listaPropiedadesCondominio,
-                    //Propietarios = await propietarios.ToListAsync(),
+                    Propietarios = await propietarios.ToListAsync(),
                     Recibos = recibosCobroCond,
                     //Inmuebles = await inmueblesCondominio.ToListAsync()
                 };
@@ -388,8 +395,6 @@ namespace Prueba.Repositories
             }
 
             return new RecibosCreadosVM();
-        }
-
-        
+        }        
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
 using SQLitePCL;
+using System.Runtime.InteropServices;
 
 namespace Prueba.Repositories
 {
@@ -14,6 +16,7 @@ namespace Prueba.Repositories
         Task<IndexPagoFacturaEmitidaVM> GetPagosFacturasEmitidas(int id);
         Task<string> RegistrarCobroTransito(CobroTransitoVM modelo);
         Task<string> RegistrarPago(PagoFacturaEmitidaVM modelo);
+        Task<string> RegistrarPagoPropietario(PagoRecibidoVM modelo);
     }
     public class PagosRecibidosRepository : IPagosRecibidosRepository
     {
@@ -1065,6 +1068,143 @@ namespace Prueba.Repositories
             }
 
             return resultado;
+        }
+
+        public async Task<string> RegistrarPagoPropietario(PagoRecibidoVM modelo)
+        {
+            if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+            {
+                var pago = new PagoRecibido()
+                {
+                    //IdPropiedad = modelo.IdPropiedad,
+                    IdCondominio = modelo.IdCondominio,
+                    Fecha = modelo.Fecha,
+                    Concepto = modelo.Concepto,
+                    Confirmado = false,
+                    Imagen = modelo.Imagen
+                };
+                //var ejemplo = await _context.Propiedads.FindAsync()
+                var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+
+                if (propiedad != null)
+                {
+                    // validar num referencia repetido
+                    decimal montoReferencia = 0;
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(propiedad.IdCondominio);
+
+                    if (modelo.Pagoforma == FormaPago.Efectivo)
+                    {
+                        var idCaja = (from c in _context.CodigoCuentasGlobals
+                                      where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
+                                      select c).First();
+
+                        // buscar moneda asigna a la subcuenta
+                        var moneda = from m in _context.MonedaConds
+                                     join mc in _context.MonedaCuenta
+                                     on m.IdMonedaCond equals mc.IdMoneda
+                                     where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                     select m;
+
+                        // calcular monto referencia
+                        if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                        {
+                            return "No hay monedas registradas en el sistema!";
+                        }
+                        else if (moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                        }
+                        else if (!moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                        }
+
+                        // disminuir saldo de la cuenta de CAJA
+                        var monedaCuenta = (from m in _context.MonedaCuenta
+                                            where m.IdCodCuenta == idCaja.IdCodCuenta
+                                            select m).First();
+
+                        monedaCuenta.SaldoFinal -= modelo.Monto;
+                        // añadir al pago
+
+                        pago.FormaPago = false;
+                        pago.SimboloMoneda = moneda.First().Simbolo;
+                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        pago.SimboloRef = "$";
+                        pago.MontoRef = montoReferencia;
+
+                        // registrar pago
+                        // registrar pagoPropiedad
+
+                        _context.PagoRecibidos.Add(pago);
+                        var valor = await _context.SaveChangesAsync();
+
+                        if (valor > 0)
+                        {
+                            return "exito";
+                        }
+                        else
+                        {
+                            return "Error al registrar su pago. Intente nuevamente!";
+                        }
+
+                    } else if (modelo.Pagoforma == FormaPago.Transferencia)
+                    {                        
+                        var idBanco = (from c in _context.CodigoCuentasGlobals
+                                       where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
+                                       select c).First();
+
+                        var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
+                        // buscar moneda asigna a la subcuenta
+                        var moneda = from m in _context.MonedaConds
+                                     join mc in _context.MonedaCuenta
+                                     on m.IdMonedaCond equals mc.IdMoneda
+                                     where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                     select m;
+
+                        // calcular monto referencia
+                        if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                        {
+                            return "No hay monedas registradas en el sistema!";
+                        }
+                        else if (moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                        }
+                        else if (!moneda.First().Equals(monedaPrincipal.First()))
+                        {
+                            montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                        }
+
+                        pago.FormaPago = true;
+                        pago.SimboloMoneda = moneda.First().Simbolo;
+                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        pago.SimboloRef = "$";
+                        pago.MontoRef = montoReferencia;
+
+                        // registrar pago
+                        // registrar pagoPropiedad
+
+                        _context.PagoRecibidos.Add(pago);
+                        var valor = await _context.SaveChangesAsync();
+
+                        if (valor > 0)
+                        {
+                            return "exito";
+                        }
+                        else
+                        {
+                            return "Error al registrar su pago. Intente nuevamente!";
+                        }                        
+                    }
+                }
+
+                return "No existe esta una Propiedad! Comunicarse con la Administración!";
+            }
+
+            return "No ha seleccionado una forma de pago. Intentelo nuevamente!";
         }
     }
 }
