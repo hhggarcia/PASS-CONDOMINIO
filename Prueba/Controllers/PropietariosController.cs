@@ -21,6 +21,7 @@ using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Net;
 using System.Reflection.Metadata;
 using System.Linq;
+using System.Text;
 
 namespace Prueba.Controllers
 {
@@ -82,52 +83,6 @@ namespace Prueba.Controllers
         {
 
             return View();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> Historial()
-        {
-            try
-            {
-                string idPropietario = TempData.Peek("idUserLog").ToString();
-
-                //llamar a pagos realizados
-                // pasar diccionario de propiedades y por cada propiedad una lista de pagos realizados
-                var modelo = new Dictionary<Propiedad, List<PagoRecibido>>();
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
-                if (propiedades != null && propiedades.Any())
-                {
-                    foreach (var item in propiedades)
-                    {
-                        //var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == item.IdPropiedad).ToListAsync();
-
-                        var pagos = await (from pago in _context.PagosRecibos
-                                           join pagoRecibido in _context.PagoRecibidos
-                                           on pago.IdPago equals pagoRecibido.IdPagoRecibido
-                                           join recibo in _context.ReciboCobros
-                                           on pago.IdRecibo equals recibo.IdReciboCobro
-                                           where pago.IdPago == pagoRecibido.IdPagoRecibido && pago.IdRecibo == recibo.IdReciboCobro && recibo.IdPropiedad == item.IdPropiedad
-                                           select pagoRecibido).ToListAsync();
-
-                        modelo.Add(item, pagos);
-                    }
-                }
-
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-
         }
 
         /// <summary>
@@ -316,7 +271,7 @@ namespace Prueba.Controllers
                     }
                 }
 
-                modelo.Imagen = uniqueFileName; //fill the image property
+                modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
 
                 var resultado = await _repoPagosRecibidos.RegistrarPagoPropietario(modelo);
 
@@ -343,21 +298,29 @@ namespace Prueba.Controllers
                         Mensaje = "Gracias por su pago!"
                     };
 
-                    if (modelo.FormaPago)
+                    if (modelo.FormaPago && modelo.IdCodigoCuentaBanco > 0)
                     {
+                        var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
+
                         comprobante.Referencias = new ReferenciasPr()
                         {
-                            Banco = "",
+                            Banco = banco.Descricion,
                             NumReferencia = modelo.NumReferencia
                         };
                     }
+
                     TempData.Keep();
 
                     return View("Comprobante", comprobante);
                 }
-                TempData.Keep();
 
-                //return RedirectToAction("RegistrarPagos");
+                if (file != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
+                    uniqueFileName = file.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    System.IO.File.Delete(filePath);
+                }               
 
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
@@ -366,6 +329,11 @@ namespace Prueba.Controllers
                                   select c;
 
                 modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
+                
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = resultado;
+
+                TempData.Keep();
 
                 return View("RegistrarPagos", modelo);
             }
@@ -378,8 +346,6 @@ namespace Prueba.Controllers
                 TempData.Keep();
 
                 return View("Error", modeloError);
-
-
             }
         }
 
@@ -511,6 +477,7 @@ namespace Prueba.Controllers
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Recibo.pdf");
         }
+
         [HttpGet]
         public async Task<IActionResult> HistorialPdf()
         {
@@ -539,6 +506,7 @@ namespace Prueba.Controllers
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Historial.pdf");
         }
+
         [HttpGet]
         async public Task<IActionResult> DetallePdf(int id)
         {
@@ -571,6 +539,7 @@ namespace Prueba.Controllers
             return File(stream, "application/pdf", "DetalleRecibo.pdf");
 
         }
+
         [HttpPost]
         public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
         {

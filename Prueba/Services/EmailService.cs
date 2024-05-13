@@ -13,7 +13,7 @@ namespace Prueba.Services
     {
         void SendEmail(RegisterConfirm request);
         void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password);
-        void RectificarPago(String EmailFrom, String EmailTo, PagoRecibido pago, String password);
+        string RectificarPago(string EmailFrom, string EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia);
         void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
         void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
         void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
@@ -51,37 +51,37 @@ namespace Prueba.Services
             {
                 Text =
                     $@"
-                <html>
-               <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 0; padding: 0;"">
+                        <html>
+                               <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 0; padding: 0;"">
 
-                    <h3 style=""color: #3950a2;"">{{email.Subject}}</h3>
-                    <h4>¡Gracias por realizar su pago!</h4>
-                    <p>Su pago fue confirmado con éxito. Se detallan los datos:</p>
+                                    <h3 style=""color: #3950a2;"">{{email.Subject}}</h3>
+                                    <h4>¡Gracias por realizar su pago!</h4>
+                                    <p>Su pago fue confirmado con éxito. Se detallan los datos:</p>
 
-                    <table style=""border-collapse: collapse; width: 100%;"">
-                        <tr>
-                            <th style=""background-color: #3950a2; color: white;"">Recibo</th>
-                            <th style=""background-color: #3950a2; color: white;"">Fecha</th>
-                            <th style=""background-color: #3950a2; color: white;"">Deuda</th>
-                            <th style=""background-color: #3950a2; color: white;"">Abonado</th>
-                            <th style=""background-color: #3950a2; color: white;"">Monto</th>
-                        </tr>
-                        <tr>
-                            <td>{{reciboCobro.IdReciboCobro}}</td>
-                            <td>{{DateTime.Now}}</td>
-                            <td>{{propiedad.Saldo + propiedad.Deuda}} Bs</td>
-                            <td>{{reciboCobro.Abonado}} Bs</td>
-                            <td>{{pagoRecibido.MontoRef}} Bs</td>
-                        </tr>
-                    </table>
+                                    <table style=""border-collapse: collapse; width: 100%;"">
+                                        <tr>
+                                            <th style=""background-color: #3950a2; color: white;"">Recibo</th>
+                                            <th style=""background-color: #3950a2; color: white;"">Fecha</th>
+                                            <th style=""background-color: #3950a2; color: white;"">Deuda</th>
+                                            <th style=""background-color: #3950a2; color: white;"">Abonado</th>
+                                            <th style=""background-color: #3950a2; color: white;"">Monto</th>
+                                        </tr>
+                                        <tr>
+                                            <td>{reciboCobro.IdReciboCobro}</td>
+                                            <td>{DateTime.Now.ToString("dd/MM/yyyy")}</td>
+                                            <td>{propiedad.Saldo + propiedad.Deuda} Bs</td>
+                                            <td>{reciboCobro.Abonado} Bs</td>
+                                            <td>{pagoRecibido.MontoRef} Bs</td>
+                                        </tr>
+                                    </table>
 
-                    <div class=""footer"" style=""background-color: #333; color: #fff; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;"">
-                        Desarrollado por Password Tecnology
-                    </div>
+                                    <div class=""footer"" style=""background-color: #333; color: #fff; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;"">
+                                        Desarrollado por: Password Technology C.A.
+                                    </div>
 
-                </body>
+                                </body>
 
-                </html>"
+                        </html>"
             };
 
             using var smtp = new SmtpClient();
@@ -90,52 +90,71 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void RectificarPago(String EmailFrom, String EmailTo, PagoRecibido pago, String password)
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="EmailFrom"></param>
+        /// <param name="EmailTo"></param>
+        /// <param name="password"></param>
+        /// <param name="pago"></param>
+        /// <param name="referencia"></param>
+        public string RectificarPago(string EmailFrom, string EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia)
         {
-
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
-            email.To.Add(MailboxAddress.Parse(EmailTo));
-            email.Subject = "Rectificación de pago";
-
-            email.Body = new TextPart(TextFormat.Html)
+            try
             {
-                Text =
-                   $@"
-                <html>
-                <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 0; padding: 0;"">
+                var result = string.Empty;
 
-                <h3 style=""color: #3950a2;"">{{email.Subject}}</h3>
-                <h4>Su pago no fue aceptado</h4>
-                <p>Lamentamos informarle que su pago no ha sido aceptado. A continuación, se detallan los datos:</p>
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(EmailFrom));
+                email.To.Add(MailboxAddress.Parse(EmailTo));
+                email.Subject = "Rectificación de pago";
 
-                <table border='1' style='border-collapse: collapse; width: 100%;'>
-                    <tr>
-                        <th style='background-color: #3950a2; color: white;'>Fecha</th>
-                        <th style='background-color: #3950a2; color: white;'>Método de Pago</th>
-                        <th style='background-color: #3950a2; color: white;'>Monto</th>
-                    </tr>
-                    <tr>
-                        <td>{{pago.Fecha}}</td>
-                        <td>{{{{pago.FormaPago ? 'Transferencia' : 'Efectivo'}}}}</td>
-                        <td>{{pago.Monto}} Bs</td>
-                    </tr>
-                </table>
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text =
+                       $@"
+                    <html>
+                        <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 5rem; padding: 2rem;"">
+                            <h3 style=""color: #3950a2;"">{email.Subject}</h3>
+                            <h4 style=""color: #3950a2;"">NO RESPONDA ESTE CORREO SIMPLEMENTE NOTIFIQUE NUEVAMENTE POR LA APLICACIÓN WEB</h4>
+                            <h4>Su pago no fue aceptado</h4>
+                            <p>Su pago fue verificado y no aparece en los estados de cuenta de la admistración. A continuación, se detallan los datos:</p>
 
-                <div class=""footer"" style='background-color: #333; color: #fff; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;'>
-                    Desarrollado por Password Tecnology
-                </div>
+                            <table border='1' style='border-collapse: collapse; width: 100%;'>
+                                <tr>
+                                    <th style='background-color: #3950a2; color: white;'>Fecha</th>
+                                    <th style='background-color: #3950a2; color: white;'>Método de Pago</th>
+                                    <th style='background-color: #3950a2; color: white;'>Monto</th>
+                                </tr>
+                                <tr>
+                                    <td>{pago.Fecha.ToString("dd/MM/yyyy")}</td>
+                                    <td>{(pago.FormaPago ? "Transferencia" : "Efectivo")}</td>
+                                    <td>{pago.Monto.ToString("N")} Bs</td>
+                                </tr>
+                            </table>
+                            <hr/>
+                            <p>Te invitamos a revisar sus transacciones y notificar nuevamente el pago, ya que este será eliminado del sistema</p>
 
-            </body>
+                            <div class=""footer"" style='color: #3950a2; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;'>
+                                Desarrollado por: Password Technology C.A.
+                            </div>
+                        </body>
+                    </html>"
+                };
 
-                </html>"
-            };
+                using var smtp = new SmtpClient();
+                smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(EmailFrom, password);
+                result = smtp.Send(email);
+                smtp.Disconnect(true);
 
-            using var smtp = new SmtpClient();
-            smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(EmailFrom, password);
-            smtp.Send(email);
-            smtp.Disconnect(true);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return $"Error al enviar el correo: {ex.Message}";
+            }            
         }
         public void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password)
         {
@@ -329,13 +348,18 @@ namespace Prueba.Services
             }
         }
 
+        /// <summary>
+        /// Envia un correo con un archivo adjunto
+        /// </summary>
+        /// <param name="model">contiene la descripcion del correo</param>
+        /// <returns></returns>
         public string SendEmailRG(EmailAttachmentPdf model)
         {
             try
             {
                 var result = string.Empty;
                 var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse(model.From)); 
+                email.From.Add(MailboxAddress.Parse(model.From));
                 email.To.Add(MailboxAddress.Parse(model.To));
                 email.Subject = model.Subject;
 

@@ -39,6 +39,8 @@ public partial class AspNetUser
 
     public int AccessFailedCount { get; set; }
 
+    public virtual ICollection<Administrador> Administradors { get; set; } = new List<Administrador>();
+
     public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } = new List<AspNetUserClaim>();
 
     public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } = new List<AspNetUserLogin>();
@@ -46,6 +48,8 @@ public partial class AspNetUser
     public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
 
     public virtual ICollection<Condominio> Condominios { get; set; } = new List<Condominio>();
+
+    public virtual ICollection<Inquilino> Inquilinos { get; set; } = new List<Inquilino>();
 
     public virtual ICollection<Propiedad> Propiedads { get; set; } = new List<Propiedad>();
 

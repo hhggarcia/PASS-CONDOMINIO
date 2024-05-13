@@ -25,6 +25,8 @@ public partial class Condominio
 
     public decimal? Multa { get; set; }
 
+    public virtual ICollection<Administrador> Administradors { get; set; } = new List<Administrador>();
+
     public virtual ICollection<BalanceComprobacion> BalanceComprobacions { get; set; } = new List<BalanceComprobacion>();
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();

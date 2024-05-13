@@ -33,6 +33,10 @@ public partial class Propiedad
 
     public virtual AspNetUser IdUsuarioNavigation { get; set; } = null!;
 
+    public virtual ICollection<Inquilino> Inquilinos { get; set; } = new List<Inquilino>();
+
+    public virtual ICollection<PagoPropiedad> PagoPropiedads { get; set; } = new List<PagoPropiedad>();
+
     public virtual ICollection<PropiedadesGrupo> PropiedadesGrupos { get; set; } = new List<PropiedadesGrupo>();
 
     public virtual ICollection<ReciboCobro> ReciboCobros { get; set; } = new List<ReciboCobro>();

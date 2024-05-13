@@ -1,0 +1,130 @@
+﻿@model Dictionary<Propiedad, List<PagoRecibido>>
+
+@{
+    ViewData["Title"] = "Historial";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Historial</h1>
+    </div>*@
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*    <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="HistorialPdf" asp-controller="Propietarios">Crear pdf</a>
+
+        <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Verifique su historial
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+                            <table class="table table-bordered form"
+                                   id="dataTable"
+                                   width="100%"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Propiedad</th>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                        <th>Forma de Pago</th>
+                                        <th>Concepto</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Propiedad</th>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                        <th>Forma de Pago</th>
+                                        <th>Concepto</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+
+                                    @foreach (var item in Model)
+                                    {
+                                        @if (item.Value.Count() > 0)
+                                        {
+                                            @foreach (var pago in item.Value)
+                                            {
+                                                <tr class="tr_s">
+
+                                                    <th>@item.Key.Codigo</th>
+
+                                                    <td>@pago.Fecha.ToString("dd/MM/yyyy")</td>
+                                                    <td>@pago.Monto.ToString("N")</td>
+                                                    @if (pago.FormaPago)
+                                                    {
+                                                        <td>Transferencia</td>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>Efectivo</td>
+                                                    }
+                                                    <td>@pago.Concepto</td>
+                                                </tr>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="tr_s">
+                                                <td>No</td>
+                                                <td>Hay</td>
+                                                <td>Pagos</td>
+                                                <td>En esta propiedad</td>
+                                            </tr>
+
+                                        }
+
+
+                                        @*<td>2008/11/28</td>
+                                <td>
+                                <button type="button"
+                                class="btn btn-outline-success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModalScrollable">
+                                Ver
+                                </button>
+                                </td>
+                                <td>Pagado</td>*@
+                                    }
+
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <h3>Pero qué ha pasao :O</h3>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -18,6 +18,8 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Activo> Activos { get; set; }
 
+    public virtual DbSet<Administrador> Administradors { get; set; }
+
     public virtual DbSet<Anticipo> Anticipos { get; set; }
 
     public virtual DbSet<AnticipoNomina> AnticipoNominas { get; set; }
@@ -92,6 +94,8 @@ public partial class NuevaAppContext : DbContext
 
     public virtual DbSet<Ingreso> Ingresos { get; set; }
 
+    public virtual DbSet<Inquilino> Inquilinos { get; set; }
+
     public virtual DbSet<Islr> Islrs { get; set; }
 
     public virtual DbSet<Iva> Ivas { get; set; }
@@ -123,6 +127,8 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<PagoFactura> PagoFacturas { get; set; }
 
     public virtual DbSet<PagoFacturaEmitida> PagoFacturaEmitida { get; set; }
+
+    public virtual DbSet<PagoPropiedad> PagoPropiedads { get; set; }
 
     public virtual DbSet<PagoRecibido> PagoRecibidos { get; set; }
 
@@ -193,6 +199,26 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdAsiento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Activos_LDiario_Global");
+        });
+
+        modelBuilder.Entity<Administrador>(entity =>
+        {
+            entity.HasKey(e => e.IdAdministrador);
+
+            entity.ToTable("Administrador");
+
+            entity.Property(e => e.Cargo).HasMaxLength(50);
+            entity.Property(e => e.IdUsuario).HasMaxLength(450);
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Administradors)
+                .HasForeignKey(d => d.IdCondominio)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Administrador_Condominio");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Administradors)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Administrador_AspNetUsers");
         });
 
         modelBuilder.Entity<Anticipo>(entity =>
@@ -934,6 +960,26 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Ingresos_LDiario_Global");
         });
 
+        modelBuilder.Entity<Inquilino>(entity =>
+        {
+            entity.HasKey(e => e.IdInquilino);
+
+            entity.Property(e => e.Cedula).HasMaxLength(50);
+            entity.Property(e => e.IdUsuario).HasMaxLength(450);
+            entity.Property(e => e.Rif).HasMaxLength(50);
+            entity.Property(e => e.Telefono).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.Inquilinos)
+                .HasForeignKey(d => d.IdPropiedad)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Inquilinos_Propiedad");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Inquilinos)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Inquilinos_AspNetUsers");
+        });
+
         modelBuilder.Entity<Islr>(entity =>
         {
             entity.ToTable("islr");
@@ -1268,6 +1314,23 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdPagoRecibido)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PagoFacturaEmitida_Pago_Recibido");
+        });
+
+        modelBuilder.Entity<PagoPropiedad>(entity =>
+        {
+            entity.HasKey(e => e.IdPagoPropiedad);
+
+            entity.ToTable("PagoPropiedad");
+
+            entity.HasOne(d => d.IdPagoNavigation).WithMany(p => p.PagoPropiedads)
+                .HasForeignKey(d => d.IdPago)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoPropiedad_Pago_Recibido");
+
+            entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.PagoPropiedads)
+                .HasForeignKey(d => d.IdPropiedad)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PagoPropiedad_Propiedad");
         });
 
         modelBuilder.Entity<PagoRecibido>(entity =>

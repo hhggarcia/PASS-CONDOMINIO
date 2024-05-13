@@ -11,13 +11,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-        <i class="fas fa-download fa-sm text-white-50"></i> Generar
-        PDF
-        </a>
-        *@
-        @*         <button type="button" id="PagosRecibidosPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</button>
-        *@        <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="PagosRecibidosPDF" asp-controller="Administrador"> Generar pdf</a>
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="PagosRecibidosPDF" asp-controller="Administrador"> Generar pdf</a>
 
         <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
@@ -51,7 +45,6 @@
                                     <th>Propiedad</th>
                                     <th>Concepto</th>
                                     <th>Monto</th>
-
                                     <th>Forma de Pago</th>
                                     <th></th>
                                 </tr>
@@ -65,8 +58,6 @@
                                 {
                                     @foreach (var diccUsuarioPropiedad in Model.UsuariosPropiedad)
                                     {
-
-
                                         @foreach (var propiedad in @diccUsuarioPropiedad.Value)
                                         {
                                             @if (propiedad.Saldo > 0 || propiedad.Deuda > 0)
@@ -80,7 +71,7 @@
                                                             <tr class="tr_s">
 
                                                                 <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
-                                                                <td>@diccUsuarioPropiedad.Key.FirstName @diccUsuarioPropiedad.Key.LastName</td>
+                                                                <td>@diccUsuarioPropiedad.Key.FirstName</td>
                                                                 <td>@propiedad.Codigo</td>
                                                                 <td>@pago.Concepto</td>
                                                                 <td>@(pago.Monto.ToString("N")) Bsf</td>
@@ -96,13 +87,11 @@
                                                                 <td>
 
                                                                     <a class="btn btn-outline-success"
-                                                                       asp-controller="Administrador"
                                                                        asp-action="ConfirmarPagoRecibido"
                                                                        asp-route-id="@pago.IdPagoRecibido">
                                                                         Confirmar Pago
                                                                     </a>
                                                                     <a class="btn btn-outline-danger"
-                                                                       asp-controller="Administrador"
                                                                        asp-action="RectificarPago"
                                                                        asp-route-id="@pago.IdPagoRecibido">
                                                                         Rectificar Pago
@@ -110,8 +99,6 @@
 
                                                                 </td>
                                                             </tr>
-
-                                                            @*<td>Pagado</td>*@
                                                         }
 
                                                     }
@@ -131,7 +118,6 @@
                                         <td>recibidos</td>
                                         <td>por</td>
                                         <td>confirmar</td>
-
                                     </tr>
                                 }
                             </tbody>
@@ -143,87 +129,3 @@
         </div>
     </div>
 </div>
-
-
-@*PDF Configuración*@
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
-@* <script>
-    $(document).ready(function () {
-        $("#PagosRecibidosPDF").click(function () {
-            console.log("datas")
-            var datos = JSON.stringify(@Html.Raw(Json.Serialize(Model)));
-            var datosSerializados = JSON.stringify(@Html.Raw(JsonConvert.SerializeObject(Model.DiccionarioDatos)));
-
-            $.ajax({
-                url: '/Administrador/ComprobantePagosRecibidosPDF',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(datos),
-                success: function (result) {
-                    var binaryData = atob(result);
-                    var arrayBuffer = new ArrayBuffer(binaryData.length);
-                    var uint8Array = new Uint8Array(arrayBuffer);
-
-                    for (var i = 0; i < binaryData.length; i++) {
-                        uint8Array[i] = binaryData.charCodeAt(i);
-                    }
-
-                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
-                    var url = URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = 'DetalleRecibo.pdf';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                },
-                error: function (result) {
-                    alert('Error al descargar detalle del recibo');
-                    console.log(result);
-                }
-            });
-        });
-    });
-</script>
- *@
-@section scripts {
-    <script>
-
-        function fnExcelReport() {
-            var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
-            var textRange; var j = 0;
-            tab = document.getElementById('dataTable'); // id of table
-
-            for (j = 0; j < tab.rows.length; j++) {
-                tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
-            }
-
-            tab_text = tab_text + "</table>";
-            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
-            tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
-            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
-
-            var ua = window.navigator.userAgent;
-            var msie = ua.indexOf("MSIE ");
-
-            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
-            {
-                txtArea1.document.open("txt/html", "replace");
-                txtArea1.document.write(tab_text);
-                txtArea1.document.close();
-                txtArea1.focus();
-                sa = txtArea1.document.execCommand("SaveAs", true, "Recibos.xls");
-            }
-            else                 //other browser not tested on IE 11
-                sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
-
-            return (sa);
-        }
-    </script>
-}
-
-
-

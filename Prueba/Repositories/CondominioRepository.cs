@@ -1,5 +1,4 @@
 ﻿using Prueba.Context;
-using Prueba.Models;
 
 namespace Prueba.Repositories
 {

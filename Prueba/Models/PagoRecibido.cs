@@ -29,13 +29,15 @@ public partial class PagoRecibido
 
     public string SimboloRef { get; set; } = null!;
 
-    public string? Imagen { get; set; }
+    public byte[]? Imagen { get; set; }
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();
+
+    public virtual ICollection<PagoPropiedad> PagoPropiedads { get; set; } = new List<PagoPropiedad>();
 
     public virtual PagoReserva? PagoReserva { get; set; }
 

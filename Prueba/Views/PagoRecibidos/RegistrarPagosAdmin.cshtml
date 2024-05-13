@@ -3,6 +3,7 @@
 @model PagoRecibidoVM
 @{
     ViewData["Title"] = "Registrar Pagos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
 <!-- Begin Page Content -->
@@ -19,7 +20,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Reporta aquí cada pago que realizes
+                        Reporta aquí cada pago recibido de un propietario
                     </h6>
                 </div>
                 <div class="card-body">
@@ -29,7 +30,7 @@
                        && Model.Propiedades.Count > 0)
                         {
                             <!-- Inicio -->
-                            <form class="form form-horizontal" enctype="multipart/form-data" asp-action="RegistrarPagos">
+                            <form class="form form-horizontal" enctype="multipart/form-data" asp-action="ConfirmarPago">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 @if (@ViewBag.FormaPago == "fallido")
                                 {
@@ -43,7 +44,7 @@
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione una Propiedad</label>
                                                 <div class="position-relative">
-                                                    @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Propiedad", new {@class = "form-control form-select nav-tabs-selector"})
+                                                    @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Propiedad", new { @class = "form-control form-select nav-tabs-selector" })
 
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
@@ -57,10 +58,10 @@
                                                 @*<label for="last-name-column">Ver Propiedad</label>*@
                                                 <br />
                                                 <button type="button"
-                                                class="btn btn-outline-success"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalRecibos"
-                                                onclick="showContent();">
+                                                        class="btn btn-outline-success"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalRecibos"
+                                                        onclick="showContent();">
                                                     Ver
                                                 </button>
                                             </div>
@@ -78,17 +79,17 @@
 
 
                                             <div class="modal-dialog modal-dialog-scrollable"
-                                                    role="document">
+                                                 role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title"
-                                                    id="exampleModalScrollableTitle">
+                                                            id="exampleModalScrollableTitle">
                                                             Información de Deuda
                                                         </h5>
                                                         <button type="button"
-                                                        class="close"
-                                                        data-bs-dismiss="modal"
-                                                        aria-label="Close">
+                                                                class="close"
+                                                                data-bs-dismiss="modal"
+                                                                aria-label="Close">
                                                             <i data-feather="x"></i>
                                                         </button>
                                                     </div>
@@ -121,8 +122,8 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button"
-                                                        class="btn btn-light-secondary"
-                                                        data-bs-dismiss="modal">
+                                                                class="btn btn-light-secondary"
+                                                                data-bs-dismiss="modal">
                                                             <i class="bx bx-x d-block d-sm-none"></i>
                                                             <span class="d-none d-sm-block">Cerrar</span>
                                                         </button>
@@ -131,28 +132,26 @@
                                             </div>
                                         </div>
                                         <!-- Fin modal-->
-
                                         <!-- Select Recibo a pagar -->
+                                        @*            <div class="col-md-12 col-12">
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Seleccione un Recibo</label>
+                                <div class="position-relative"> *@
 
-                             @*            <div class="col-md-12 col-12">
-                                            <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative"> *@
-                                                    
-                                                    @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
-                        @*                             <select asp-for="IdRecibo"
-                                                        asp-items="Model.RecibosModel"
-                                                        class="form-select" id="recibos">
-                                                        <option value="0">Seleccionar</option>
-                                                        </select>
+                                        @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
+                                        @*                             <select asp-for="IdRecibo"
+                                asp-items="Model.RecibosModel"
+                                class="form-select" id="recibos">
+                                <option value="0">Seleccionar</option>
+                                </select>
 
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-building"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> *@
-                                         
+                                <div class="form-control-icon">
+                                <i class="bi bi-building"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div> *@
+
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
@@ -161,32 +160,32 @@
 
                                                 <div class="position-relative">
                                                     <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Concepto"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Concepto" />
+                                                           class="form-control"
+                                                           placeholder="Concepto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Concepto" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Monto -->
 
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Monto</label>
-                                            <span asp-validation-for="Monto" class="text-danger"></span>
+                                                <span asp-validation-for="Monto" class="text-danger"></span>
 
                                                 <div class="position-relative">
                                                     <input type="number"
-                                                   class="form-control"
-                                                   placeholder="Monto"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Monto" />
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Monto" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
@@ -199,15 +198,15 @@
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Fecha</label>
-                                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                                                <span asp-validation-for="Fecha" class="text-danger"></span>
 
                                                 <div class="position-relative">
-                                                    <input type="date"
-                                                   class="form-control"
-                                                   placeholder="Name"
-                                                   id="first-name-icon"
-                                                   asp-for="Fecha"
-                                                   value="@DateTime.Today" />
+                                                    <input
+                                                           class="form-control"
+                                                           placeholder="Name"
+                                                           id="first-name-icon"
+                                                           asp-for="Fecha"
+                                                           value="@DateTime.Today" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-calendar-date"></i>
                                                     </div>
@@ -228,8 +227,7 @@
                                                            placeholder="Imagen"
                                                            id="first-name-icon"
                                                            required
-                                                           name="file"
-                                                           />
+                                                           name="file" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
@@ -279,8 +277,8 @@
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaCaja"
-                                                                                                asp-items="Model.SubCuentasCaja"
-                                                                                                class="form-select" id="efectivos">
+                                                                                                        asp-items="Model.SubCuentasCaja"
+                                                                                                        class="form-select" id="efectivos">
                                                                                                     <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
@@ -304,8 +302,8 @@
                                                                                         <label for="last-name-column">Número de Referencia</label>
                                                                                         <div class="position-relative">
                                                                                             <input type="number" class="form-control"
-                                                                                           placeholder="Referencia" id="first-name-icon" required=""
-                                                                                           asp-for="NumReferencia">
+                                                                                                   placeholder="Referencia" id="first-name-icon" required=""
+                                                                                                   asp-for="NumReferencia">
                                                                                             <div class="form-control-icon">
                                                                                                 <i class="bi bi-credit-card"></i>
                                                                                             </div>
@@ -319,8 +317,8 @@
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaBanco"
-                                                                                                asp-items="Model.SubCuentasBancos"
-                                                                                                class="form-select" id="bancos">
+                                                                                                        asp-items="Model.SubCuentasBancos"
+                                                                                                        class="form-select" id="bancos">
                                                                                                     <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
@@ -345,7 +343,7 @@
 
                                         <div class="col-12 d-flex justify-content-end">
                                             <button type="submit"
-                                            class="btn btn-primary me-1 mb-1">
+                                                    class="btn btn-primary me-1 mb-1">
                                                 Enviar
                                             </button>
 
@@ -373,7 +371,7 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
-@section Scripts{
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
@@ -405,7 +403,7 @@
                 ClearDropDown("#recibos");
                 $.ajax({
                     type: "POST",
-                    url: "/Propietarios/AjaxCargarRecibos",
+                    url: "/PagoRecibidos/AjaxCargarRecibos",
                     data: dataRequest,
                     //contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -423,29 +421,29 @@
                         var credito = 0;
                         var total = 0;
 
-                        if(response.deuda > 0){
+                        if (response.deuda > 0) {
                             deuda = String(response.deuda.toFixed(2));
                         }
-                        if (response.saldo > 0 ) {
+                        if (response.saldo > 0) {
                             saldo = String(response.saldo.toFixed(2));
                         }
-                        if(response.interes > 0){
+                        if (response.interes > 0) {
                             mora = String(response.interes.toFixed(2));
                         }
-                        if(response.indexacion > 0){
+                        if (response.indexacion > 0) {
                             indexacion = String(response.indexacion.toFixed(2));
                         }
-                        if(response.credito > 0){
+                        if (response.credito > 0) {
                             credito = String(response.credito.toFixed(2));
                         }
 
                         if (response.saldo > response.abonado.toFixed(2)) {
-                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;
+                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;                            
                             total = String(aux.toFixed(2));
                         }
 
                         //var abonado = String(data.abonado.toFixed(2));
-               
+
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
                         // LLENAR BANCOS
@@ -508,8 +506,8 @@
         function CLearTable(tableId) {
             $(tableId).empty();
         }
-        
-        function ClearDropDown(dropdownId){
+
+        function ClearDropDown(dropdownId) {
             $(dropdownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');;
         }
 

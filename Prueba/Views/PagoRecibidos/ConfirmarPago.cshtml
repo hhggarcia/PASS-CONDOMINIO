@@ -1,0 +1,147 @@
+﻿@model Prueba.ViewModels.PagoRecibidoVM
+
+@{
+    ViewData["Title"] = "Pagos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Confirmar Pago
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h6>¿Seguro que quiere confirmar este pago?</h6>
+                        <h6>Al confirmar el pago se verá reflejado en el Libro diario</h6>
+                        <div>
+                            <div class="card-body">
+                                <div class="form form-horizontal">
+                                    <div class="form-body">
+                                        <dl class="row">
+                                            <form asp-action="RegistrarPagosAdmin">
+
+                                                <input type="hidden" asp-for="IdCodigoCuentaBanco" />
+                                                <input type="hidden" asp-for="IdCodigoCuentaCaja" />
+                                                <input type="hidden" asp-for="IdPropiedad" />
+                                                <input type="hidden" asp-for="Imagen" />
+                                                <label class="control-label">Forma de pago</label>
+                                                @if (Model.Pagoforma == FormaPago.Efectivo)
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Efectivo" class="form-control" readonly />
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Transferencia" class="form-control" readonly />
+                                                    <label class="control-label">Numero de Referencia</label>
+                                                    <input type="text" asp-for="NumReferencia" class="form-control" readonly />
+
+                                                }
+                                                <label class="control-label">Concepto</label>
+                                                <input type="text" asp-for="Concepto" class="form-control" readonly />
+                                                <label class="control-label">Fecha</label>
+                                                <input asp-for="Fecha" class="form-control" readonly />
+                                                <label class="control-label">Monto</label>
+                                                <input type="number" asp-for="Monto" class="form-control" readonly />
+
+                                                <label for="last-name-column">¿Desea enviar correo a los propietarios?</label>
+                                                <select id="selectEnviarCorreo" class="form-select nav-tabs-selector" onchange="mostrarModal()">
+                                                    <option value="no">No</option>
+                                                    <option value="si">Sí</option>
+                                                </select>
+                                                <hr />
+                                                <button class="btn btn-primary" type="submit">Confirmar</button>
+                                                <a class="btn btn-secondary" asp-action="PagosConfirmados">Cancelar</a>
+                                            </form>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="exampleModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Ingresar datos del correo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="contrasena" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    </div>
+                    <button type="button" id="enviarDatos" class="btn btn-primary">Enviar</button>
+                    <button type="button" id="cerrarDatos" class="btn btn-secondary">Cerrar</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $("#selectEnviarCorreo").on("change", function () {
+        // Si el valor del select es "si", abre el modal
+        if (this.value === "si") {
+            // Abre el modal
+            $("#exampleModal").modal("show");
+        } else {
+            $("#exampleModal").modal("hide");
+        }
+    });
+
+    $(document).ready(function () {
+        $("#enviarDatos").click(function () {
+            // Obtener valores del formulario
+
+            var contrasena = $("#contrasena").val();
+
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: '/PagoRecibidos/UsuarioContraseña',
+                type: 'POST',
+                data: { contrasena: contrasena },
+                success: function (response) {
+                    // console.log(response);
+                    $("#exampleModal").modal("hide");
+                    alert(response.message); // Mostrar mensaje de éxito o error
+
+                },
+                error: function (error) {
+                    console.error(error);
+                    // alert('Error en la solicitud AJAX');
+                }
+            });
+        });
+
+        $("#cerrarDatos").click(function () {
+            console.log("hola munod");
+            $("#exampleModal").modal("hide");
+            $("selectEnviarCorreo").value = "no";
+        });
+    });
+
+</script>
+
+
