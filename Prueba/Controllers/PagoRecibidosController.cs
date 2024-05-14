@@ -18,8 +18,6 @@ using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "RequireAdmin")]
-
     public class PagoRecibidosController : Controller
     {
         private readonly IPagosRecibidosRepository _repoPagosRecibidos;
@@ -45,6 +43,8 @@ namespace Prueba.Controllers
         }
 
         // GET: PagoRecibidos
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Index()
         {
             var nuevaAppContext = _context.PagoRecibidos.Include(p => p.IdCondominioNavigation);
@@ -52,6 +52,8 @@ namespace Prueba.Controllers
         }
 
         // GET: PagoRecibidos/Details/5
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -71,6 +73,8 @@ namespace Prueba.Controllers
         }
 
         // GET: PagoRecibidos/Create
+        [Authorize(Policy = "RequireAdmin")]
+
         public IActionResult Create()
         {
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
@@ -82,6 +86,8 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Create([Bind("IdPagoRecibido,IdCondominio,FormaPago,Monto,Fecha,IdSubCuenta,Concepto,Confirmado,ValorDolar,MontoRef,SimboloMoneda,SimboloRef,Imagen")] PagoRecibido pagoRecibido)
         {
             if (ModelState.IsValid)
@@ -95,6 +101,8 @@ namespace Prueba.Controllers
         }
 
         // GET: PagoRecibidos/Edit/5
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -116,6 +124,8 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Edit(int id, [Bind("IdPagoRecibido,IdCondominio,FormaPago,Monto,Fecha,IdSubCuenta,Concepto,Confirmado,ValorDolar,MontoRef,SimboloMoneda,SimboloRef,Imagen")] PagoRecibido pagoRecibido)
         {
             if (id != pagoRecibido.IdPagoRecibido)
@@ -148,6 +158,8 @@ namespace Prueba.Controllers
         }
 
         // GET: PagoRecibidos/Delete/5
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -169,6 +181,8 @@ namespace Prueba.Controllers
         // POST: PagoRecibidos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var pagoRecibido = await _context.PagoRecibidos.FindAsync(id);
@@ -181,6 +195,7 @@ namespace Prueba.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> PagosConfirmados()
         {
             var model = await _context.PagoPropiedads
@@ -196,6 +211,7 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> RegistrarPagosAdmin()
         {
             try
@@ -229,6 +245,8 @@ namespace Prueba.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> RegistrarPagosAdmin(PagoRecibidoVM modelo)
         {
             try
@@ -262,6 +280,7 @@ namespace Prueba.Controllers
                 if (resultado == "exito")
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
                     var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
 
                     var comprobante = new ComprobanteVM()
@@ -276,7 +295,7 @@ namespace Prueba.Controllers
                             IdCondominio = modelo.IdCondominio,
                             Fecha = modelo.Fecha,
                             FormaPago = modelo.FormaPago,
-                            Monto = modelo.Monto
+                            Monto = recibo.Monto
                         },
                         Mensaje = "Gracias por su pago!"
                     };
@@ -305,11 +324,9 @@ namespace Prueba.Controllers
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                     System.IO.File.Delete(filePath);
                 }
-                
-                string idPropietario = TempData.Peek("idUserLog").ToString();
 
                 var propiedades = from c in _context.Propiedads
-                                  where c.IdUsuario == idPropietario
+                                  where c.IdCondominio == idCondominio
                                   select c;
 
                 modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
@@ -339,6 +356,8 @@ namespace Prueba.Controllers
         /// <param name="valor"></param>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<JsonResult> AjaxCargarRecibos(int valor)
         {
             PagoRecibidoVM modelo = new PagoRecibidoVM();
@@ -387,8 +406,12 @@ namespace Prueba.Controllers
             return Json(modelo);
         }
 
+        [Authorize(Policy = "RequireAdmin")]
         public IActionResult ConfirmarPago(PagoRecibidoVM modelo, IFormFile file)
         {
+            var recibo = _context.ReciboCobros.Find(modelo.IdRecibo);
+            modelo.Monto = recibo.Monto;
+
             string uniqueFileName = null;  //to contain the filename
             if (file != null)  //handle iformfile
             {
@@ -416,6 +439,8 @@ namespace Prueba.Controllers
         /// <returns></returns>
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+
         public async Task<IActionResult> RegistrarPagos(PagoRecibidoVM modelo, IFormFile file)
         {
             try
@@ -498,6 +523,7 @@ namespace Prueba.Controllers
                     return View("Comprobante", comprobante);
                 }
 
+                // eliminar archivo si no se registro efectivamente el pago
                 if (file != null)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
@@ -533,6 +559,7 @@ namespace Prueba.Controllers
             }
         }
 
+        [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> PagosRecibidosAdmin()
         {
             try
@@ -558,7 +585,7 @@ namespace Prueba.Controllers
                             var pagos = await (from c in _context.PagoRecibidos
                                                join d in _context.PagoPropiedads
                                                on c.IdPagoRecibido equals d.IdPago
-                                               where c.IdCondominio == idCondominio && d.IdPropiedad == propiedad.IdPropiedad
+                                               where c.IdCondominio == idCondominio && d.IdPropiedad == propiedad.IdPropiedad && !d.Confirmado
                                                select c).ToListAsync();
 
                             if (pagos != null && pagos.Any())
@@ -593,6 +620,7 @@ namespace Prueba.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Policy = "RequireAdmin")]
         public IActionResult RectificarPago(int id)
         {
             try
@@ -614,6 +642,7 @@ namespace Prueba.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> ConfirmarRectificarPago()
         {
             try
@@ -668,6 +697,7 @@ namespace Prueba.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequireAdmin")]
         public IActionResult UsuarioContraseña(string contrasena)
         {
             TempData["Contrasena"] = contrasena;
@@ -676,7 +706,7 @@ namespace Prueba.Controllers
         }
 
         [Authorize(Policy = "RequirePropietario")]
-        public async Task<IActionResult> PagosRecibidosPropietarios()
+        public async Task<IActionResult> PagosRecibidosPropietario()
         {
             try
             {
@@ -715,6 +745,7 @@ namespace Prueba.Controllers
             }
 
         }
+
         private bool PagoRecibidoExists(int id)
         {
             return _context.PagoRecibidos.Any(e => e.IdPagoRecibido == id);

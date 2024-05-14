@@ -132,25 +132,26 @@
                                             </div>
                                         </div>
                                         <!-- Fin modal-->
+
                                         <!-- Select Recibo a pagar -->
-                                        @*            <div class="col-md-12 col-12">
-                                <div class="form-group has-icon-left">
-                                <label for="last-name-column">Seleccione un Recibo</label>
-                                <div class="position-relative"> *@
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Seleccione un Recibo</label>
+                                                <div class="position-relative">
 
-                                        @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
-                                        @*                             <select asp-for="IdRecibo"
-                                asp-items="Model.RecibosModel"
-                                class="form-select" id="recibos">
-                                <option value="0">Seleccionar</option>
-                                </select>
+                                                    @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
+                                                    <select asp-for="IdRecibo"
+                                                            asp-items="Model.RecibosModel" required
+                                                            class="form-select" id="recibos">
+                                                        <option value="0">Seleccionar</option>
+                                                    </select>
 
-                                <div class="form-control-icon">
-                                <i class="bi bi-building"></i>
-                                </div>
-                                </div>
-                                </div>
-                                </div> *@
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
@@ -173,25 +174,24 @@
                                         </div>
 
                                         <!-- Monto -->
+                                        @* <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Monto</label>
+                                <span asp-validation-for="Monto" class="text-danger"></span>
 
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Monto</label>
-                                                <span asp-validation-for="Monto" class="text-danger"></span>
-
-                                                <div class="position-relative">
-                                                    <input type="number"
-                                                           class="form-control"
-                                                           placeholder="Monto"
-                                                           id="first-name-icon"
-                                                           required
-                                                           asp-for="Monto" />
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-building"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="position-relative">
+                                <input type="number"
+                                class="form-control"
+                                placeholder="Monto"
+                                id="first-name-icon"
+                                required
+                                asp-for="Monto" />
+                                <div class="form-control-icon">
+                                <i class="bi bi-building"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div> *@
 
 
                                         <!-- Fecha -->
@@ -201,9 +201,9 @@
                                                 <span asp-validation-for="Fecha" class="text-danger"></span>
 
                                                 <div class="position-relative">
-                                                    <input
-                                                           class="form-control"
+                                                    <input class="form-control"
                                                            placeholder="Name"
+                                                           required
                                                            id="first-name-icon"
                                                            asp-for="Fecha"
                                                            value="@DateTime.Today" />
@@ -214,7 +214,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Monto -->
+                                        <!-- Imagen -->
 
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
@@ -438,7 +438,7 @@
                         }
 
                         if (response.saldo > response.abonado.toFixed(2)) {
-                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;                            
+                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;
                             total = String(aux.toFixed(2));
                         }
 

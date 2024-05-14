@@ -139,7 +139,7 @@ namespace Prueba.Controllers
 
                 var propiedades = from c in _context.Propiedads
                                   where c.IdUsuario == idPropietario
-                                  select c;
+                                  select c;                
 
                 modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
 
@@ -280,6 +280,7 @@ namespace Prueba.Controllers
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
                     var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
+                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
 
                     var comprobante = new ComprobanteVM()
                     {
@@ -292,13 +293,13 @@ namespace Prueba.Controllers
                         {
                             IdCondominio = modelo.IdCondominio,
                             Fecha = modelo.Fecha,
-                            FormaPago = modelo.FormaPago,
-                            Monto = modelo.Monto
+                            FormaPago = modelo.Pagoforma == FormaPago.Transferencia,
+                            Monto = recibo.Monto
                         },
                         Mensaje = "Gracias por su pago!"
                     };
 
-                    if (modelo.FormaPago && modelo.IdCodigoCuentaBanco > 0)
+                    if (modelo.IdCodigoCuentaBanco > 0)
                     {
                         var banco = await _context.SubCuenta.FindAsync(modelo.IdCodigoCuentaBanco);
 

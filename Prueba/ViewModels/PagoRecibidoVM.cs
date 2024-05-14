@@ -5,7 +5,6 @@ namespace Prueba.ViewModels
 {
     public class PagoRecibidoVM: PagoRecibido
     {
-        public int IdCondominio { get; set; }
         public FormaPago Pagoforma { get; set; }
         public int DeudaPagar { get; set; }
         public IList<SelectListItem>? SubCuentasBancos { get; set; }

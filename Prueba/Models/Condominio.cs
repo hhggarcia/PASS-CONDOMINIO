@@ -25,6 +25,13 @@ public partial class Condominio
 
     public decimal? Multa { get; set; }
 
+    public string? ClaveCorreo { get; set; }
+
+    /// <summary>
+    /// Codigo para cuenta a registrar pagos de propietarios
+    /// </summary>
+    public int? IdCodCuenta { get; set; }
+
     public virtual ICollection<Administrador> Administradors { get; set; } = new List<Administrador>();
 
     public virtual ICollection<BalanceComprobacion> BalanceComprobacions { get; set; } = new List<BalanceComprobacion>();

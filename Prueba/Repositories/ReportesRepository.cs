@@ -264,8 +264,8 @@ namespace Prueba.Repositories
                 var pagosMes = _context.PagoRecibidos
                         .Where(c => c.IdCondominio == idCondominio
                         && c.Fecha.Month == mes
-                        && c.Confirmado == true)
-                        .Sum(c => c.MontoRef);
+                        && c.Confirmado)
+                        .Sum(c => c.Monto);
 
                 ingresoMes += pagosMes;
             }
@@ -286,7 +286,7 @@ namespace Prueba.Repositories
                 var pagosEmitidosMes = _context.PagoEmitidos
                     .Where(c => c.IdCondominio == condominio.IdCondominio 
                     && c.Fecha.Month == mes)
-                    .Sum(c => c.MontoRef);
+                    .Sum(c => c.Monto);
 
                 egresoMes += pagosEmitidosMes;
             }
@@ -375,8 +375,8 @@ namespace Prueba.Repositories
                 foreach (var propiedad in listaPropiedadesCondominio)
                 {
                     var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad
-                                                            && c.EnProceso != true
-                                                            && c.Pagado != true)
+                                                            && !c.EnProceso
+                                                            && !c.Pagado)
                                                     .ToListAsync();
 
                     var aux = recibosCobroCond.Concat(recibo).ToList();

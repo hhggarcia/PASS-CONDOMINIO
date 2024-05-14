@@ -134,16 +134,16 @@
 
                                         <!-- Select Recibo a pagar -->
 
-                             @*            <div class="col-md-12 col-12">
+                                        <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative"> *@
+                                                <div class="position-relative">
                                                     
-                                                    @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
-                        @*                             <select asp-for="IdRecibo"
+                                                    @* html.dropdownlistfor(r => r.idrecibo, model.recibosmodel, "recibo", new {@class = "form-control form-select nav-tabs-selector"}) *@
+                                                    <select asp-for="IdRecibo"
                                                         asp-items="Model.RecibosModel"
                                                         class="form-select" id="recibos">
-                                                        <option value="0">Seleccionar</option>
+                                                        <option value="0">seleccionar</option>
                                                         </select>
 
                                                     <div class="form-control-icon">
@@ -151,7 +151,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div> *@
+                                        </div>
                                          
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
@@ -175,7 +175,7 @@
                                         
                                         <!-- Monto -->
 
-                                        <div class="col-md-6 col-12">
+                                        @* <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Monto</label>
                                             <span asp-validation-for="Monto" class="text-danger"></span>
@@ -192,7 +192,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> *@
 
 
                                         <!-- Fecha -->
@@ -215,7 +215,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Monto -->
+                                        <!-- Imagen -->
 
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
