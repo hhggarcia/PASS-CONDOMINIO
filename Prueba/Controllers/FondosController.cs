@@ -48,7 +48,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            return RedirectToAction("RelaciondeGastos", "RelacionGastos");
+            return RedirectToAction("TransaccionesDelMes", "RelacionGastos");
 
         }
 
@@ -71,7 +71,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdFondo,IdCodCuenta,Porcentaje,FechaInicio,FechaFin")] Fondo fondo)
+        public async Task<IActionResult> Create([Bind("IdFondo,IdCodCuenta,Porcentaje,Monto,FechaInicio,FechaFin")] Fondo fondo)
         {
             //if (ModelState.IsValid)
             //{
@@ -98,7 +98,7 @@ namespace Prueba.Controllers
             // 
             var result = await _repoCuentas.CrearFondo(fondo);
 
-            return RedirectToAction("RelaciondeGastos", "RelacionGastos");
+            return RedirectToAction("TransaccionesDelMes", "RelacionGastos");
             //}
             //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", fondo.IdCodCuenta);
             //return View(fondo);
@@ -133,7 +133,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdFondo,IdCodCuenta,Porcentaje,FechaInicio,FechaFin")] Fondo fondo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdFondo,IdCodCuenta,Porcentaje,Monto,FechaInicio,FechaFin")] Fondo fondo)
         {
             if (id != fondo.IdFondo)
             {
@@ -183,7 +183,7 @@ namespace Prueba.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("RelaciondeGastos", "RelacionGastos"); 
+            return RedirectToAction("TransaccionesDelMes", "RelacionGastos"); 
             //}
             //ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", fondo.IdCodCuenta);
             //return View(fondo);
@@ -224,7 +224,7 @@ namespace Prueba.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("RelaciondeGastos", "RelacionGastos");
+            return RedirectToAction("TransaccionesDelMes", "RelacionGastos");
 
         }
 

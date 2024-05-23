@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -17,11 +19,15 @@ namespace Prueba.Controllers
 
     public class LibroVentasController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public LibroVentasController(IFiltroFechaRepository filtroFechaRepository,NuevaAppContext context)
+        public LibroVentasController(IPDFServices servicesPDF,
+            IFiltroFechaRepository filtroFechaRepository,
+            NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
@@ -170,6 +176,42 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<ContentResult> LibroPDF([FromBody] IEnumerable<LibroVenta> listaLibroVenta)
+        {
+            try
+            {
+                var modelo = new List<LibroVentasVM>();
+
+                foreach (var item in listaLibroVenta)
+                {
+                    var factura = await _context.FacturaEmitida.FindAsync(item.IdFactura);
+                    if (factura != null)
+                    {
+                        var producto = await _context.Productos.FindAsync(factura.IdProducto);
+                        var cliente  = await _context.Clientes.FindAsync(factura.IdCliente);
+
+                        modelo.Add(new LibroVentasVM
+                        {
+                            libroVenta = item,
+                            FacturaEmitida = factura,
+                            Producto = producto,
+                            cliente = cliente
+                        });
+                    }
+                }                
+
+                var data = _servicesPDF.LibroVentas(modelo);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
 
         private bool LibroVentaExists(int id)

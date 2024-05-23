@@ -166,6 +166,51 @@ namespace Prueba.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DeudoresPDF()
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
+
+            if (modelo.Propiedades != null && modelo.Propiedades.Any()
+                && modelo.Propietarios != null && modelo.Propietarios.Any()
+                && modelo.Recibos != null && modelo.Recibos.Any())
+            {
+                var data = await _servicePDF.Deudores(modelo, idCondominio);
+                Stream stream = new MemoryStream(data);
+                TempData.Keep();
+                return File(stream, "application/pdf", "Deudores_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+            }
+
+            TempData.Keep();
+
+            return RedirectToAction("Index");
+
+        }
+
+        public async Task<IActionResult> DeudoresResumenPDF()
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
+
+            if (modelo.Propiedades != null && modelo.Propiedades.Any()
+                && modelo.Propietarios != null && modelo.Propietarios.Any()
+                && modelo.Recibos != null && modelo.Recibos.Any())
+            {
+                var data = await _servicePDF.DeudoresResumen(modelo, idCondominio);
+                Stream stream = new MemoryStream(data);
+                TempData.Keep();
+                return File(stream, "application/pdf", "Deudores_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+            }
+
+            TempData.Keep();
+
+            return RedirectToAction("Index");
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -183,7 +228,7 @@ namespace Prueba.Controllers
                 // pagos recibidos
                 var pagosPorPropiedad = new Dictionary<Propiedad, List<PagoRecibido>>();
                 //var pagosCuotas = await _context.PagosCuotas.Select(c => c.IdPagoRecibido).ToListAsync();
-                
+
                 foreach (var user in listaPropietarios)
                 {
                     var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == user.Id).ToListAsync();
@@ -196,7 +241,7 @@ namespace Prueba.Controllers
                             var pagos = await (from c in _context.PagoRecibidos
                                                join d in _context.PagosRecibos
                                                on c.IdPagoRecibido equals d.IdPago
-                                               where c.IdPropiedad == propiedad.IdPropiedad
+                                               where c.IdCondominio == idCondominio
                                                select c).ToListAsync();
 
                             if (pagos != null && pagos.Count() > 0)
@@ -267,7 +312,14 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+                    //var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+
+                    var recibo = (from c in _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido)
+                                  join f in _context.ReciboCobros
+                                  on c.IdRecibo equals f.IdReciboCobro
+                                  select f).FirstOrDefault();
+
+                    var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
 
                     if (propiedad != null)
                     {
@@ -385,11 +437,18 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    // buscar propiedad
-                    var propiedad = await _context.Propiedads.FindAsync(pago.IdPropiedad);
+                    // buscar propiedad                   
 
-                    if (propiedad != null)
+                    var recibo = (from c in _context.PagosRecibos
+                                  join r in _context.ReciboCobros
+                                  on c.IdRecibo equals r.IdReciboCobro
+                                  where c.IdPago == pago.IdPagoRecibido
+                                  select r).FirstOrDefault();
+
+                    if (recibo != null)
                     {
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+
                         var relacion = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
 
                         var reciboActual = (from r in relacion
@@ -554,16 +613,16 @@ namespace Prueba.Controllers
 
 
 
-                                if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
-                                {
-                                    string password = TempData.Peek("Contrasena").ToString();
-                                    var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
+                                //if (TempData.Peek("Contrasena") != null || TempData.Peek("Contrasena") != "")
+                                //{
+                                //    string password = TempData.Peek("Contrasena").ToString();
+                                //    var email = await _context.AspNetUsers.Where(c => c.Id == propiedad.IdUsuario).Select(c => c.Email).FirstAsync();
 
-                                    var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
+                                //    var emailFrom = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).Select(c => c.Email).FirstAsync();
 
-                                    _serviceEmail.ConfirmacionPago(emailFrom, email, propiedad, reciboActual, pago, "");
-                                    TempData["Contrasena"] = null;
-                                }
+                                //    _serviceEmail.ConfirmacionPago(emailFrom, email, propiedad, reciboActual, pago, "");
+                                //    TempData["Contrasena"] = null;
+                                //}
 
                                 int numAsiento = 1;
 
@@ -650,7 +709,10 @@ namespace Prueba.Controllers
 
                             return View("Error", error);
                         }
+
                     }
+
+
                 }
                 TempData.Keep();
                 return RedirectToAction("PagosRecibidos");
@@ -755,20 +817,22 @@ namespace Prueba.Controllers
         /// <returns></returns>
         public async Task<IActionResult> DetalleRecibo(int id)
         {
-            if (_context.RelacionGastos == null)
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
             {
-                return NotFound();
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGasto.LoadTransaccionesMes(rg.IdRgastos);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
             }
 
-            //var relacionGasto = await _context.RelacionGastos
-            //    .Include(r => r.IdCondominioNavigation)
-            //    .FirstOrDefaultAsync(m => m.IdRgastos == id);
-            //if (relacionGasto == null)
-            //{
-            //    return NotFound();
-            //}
-            var modelo = await _repoRelacionGasto.DetalleRecibo(id);
-            //return View(relacionGasto);
             return View(modelo);
         }
 
@@ -808,12 +872,16 @@ namespace Prueba.Controllers
                     propiedadesPorUsuario.Add(user, propiedades);
                     foreach (var propiedad in propiedades)
                     {
-                        var pagos = await _context.PagoRecibidos.Where(
-                            c => c.IdPropiedad == propiedad.IdPropiedad
-                            && c.Confirmado == false)
-                            .ToListAsync();
+                        var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
-                        if (pagos != null && pagos.Count() > 0)
+                        var pagos = await (from p in _context.PagoRecibidos
+                                           join cc in _context.PagosRecibos
+                                           on p.IdPagoRecibido equals cc.IdPago
+                                           join r in recibos
+                                           on cc.IdRecibo equals r.IdReciboCobro
+                                           select p).ToListAsync();
+
+                        if (pagos != null && pagos.Any())
                         {
                             pagosPorPropiedad.Add(propiedad, pagos);
                         }

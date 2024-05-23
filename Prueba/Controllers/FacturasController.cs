@@ -17,11 +17,18 @@ namespace Prueba.Controllers
 
     public class FacturasController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public FacturasController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
+        public FacturasController(IMonedaRepository repoMoneda,
+            ICuentasContablesRepository repoCuentas,
+            IFiltroFechaRepository filtroFechaRepository, 
+            NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
+            _repoCuentas = repoCuentas;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
@@ -31,16 +38,16 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            //var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
-            //                          join c in _context.CodigoCuentasGlobals on f.IdCodCuenta equals c.IdCodCuenta
-            //                          where c.IdCondominio == IdCondominio
-            //                          select f).ToListAsync();
+            var listFacturas = await (from f in _context.Facturas.Include(f => f.IdProveedorNavigation)
+                                      join c in _context.Proveedors on f.IdProveedor equals c.IdProveedor
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
 
-            var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
+            //var nuevaAppContext = await _context.Facturas.Include(f => f.IdProveedorNavigation).ToListAsync();
 
             TempData.Keep();
 
-            return View(nuevaAppContext);
+            return View(listFacturas);
         }
 
         // GET: Facturas/Details/5
@@ -78,8 +85,11 @@ namespace Prueba.Controllers
                 ViewData["NumControl"] = listFacturas[listFacturas.Count - 1].NumControl;
             }
 
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
             TempData.Keep();
             return View();
@@ -100,21 +110,45 @@ namespace Prueba.Controllers
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             if (ModelState.IsValid)
             {
                 factura.EnProceso = true;
-                _context.Add(factura);
-                await _context.SaveChangesAsync();
-
-                // calcular retenciones al proveedor
-
                 var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
 
                 if (proveedor == null)
                 {
                     return NotFound();
                 }
+                var grupo = await (from g in _context.GrupoGastos
+                                   join cg in _context.CuentasGrupos
+                                   on g.IdGrupoGasto equals cg.IdGrupoGasto
+                                   where factura.IdCodCuenta == cg.IdCodCuenta
+                                   select g).FirstOrDefaultAsync();
+                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(IdCondominio);
+                var transaccion = new Transaccion
+                {
+                    TipoTransaccion = false,
+                    IdCodCuenta = factura.IdCodCuenta,
+                    Descripcion = factura.Descripcion + " - " + proveedor.Nombre,
+                    MontoTotal = factura.MontoTotal,
+                    Documento = factura.NumFactura.ToString(),
+                    Cancelado = factura.MontoTotal,
+                    SimboloMoneda = monedaPrincipal.First().Simbolo,
+                    SimboloRef = "$",
+                    ValorDolar = monedaPrincipal.First().ValorDolar,
+                    MontoRef = factura.MontoTotal / monedaPrincipal.First().ValorDolar,
+                    Fecha = DateTime.Today,
+                    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
+                    Activo = true
+                };
+
+                _context.Transaccions.Add(transaccion);
+                _context.Add(factura);
+                await _context.SaveChangesAsync();
+
+                // calcular retenciones al proveedor                
 
                 var rtiva = await _context.Ivas.FindAsync(proveedor.IdRetencionIva);
 
@@ -130,13 +164,11 @@ namespace Prueba.Controllers
 
                 if (rtislr != null)
                 {
-                    montoRTISLR = factura.Subtotal * (rtislr.Tarifa / 100);
+                    montoRTISLR = factura.Subtotal * (rtislr.Tarifa / 100) - rtislr.Sustraendo;
                 }
-
 
                 // registrar libro de compras
 
-                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
                 var itemLibroCompra = new LibroCompra
                 {
@@ -148,7 +180,7 @@ namespace Prueba.Controllers
                     Igtf = 0,
                     RetIva = montoRTIVA,
                     RetIslr = montoRTISLR,
-                    Monto = factura.MontoTotal,
+                    Monto = factura.MontoTotal - montoRTIVA - montoRTISLR,
                     NumComprobanteRet = 0,
                     FechaComprobanteRet = DateTime.Now
                 };
@@ -170,9 +202,14 @@ namespace Prueba.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
 
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(factura);
         }
 
@@ -194,8 +231,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion", cc.IdSubCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(factura);
         }
@@ -239,9 +282,14 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(factura);
         }
 
@@ -273,12 +321,21 @@ namespace Prueba.Controllers
             if (factura != null)
             {
                 var pagosFactura = await _context.PagoFacturas.Where(c => c.IdFactura.Equals(id)).ToListAsync();
+                var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).ToListAsync();
+                var itemCuentasCobrar = await _context.CuentasPagars.Where(c => c.IdFactura == factura.IdFactura).ToListAsync();
 
                 if (pagosFactura != null)
                 {
                     _context.PagoFacturas.RemoveRange(pagosFactura);
                 }
-
+                if (itemLibroCompra != null)
+                {
+                    _context.LibroCompras.RemoveRange(itemLibroCompra);
+                }
+                if (itemCuentasCobrar != null)
+                {
+                    _context.CuentasPagars.RemoveRange(itemCuentasCobrar);
+                }
                 _context.Facturas.Remove(factura);
             }
 

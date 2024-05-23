@@ -17,9 +17,9 @@ public partial class Cliente
 
     public string Rif { get; set; } = null!;
 
-    public int IdRetencionIslr { get; set; }
+    public int? IdRetencionIslr { get; set; }
 
-    public int IdRetencionIva { get; set; }
+    public int? IdRetencionIva { get; set; }
 
     public decimal Saldo { get; set; }
 
@@ -27,15 +27,19 @@ public partial class Cliente
 
     public bool ContribuyenteEspecial { get; set; }
 
+    public string? Email { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();
 
+    public virtual ICollection<FacturaEmitida> FacturaEmitida { get; set; } = new List<FacturaEmitida>();
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual Islr IdRetencionIslrNavigation { get; set; } = null!;
+    public virtual Islr? IdRetencionIslrNavigation { get; set; }
 
-    public virtual Iva IdRetencionIvaNavigation { get; set; } = null!;
+    public virtual Iva? IdRetencionIvaNavigation { get; set; }
 
     public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
 }

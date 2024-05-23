@@ -46,13 +46,22 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdProveedorNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.NumCompRet)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.FechaEmision)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Descripcion)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Retencion)
+                                        @Html.DisplayNameFor(model => model.Retencion) %
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Sustraendo)
@@ -63,12 +72,8 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.TotalImpuesto)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdProveedorNavigation)
-                                    </th>
+                                    
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
@@ -76,6 +81,15 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NumCompRet)
+                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.FechaEmision)
                                         </td>
@@ -93,17 +107,14 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalImpuesto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFactura)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.IdProveedor)
-                                        </td>
+                                        </td>                                        
+                                        
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdComprobante">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdComprobante">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a> |
+                                            <a asp-action="PrintComprobante" asp-route-id="@item.IdComprobante">Imprimir</a> |
+                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdComprobante">Descargar PDF</a>
                                         </td>
                                     </tr>
                                 }

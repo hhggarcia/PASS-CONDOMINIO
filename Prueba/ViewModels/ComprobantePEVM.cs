@@ -20,5 +20,7 @@ namespace Prueba.ViewModels
 
         public Anticipo? Anticipo { get; set; }
         public string Beneficiario { get; set; }
+        public bool retencionesIva { get; set; }
+        public bool retencionesIslr { get; set; }
     }
 }

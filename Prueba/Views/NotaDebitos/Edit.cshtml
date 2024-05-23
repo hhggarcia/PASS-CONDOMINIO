@@ -2,49 +2,60 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "_LayoutAdministrador.cshtml";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>NotaDebito</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdNotaDebito" />
-            <div class="form-group">
-                <label asp-for="NumNotaDebito" class="control-label"></label>
-                <input asp-for="NumNotaDebito" class="form-control" />
-                <span asp-validation-for="NumNotaDebito" class="text-danger"></span>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Notas de Debito
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form asp-action="Edit">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="IdNotaDebito" />
+                                <div class="form-group">
+                                    <label asp-for="NumNotaDebito" class="control-label"></label>
+                                    <input asp-for="NumNotaDebito" class="form-control" />
+                                    <span asp-validation-for="NumNotaDebito" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Concepto" class="control-label"></label>
+                                    <input asp-for="Concepto" class="form-control" />
+                                    <span asp-validation-for="Concepto" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdProveedor" class="control-label"></label>
+                                    <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
+                                    <span asp-validation-for="IdProveedor" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Abonado" class="control-label"></label>
+                                    <input type="number" asp-for="Abonado" class="form-control" />
+                                    <span asp-validation-for="Abonado" class="text-danger"></span>
+                                </div>
+                                <div class="form-group pt-2">
+                                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Concepto" class="control-label"></label>
-                <input asp-for="Concepto" class="form-control" />
-                <span asp-validation-for="Concepto" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdProveedor" class="control-label"></label>
-                <select asp-for="IdProveedor" class="form-control" asp-items="ViewBag.IdProveedor"></select>
-                <span asp-validation-for="IdProveedor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Abonado" class="control-label"></label>
-                <input asp-for="Abonado" class="form-control" />
-                <span asp-validation-for="Abonado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

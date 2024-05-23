@@ -28,8 +28,13 @@
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="Porcentaje" class="control-label"></label>
-                                        <input asp-for="Porcentaje" class="form-control" />
+                                        <input type="number" asp-for="Porcentaje" class="form-control" />
                                         <span asp-validation-for="Porcentaje" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Monto" class="control-label"></label>
+                                        <input type="number" asp-for="Monto" class="form-control" />
+                                        <span asp-validation-for="Monto" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="FechaInicio" class="control-label"></label>
@@ -43,8 +48,7 @@
                                     </div>
                                     <div class="form-group">
                                         <input type="submit" value="Crear" class="btn btn-primary" />
-                                        <a asp-controller="RelacionGastos" asp-action="RelaciondeGastos" class="btn btn-secondary">Volver</a>
-
+                                        <a asp-controller="RelacionGastos" asp-action="TransaccionesDelMes" class="btn btn-secondary">Volver</a>
                                     </div>
                                 </form>
                             </div>

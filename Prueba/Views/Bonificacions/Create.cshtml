@@ -1,0 +1,68 @@
+﻿@model Prueba.Models.Bonificacion
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    @*    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>
+    </div>*@
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Bonificaciones
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="IdEmpleado" class="control-label"></label>
+                            <select asp-for="IdEmpleado" class="form-control" asp-items="ViewBag.IdEmpleado"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdCodCuenta" class="control-label"></label>
+                            <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Concepto" class="control-label"></label>
+                            <input asp-for="Concepto" class="form-control" />
+                            <span asp-validation-for="Concepto" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Monto" class="control-label"></label>
+                            <input asp-for="Monto" class="form-control" />
+                            <span asp-validation-for="Monto" class="text-danger"></span>
+                        </div>
+                        @* <div class="form-group">
+                            <label asp-for="RefMonto" class="control-label"></label>
+                            <input asp-for="RefMonto" class="form-control" />
+                            <span asp-validation-for="RefMonto" class="text-danger"></span>
+                        </div> *@
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

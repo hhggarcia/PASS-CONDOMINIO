@@ -6,11 +6,6 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- Page Heading -->
-    @*<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Deudores</h1>
-    </div>*@
-
-
     <div class="row">
 
         @if (Model.Propiedades != null && Model.Propiedades.Any()
@@ -40,7 +35,7 @@
                                         <div class="card-profile-image">
                                             <a href="#">
                                                 <img src="https://img.freepik.com/free-vector/building-concept-illustration_114360-4469.jpg?w=2000"
-                                             class="rounded-circle" />
+                                                     class="rounded-circle" />
                                             </a>
                                         </div>
                                     </div>
@@ -52,20 +47,22 @@
                                 </div>
                                 <div class="card-body pt-0">
                                     <div class="text-center">
-                                        <h5 class="h3">
-                                            @propietario.FirstOrDefault().FirstName @propietario.FirstOrDefault().LastName
-                                        </h5>
+                                        <h4>
+                                            <strong>
+                                                @propietario.FirstOrDefault().FirstName
+                                            </strong>
+                                        </h4>
                                         <h5 class="font-weight-300">
-                                            @propiedad.Codigo - Condominio
+                                            @propiedad.Codigo
                                         </h5>
                                         <h5 class="h5 mt-4">
                                             Alicuota: @propiedad.Alicuota.ToString("N")
                                         </h5>
                                         <button type="button"
-                                        class="btn btn-outline-success"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#wholePost_@propiedad.IdPropiedad"
-                                        onclick="showContent(@propiedad.IdPropiedad);">
+                                                class="btn btn-outline-success"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#wholePost_@propiedad.IdPropiedad"
+                                                onclick="showContent(@propiedad.IdPropiedad);">
                                             Ver
                                         </button>
                                     </div>
@@ -81,25 +78,25 @@
 
                 <!--scrolling content Modal -->
                 <div class="modal fade"
-             id="wholePost_@propiedad.IdPropiedad"
-             tabindex="-1"
-             role="dialog"
-             aria-labelledby="exampleModalScrollableTitle"
-             aria-hidden="true">
+                     id="wholePost_@propiedad.IdPropiedad"
+                     tabindex="-1"
+                     role="dialog"
+                     aria-labelledby="exampleModalScrollableTitle"
+                     aria-hidden="true">
 
 
                     <div class="modal-dialog modal-dialog-scrollable"
-                 role="document">
+                         role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title"
-                            id="exampleModalScrollableTitle">
+                                    id="exampleModalScrollableTitle">
                                     Información de Deuda
                                 </h5>
                                 <button type="button"
-                                class="close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close">
+                                        class="close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">
                                     <i data-feather="x"></i>
                                 </button>
                             </div>
@@ -107,13 +104,31 @@
                             <div class="modal-body">
                                 <p>
                                     <strong>
-                                        Deuda Actual
-                                    </strong> = @(propiedad.Saldo.ToString("N"))
+                                        Interés Mora
+                                    </strong> = @(propiedad.MontoIntereses.ToString("N"))
                                 <p>
-                                    <strong>Deuda Vencida</strong> = @(propiedad.Deuda.ToString("N"))
+                                <p>
+                                    <strong>
+                                        Interés Indexación
+                                    </strong> = @((((decimal)propiedad.MontoMulta)).ToString("N"))
+                                <p>
+                                <p>
+                                    <strong>Deuda</strong> = @(propiedad.Deuda.ToString("N"))
                                 </p>
                                 <p>
-                                    <strong>Total</strong> = @((propiedad.Saldo + propiedad.Deuda).ToString("N"))
+                                    <strong>
+                                        Saldo Actual
+                                    </strong> = @(propiedad.Saldo.ToString("N"))
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        Crédito
+                                    </strong> = @(((decimal)propiedad.Creditos).ToString("N"))
+                                </p>
+                                <hr />
+                                <p>
+                                    <strong>Total</strong> = @((propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
                                 </p>
                                 <div class="table-responsive text-center">
                                     <table class="table mb-0">
@@ -128,26 +143,25 @@
                                         </thead>
 
                                         <tbody>
-                                                @if (recibos != null && recibos.Any())
-                                                {
-                                                    @foreach (var recibo in recibos)
-                                                    {
+                                                            @if (recibos != null && recibos.Any())
+                                                            {
+                                                                @foreach (var recibo in recibos)
+                                                                {
                                                     <tr>
                                                         <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
                                                         <td class="text-bold-500">@recibo.Monto.ToString("N") @recibo.SimboloMoneda</td>
                                                         <td>@recibo.ValorDolar.ToString("N")</td>
                                                         <td class="text-bold-500">@recibo.MontoRef.ToString("N") @recibo.SimboloRef</td>
                                                         <td>
-                                                            <a asp-controller="Administrador"
-                                                            asp-action="DetalleRecibo"
-                                                            asp-route-id="@recibo.IdReciboCobro">Detalles</a>
+                                                            <a asp-action="DetalleRecibo"
+                                                               asp-route-id="@recibo.IdReciboCobro">Detalles</a>
                                                         </td>
                                                     </tr>
-                                                    }
+                                                                }
 
-                                                }
-                                                else
-                                                {
+                                                            }
+                                                            else
+                                                            {
                                                 <tr>
                                                     <td class="text-bold-500">Sin</td>
                                                     <td>Recibos</td>
@@ -155,7 +169,7 @@
                                                     <td></td>
                                                     <td></td>
                                                 </tr>
-                                                }
+                                                            }
 
                                         </tbody>
                                     </table>
@@ -163,8 +177,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button"
-                                class="btn btn-light-secondary"
-                                data-bs-dismiss="modal">
+                                        class="btn btn-light-secondary"
+                                        data-bs-dismiss="modal">
                                     <i class="bx bx-x d-block d-sm-none"></i>
                                     <span class="d-none d-sm-block">Cerrar</span>
                                 </button>
@@ -172,9 +186,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
             }
 
 
@@ -182,16 +193,16 @@
         }
         else
         {
-            <h2>No hay Deudores :D</h2>
+        <h2>No hay Deudores :D</h2>
         }
 
 
-    </div>
+</div>
 
-    <!-- Content Row -->
+<!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
-@section Scripts{
+@section Scripts {
     <script>
         function showContent(id) {
             console.log(id);

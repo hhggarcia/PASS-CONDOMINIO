@@ -1,0 +1,103 @@
+﻿@model Prueba.ViewModels.RecibosCreadosVM
+
+<div class="table-responsive text-center" id="DetalleReciboTabla ">
+    <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Total $</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RelacionGasto != null)
+            {
+                <tr class="tr_s">
+                    <td>@Model.RelacionGasto.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@Model.RelacionGasto.TotalMensual.ToString("N") Bs</td>
+                    <td>@Model.RelacionGasto.MontoRef.ToString("N") $</td>
+                    <td><a asp-route-id="@Model.RelacionGasto.IdRgastos" asp-controller="RelacionGastos" asp-action="Details">Detalles</a></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+    <table class="table text-center"
+           width="100%"
+           cellspacing="0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Propiedad</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Abonado</th>
+                <th>Mora</th>
+                <th>Indexación</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Propiedades != null && Model.Propiedades.Any()
+            && Model.Recibos != null && Model.Recibos.Any())
+            {
+                foreach (var propiedad in Model.Propiedades)
+                {
+                    var recibo = Model.Recibos.FirstOrDefault(c => c.IdPropiedad == propiedad.IdPropiedad);
+
+                    if (recibo != null)
+                    {
+                        <tr class="tr_s">
+                            <td>@recibo.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@propiedad.Codigo</td>
+                            <td>@recibo.Monto.ToString("N")</td>
+                            @if (recibo.EnProceso && !recibo.Pagado)
+                            {
+                                <td>En Proceso</td>
+                            }
+                            else if (!recibo.EnProceso && recibo.Pagado)
+                            {
+                                <td>Pagado</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@recibo.Abonado.ToString("N")</td>
+                            <td>@recibo.MontoMora.ToString("N")</td>
+                            <td>@recibo.MontoIndexacion.ToString("N")</td>
+                            <td><a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransacciones">Detalles</a> |
+                                <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DetalleReciboTransaccionesPDF">PDF</a> |
+                                <a asp-route-id="@recibo.IdReciboCobro" asp-controller="RelacionGastos" asp-action="DataEmail">Correo</a>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

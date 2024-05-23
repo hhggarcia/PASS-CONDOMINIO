@@ -30,12 +30,12 @@
                                             <input type="hidden" asp-for="IdRgastos" />
                                             <div class="form-group">
                                                 <label asp-for="SubTotal" class="control-label"></label>
-                                                <input asp-for="SubTotal" class="form-control" />
+                                                <input type="number" asp-for="SubTotal" class="form-control" />
                                                 <span asp-validation-for="SubTotal" class="text-danger"></span>
                                             </div>
                                             <div class="form-group">
                                                 <label asp-for="TotalMensual" class="control-label"></label>
-                                                <input asp-for="TotalMensual" class="form-control" />
+                                                <input type="number" asp-for="TotalMensual" class="form-control" />
                                                 <span asp-validation-for="TotalMensual" class="text-danger"></span>
                                             </div>
                                             <div class="form-group">
@@ -43,12 +43,12 @@
                                                 <input asp-for="Fecha" class="form-control" />
                                                 <span asp-validation-for="Fecha" class="text-danger"></span>
                                             </div>
-                                           @* <div class="form-group">
-                                                <label asp-for="IdCondominio" class="control-label"></label>
-                                                <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
-                                                <span asp-validation-for="IdCondominio" class="text-danger"></span>
+                                            @* <div class="form-group">
+                                            <label asp-for="IdCondominio" class="control-label"></label>
+                                            <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                                            <span asp-validation-for="IdCondominio" class="text-danger"></span>
                                             </div>*@
-                                           
+
                                             <input type="hidden" asp-for="IdCondominio" />
 
                                             <div class="col-md-12">
@@ -58,9 +58,6 @@
                                             </div>
                                         </form>
                                     </div>
-
-
-                                    
                                 </div>
                             </div>
                         </div>
@@ -69,9 +66,10 @@
             </div>
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+}

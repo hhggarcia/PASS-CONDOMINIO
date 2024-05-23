@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.DotNet.Scaffolding.Shared.Project;
 using MimeKit;
 using MimeKit.Text;
 using Prueba.Models;
@@ -16,8 +17,9 @@ namespace Prueba.Services
         void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
         void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
         void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
+        string SendEmailRG(EmailAttachmentPdf model);
     }
-    public class EmailService: IEmailService
+    public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
         public EmailService(IConfiguration config)
@@ -44,9 +46,10 @@ namespace Prueba.Services
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
             email.To.Add(MailboxAddress.Parse(EmailTo));
-            email.Subject = "Conformación de pago";
-            email.Body = new TextPart(TextFormat.Html) {
-            Text =
+            email.Subject = "Confirmación de pago";
+            email.Body = new TextPart(TextFormat.Html)
+            {
+                Text =
                     $@"
                 <html>
                <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 0; padding: 0;"">
@@ -134,7 +137,7 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void ConfirmacionPagoCuota(String EmailFrom,String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password)
+        public void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
@@ -188,7 +191,7 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void RectificarPagoCuotaEspecial(String EmailFrom,String EmailTo,CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password)
+        public void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password)
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(EmailFrom));
@@ -240,10 +243,10 @@ namespace Prueba.Services
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(EmailFrom));
 
-            foreach(var item in relacionGastosEmailVM)
+            foreach (var item in relacionGastosEmailVM)
             {
                 email.To.Add(MailboxAddress.Parse(item.Email));
-                if(item.CuotasEspeciale == null)
+                if (item.CuotasEspeciale == null)
                 {
                     email.Subject = "Recibo de Cobro para la propiedad " + item.Propiedad.Codigo;
                     email.Body = new TextPart(TextFormat.Html)
@@ -316,13 +319,51 @@ namespace Prueba.Services
                         </html>"
                     };
                 }
-              
+
                 using var smtp = new SmtpClient();
                 smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
                 //smtp.Authenticate(_config.GetSection("EmailUsername").Value, _config.GetSection("EmailPassword").Value);
                 smtp.Authenticate(EmailFrom, password);
                 smtp.Send(email);
                 smtp.Disconnect(true);
+            }
+        }
+
+        public string SendEmailRG(EmailAttachmentPdf model)
+        {
+            try
+            {
+                var result = string.Empty;
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(model.From)); 
+                email.To.Add(MailboxAddress.Parse(model.To));
+                email.Subject = model.Subject;
+
+                var pdfAttachment = new MimePart("application", "pdf")
+                {
+                    Content = new MimeContent(new MemoryStream(model.Pdf)),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = model.FileName + ".pdf"
+                };
+
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.Attachments.Add(pdfAttachment);
+                email.Body = bodyBuilder.ToMessageBody();
+
+                using var smtpClient = new SmtpClient();
+                smtpClient.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtpClient.Authenticate(model.From, model.Password);
+                result = smtpClient.Send(email);
+                smtpClient.Disconnect(true);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                // Maneja el error según tus necesidades (registra, notifica, etc.)
+                return $"Error al enviar el correo: {ex.Message}";
             }
         }
     }

@@ -7,7 +7,7 @@ public partial class PagoRecibido
 {
     public int IdPagoRecibido { get; set; }
 
-    public int IdPropiedad { get; set; }
+    public int IdCondominio { get; set; }
 
     public bool FormaPago { get; set; }
 
@@ -29,9 +29,11 @@ public partial class PagoRecibido
 
     public string SimboloRef { get; set; } = null!;
 
-    public byte[]? Imagen { get; set; }
+    public string? Imagen { get; set; }
 
-    public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
+    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();
 

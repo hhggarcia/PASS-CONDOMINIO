@@ -50,6 +50,16 @@
                             <span asp-validation-for="Rif" class="text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                @Html.CheckBox("check")  @Html.Label("No aplica Retenciones ISLR")
+                            </label>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="IdRetencionIslr" class="control-label"></label>
                             <select asp-for="IdRetencionIslr" class="form-control" asp-items="ViewBag.IdRetencionIslr"></select>
                         </div>
@@ -59,7 +69,7 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="Saldo" class="control-label"></label>
-                            <input asp-for="Saldo" class="form-control" />
+                            <input type="number" asp-for="Saldo" class="form-control" />
                             <span asp-validation-for="Saldo" class="text-danger"></span>
                         </div>
                         <div class="form-group">

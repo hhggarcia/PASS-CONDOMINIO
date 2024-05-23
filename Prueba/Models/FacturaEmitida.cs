@@ -31,7 +31,9 @@ public partial class FacturaEmitida
 
     public bool EnProceso { get; set; }
 
-    public int? IdCodCuenta { get; set; }
+    public int IdCodCuenta { get; set; }
+
+    public int IdCliente { get; set; }
 
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
@@ -39,7 +41,9 @@ public partial class FacturaEmitida
 
     public virtual ICollection<CuentasCobrar> CuentasCobrars { get; set; } = new List<CuentasCobrar>();
 
-    public virtual CodigoCuentasGlobal? IdCodCuentaNavigation { get; set; }
+    public virtual Cliente IdClienteNavigation { get; set; } = null!;
+
+    public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Producto IdProductoNavigation { get; set; } = null!;
 

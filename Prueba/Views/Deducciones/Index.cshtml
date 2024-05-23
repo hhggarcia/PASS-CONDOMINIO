@@ -14,6 +14,10 @@
            asp-action="Create">
             Registrar
         </a>
+        <a class="btn btn-light mb-3"
+           asp-action="Index" asp-controller="Empleados">
+            Volver
+        </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -40,13 +44,17 @@
 
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table-responsive">                        
                         <table class="table text-center"
                                id="dataTable"
                                width="100%"
                                cellspacing="0">
                             <thead>
                                 <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
+                                    </th>
+
                                     <th>
                                         @Html.DisplayNameFor(model => model.Concepto)
                                     </th>
@@ -59,38 +67,54 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.Activo)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdEmpleadoNavigation)
-                                    </th>
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model)
+                                @if (Model.Any())
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.Nombre)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Concepto)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Monto)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.RefMonto)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Activo)
+                                            </td>
+                                            
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.IdDeduccion">Editar</a> |
+                                                <a asp-action="Details" asp-route-id="@item.IdDeduccion">Detalles</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdDeduccion">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
                                 {
                                     <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Concepto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Monto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.RefMonto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Activo)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdEmpleadoNavigation.Nombre)
-                                        </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdDeduccion">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdDeduccion">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdDeduccion">Eliminar</a>
-                                        </td>
+                                        <td>No</td>
+                                        <td>hay</td>
+                                        <td>datos</td>
+                                        <td>:)</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                 }
+                                
                             </tbody>
                         </table>
                     </div>

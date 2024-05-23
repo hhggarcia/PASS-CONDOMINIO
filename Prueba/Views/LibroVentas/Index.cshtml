@@ -17,12 +17,16 @@
            asp-action="Index">
             Comprobantes Retencion I.S.L.R.
         </a>
+        <a class="btn btn-light mb-3" asp-controller="CompRetIvaClientes"
+           asp-action="Index">
+            Comprobantes Retencion IVA
+        </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-        <i class="fas fa-download fa-sm text-white-50"></i> Generar
-        PDF
-        </a> *@
+        <button id="create_pdf" value="Generate PDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            PDF
+        </button>
         @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
 
         @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
@@ -52,6 +56,12 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.ComprobanteRetencion)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.BaseImponible)
                                     </th>
                                     <th>
@@ -78,9 +88,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
@@ -88,6 +96,12 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ComprobanteRetencion)
+                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.BaseImponible)
                                         </td>
@@ -115,9 +129,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
-                                        </td>
+                                        
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
@@ -133,3 +145,42 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#create_pdf").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/LibroVentas/LibroPDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobante.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+    });
+
+</script>

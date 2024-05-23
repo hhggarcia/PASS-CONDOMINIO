@@ -68,6 +68,12 @@
                                         @Html.DisplayNameFor(model => model.MontoIntereses)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.MontoMulta)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Creditos)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.IdCondominioNavigation)
                                     </th>
                                     <th>
@@ -102,12 +108,19 @@
                                             @Html.DisplayFor(modelItem => item.MontoIntereses)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.MontoMulta)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Creditos)
+                                        </td>
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdUsuarioNavigation.Email)
                                         </td>
                                         <td>
+                                            <a asp-action="VerGrupos" asp-route-id="@item.IdPropiedad">Ver Grupos</a> |
                                             <a asp-action="Edit" asp-route-id="@item.IdPropiedad">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdPropiedad">Detalles</a> |
                                             <a asp-action="Delete" asp-route-id="@item.IdPropiedad">Eliminar</a>

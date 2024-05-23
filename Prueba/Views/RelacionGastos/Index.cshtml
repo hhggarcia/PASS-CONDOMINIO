@@ -8,12 +8,11 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a asp-action="RelaciondeGastos"
+        <a asp-action="TransaccionesDelMes"
            class="d-none d-sm-inline-block btn btn-sm btn-light shadow-sm">
             Crear
         </a>
         <a class="btn btn-light mb-3" asp-action="Index" asp-controller="Transaccions">Transacciones</a>
-
     </div>
 
     <!-- Content Row -->
@@ -94,6 +93,9 @@
                                                                 @Html.DisplayFor(modelItem => item.IdCondominioNavigation.IdCondominio)
                                                             </td>*@
                                                             <td>
+                                                                <a asp-action="VerRecibos" asp-route-id="@item.IdRgastos">Ver Recibos</a> |
+                                                                <a asp-action="RelacionGastosPDF" asp-route-id="@item.IdRgastos">PDF</a> |
+                                                                <a asp-action="RelacionGastosEmail" asp-route-id="@item.IdRgastos">Correo</a> |
                                                                 <a asp-action="Edit" asp-route-id="@item.IdRgastos">Editar</a> |
                                                                 <a asp-action="Details" asp-route-id="@item.IdRgastos">Detalles</a> |
                                                                 <a asp-action="Delete" asp-route-id="@item.IdRgastos">Eliminar</a>

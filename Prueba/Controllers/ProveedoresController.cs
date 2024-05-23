@@ -137,7 +137,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check)
+        public async Task<IActionResult> Create([Bind("IdProveedor,IdCondominio,Nombre,Direccion,Telefono,Rif,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Proveedor proveedor, bool check, bool checkBeneficiario)
         {
             ModelState.Remove(nameof(proveedor.IdCondominioNavigation));
             ModelState.Remove(nameof(proveedor.IdRetencionIslrNavigation));
@@ -149,11 +149,20 @@ namespace Prueba.Controllers
                 {
 
                     proveedor.IdRetencionIslr = null;
-                    proveedor.IdRetencionIva = null;
+                    //proveedor.IdRetencionIva = null;
                     _context.Add(proveedor);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                     
+                }
+                if (checkBeneficiario)
+                {
+                    proveedor.IdRetencionIslr = null;
+                    proveedor.IdRetencionIva = null;
+                    proveedor.Beneficiario = true;
+                    _context.Add(proveedor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
@@ -161,7 +170,7 @@ namespace Prueba.Controllers
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                
+
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
@@ -201,7 +210,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descrpicion", proveedor.IdRetencionIva);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
                                      where c.Tarifa > 0
@@ -248,7 +257,7 @@ namespace Prueba.Controllers
                     {
 
                         proveedor.IdRetencionIslr = null;
-                        proveedor.IdRetencionIva = null;
+                        //proveedor.IdRetencionIva = null;
                         _context.Update(proveedor);
                         await _context.SaveChangesAsync();
 
@@ -274,7 +283,7 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
-            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", proveedor.IdRetencionIva);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
                                      where c.Tarifa > 0

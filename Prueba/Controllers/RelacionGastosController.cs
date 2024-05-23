@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.Intrinsics.X86;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
 using Prueba.Areas.Identity.Data;
@@ -30,9 +33,11 @@ namespace Prueba.Controllers
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPDFServices _servicePDF;
+        private readonly IEmailService _emailService;
         private readonly NuevaAppContext _context;
 
-        public RelacionGastosController(IUnitOfWork unitOfWork,
+        public RelacionGastosController(IEmailService emailService,
+            IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
@@ -49,6 +54,7 @@ namespace Prueba.Controllers
             _repoRelacionGastos = repoRelacionGastos;
             _repoMoneda = repoMoneda;
             _servicePDF = PDFService;
+            _emailService = emailService;
         }
 
         // GET: RelacionGastos
@@ -96,6 +102,34 @@ namespace Prueba.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> TransaccionesDelMes()
+        {
+            try
+            {
+                // CARGAR GASTOS REGISTRADOS
+
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var modelo = await _repoRelacionGastos.LoadTransacciones(idCondominio);
+
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+        /// <summary>
         /// Muestra los detalles de gastos, fondos y provisiones
         /// de una Relación de Gastos específica
         /// </summary>
@@ -115,9 +149,36 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            var modelo = await _repoRelacionGastos.LoadDataRelacionGastosMes(id);
-            modelo.IdDetail = id;
+
+            var modelo = await _repoRelacionGastos.LoadTransaccionesMes(id);
+            //modelo.IdDetail = id;
             //return View(relacionGasto);
+            return View(modelo);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del recibo a buscar el detalle</param>
+        /// <returns></returns>
+        public async Task<IActionResult> DetalleReciboTransacciones(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+            }
+
             return View(modelo);
         }
 
@@ -242,6 +303,7 @@ namespace Prueba.Controllers
             return View(relacionGasto);
         }
 
+
         /// <summary>
         /// Confirma la elimnación de una RG 
         /// </summary>
@@ -260,6 +322,10 @@ namespace Prueba.Controllers
             if (relacionGasto != null)
             {
                 var result = await _repoRelacionGastos.DeleteRecibosCobroRG(id);
+                var transaccions = await _context.RelacionGastoTransaccions.Where(c => c.IdRelacionGasto == id).ToListAsync();
+
+                _context.RelacionGastoTransaccions.RemoveRange(transaccions);
+
                 if (result)
                 {
                     _context.RelacionGastos.Remove(relacionGasto);
@@ -280,135 +346,365 @@ namespace Prueba.Controllers
         /// si la propiedad está solvente, se cambiará a deudor
         /// </summary>
         /// <returns>Index de Relaciones de Gastos</returns> 
-        public async Task<IActionResult> GenerarReciboCobro()
+        //public async Task<IActionResult> GenerarReciboCobro()
+        //{
+        //    try
+        //    {
+        //        int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+        //        var relacionesDeGasto = from c in _context.RelacionGastos
+        //                                where c.IdCondominio == idCondominio
+        //                                select c;
+
+        //        var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month == DateTime.Today.Month).ToListAsync();
+
+        //        if (!existeActualRG.Any())
+        //        {
+        //            var modelo = await _repoRelacionGastos.LoadDataRelacionGastos(idCondominio);
+        //            // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
+        //            //var inmueblesCondominio = from c in _context.Inmuebles
+        //            //                          where c.IdCondominio == idCondominio
+        //            //                          select c;
+
+        //            var propiedades = from c in _context.Propiedads
+        //                              select c;
+        //            var propietarios = from c in _context.AspNetUsers
+        //                               select c;
+
+        //            // Moneda Principal para hacer la referencia de Monto respecto al dolar
+        //            var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+
+        //            // REGISTRAR EN BD LA RELACION DE GASTOS
+        //            var relacionGasto = new RelacionGasto
+        //            {
+        //                SubTotal = modelo.SubTotal,
+        //                TotalMensual = modelo.Total,
+        //                Fecha = DateTime.Today,
+        //                IdCondominio = idCondominio,
+        //                MontoRef = modelo.Total / monedaPrincipal.First().ValorDolar,
+        //                ValorDolar = monedaPrincipal.First().ValorDolar,
+        //                SimboloMoneda = monedaPrincipal.First().Simbolo,
+        //                SimboloRef = "$"
+        //            };
+
+        //            using (var db_context = new NuevaAppContext())
+        //            {
+        //                await db_context.AddAsync(relacionGasto);
+        //                await db_context.SaveChangesAsync();
+        //            }
+
+        //            IList<Propiedad> listaPropiedadesCondominio = new List<Propiedad>();
+        //            if (propiedades != null && propiedades.Any())
+        //            {
+        //                var propiedadsCond = await propiedades.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+        //                var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
+        //                listaPropiedadesCondominio = aux2;
+
+        //                // CALCULAR LOS PAGOS DE CADA PROPIEDAD POR SU ALICUOTA
+        //                // CAMBIAR SOLVENCIA, SALDO Y DEUDA DE LA PROPIEDAD
+        //                IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
+        //                //IList<RelacionGastosEmailVM> recibosCobroEmail = new List<RelacionGastosEmailVM>();
+        //                foreach (var propiedad in listaPropiedadesCondominio)
+        //                {
+        //                    // BUSCAR PUESTOS DE ESTACIONAMIENTO EXTRAS
+        //                    //var puestos = await _context.PuestoEs.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+        //                    // VERIFICAR SOLVENCIA
+        //                    // SI ES TRUE (ESTA SOLVENTE, AL DIA) NO SE BUSCA EN LA DEUDA
+        //                    // SI ES FALSO PARA EL MONTO TOTAL A PAGAR DEBE MOSTRARSELE LA DEUDA
+        //                    // Y EL TOTAL DEL MES MAS LA DEUDA
+        //                    if (propiedad.Solvencia)
+        //                    {
+        //                        propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+        //                        propiedad.Solvencia = false;
+
+        //                    }
+        //                    else
+        //                    {
+        //                        propiedad.Deuda += propiedad.Saldo;
+        //                        propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+        //                    }
+        //                    // INFO DEL RECIBO
+
+        //                    var recibo = new ReciboCobro();
+
+
+        //                    recibo.IdPropiedad = propiedad.IdPropiedad;
+        //                    recibo.IdRgastos = relacionGasto.IdRgastos;
+        //                    recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
+        //                    recibo.Fecha = DateTime.Today;
+        //                    recibo.Abonado = 0;
+        //                    recibo.MontoRef = (relacionGasto.TotalMensual * (propiedad.Alicuota) / 100) / monedaPrincipal.First().ValorDolar;
+        //                    recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
+        //                    recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
+        //                    recibo.SimboloRef = "$";
+
+        //                    recibosCobroCond.Add(recibo);
+        //                }
+
+        //                // REGISTRAR EN BD LOS RECIBOS DE COBRO PARA CADA PROPIEDAD
+        //                //  Y EDITAR LAS PROPIEDADES
+
+        //                using (var db_context = new NuevaAppContext())
+        //                {
+        //                    foreach (var item in recibosCobroCond)
+        //                    {
+        //                        await db_context.AddAsync(item);
+        //                    }
+        //                    foreach (var propiedad in listaPropiedadesCondominio)
+        //                    {
+        //                        db_context.Update(propiedad);
+        //                    }
+        //                    await db_context.SaveChangesAsync();
+        //                }
+
+        //                // CREAR MODELO PARA NUEVA VISTA
+        //                var aux = new RecibosCreadosVM
+        //                {
+        //                    Propiedades = listaPropiedadesCondominio,
+        //                    Propietarios = propietarios.ToList(),
+        //                    Recibos = recibosCobroCond,
+        //                    //Inmuebles = inmueblesCondominio.ToList(),
+        //                    RelacionGastos = modelo
+        //                };
+
+        //                // REENVIAR A OTRA VISTA
+
+        //                ViewBag.Recibos = "Exitoso";
+
+        //                TempData.Keep();
+
+        //                return RedirectToAction("Index");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            TempData.Keep();
+
+        //            var modeloError = new ErrorViewModel()
+        //            {
+        //                RequestId = "Ya existe una Relación de Gastos para este mes!"
+        //            };
+
+        //            return View("Error", modeloError);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Recibos = "Fallido";
+        //        ViewBag.MsgError = "Error: " + ex.Message;
+        //        var aux = new RecibosCreadosVM();
+        //        TempData.Keep();
+        //        return View(aux);
+        //    }
+
+        //    return RedirectToAction("Index");
+
+        //}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Index Realcion de Gastos</returns>
+        public async Task<IActionResult> RecibosCobroTransacciones()
         {
             try
             {
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var relacionesDeGasto = from c in _context.RelacionGastos
-                                        where c.IdCondominio == idCondominio
-                                        select c;
+                var relacionesDeGasto = await (from c in _context.RelacionGastos
+                                               where c.IdCondominio == idCondominio
+                                               where c.Fecha.Month == DateTime.Today.Month
+                                               select c).ToListAsync();
 
-                var existeActualRG = await relacionesDeGasto.Where(c => c.Fecha.Month == DateTime.Today.Month).ToListAsync();
-
-                if (!existeActualRG.Any())
+                if (!relacionesDeGasto.Any())
                 {
-                    var modelo = await _repoRelacionGastos.LoadDataRelacionGastos(idCondominio);
-                    // CARGAR PROPIEDADES DE CADA INMUEBLE DEL CONDOMINIO
-                    //var inmueblesCondominio = from c in _context.Inmuebles
-                    //                          where c.IdCondominio == idCondominio
-                    //                          select c;
+                    // buscar condominio                
+                    var condominio = await _context.Condominios.FindAsync(idCondominio);
 
-                    var propiedades = from c in _context.Propiedads
-                                      select c;
-                    var propietarios = from c in _context.AspNetUsers
-                                       select c;
-
-                    // Moneda Principal para hacer la referencia de Monto respecto al dolar
-                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
-
-                    // REGISTRAR EN BD LA RELACION DE GASTOS
-                    var relacionGasto = new RelacionGasto
+                    if (condominio != null)
                     {
-                        SubTotal = modelo.SubTotal,
-                        TotalMensual = modelo.Total,
-                        Fecha = DateTime.Today,
-                        IdCondominio = idCondominio,
-                        MontoRef = modelo.Total / monedaPrincipal.First().ValorDolar,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
-                        SimboloMoneda = monedaPrincipal.First().Simbolo,
-                        SimboloRef = "$"
-                    };
+                        // buscar transacciones
+                        var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
+                        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
 
-                    using (var db_context = new NuevaAppContext())
-                    {
-                        await db_context.AddAsync(relacionGasto);
-                        await db_context.SaveChangesAsync();
-                    }
-
-                    IList<Propiedad> listaPropiedadesCondominio = new List<Propiedad>();
-                    if (propiedades != null && propiedades.Any())
-                    {
-                        var propiedadsCond = await propiedades.Where(c => c.IdCondominio == idCondominio).ToListAsync();
-                        var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
-                        listaPropiedadesCondominio = aux2;
-
-                        // CALCULAR LOS PAGOS DE CADA PROPIEDAD POR SU ALICUOTA
-                        // CAMBIAR SOLVENCIA, SALDO Y DEUDA DE LA PROPIEDAD
-                        IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
-                        //IList<RelacionGastosEmailVM> recibosCobroEmail = new List<RelacionGastosEmailVM>();
-                        foreach (var propiedad in listaPropiedadesCondominio)
+                        // generar Relacion de Gastos con las transacciones
+                        // y sus relaciones
+                        var relacionGasto = new RelacionGasto
                         {
-                            // BUSCAR PUESTOS DE ESTACIONAMIENTO EXTRAS
-                            //var puestos = await _context.PuestoEs.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
-                            // VERIFICAR SOLVENCIA
-                            // SI ES TRUE (ESTA SOLVENTE, AL DIA) NO SE BUSCA EN LA DEUDA
-                            // SI ES FALSO PARA EL MONTO TOTAL A PAGAR DEBE MOSTRARSELE LA DEUDA
-                            // Y EL TOTAL DEL MES MAS LA DEUDA
-                            if (propiedad.Solvencia)
-                            {
-                                propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                                propiedad.Solvencia = false;
-
-                            }
-                            else
-                            {
-                                propiedad.Deuda += propiedad.Saldo;
-                                propiedad.Saldo += relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                            }
-                            // INFO DEL RECIBO
-
-                            var recibo = new ReciboCobro();
-
-
-                            recibo.IdPropiedad = propiedad.IdPropiedad;
-                            recibo.IdRgastos = relacionGasto.IdRgastos;
-                            recibo.Monto = relacionGasto.TotalMensual * propiedad.Alicuota / 100;
-                            recibo.Fecha = DateTime.Today;
-                            recibo.Abonado = 0;
-                            recibo.MontoRef = (relacionGasto.TotalMensual * (propiedad.Alicuota) / 100) / monedaPrincipal.First().ValorDolar;
-                            recibo.ValorDolar = monedaPrincipal.First().ValorDolar;
-                            recibo.SimboloMoneda = monedaPrincipal.First().Simbolo;
-                            recibo.SimboloRef = "$";
-
-                            recibosCobroCond.Add(recibo);
-                        }
-
-                        // REGISTRAR EN BD LOS RECIBOS DE COBRO PARA CADA PROPIEDAD
-                        //  Y EDITAR LAS PROPIEDADES
-
-                        using (var db_context = new NuevaAppContext())
-                        {
-                            foreach (var item in recibosCobroCond)
-                            {
-                                await db_context.AddAsync(item);
-                            }
-                            foreach (var propiedad in listaPropiedadesCondominio)
-                            {
-                                db_context.Update(propiedad);
-                            }
-                            await db_context.SaveChangesAsync();
-                        }
-
-                        // CREAR MODELO PARA NUEVA VISTA
-                        var aux = new RecibosCreadosVM
-                        {
-                            Propiedades = listaPropiedadesCondominio,
-                            Propietarios = propietarios.ToList(),
-                            Recibos = recibosCobroCond,
-                            //Inmuebles = inmueblesCondominio.ToList(),
-                            RelacionGastos = modelo
+                            IdCondominio = idCondominio,
+                            SubTotal = transaccionesDelMes.Total,
+                            TotalMensual = transaccionesDelMes.Total,
+                            Fecha = DateTime.Today,
+                            MontoRef = transaccionesDelMes.Total / monedaPrincipal.First().ValorDolar,
+                            ValorDolar = monedaPrincipal.First().ValorDolar,
+                            SimboloMoneda = monedaPrincipal.First().Simbolo,
+                            SimboloRef = "$"
                         };
 
-                        // REENVIAR A OTRA VISTA
+                        _context.RelacionGastos.Add(relacionGasto);
+                        var idRelacionGatos = await _context.SaveChangesAsync();
 
-                        ViewBag.Recibos = "Exitoso";
+                        if (idRelacionGatos != 0)
+                        {
+                            foreach (var transaccion in transaccionesDelMes.Transaccions)
+                            {
+                                var relacionTransaccion = new RelacionGastoTransaccion
+                                {
+                                    IdRelacionGasto = relacionGasto.IdRgastos,
+                                    IdTransaccion = transaccion.IdTransaccion
+                                };
 
-                        TempData.Keep();
+                                _context.RelacionGastoTransaccions.Add(relacionTransaccion);
+                                await _context.SaveChangesAsync();
+                            }
+
+                            IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
+                            // buscar propiedades
+                            var propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+
+                            if (propiedades.Any())
+                            {
+                                // para cada propiedad
+
+                                foreach (var propiedad in propiedades)
+                                {
+                                    decimal monto = 0;
+
+                                    // --> ver sus grupos y alicuota
+                                    var gruposPropiedad = await _context.PropiedadesGrupos
+                                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                                        .ToListAsync();
+
+                                    // -----> recorrer transacciones si grupoCuenta == transaccionCuenta
+                                    foreach (var transaccion in transaccionesDelMes.Transaccions)
+                                    {
+                                        // por cada transaccion 
+                                        // revisar si esta entre los grupos de la propiedad
+                                        if (transaccion.IdPropiedad == null && gruposPropiedad.Exists(c => c.IdGrupoGasto == transaccion.IdGrupo))
+                                        {
+                                            if (!transaccion.TipoTransaccion)
+                                            {
+                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                                                monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
+                                            else
+                                            {
+                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                                                monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
+                                        }
+                                    }
+
+                                    // buscar fondosd 
+
+                                    // aplicar con la alicuota de la propiedad
+                                    // BUSCAR FONDOS
+                                    var fondos = from f in _context.Fondos
+                                                 join c in _context.CodigoCuentasGlobals
+                                                 on f.IdCodCuenta equals c.IdCodCuenta
+                                                 where c.IdCondominio == condominio.IdCondominio
+                                                 //where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                                 select f;
+
+                                    foreach (var fondo in fondos)
+                                    {
+                                        if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                        {
+                                            monto += (transaccionesDelMes.Total * (decimal)fondo.Porcentaje / 100) * (propiedad.Alicuota / 100);
+                                        }
+
+                                        if (fondo.Monto != null && fondo.Monto > 0)
+                                        {
+                                            monto += (decimal)fondo.Monto * (propiedad.Alicuota / 100);
+                                        }
+                                    }
+
+                                    // revisar transacciones individuales
+                                    var individuales = transaccionesDelMes.TransaccionesIndividuales.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+                                    if (individuales.Any())
+                                    {
+                                        monto += individuales.Sum(c => c.MontoTotal);
+                                    }
+
+                                    // VALIDAR DEUDAS PARA ACTUALIZAR  PROPIEDAD
+                                    if (propiedad.Solvencia)
+                                    {
+                                        propiedad.Saldo = monto;
+                                        propiedad.Solvencia = false;
+                                    }
+                                    else
+                                    {
+                                        propiedad.Deuda += propiedad.Saldo;
+                                        propiedad.Saldo = monto;
+
+                                        // buscar recibos anteriores no pagados
+                                        var recibosAnt = await _context.ReciboCobros
+                                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad && c.Pagado == false && c.EnProceso == false)
+                                            .ToListAsync();
+
+                                        // mora para cada recibo y sumar a la propiedad
+                                        // indexacion por cada recibo y sumar a la propiedad
+                                        decimal mora = 0;
+                                        decimal indexacion = 0;
+
+                                        if (recibosAnt.Any())
+                                        {
+                                            mora = recibosAnt.Sum(c => c.MontoMora);
+                                            indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                        }
+                                        
+
+                                        propiedad.MontoIntereses += mora;
+                                        propiedad.MontoMulta += indexacion;
+                                    }
+
+                                    // generar recibos
+                                    var recibo = new ReciboCobro
+                                    {
+                                        IdPropiedad = propiedad.IdPropiedad,
+                                        IdRgastos = relacionGasto.IdRgastos,
+                                        Monto = monto,
+                                        Fecha = DateTime.Today,
+                                        Pagado = false,
+                                        EnProceso = false,
+                                        Abonado = 0,
+                                        MontoRef = monto / monedaPrincipal.First().ValorDolar,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = monedaPrincipal.First().Simbolo,
+                                        SimboloRef = "$",
+                                        MontoMora = monto * (condominio.InteresMora / 100),
+                                        MontoIndexacion = monto * ((decimal)condominio.Multa / 100)
+                                    };
+
+                                    recibosCobroCond.Add(recibo);
+                                    // registrar recibo 
+                                    // actualizar propiedad
+
+                                    _context.ReciboCobros.Add(recibo);
+                                    _context.Propiedads.Update(propiedad);
+                                }
+                            }
+                            await _context.SaveChangesAsync();
+
+                            // CREAR MODELO PARA NUEVA VISTA
+                            var aux = new RecibosCreadosVM
+                            {
+                                Propiedades = propiedades,
+                                Recibos = recibosCobroCond,
+                                RelacionGastosTransacciones = transaccionesDelMes,
+                                RelacionGasto = relacionGasto
+                            };
+
+                            return View("RecibosCreados", aux);
+
+                        }
 
                         return RedirectToAction("Index");
                     }
+
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -430,46 +726,253 @@ namespace Prueba.Controllers
                 TempData.Keep();
                 return View(aux);
             }
+        }
+        public IActionResult RecibosCreados()
+        {
+            var aux = new RecibosCreadosVM();
+            return View(aux);
+        }
 
-            return RedirectToAction("Index");
+        /// <summary>
+        /// Muestra los recibos de cada propiedad 
+        /// de una relacion de gastos especificos
+        /// </summary>
+        /// <param name="id">Id relacion de gastos</param>
+        /// <returns></returns>
+        public async Task<IActionResult> VerRecibos(int id)
+        {
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            var modelo = new RecibosCreadosVM();
 
+            if (rg != null)
+            {
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var propiedades = await _context.Propiedads.Where(c => c.IdCondominio == rg.IdCondominio).ToListAsync();
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                modelo.RelacionGasto = rg;
+                modelo.RelacionGastosTransacciones = transacciones;
+                modelo.Recibos = recibos;
+                modelo.Propiedades = propiedades;
+            }
+
+            return View("RecibosCreados", modelo);
         }
 
         [HttpGet]
         public async Task<IActionResult> ReciboPdf()
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var dataCondominio = await _context.Condominios.Where(c=>c.IdCondominio==idCondominio).FirstAsync();
+            var dataCondominio = await _context.Condominios.Where(c => c.IdCondominio == idCondominio).FirstAsync();
             var modelo = await _repoRelacionGastos.LoadDataRelacionGastos(idCondominio);
 
             var data = _servicePDF.RelacionGastosPDF(modelo);
             Stream stream = new MemoryStream(data);
             return File(stream, "application/pdf", "Recibo.pdf");
         }
-        [HttpGet]
-         public async Task<IActionResult> RelacionGastosPDF(int id)
-        {
-            var modelo = await _repoRelacionGastos.LoadDataRelacionGastosMes(id);
-            var data = _servicePDF.RelacionGastosPDF(modelo);
-            Stream stream = new MemoryStream(data);
-            return File(stream, "application/pdf", "Recibo.pdf");
-        }
-        //[HttpPost]
-        //public ContentResult RelacionGastosPDF([FromBody] RelacionDeGastosVM relacionDeGastos)
-        //{
-        //    try
-        //    {
-        //        var data = _servicePDF.RelacionGastosPDF(relacionDeGastos);
-        //        var base64 = Convert.ToBase64String(data);
-        //        return Content(base64, "application/pdf");
 
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"Error generando PDF: {e.Message}");
-        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
-        //    }
-        //}
+        [HttpGet]
+        public async Task<IActionResult> RelacionGastosPDF(int id)
+        {
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            if (rg != null)
+            {
+                var modelo = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var data = _servicePDF.Transacciones(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "RelacionGasto.pdf");
+            }
+
+            return RedirectToAction("Index");
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id del recibo a consultar</param>
+        /// <returns></returns>
+        public async Task<IActionResult> DetalleReciboTransaccionesPDF(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+
+                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "Recibo_" + propiedad.Codigo+ "_"+ recibo.Fecha.ToString("dd/MM/yyyy") + ".pdf");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">id de la relacion de gastos</param>
+        /// <returns></returns>
+        public async Task<IActionResult> TodosRecibosTransaccionesPDF(int id)
+        {
+            var modelo = new List<DetalleReciboTransaccionesVM>();
+
+            var rg = await _context.RelacionGastos.FindAsync(id);
+            if (rg != null)
+            {
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                foreach (var recibo in recibos)
+                {
+                    var item = new DetalleReciboTransaccionesVM();
+                    if (recibo != null)
+                    {
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                        //var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                        var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                        var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+
+                        item.Recibo = recibo;
+                        item.Propiedad = propiedad;
+                        item.GruposPropiedad = gruposPropiedad;
+                        item.RelacionGasto = rg;
+                        item.Transacciones = transacciones;
+                    }
+
+                    modelo.Add(item);
+                }
+
+                var data = _servicePDF.TodosRecibosTransaccionesPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "RecibosCondominio.pdf");
+            }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DataEmail(int id)
+        {
+            TempData["IdReciboCobro"] = id.ToString();
+
+            TempData.Keep();
+
+            return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"> Id de realcion de gastos</param>
+        /// <returns></returns>
+        public IActionResult DataEmailPropiedades(int id)
+        {
+            TempData["IdRG"] = id.ToString();
+
+            TempData.Keep();
+
+            return View();
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> ConfirmSendEmailRecibo(EmailAttachmentPdf email)
+        {
+            int idRecibo = Convert.ToInt32(TempData.Peek("IdReciboCobro").ToString());
+
+            var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+            var modelo = new DetalleReciboTransaccionesVM();
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                modelo.Recibo = recibo;
+                modelo.Propiedad = propiedad;
+                modelo.GruposPropiedad = gruposPropiedad;
+                modelo.RelacionGasto = rg;
+                modelo.Transacciones = transacciones;
+
+                var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+
+                email.From = modelo.Transacciones.Condominio.Email;
+                email.To = usuario.Email;
+                email.Pdf = data;
+                email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+
+                var result = _emailService.SendEmailRG(email);
+
+                if (!result.Contains("OK"))
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = result
+                    };
+
+                    return View("Error", modeloError);
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmSendEmailTodosRecibos(EmailAttachmentPdf email)
+        {
+            int idRg = Convert.ToInt32(TempData.Peek("IdRG").ToString());
+
+            var rg = await _context.RelacionGastos.FindAsync(idRg);
+
+            if (rg != null)
+            {
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                if (recibos.Any())
+                {
+                    foreach (var recibo in recibos)
+                    {
+                        //var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                        var modelo = new DetalleReciboTransaccionesVM();
+
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                        //var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                        var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                        var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                        var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                        modelo.Recibo = recibo;
+                        modelo.Propiedad = propiedad;
+                        modelo.GruposPropiedad = gruposPropiedad;
+                        modelo.RelacionGasto = rg;
+                        modelo.Transacciones = transacciones;
+
+                        var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
+
+                        email.From = modelo.Transacciones.Condominio.Email;
+                        email.To = usuario.Email;
+                        email.Pdf = data;
+                        email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+
+                        var result = _emailService.SendEmailRG(email);
+
+                    }
+                }
+            }
+
+            return RedirectToAction("Index");
+
+        }
     }
 }

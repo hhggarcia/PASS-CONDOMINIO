@@ -22,6 +22,11 @@
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <input type="hidden" asp-for="IdFacturaEmitida" />
                                 <div class="form-group">
+                                    <label asp-for="IdCliente" class="control-label"></label>
+                                    <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.IdCliente"></select>
+                                    <span asp-validation-for="IdCliente" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
                                     <label asp-for="IdProducto" class="control-label"></label>
                                     <select asp-for="IdProducto" class="form-control" asp-items="ViewBag.IdProducto"></select>
                                     <span asp-validation-for="IdProducto" class="text-danger"></span>
@@ -53,22 +58,22 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="SubTotal" class="control-label"></label>
-                                    <input asp-for="SubTotal" class="form-control" />
+                                    <input type="number" asp-for="SubTotal" class="form-control" />
                                     <span asp-validation-for="SubTotal" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Iva" class="control-label"></label>
-                                    <input asp-for="Iva" class="form-control" />
+                                    <input type="number" asp-for="Iva" class="form-control" />
                                     <span asp-validation-for="Iva" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="MontoTotal" class="control-label"></label>
-                                    <input asp-for="MontoTotal" class="form-control" />
+                                    <input type="number" asp-for="MontoTotal" class="form-control" />
                                     <span asp-validation-for="MontoTotal" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Abonado" class="control-label"></label>
-                                    <input asp-for="Abonado" class="form-control" />
+                                    <input type="number" asp-for="Abonado" class="form-control" />
                                     <span asp-validation-for="Abonado" class="text-danger"></span>
                                 </div>
                                 <div class="form-group form-check">

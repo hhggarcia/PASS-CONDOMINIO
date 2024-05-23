@@ -5637,7 +5637,7 @@ html.rd-navbar-fixed-linked .page {
 
     .rd-navbar-classic.rd-navbar-static .rd-navbar-brand img {
         width: auto;
-        height: auto;
+        height: 50px;
         max-width: 200px;
         max-height: 200px;
     }
@@ -6549,17 +6549,14 @@ html.rd-navbar-fixed-linked .page {
     padding: 5rem 3rem;
 }
 
-    #auth #auth-left .auth-logo {
-        margin-bottom: 7rem;
-    }
+#auth #auth-left {
+    margin-bottom: 7rem;
+}
 
-    #auth #auth-left .auth-logo {
-        margin-bottom: 7rem;
+    #auth #auth-left .auth-logo img {
+        height: 5rem;
+        margin-bottom: 2rem;
     }
-
-        #auth #auth-left .auth-logo img {
-            height: 2rem;
-        }
 
     #auth #auth-left .auth-title {
         font-size: 3rem !important;

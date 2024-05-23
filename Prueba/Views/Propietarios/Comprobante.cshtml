@@ -35,27 +35,23 @@
                             <div class="position-relative">
 
                                 <h3>Condominio</h3>
-                                @if (Model.Condominio != null
-                                
+                                @if (Model.Condominio != null                                
                                 && Model.Propiedad != null)
                                 {
                                     <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
                                     @* <p><strong>Inmueble</strong>: </p> *@
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
-                                    @if (Model.Abonado !=0)
+                                    @if (Model.Abonado != 0)
                                     {
                                         <p><strong>Monto extra abonado</strong>: @Model.Abonado.ToString("N2") Bs.</p>
                                     }
-                                    if (Model.Restante!=0)
+                                    if (Model.Restante != 0)
                                     {
                                         <p><strong>Faltante por pagar</strong>: @Model.Restante.ToString("N2") Bs.</p>
                                     }
                                 }
                             </div>
                         </div>
-
-
-
 
                         <div class="form-group has-icon-left">
                             <div class="position-relative">

@@ -1,0 +1,224 @@
+﻿@model Prueba.ViewModels.ComprobantePagoNomina
+@{
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Comprobante</h1>*@
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        @if (Model.Percepciones.Any() && Model.Deducciones.Any())
+        {
+            <button id="ComprobantePDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button>
+        }
+
+        @if (Model.Bonos.Any())
+        {
+            <button id="ComprobanteBonosPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Bonos pdf</button>
+        }
+
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 mb-4">
+
+
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Comprobante Nomina
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="form row text-center">
+
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <form method="post">
+
+                                    <h6>Condominio</h6>
+                                    @if (Model.Condominio != null)
+                                    {
+                                        <input type="hidden" asp-for="@Model.Condominio.Nombre" />
+                                        <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
+                                        <p><strong>RIF</strong>: @Model.Condominio.Rif</p>
+                                    }
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <form method="post">
+
+                                    <h6>Recibo Nomina</h6>
+                                    @if (Model.Empleado != null)
+                                    {
+                                        <h6>Empleado</h6>
+                                        <p><strong>Nombre:</strong> @Model.Empleado.Nombre @Model.Empleado.Apellido</p>
+                                        <p><strong>Cedula:</strong> @Model.Empleado.Cedula</p>
+                                        <p><strong>Fecha de Ingreso:</strong> @Model.Empleado.FechaIngreso.ToString("dd/MM/yyyy")</p>
+                                        <p><strong>Base de Sueldo:</strong> @Model.Empleado.BaseSueldo.ToString("N")</p>
+                                    }
+                                    @if (Model.Percepciones.Any())
+                                    {
+                                        <h6>Percepciones</h6>
+
+                                        @foreach (var percepcion in Model.Percepciones)
+                                        {
+                                            <p><strong>Concepto:</strong> @percepcion.Concepto </p>
+                                            <p><strong>Monto:</strong> @percepcion.Monto.ToString("N") Bs </p>
+                                        }
+                                    }
+
+                                    @if (Model.Deducciones.Any())
+                                    {
+                                        <h6>Deducciones</h6>
+                                        @foreach (var deduccion in Model.Deducciones)
+                                        {
+                                            <p><strong>Concepto:</strong> @deduccion.Concepto </p>
+                                            <p><strong>Monto:</strong> @deduccion.Monto.ToString("N") Bs </p>
+                                        }
+                                    }
+                                </form>
+                            </div>
+                        </div>
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+
+                                @if (Model.Pago != null)
+                                {
+
+                                    @if (Model.Pagoforma == FormaPago.Transferencia)
+                                    {
+                                        <h6>Transferencia</h6>
+                                        <p><strong>Fecha</strong>: @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
+
+                                        <p><strong>Cuenta</strong>: @Model.Banco.Descricion.ToString()</p>
+                                        <p><strong>Referencia</strong>: @Model.NumReferencia</p>
+                                        <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N") Bs</p>
+                                        <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
+                                    }
+                                    else
+                                    {
+                                        <h6>Efectivo</h6>
+                                        <p><strong>Cuenta</strong>: @Model.Caja.Descricion</p>
+
+                                        <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N") Bs</p>
+                                        <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
+                                    }
+                                }
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mb-4">
+                    <h4 class="text-center">@Model.Mensaje</h4>
+
+                    <a asp-action="PagoNomina"
+                       class="btn btn-primary me-1 mb-1">
+                        Realizar otro pago
+                    </a>
+                    <a asp-action="Index"
+                       class="btn btn-primary me-1 mb-1">
+                        Finalizar
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@*PDF Configuración*@
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#ComprobantePDF").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/Empleados/ComprobantePDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobante.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+
+        $("#ComprobanteBonosPDF").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/Empleados/ComprobanteBonosPDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobante.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar detalle del recibo');
+                }
+            });
+        });
+    });
+</script>
+
+

@@ -29,11 +29,11 @@
                        && Model.Propiedades.Count > 0)
                         {
                             <!-- Inicio -->
-                            <form class="form form-horizontal" asp-action="RegistrarPagos">
+                            <form class="form form-horizontal" enctype="multipart/form-data" asp-action="RegistrarPagos">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 @if (@ViewBag.FormaPago == "fallido")
                                 {
-                                    <h6>Debe seleccionar una cuenta de Efectivo o transferencia!</h6>
+                                    <h6>@ViewBag.Mensaje</h6>
                                     <hr />
                                 }
                                 <div class="form-body">
@@ -96,10 +96,11 @@
                                                     <div class="modal-body">
 
 
-                                                        <div id="Saldo"></div>
+                                                        <div id="Mora"></div>
+                                                        <div id="Indexacion"></div>
                                                         <div id="Deuda"></div>
-                                                        <div id="Abonado"></div>
-
+                                                        <div id="Saldo"></div>
+                                                        <div id="Credito"></div>
                                                         <p>
                                                             <div id="Total"></div>
                                                         </p>
@@ -107,9 +108,10 @@
                                                             <table class="table mb-0">
                                                                 <thead>
                                                                     <tr>
-                                                                        <th>Monto</th>
-                                                                        <th>Abonado</th>
                                                                         <th>Fecha</th>
+                                                                        <th>Monto</th>
+                                                                        <th>Tasa de Cambio $</th>
+                                                                        <th>Monto Ref</th>
                                                                     </tr>
                                                                 </thead>
 
@@ -208,6 +210,28 @@
                                                    value="@DateTime.Today" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-calendar-date"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Monto -->
+
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Comprobante de Pago</label>
+                                                <span asp-validation-for="Imagen" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input type="file"
+                                                           class="form-control"
+                                                           placeholder="Imagen"
+                                                           id="first-name-icon"
+                                                           required
+                                                           name="file"
+                                                           />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -392,17 +416,35 @@
 
                         bancos = response.subCuentasBancos;
                         efectivos = response.subCuentasCaja;
+                        var deuda = 0;
+                        var saldo = 0;
+                        var mora = 0;
+                        var indexacion = 0;
+                        var credito = 0;
 
-                        var aux1 = String(response.deuda.toFixed(2));
-                        var aux2 = String(response.saldo.toFixed(2));
-
-                        if (response.saldo > response.abonado.toFixed(2)) {
-                            var aux3 = String(((response.deuda + response.saldo) - response.abonado).toFixed(2))
-                        }else{
-                            var aux3 = 0
+                        if(response.deuda > 0){
+                            deuda = String(response.deuda.toFixed(2));
+                        }
+                        if (response.saldo > 0 ) {
+                            saldo = String(response.saldo.toFixed(2));
+                        }
+                        if(response.interes > 0){
+                            mora = String(response.interes.toFixed(2));
+                        }
+                        if(response.indexacion > 0){
+                            indexacion = String(response.indexacion.toFixed(2));
+                        }
+                        if(response.credito > 0){
+                            credito = String(response.credito.toFixed(2));
                         }
 
-                        var aux4 = String(data.abonado.toFixed(2));
+                        if (response.saldo > response.abonado.toFixed(2)) {
+                            var total = String((deuda + saldo + mora + indexacion - credito).toFixed(2))
+                        }else{
+                            var total = 0
+                        }
+
+                        //var abonado = String(data.abonado.toFixed(2));
                
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
@@ -417,19 +459,15 @@
                         LoadTable("#contenido", response.recibos)
                         // LLENAR DEUDA
                         //$("#Deuda").innerText(response.deuda);
-                        $("#Deuda").html("<p> <strong>Deuda Vencida</strong> = " + aux1 + "</p>");
+                        $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");
+                        $("#Mora").html("<p> <strong>Indexación</strong> = " + indexacion + "</p>");
+                        $("#Deuda").html("<p> <strong>Deuda</strong> = " + deuda + "</p>");
+                        $("#Saldo").html("<p> <strong>Saldo</strong> = " + saldo + "</p>");
+                        $("#Credito").html("<p> <strong>Saldo</strong> = " + credito + "</p>");
 
-                        // LLENAR SALDO
-                        //$("#Saldo").innerText(response.saldo);
-                        $("#Saldo").html("<p> <strong> Deuda Actual </strong> = " + aux2 + "</p>");
-
-                        // LLENAR ABONADO
-                        //$("#Abonado").innerText(response.abonado);
-                        $("#Abonado").html("<p> <strong> Dinero abonado </strong> = " + aux4 + "</p>");
-                        
                         // LLENAR total
                         //$("#Total").innerText(response.saldo);
-                        $("#Total").html("<p> <strong> Total </strong> = " + aux3 + "</p>");
+                        $("#Total").html("<hr/><p> <strong> Total </strong> = " + total + "</p>");
 
 
 
@@ -461,7 +499,9 @@
         function LoadTable(tableId, list) {
             CLearTable(tableId);
             $.each(list, function (idex, value) {
-                $(tableId).append("<tr><td>" + value.monto.toFixed(2) + "</td><td>" + value.abonado.toFixed(2) + "</td><td>" + value.fecha + "</td><tr>");
+                //var fechita = new Date(value.fecha);
+
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + + value.valorDolar.toFixed(2) + "</td><td>" + value.montoRef + "</td><tr>");
             });
         }
 

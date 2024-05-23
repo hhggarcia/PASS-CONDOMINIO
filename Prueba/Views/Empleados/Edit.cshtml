@@ -49,14 +49,14 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="BaseSueldo" class="control-label"></label>
-                                    <input asp-for="BaseSueldo" class="form-control" />
+                                    <input type="number" asp-for="BaseSueldo" class="form-control" />
                                     <span asp-validation-for="BaseSueldo" class="text-danger"></span>
                                 </div>
-                                <div class="form-group">
+@*                                 <div class="form-group">
                                     <label asp-for="RefMonto" class="control-label"></label>
-                                    <input asp-for="RefMonto" class="form-control" />
+                                    <input type="number" asp-for="RefMonto" class="form-control" />
                                     <span asp-validation-for="RefMonto" class="text-danger"></span>
-                                </div>
+                                </div> *@
                                 <div class="form-group pt-2">
                                     <input type="submit" value="Guardar" class="btn btn-primary" />
                                     <a asp-action="Index" class="btn btn-secondary">Volver</a>
@@ -75,5 +75,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
->>>>>>> DevAdminstradoras
 }

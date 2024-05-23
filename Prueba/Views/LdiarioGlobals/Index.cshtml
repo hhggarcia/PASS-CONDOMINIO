@@ -120,13 +120,13 @@
                                                                 <td class="text-bold-500">@asiento.Concepto</td>
                                                                 @if (asiento.TipoOperacion)
                                                                 {
-                                                                    <td class="text-bold-500">@asiento.MontoRef.ToString("N")</td>
+                                                                    <td class="text-bold-500">@asiento.Monto.ToString("N")</td>
                                                                     <td class="text-bold-500"></td>
                                                                 }
                                                                 else
                                                                 {
                                                                     <td class="text-bold-500"></td>
-                                                                    <td class="text-bold-500">@asiento.MontoRef.ToString("N")</td>
+                                                                    <td class="text-bold-500">@asiento.Monto.ToString("N")</td>
                                                                 }
                                                                 <td>
                                                                     <a asp-action="Edit" asp-route-id="@asiento.IdAsiento">Editar</a> |

@@ -166,7 +166,7 @@ namespace Prueba.Areas.Identity.Pages.Account
                         var correo = new RegisterConfirm
                         {
                             To = Input.Email,
-                            Subject = "Registro Condominio Password Technology",
+                            Subject = "Registro Condominio Password Technology C.A.",
                             Body = "Bienvenido a nuestra aplicación para administrar sus condominios."
                         };
 

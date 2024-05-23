@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +10,30 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
     [Authorize(Policy = "RequireAdmin")]
-
     public class AnticiposController : Controller
     {
         private readonly NuevaAppContext _context;
+        private readonly ICuentasContablesRepository _repoCuentas;
+        private readonly IPDFServices _servicesPDF;
+        private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
 
 
-        public AnticiposController(IFiltroFechaRepository filtroFechaRepository, NuevaAppContext context)
+        public AnticiposController(ICuentasContablesRepository repoCuentas,
+            IPDFServices servicesPDF,
+            IPagosEmitidosRepository repoPagosEmitidos,
+            IFiltroFechaRepository filtroFechaRepository, 
+            NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
+            _servicesPDF = servicesPDF;
+            _repoPagosEmitidos = repoPagosEmitidos;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
         }
@@ -61,10 +72,16 @@ namespace Prueba.Controllers
         }
 
         // GET: Anticipos/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            TempData.Keep();
+
             return View();
         }
 
@@ -89,8 +106,15 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(anticipo);
         }
@@ -108,8 +132,14 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
 
             return View(anticipo);
         }
@@ -154,9 +184,14 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(_context.SubCuenta, "Id", "Descricion");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
             return View(anticipo);
         }
 
@@ -205,12 +240,161 @@ namespace Prueba.Controllers
         {
             return _context.Anticipos.Any(e => e.IdAnticipo == id);
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> PagoAnticipo()
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            // cargar formulario
+            var modelo = await _repoPagosEmitidos.FormPagoAnticicipo(idCondominio);
+            // usar el repositorio?
+
+            return View(modelo);
+        }
+
+        public IActionResult ConfirmarPago(PagoAnticipoVM modelo)
+        {
+            return View(modelo);
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> RegistrarPagosPost(PagoAnticipoVM modelo)
+        {
+            try
+            {
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                {
+                    modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    if (modelo.Pagoforma == FormaPago.Transferencia)
+                    {
+                        var existPagoTransferencia = from pago in _context.PagoEmitidos
+                                                     join referencia in _context.ReferenciasPes
+                                                     on pago.IdPagoEmitido equals referencia.IdPagoEmitido
+                                                     where pago.IdCondominio == modelo.IdCondominio
+                                                     where referencia.NumReferencia == modelo.NumReferencia
+                                                     select new { pago, referencia };
+
+                        if (existPagoTransferencia != null && existPagoTransferencia.Any())
+                        {
+                            modelo = await _repoPagosEmitidos.FormPagoAnticicipo(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe una transferencia con este número de referencia!";
+
+                            return View("PagoAnticipo", modelo);
+                        }
+                    }
+
+                    var resultado = await _repoPagosEmitidos.RegistrarAnticipo(modelo);
+
+                    if (resultado == "exito")
+                    {
+                        var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
+
+
+                        var comprobante = new ComprobanteAnticipoVM()
+                        {
+                            Condominio = condominio,
+                            Concepto = modelo.Concepto,
+                            Pagoforma = modelo.Pagoforma,
+                            Mensaje = "¡Gracias por su pago!"
+                        };
+
+                        if (modelo.Pagoforma == FormaPago.Transferencia)
+                        {
+                            var banco = from c in _context.SubCuenta
+                                        where c.Id == modelo.IdCodigoCuentaBanco
+                                        select c;
+
+                            comprobante.Banco = banco.First();
+                            comprobante.NumReferencia = modelo.NumReferencia;
+
+                        }
+                        else
+                        {
+                            var caja = from c in _context.SubCuenta
+                                       where c.Id == modelo.IdCodigoCuentaCaja
+                                       select c;
+
+                            comprobante.Caja = caja.First();
+                        }
+
+                        var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == modelo.IdProveedor).FirstAsync();
+
+                        comprobante.Pago.Monto = modelo.Monto;
+                        comprobante.Pago.Fecha = modelo.Fecha;
+                        comprobante.Beneficiario = proveedor.Nombre;
+
+                        TempData.Keep();
+
+                        return View("Comprobante", comprobante);
+                    }
+
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = resultado;
+                    //traer subcuentas del condominio
+                    int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                    modelo = await _repoPagosEmitidos.FormPagoAnticicipo(idCondominio);
+
+                    TempData.Keep();
+
+                    return View("PagoAnticipo", modelo);
+
+                }
+                //traer subcuentas del condominio
+                var id = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormPagoAnticicipo(id);
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "Ha ocurrido un error inesperado";
+
+                return View("PagoAnticipo", modelo);
+
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
         {
             var filtrarFecha = await _reposFiltroFecha.ObtenerAnticipos(filtrarFechaVM);
             return View("Index", filtrarFecha);
+        }
+
+        public ContentResult ComprobantePDF([FromBody] ComprobanteAnticipoVM modelo)
+        {
+            try
+            {
+                var data = _servicesPDF.ComprobanteAnticipoPDF(modelo);
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
     }
 }

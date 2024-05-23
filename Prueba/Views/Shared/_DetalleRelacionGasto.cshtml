@@ -32,16 +32,7 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        @*<tfoot>
-        <tr class="tr_s">
-        <th></th>
-        <th>Sub Total: @Model.SubTotal.ToString("N") </th>
-        <th>Total: @Model.Total.ToString("N") </th>
-        <th></th>
-        <th></th>
 
-        </tr>
-        </tfoot>*@
         <tbody>
             @if ((Model.SubcuentasGastos != null && Model.SubcuentasGastos.Any())
             && (Model.GastosDiario != null && Model.GastosDiario.Any())
@@ -133,7 +124,7 @@
                             <th></th>
                             <th>@subcuenta.First().Descricion - @fondo.Porcentaje % </th>
 
-                            <th>@((Model.SubTotal * fondo.Porcentaje / 100).ToString("N")) </th>
+                            <th>@((Model.SubTotal * (int)fondo.Porcentaje / 100).ToString("N")) </th>
                             <th></th>
                             <th></th>
                             <th>

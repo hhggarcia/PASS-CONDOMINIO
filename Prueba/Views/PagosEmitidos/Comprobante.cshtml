@@ -40,8 +40,7 @@
                                 <h6>Condominio</h6>
                                 @if (Model.Condominio != null)
                                 {
-                                    <input type="hidden" asp-for="@Model.Condominio.Nombre" />
-
+                                    <input type="hidden" asp-for="@Model.Condominio.Nombre" />                                        
                                     <p><strong>Condominio</strong>: @Model.Condominio.Nombre</p>
                                     <p><strong>RIF</strong>: @Model.Condominio.Rif</p>
                                    @* <p><strong>Inmueble</strong>: @Model.Inmueble.Nombre</p>

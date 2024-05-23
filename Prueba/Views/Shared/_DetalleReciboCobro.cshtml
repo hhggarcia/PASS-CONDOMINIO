@@ -178,9 +178,9 @@
 
                             <th> </th>
                             <th></th>
-                            <th>@((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100).ToString("N"))</th>
+                            <th>@((Model.RelacionGastos.SubTotal * (int)fondo.Porcentaje / 100).ToString("N"))</th>
                             <th>
-                                @(((Model.RelacionGastos.SubTotal * fondo.Porcentaje / 100) * (Model.Propiedad.Alicuota / 100)).ToString("N"))
+                                @(((Model.RelacionGastos.SubTotal * (int)fondo.Porcentaje / 100) * (Model.Propiedad.Alicuota / 100)).ToString("N"))
                                 @*<a asp-action="Edit" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Editar</a> |
                                     <a asp-action="Details" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Detalles</a> |
                                     <a asp-action="Delete" asp-controller="Fondos" asp-route-id="@fondo.IdFondo">Eliminar</a>*@

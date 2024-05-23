@@ -7,8 +7,6 @@ public partial class ReciboNomina
 {
     public int IdReciboNomina { get; set; }
 
-    public int IdCondominio { get; set; }
-
     public bool Entregado { get; set; }
 
     public int IdEmpleado { get; set; }

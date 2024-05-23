@@ -13,29 +13,31 @@ public partial class Transaccion
 
     public int IdCodCuenta { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public int? IdProveedor { get; set; }
 
-    public string Documento { get; set; } = null!;
+    public string Documento { get; set; } = string.Empty;
 
-    public string MontoTotal { get; set; } = null!;
+    public decimal MontoTotal { get; set; }
 
     public decimal Cancelado { get; set; }
 
-    public bool FormaPago { get; set; }
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public int IdCodCuentaBanco { get; set; }
+    public string SimboloRef { get; set; } = string.Empty;
 
-    public string NumDocumento { get; set; } = null!;
+    public decimal ValorDolar { get; set; }
 
-    public int IdGrupoGasto { get; set; }
+    public decimal MontoRef { get; set; }
 
-    public virtual CodigoCuentasGlobal IdCodCuentaBancoNavigation { get; set; } = null!;
+    public DateTime Fecha { get; set; }
+
+    public int IdGrupo { get; set; }
+
+    public bool? Activo { get; set; }
 
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
-
-    public virtual GrupoGasto IdGrupoGastoNavigation { get; set; } = null!;
 
     public virtual Propiedad? IdPropiedadNavigation { get; set; }
 

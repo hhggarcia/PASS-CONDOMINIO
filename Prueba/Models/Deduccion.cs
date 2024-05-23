@@ -17,5 +17,9 @@ public partial class Deduccion
 
     public int IdEmpleado { get; set; }
 
+    public int? IdCodCuenta { get; set; }
+
+    public virtual CodigoCuentasGlobal? IdCodCuentaNavigation { get; set; }
+
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 }

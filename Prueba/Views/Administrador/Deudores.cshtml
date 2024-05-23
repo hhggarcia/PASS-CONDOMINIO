@@ -6,4 +6,10 @@
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 }
 
-<partial name="_Deudores" model="Model"/>
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        <a class="btn btn-light mb-3" asp-controller="Administrador" asp-action="DeudoresPDF">PDF</a>
+    </div>
+    <partial name="_Deudores" model="Model" />
+</div>

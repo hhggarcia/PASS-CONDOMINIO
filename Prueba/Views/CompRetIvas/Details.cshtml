@@ -2,102 +2,117 @@
 
 @{
     ViewData["Title"] = "Details";
-    Layout = "_LayoutAdministrador.cshtml";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
 
-<div>
-    <h4>CompRetIva</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaEmision)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaEmision)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoTransaccion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoTransaccion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumFacturaAfectada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumFacturaAfectada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalCompraIva)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalCompraIva)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CompraSinCreditoIva)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CompraSinCreditoIva)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BaseImponible)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BaseImponible)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Alicuota)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Alicuota)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImpIva)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImpIva)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IvaRetenido)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IvaRetenido)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalCompraRetIva)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalCompraRetIva)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdFacturaNavigation.IdFactura)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdNotaCreditoNavigation.IdNotaCredito)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdNotaDebitoNavigation.IdNotaDebito)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdProveedorNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdProveedorNavigation.IdProveedor)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdComprobanteIva">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Copmrobante IVA
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <dl class="row">
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.FechaEmision)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.FechaEmision)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.TipoTransaccion)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.TipoTransaccion)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.NumFacturaAfectada)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.NumFacturaAfectada)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.TotalCompraIva)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.TotalCompraIva)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.CompraSinCreditoIva)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.CompraSinCreditoIva)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.BaseImponible)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.BaseImponible)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.Alicuota)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.Alicuota)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.ImpIva)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.ImpIva)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IvaRetenido)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IvaRetenido)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.TotalCompraRetIva)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.TotalCompraRetIva)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdFacturaNavigation.IdFactura)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdNotaCreditoNavigation.IdNotaCredito)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdNotaDebitoNavigation.IdNotaDebito)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdProveedorNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdProveedorNavigation.IdProveedor)
+                                </dd>
+                            </dl>
+                            <div class="col-md-12">
+                                <a asp-action="Edit" asp-route-id="@Model?.IdComprobanteIva" class="btn btn-primary">Editar</a>
+                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

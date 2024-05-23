@@ -32,6 +32,18 @@
                                     @Html.DisplayFor(model => model.NumControl)
                                 </dd>
                                 <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdClienteNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdClienteNavigation.Nombre)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => model.IdProductoNavigation)
+                                </dt>
+                                <dd class="col-sm-10">
+                                    @Html.DisplayFor(model => model.IdProductoNavigation.Nombre)
+                                </dd>
+                                <dt class="col-sm-2">
                                     @Html.DisplayNameFor(model => model.Descripcion)
                                 </dt>
                                 <dd class="col-sm-10">
@@ -85,12 +97,7 @@
                                 <dd class="col-sm-10">
                                     @Html.DisplayFor(model => model.EnProceso)
                                 </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.IdProductoNavigation)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdProductoNavigation.Nombre)
-                                </dd>
+                                
                             </dl>
                             <div class="col-md-12">
                                 <a asp-action="Edit" asp-route-id="@Model?.IdFacturaEmitida" class="btn btn-primary">Editar</a>

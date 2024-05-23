@@ -27,6 +27,8 @@ public partial class Proveedor
 
     public bool ContribuyenteEspecial { get; set; }
 
+    public bool Beneficiario { get; set; }
+
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
@@ -42,6 +44,8 @@ public partial class Proveedor
     public virtual Iva? IdRetencionIvaNavigation { get; set; }
 
     public virtual ICollection<NotaDebito> NotaDebitos { get; set; } = new List<NotaDebito>();
+
+    public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();
 
     public virtual ICollection<Transaccion> Transaccions { get; set; } = new List<Transaccion>();
 }

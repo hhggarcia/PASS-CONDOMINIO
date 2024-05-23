@@ -9,13 +9,15 @@ public partial class Fondo
 
     public int IdCodCuenta { get; set; }
 
-    public int Porcentaje { get; set; }
+    public int? Porcentaje { get; set; }
 
     public DateTime FechaInicio { get; set; }
 
     public DateTime FechaFin { get; set; }
 
     public decimal Saldo { get; set; }
+
+    public decimal? Monto { get; set; }
 
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 }

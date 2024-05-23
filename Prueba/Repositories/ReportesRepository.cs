@@ -256,21 +256,18 @@ namespace Prueba.Repositories
 
                 //IList<Propiedad> propiedades = new List<Propiedad>();
 
-                IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+               // IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
                 //var aux = propiedades.Concat(propiedad).ToList();
                 //propiedades = aux.ToList();
 
-                foreach (var propiedad in propiedades)
-                {
-                    var pagosMes = _context.PagoRecibidos
-                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad
+                var pagosMes = _context.PagoRecibidos
+                        .Where(c => c.IdCondominio == idCondominio
                         && c.Fecha.Month == mes
                         && c.Confirmado == true)
                         .Sum(c => c.MontoRef);
 
-                    ingresoMes += pagosMes;
-                }
+                ingresoMes += pagosMes;
             }
             return ingresoMes;
         }
@@ -343,14 +340,21 @@ namespace Prueba.Repositories
             //                          where c.IdCondominio == idCondominio
             //                          select c;
             var propiedades = from c in _context.Propiedads
-                              where c.Solvencia == false
+                              where c.IdCondominio == idCondominio
+                              where !c.Solvencia
                               select c;
+
             var propietarios = from c in _context.AspNetUsers
+                               join p in propiedades
+                               on c.Id equals p.IdUsuario
                                select c;
+
             var relacionesGastos = from c in _context.RelacionGastos
                                    where c.IdCondominio == idCondominio
                                    select c;
             var recibosCobro = from c in _context.ReciboCobros
+                               join p in propiedades
+                               on c.IdPropiedad equals p.IdPropiedad
                                select c;
 
             if (propiedades != null && propiedades.Any()
@@ -391,8 +395,6 @@ namespace Prueba.Repositories
             }
 
             return new RecibosCreadosVM();
-        }
-
-        
+        }        
     }
 }

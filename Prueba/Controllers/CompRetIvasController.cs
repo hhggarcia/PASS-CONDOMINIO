@@ -2,20 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ceTe.DynamicPDF.Printing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Services;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class CompRetIvasController : Controller
     {
+        private readonly IPrintServices _printServices;
+        private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public CompRetIvasController(NuevaAppContext context)
+        public CompRetIvasController(IPrintServices printServices,
+            IPDFServices servicesPDF,
+            NuevaAppContext context)
         {
+            _printServices = printServices;
+            _servicesPDF = servicesPDF;
             _context = context;
         }
 
@@ -177,6 +189,74 @@ namespace Prueba.Controllers
         private bool CompRetIvaExists(int id)
         {
             return _context.CompRetIvas.Any(e => e.IdComprobanteIva == id);
+        }
+
+        public async Task<IActionResult> PrintComprobante(int id)
+        {
+            try
+            {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var comprobanteRetencion = await _context.CompRetIvas.FindAsync(id);
+                if (comprobanteRetencion != null)
+                {
+                    var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == comprobanteRetencion.IdProveedor).FirstOrDefaultAsync();
+                    var condominio = await _context.Condominios.Where(c => c.IdCondominio == proveedor.IdCondominio).FirstOrDefaultAsync();
+                    //_context.ComprobanteRetencions.Remove(comprobanteRetencion);
+                    var modelo = new ComprobanteRetencionesIVAVM
+                    {
+                        Condominio = condominio,
+                        Proveedor = proveedor,
+                        compRetIva = comprobanteRetencion
+                    };
+
+                    var data = _servicesPDF.ComprobanteRetencionesIVA(modelo);
+
+                    var resultado = _printServices.PrintCompRetencionIva(data, idCondominio);
+
+                    TempData.Keep();
+
+                    return RedirectToAction("Index");
+                }
+
+                TempData.Keep();
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
+        public async Task<IActionResult> ComprobantePDF(int id)
+        {
+
+            var comprobanteRetencion = await _context.CompRetIvas.FindAsync(id);
+            if (comprobanteRetencion != null)
+            {
+                var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == comprobanteRetencion.IdProveedor).FirstOrDefaultAsync();
+                var condominio = await _context.Condominios.Where(c => c.IdCondominio == proveedor.IdCondominio).FirstOrDefaultAsync();
+                //_context.ComprobanteRetencions.Remove(comprobanteRetencion);
+                var modelo = new ComprobanteRetencionesIVAVM
+                {
+                    Condominio = condominio,
+                    Proveedor = proveedor,
+                    compRetIva = comprobanteRetencion
+                };
+                var data = _servicesPDF.ComprobanteRetencionesIVA(modelo);
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobanteRetencion.pdf");
+            }
+
+            return View("Index");
+
         }
     }
 }

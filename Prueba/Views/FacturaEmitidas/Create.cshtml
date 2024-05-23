@@ -25,17 +25,25 @@
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-group">
+                            <label asp-for="IdCliente" class="control-label"></label>
+                            <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.IdCliente"></select>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="IdProducto" class="control-label"></label>
                             <select asp-for="IdProducto" class="form-control" asp-items="ViewBag.IdProducto"></select>
                         </div>
                         <div class="form-group">
+                            <label asp-for="IdCodCuenta" class="control-label"></label>
+                            <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="NumFactura" class="control-label"></label>
-                            <input asp-for="NumFactura" class="form-control" />
+                            <input asp-for="NumFactura" class="form-control" value="@ViewBag.NumFactura" />
                             <span asp-validation-for="NumFactura" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="NumControl" class="control-label"></label>
-                            <input asp-for="NumControl" class="form-control" />
+                            <input asp-for="NumControl" class="form-control" value="@ViewBag.NumControl" />
                             <span asp-validation-for="NumControl" class="text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -55,22 +63,22 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="SubTotal" class="control-label"></label>
-                            <input asp-for="SubTotal" class="form-control" />
+                            <input type="number" asp-for="SubTotal" class="form-control" id="subtotal" onkeyup="calcularIva()" />
                             <span asp-validation-for="SubTotal" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Iva" class="control-label"></label>
-                            <input asp-for="Iva" class="form-control" />
+                            <label asp-for="Iva" class="control-label">IVA (16%)</label>
+                            <input type="number" asp-for="Iva" class="form-control" id="iva" />
                             <span asp-validation-for="Iva" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        @* <div class="form-group">
                             <label asp-for="MontoTotal" class="control-label"></label>
-                            <input asp-for="MontoTotal" class="form-control" />
+                            <input type="number" asp-for="MontoTotal" class="form-control" />
                             <span asp-validation-for="MontoTotal" class="text-danger"></span>
-                        </div>
+                        </div> *@
                         <div class="form-group">
                             <label asp-for="Abonado" class="control-label"></label>
-                            <input asp-for="Abonado" class="form-control" />
+                            <input type="number" asp-for="Abonado" class="form-control" />
                             <span asp-validation-for="Abonado" class="text-danger"></span>
                         </div>
                         <div class="form-group form-check">
@@ -98,3 +106,12 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+<script>
+    function calcularIva() {
+        let subtotal = parseFloat(document.getElementById("subtotal").value);
+        let iva = subtotal * 0.16;
+        document.getElementById("iva").value = iva;
+        // document.getElementById("iva").value = iva.toFixed(2);
+    }
+</script>

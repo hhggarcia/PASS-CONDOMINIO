@@ -41,6 +41,15 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+// culture
+//builder.Services.Configure<RequestLocalizationOptions>(options =>
+//{
+//    var supportedCultures = new[] { "en-US" };
+//    options.SetDefaultCulture(supportedCultures[0])
+//        .AddSupportedCultures(supportedCultures)
+//        .AddSupportedUICultures(supportedCultures);
+//});
+
 #region Authorization
 
 AddAuthorizationPolicies();
@@ -60,11 +69,16 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+//app.UseRequestLocalization(new RequestLocalizationOptions
+//{
+//    ApplyCurrentCultureToResponseHeaders = true
+//});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
 
 app.UseAuthorization();
 
@@ -100,6 +114,7 @@ void AddScoped()
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddScoped<IPDFServices, PDFServices>();
+    builder.Services.AddScoped<IPrintServices, PrintServices>();
 }
 
 void AddTransient()
@@ -108,6 +123,7 @@ void AddTransient()
     builder.Services.AddTransient<IRelacionGastoRepository, RelacionGastoRepository>();
     builder.Services.AddTransient<IReportesRepository, ReportesRepository>();
     builder.Services.AddTransient<IPagosEmitidosRepository, PagosEmitidosRepository>();
+    builder.Services.AddTransient<IPagosRecibidosRepository, PagosRecibidosRepository>();
     builder.Services.AddTransient<ILibroDiarioRepository, LibroDiarioRepository>();
     builder.Services.AddTransient<ICuentasContablesRepository, CuentasContablesRepository>();    
     builder.Services.AddTransient<IMonedaRepository, MonedaRepository>();

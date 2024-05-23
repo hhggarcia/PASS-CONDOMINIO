@@ -37,7 +37,7 @@
                         <form class="form form-horizontal" asp-action="ConfirmarPago">
                             @if (@ViewBag.FormaPago == "fallido")
                             {
-                                <h6>Debe seleccionar una cuenta de Efectivo o transferencia!</h6>
+                                <h6>@ViewBag.Mensaje</h6>
                                 <hr />
                             }
                             <div class="form-body">
@@ -77,31 +77,31 @@
                                             </div>
                                         </div>
                                     </div>
-                          @*         
-                              <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Facturas</label>
-                                            <div class="position-relative">
-                                                <fieldset class="form-group">
-                                                    <select class="form-select" id="facturaSelect" asp-for="IdFactura">
-                                                        <option value="">Seleccione una factura</option>
-                                                        @foreach (var factura in Model.Facturas)
-                                                        {
-                                                            <option value="@factura.Value">@factura.Text</option>
-                                                        }
-                                                    </select>
-                                                </fieldset>
-                                            </div>
-                                        </div>
-                                    </div> *@
-                                    
+                                    @*
+                                <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Facturas</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
+                                <select class="form-select" id="facturaSelect" asp-for="IdFactura">
+                                <option value="">Seleccione una factura</option>
+                                @foreach (var factura in Model.Facturas)
+                                {
+                                <option value="@factura.Value">@factura.Text</option>
+                                }
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
+                                </div> *@
+
                                     <!-- Anticipos -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">¿Desea pagar con anticipos?</label>
                                             <div class="position-relative">
                                                 <fieldset class="form-group">
-                                                    <select class="form-select" id="basicSelectAnticipos" >
+                                                    <select class="form-select" id="basicSelectAnticipos">
                                                         <option value="No">No</option>
                                                         <option value="Si">Si</option>
                                                     </select>
@@ -119,30 +119,24 @@
 
                                                     <select class="form-select" id="basicSelect" asp-for="IdAnticipo">
                                                         <option value="">Seleccione un anticipo</option>
-          
+
                                                     </select>
                                                 </fieldset>
                                             </div>
                                         </div>
                                     </div>
-
-
-                            
-                                    
-
                                     <!-- Monto -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Monto</label>
                                             <span asp-validation-for="Monto" class="text-danger"></span>
-                                            <span id="validatonMonto"class="text-danger"></span>
+                                            <span id="validatonMonto" class="text-danger"></span>
                                             <div class="position-relative">
-                                                <input type="text"
-                                                       class="form-control"
+                                                @* <input id="montoInput" type="number" asp-for="Monto" class="form-control" /> *@
+                                                <input class="form-control"
                                                        placeholder="Monto"
                                                        id="montoInput"
-                                                       asp-for="Monto"
-                                                       /> <!-- Agregar el atributo disabled -->
+                                                       asp-for="Monto" /> <!-- Agregar el atributo disabled -->
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-person"></i>
                                                 </div>
@@ -151,34 +145,34 @@
                                     </div>
                                     <input type="hidden" id="RetIvaInput" asp-for="RetIva" />
                                     <input type="hidden" id="RetIslrInput" asp-for="RetIslr" />
-                                @*     <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Monto</label>
-                                            <span asp-validation-for="Monto" class="text-danger"></span>
-                                            <div class="position-relative">
-                                                <input type="text"
-                                                       class="form-control"
-                                                       placeholder="Monto"
-                                                       id="first-name-icon"
-                                                   asp-for="Monto" />
-                                                <div class="form-control-icon">
-                                                    <i class="bi bi-person"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> *@
+                                    @*     <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Monto</label>
+                                <span asp-validation-for="Monto" class="text-danger"></span>
+                                <div class="position-relative">
+                                <input type="text"
+                                class="form-control"
+                                placeholder="Monto"
+                                id="first-name-icon"
+                                asp-for="Monto" />
+                                <div class="form-control-icon">
+                                <i class="bi bi-person"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div> *@
 
                                     <!-- Moneda -->
-                                   @* <div class="col-md-6 col-12">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Tipo de Moneda</label>
-                                            <div class="position-relative">
-                                                <fieldset class="form-group">
-                                                    <select asp-for="IdMonedaCond" class="form-control" asp-items="ViewBag.IdMoneda"></select>
-                                                </fieldset>
-                                            </div>
-                                        </div>
-                                    </div>*@
+                                    @* <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Tipo de Moneda</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
+                                <select asp-for="IdMonedaCond" class="form-control" asp-items="ViewBag.IdMoneda"></select>
+                                </fieldset>
+                                </div>
+                                </div>
+                                </div>*@
 
                                     <!-- Fecha -->
                                     <div class="col-md-6 col-12">
@@ -187,34 +181,33 @@
                                             <span asp-validation-for="Fecha" class="text-danger"></span>
 
                                             <div class="position-relative">
-                                                <input
-                                                       class="form-control"
+                                                <input class="form-control"
                                                        placeholder="Fecha"
                                                        id="first-name-icon"
                                                        required
-                                                   value="@DateTime.Today"
-                                                   asp-for="Fecha" />
+                                                       value="@DateTime.Today"
+                                                       asp-for="Fecha" />
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-calendar-date"></i>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                            @*           <!-- Subcuentas -->
+                                    @*           <!-- Subcuentas -->
                                 <div class="col-md-6 col-12">
-                                    <div class="form-group has-icon-left mandaory">
-                                        <label for="last-name-column">Sub Cuentas</label>
-                                        <div class="position-relative">
-                                            <fieldset class="form-gro up">
-                                            <select class="form-select" id="basicSelect"
-                                            asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
-                                            <option value="">Seleccione la Sub Cuenta a pagar</option>
-                                            </select>
-                                            </fieldset>
-                                        </div>
-                                    </div>
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Sub Cuentas</label>
+                                <div class="position-relative">
+                                <fieldset class="form-gro up">
+                                <select class="form-select" id="basicSelect"
+                                asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
+                                <option value="">Seleccione la Sub Cuenta a pagar</option>
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
                                 </div> *@
-                               
+
                                     <!-- Concepto -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left">
@@ -227,14 +220,14 @@
                                                        placeholder="Concepto"
                                                        id="concepto"
                                                        required
-                                                   asp-for="Concepto" />
+                                                       asp-for="Concepto" />
                                                 <div class="form-control-icon">
                                                     <i class="bi bi-building"></i>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                
+
                                     <div class="col-md-12 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Método de Pago</label>
@@ -276,7 +269,7 @@
                                                                                     <div class="position-relative">
                                                                                         <fieldset class="form-group">
                                                                                             <select asp-for="IdCodigoCuentaCaja"
-                                                                                                asp-items="Model.SubCuentasCaja"
+                                                                                                    asp-items="Model.SubCuentasCaja"
                                                                                                     class="form-select" id="basicSelect">
                                                                                                 <option value="0">Seleccione un tipo de efectivo</option>
                                                                                             </select>
@@ -302,7 +295,7 @@
                                                                                     <div class="position-relative">
                                                                                         <input type="number" class="form-control"
                                                                                                placeholder="Referencia" id="first-name-icon" required=""
-                                                                                           asp-for="NumReferencia">
+                                                                                               asp-for="NumReferencia">
                                                                                         <div class="form-control-icon">
                                                                                             <i class="bi bi-credit-card"></i>
                                                                                         </div>
@@ -316,7 +309,7 @@
                                                                                     <div class="position-relative">
                                                                                         <fieldset class="form-group">
                                                                                             <select asp-for="IdCodigoCuentaBanco"
-                                                                                                asp-items="Model.SubCuentasBancos"
+                                                                                                    asp-items="Model.SubCuentasBancos"
                                                                                                     class="form-select" id="basicSelect">
                                                                                                 <option value="0">Seleccione un banco</option>
                                                                                             </select>
@@ -342,11 +335,11 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" asp-for="retenciones" /> Aplicar las retenciones
+                                                <input class="form-check-input" asp-for="retencionesIva" /> Aplicar las retenciones IVA
                                             </label>
-                                      @*       <div class="form-group form-check">
-                                              
-                                            </div> *@
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" asp-for="retencionesIslr" /> Aplicar las retenciones ISLR
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end">
@@ -375,31 +368,12 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
-@section Scripts{
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+@section Scripts {
+    
     <script>
-        // $(document).on('change', '#facturaSelect', function () {
-        //     var facturaId = $(this).val();
-        //     console.log('ID de factura seleccionado:', facturaId); // Agrega esta línea para depurar
-
-        //     $.ajax({
-        //         url: '/PagosEmitidos/ObtenerFactura',
-        //         type: 'GET',
-        //         data: { facturaId: facturaId },
-        //         success: function (data) {
-        //             $('#montoInput').val(data.monto);
-        //             // Permitir la edición del campo de monto
-        //             $('#montoInput').prop('readonly', false);
-        //         },
-        //         error: function (error) {
-        //             console.error('Error al obtener las facturas: ', error);
-        //         }
-        //     });
-        // });
         $(document).ready(function () {
             var montoFacturaOriginal;
-            var montoAnticipo =0; 
+            var montoAnticipo = 0;
             var datAnticipo;
             var selectOptionAnticipo = false;
 
@@ -441,11 +415,11 @@
                     type: 'GET',
                     data: { facturaId: facturaId },
                     success: function (data) {
-                        montoFacturaOriginal = parseFloat(data.monto);
+                        montoFacturaOriginal = parseFloat(data.monto).toFixed(2);
                         if (montoAnticipo != 0 && selectOptionAnticipo) {
                             var precioTotal = montoFacturaOriginal - montoAnticipo;
                             $('#montoInput').val(precioTotal);
-                        }else{
+                        } else {
                             $('#montoInput').val(data.monto);
                         }
 
@@ -453,7 +427,7 @@
                         $('#RetIvaInput').val(data.iva);
                         $('#RetIslrInput').val(data.islr);
 
-                     
+
                         // Permitir la edición del campo de monto
                         $('#montoInput').prop('disabled', false);
                     },
@@ -474,13 +448,13 @@
                 if (montoFacturaOriginal < montoTotal) {
                     $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
                     // alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                    if (montoAnticipo != 0 && selectOptionAnticipo){
+                    if (montoAnticipo != 0 && selectOptionAnticipo) {
                         var precioTotal = montoFacturaOriginal - montoAnticipo;
                         $('#montoInput').val(precioTotal);
-                    }else{
+                    } else {
                         $(this).val(montoFacturaOriginal);
                     }
-                }else{
+                } else {
                     $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
                 }
                 // if (montoAnticipo != 0 && montoInput != montoAnticipo){
@@ -508,7 +482,7 @@
                     // $('#montoInput').prop('readonly', false); // Deshabilitar el campo
                 }
             });
-           
+
             function obtenerAnticiposPorProveedor(proveedorId) {
                 $.ajax({
                     url: '/PagosEmitidos/ObtenerAnticiposPorProveedor',
@@ -542,14 +516,14 @@
                         // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
                         $('#montoInput').val(montoFacturaOriginal);
                         $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
-                    }else{
+                    } else {
                         var precioTotal = montoFacturaOriginal - montoAnticipo;
                         $('#montoInput').val(precioTotal);
                         $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
 
                     }
                     // $('#montoInput').prop('disabled', true);
-                } 
+                }
             });
         });
     </script>
@@ -559,7 +533,4 @@
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
         });
     </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 }
