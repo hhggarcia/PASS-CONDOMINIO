@@ -132,7 +132,6 @@
                                             </div>
                                         </div>
                                         <!-- Fin modal-->
-
                                         <!-- Select Recibo a pagar -->
                                         <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
@@ -174,25 +173,24 @@
                                         </div>
 
                                         <!-- Monto -->
-                                        @* <div class="col-md-6 col-12">
-                                <div class="form-group has-icon-left">
-                                <label for="last-name-column">Monto</label>
-                                <span asp-validation-for="Monto" class="text-danger"></span>
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Monto</label>
+                                                <span asp-validation-for="Monto" class="text-danger"></span>
 
-                                <div class="position-relative">
-                                <input type="number"
-                                class="form-control"
-                                placeholder="Monto"
-                                id="first-name-icon"
-                                required
-                                asp-for="Monto" />
-                                <div class="form-control-icon">
-                                <i class="bi bi-building"></i>
-                                </div>
-                                </div>
-                                </div>
-                                </div> *@
-
+                                                <div class="position-relative">
+                                                    <input type="number"
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Monto" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <!-- Fecha -->
                                         <div class="col-md-6 col-12">
@@ -215,25 +213,24 @@
                                         </div>
 
                                         <!-- Imagen -->
+                                        @* <div class="col-md-6 col-12">
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Comprobante de Pago</label>
+                                <span asp-validation-for="Imagen" class="text-danger"></span>
 
-                                        <div class="col-md-6 col-12">
-                                            <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Comprobante de Pago</label>
-                                                <span asp-validation-for="Imagen" class="text-danger"></span>
-
-                                                <div class="position-relative">
-                                                    <input type="file"
-                                                           class="form-control"
-                                                           placeholder="Imagen"
-                                                           id="first-name-icon"
-                                                           required
-                                                           name="file" />
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-building"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="position-relative">
+                                <input type="file"
+                                class="form-control"
+                                placeholder="Imagen"
+                                id="first-name-icon"
+                                required
+                                name="file" />
+                                <div class="form-control-icon">
+                                <i class="bi bi-building"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div> *@
 
                                         <!-- Metodo de pago -->
                                         <div class="col-md-12 col-12">
@@ -450,11 +447,16 @@
                         PopulateDropDown("#bancos", bancos);
                         // LLENAR EFECTIVO
                         PopulateDropDown("#efectivos", efectivos);
-                        // LLENAR RECIBOS DE PROPIEDAD
-                        PopulateDropDown("#recibos", response.recibosModel);
-                        // LLENAR MODAL CON LISTA DE REGISTRO
 
-                        LoadTable("#contenido", response.recibos)
+                        if (response.recibosModel.length > 0) {
+                            // LLENAR RECIBOS DE PROPIEDAD
+                            PopulateDropDown("#recibos", response.recibosModel);
+                        }
+
+                        // LLENAR MODAL CON LISTA DE REGISTRO
+                        if (response.recibos.length > 0) {
+                            LoadTable("#contenido", response.recibos)
+                        }
                         // LLENAR DEUDA
                         //$("#Deuda").innerText(response.deuda);
                         $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");

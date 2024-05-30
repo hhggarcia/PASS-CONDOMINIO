@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "RequireSuperAdmin")]
-
+    [Authorize(Policy = "RequireAdmin")]
     public class CondominiosController : Controller
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
 
-        public CondominiosController(NuevaAppContext context)
+        public CondominiosController(ICuentasContablesRepository repoCuentas,
+            NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _context = context;
         }
 
@@ -52,7 +54,7 @@ namespace Prueba.Controllers
         // GET: Condominios/Create
         public IActionResult Create()
         {
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email");
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id");
             return View();
         }
 
@@ -61,17 +63,15 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email")] Condominio condominio)
+        public async Task<IActionResult> Create([Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email,ContribuyenteEspecial,Multa,ClaveCorreo,IdCodCuenta")] Condominio condominio)
         {
-            ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
-
             if (ModelState.IsValid)
             {
                 _context.Add(condominio);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id", condominio.IdAdministrador);
             return View(condominio);
         }
 
@@ -88,7 +88,12 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Email", condominio.IdAdministrador);
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);
+
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers.Where(c => c.Id == condominio.IdAdministrador), "Id", "Email", condominio.IdAdministrador);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
             return View(condominio);
         }
 
@@ -97,12 +102,16 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCondominio,IdAdministrador,Rif,Tipo,Nombre,InteresMora,Direccion,Email")] Condominio condominio)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCondominio,IdAdministrador,Rif,Nombre,Tipo,InteresMora,Direccion,Email,ContribuyenteEspecial,Multa,ClaveCorreo,IdCodCuenta")] Condominio condominio)
         {
             if (id != condominio.IdCondominio)
             {
                 return NotFound();
             }
+            var idCuenta = _context.SubCuenta.Where(c => c.Id == condominio.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+            condominio.IdCodCuenta = idCodCuenta;
 
             ModelState.Remove(nameof(condominio.IdAdministradorNavigation));
 
@@ -124,9 +133,14 @@ namespace Prueba.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Dashboard", "Administrador", new { id = condominio.IdCondominio });
             }
-            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers, "Id", "Id", condominio.IdAdministrador);
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);
+
+            ViewData["IdAdministrador"] = new SelectList(_context.AspNetUsers.Where(c => c.Id == condominio.IdAdministrador), "Id", "Email", condominio.IdAdministrador);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
             return View(condominio);
         }
 

@@ -91,9 +91,9 @@
                                                             <td>@referencia.NumReferencia</td>
                                                             <td>@banco.Descricion</td>
                                                             <td>
-                                                                @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
-                                                                @* <a asp-action="Details" asp-route-id="@item.IdPagoRecibido">Detalles</a> |
-                                                                <a asp-action="Delete" asp-route-id="@item.IdPagoRecibido">Eliminar</a> *@
+                                                                <a asp-action="" asp-route-id="@item.IdPagoRecibido">Eliminar</a> |
+                                                                <a asp-action="CobroPDF" asp-route-id="@item.IdPagoRecibido">PDF</a> |
+                                                                <a asp-action="" asp-route-id="@item.IdPagoRecibido">Correo</a> 
                                                             </td>
                                                         </tr>
                                                     }

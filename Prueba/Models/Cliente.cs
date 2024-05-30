@@ -29,6 +29,10 @@ public partial class Cliente
 
     public string? Email { get; set; }
 
+    public decimal? Deuda { get; set; }
+
+    public bool? Solvente { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();

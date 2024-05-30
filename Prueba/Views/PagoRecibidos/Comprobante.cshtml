@@ -44,9 +44,9 @@
                                     <p><strong>Deuda</strong>: @Model.Propiedad.Deuda.ToString("N2") Bs.</p>
                                     <p><strong>Monto Mora</strong>: @Model.Propiedad.MontoIntereses.ToString("N2") Bs.</p>
                                     <p><strong>Monto Indexación</strong>: @(((decimal)Model.Propiedad.MontoMulta).ToString("N2")) Bs.</p>
-                                    <p><strong>Saldo Actual</strong>: @Model.Propiedad.Saldo.ToString("N2") Bs.</p>
+                                    @* <p><strong>Saldo Actual</strong>: @Model.Propiedad.Saldo.ToString("N2") Bs.</p> *@
                                     <hr />
-                                    <p><strong>Total</strong>: @((Model.Propiedad.Deuda + Model.Propiedad.MontoIntereses + (decimal)Model.Propiedad.MontoMulta + Model.Propiedad.Saldo).ToString("N2")) Bs.</p>
+                                    <p><strong>Saldo Actual</strong>: @((Model.Propiedad.Deuda + Model.Propiedad.MontoIntereses + (decimal)Model.Propiedad.MontoMulta + Model.Propiedad.Saldo).ToString("N2")) Bs.</p>
                                 }
                             </div>
                         </div>
@@ -87,18 +87,16 @@
                 <div class="text-center mb-4">
                     <h4 class="text-center">@Model.Mensaje</h4>
 
-                    <a asp-action="RegistrarPagos"
+                    <a asp-controller="PagoRecibidos" asp-action="RegistrarPagosAdmin"
                        class="btn btn-primary me-1 mb-1">
                         Realizar otro pago
                     </a>
-                    <a asp-action="DashboardUsuario"
+                    <a asp-controller="PagoRecibidos" asp-action="PagosConfirmados"
                        class="btn btn-primary me-1 mb-1">
                         Finalizar
                     </a>
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>

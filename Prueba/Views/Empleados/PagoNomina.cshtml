@@ -4,10 +4,6 @@
     ViewData["Title"] = "Pagos";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
 
-    void limpiarDeducciones()
-    {
-        Model.ListDeducciones.Clear();
-    }
 }
 
 <!-- Begin Page Content -->
@@ -295,6 +291,25 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <div class="col-sm-5">
+                                                <label class="form-check-label">
+                                                    <input id="anticiposCheck" class="form-check-input" asp-for="Anticipos" /> Aplicar Anticipos
+                                                </label>
+                                            </div>
+
+                                            <div id="inputsContainerAnticipos" style="display: none;">
+                                                <div class="col-md-12 col-12">
+                                                    <div class="form-group has-icon-left mandaory">
+                                                        <div class="position-relative">
+                                                            <fieldset class="form-group">
+                                                                <select name="ListAnticiposIDs" class="form-select" id="anticipoSelect" multiple="multiple">
+                                                                </select>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end">
@@ -446,6 +461,47 @@
             }
         }
 
+        function buscarAnticipos() {
+            var perc = document.getElementById('anticiposCheck');
+
+            if (perc.checked) {
+                var idEmpleado = $("#empleadoSelect").val();
+                const contenedorCheckboxes = document.getElementById('inputsContainerAnticipos');
+
+                //contenedorCheckboxes.innerHTML = '';
+
+                $.ajax({
+                    url: '/Empleados/ObtenerAnticipos',
+                    type: 'GET',
+                    data: { empleadoId: idEmpleado },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.length > 0) {
+                            $('#anticipoSelect').empty();
+                            $.each(data, function (index, item) {
+                                $('#anticipoSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+
+                        } else {
+                            $('#anticipoSelect').empty();
+                            //$('#facturaMessage').show();
+                        }
+
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener las percepciones: ', error);
+                    }
+                });
+
+                perc.addEventListener("change", function () {
+                    // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                    contenedorCheckboxes.style.display = perc.checked ? "block" : "none";
+                });
+            } else {
+                contenedorCheckboxes.innerHTML = '';
+            }
+        }
+
         var dedu = document.getElementById('deduccionesCheck');
         dedu.addEventListener('click', buscarDeducciones);
 
@@ -454,6 +510,9 @@
 
         var bon = document.getElementById('bonosCheck');
         bon.addEventListener('click', buscarBonos);
+
+        var ant = document.getElementById('anticiposCheck');
+        ant.addEventListener('click', buscarAnticipos);
     </script>
 
 }

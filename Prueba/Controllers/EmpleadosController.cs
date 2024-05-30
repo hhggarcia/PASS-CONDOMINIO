@@ -336,8 +336,20 @@ namespace Prueba.Controllers
                     }
                 }
             }
+            if (modelo.Anticipos)
+            {
+                foreach (var item in modelo.ListAnticiposIDs)
+                {
+                    var anticipo = _context.AnticipoNominas.Find(item);
 
-            if (modelo.deducciones && !modelo.percepciones && !modelo.Bonos)
+                    if (anticipo != null)
+                    {
+                        monto -= anticipo.Monto;
+                    }
+                }
+            }
+
+            if (modelo.deducciones || modelo.Anticipos && !modelo.percepciones && !modelo.Bonos)
             {
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
@@ -346,7 +358,21 @@ namespace Prueba.Controllers
                 TempData.Keep();
 
                 ViewBag.FormaPago = "fallido";
-                ViewBag.Mensaje = "No es posible seleccionar solo las deducciones!";
+                ViewBag.Mensaje = "No es posible seleccionar solo las deducciones o Anticipos!";
+
+                return View("PagoNomina", modelo);
+            }
+
+            if (modelo.Anticipos && !modelo.Bonos)
+            {
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+
+                TempData.Keep();
+
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "Solo debe seleccionar los anticipos con los bonos!";
 
                 return View("PagoNomina", modelo);
             }
@@ -458,6 +484,23 @@ namespace Prueba.Controllers
                         }
                     }
 
+                    if (modelo.Anticipos)
+                    {
+                        var anticipos = await _context.AnticipoNominas.Where(c => c.IdEmpleado == modelo.IdEmpleado).ToListAsync();
+
+                        if (!anticipos.Any())
+                        {
+                            modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(modelo.IdCondominio);
+
+                            TempData.Keep();
+
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El empleado no tiene Anticipos!";
+
+                            return View("PagoNomina", modelo);
+                        }
+                    }
+
                     var resultado = await _repoPagosEmitidos.RegistrarPagoNomina(modelo);
 
                     if (resultado == "exito")
@@ -476,6 +519,7 @@ namespace Prueba.Controllers
                         var deducciones = new List<Deduccion>();
                         var percepciones = new List<Percepcion>();
                         var bonos = new List<Bonificacion>();
+                        var anticipos = new List<AnticipoNomina>();
 
                         if (empleado == null)
                         {
@@ -505,8 +549,7 @@ namespace Prueba.Controllers
                                     deducciones.Add(deduccion);
                                 }
                             }
-                        }
-                       
+                        }                       
                         if (modelo.Bonos)
                         {
                             foreach (var item in modelo.ListBonosIDs)
@@ -516,6 +559,18 @@ namespace Prueba.Controllers
                                 if (bono != null)
                                 {
                                     bonos.Add(bono);
+                                }
+                            }
+                        }
+                        if (modelo.Anticipos)
+                        {
+                            foreach (var item in modelo.ListAnticiposIDs)
+                            {
+                                var anticipo = _context.AnticipoNominas.Find(item);
+
+                                if (anticipo != null)
+                                {
+                                    anticipos.Add(anticipo);
                                 }
                             }
                         }
@@ -530,7 +585,8 @@ namespace Prueba.Controllers
                             Percepciones = percepciones,
                             Deducciones = deducciones,
                             Empleado = empleado,
-                            Bonos = bonos
+                            Bonos = bonos,
+                            Anticipos = anticipos
                         };
 
                         if (modelo.Pagoforma == FormaPago.Transferencia)
@@ -639,6 +695,22 @@ namespace Prueba.Controllers
             var bonos = await _context.Bonificaciones.Where(c => c.IdEmpleado == empleado.IdEmpleado).ToListAsync();
 
             IList<SelectListItem> selectList = bonos.Select(c => new SelectListItem(c.Concepto + " " + c.Monto.ToString() +"Bs", c.IdBonificacion.ToString())).ToList();
+
+            return Json(selectList);
+        }
+
+        public async Task<IActionResult> ObtenerAnticipos(int empleadoId)
+        {
+            var empleado = await _context.Empleados.Where(c => c.IdEmpleado == empleadoId).FirstAsync();
+
+            if (empleado == null)
+            {
+                return NotFound();
+            }
+
+            var anticipos = await _context.AnticipoNominas.Where(c => c.IdEmpleado == empleado.IdEmpleado).ToListAsync();
+
+            IList<SelectListItem> selectList = anticipos.Select(c => new SelectListItem(c.Fecha.ToString("dd/MM/yyyy") + " " + c.Monto.ToString() + "Bs", c.IdAnticipoNomina.ToString())).ToList();
 
             return Json(selectList);
         }

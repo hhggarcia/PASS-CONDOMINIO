@@ -35,7 +35,15 @@ namespace Prueba.Controllers
         // GET: LibroVentas
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.LibroVentas.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.LibroVentas
+                .Include(l => l.IdCondominioNavigation)
+                .Include(l => l.IdFacturaNavigation)
+                .Where(c => c.IdCondominio == idCondominio);
+
+            TempData.Keep();
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -178,11 +186,57 @@ namespace Prueba.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<ContentResult> LibroPDF([FromBody] IEnumerable<LibroVenta> listaLibroVenta)
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ContentResult> LibroPDF([FromBody] IEnumerable<LibroVenta> listaLibroVenta)
+        //{
+        //    try
+        //    {
+        //        var modelo = new List<LibroVentasVM>();
+
+        //        foreach (var item in listaLibroVenta)
+        //        {
+        //            var factura = await _context.FacturaEmitida.FindAsync(item.IdFactura);
+        //            if (factura != null)
+        //            {
+        //                var producto = await _context.Productos.FindAsync(factura.IdProducto);
+        //                var cliente  = await _context.Clientes.FindAsync(factura.IdCliente);
+
+        //                modelo.Add(new LibroVentasVM
+        //                {
+        //                    libroVenta = item,
+        //                    FacturaEmitida = factura,
+        //                    Producto = producto,
+        //                    cliente = cliente
+        //                });
+        //            }
+        //        }                
+
+        //        var data = _servicesPDF.LibroVentas(modelo);
+        //        var base64 = Convert.ToBase64String(data);
+        //        return Content(base64, "application/pdf");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine($"Error generando PDF: {e.Message}");
+        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        //        return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+        //    }
+        //}
+
+        public async Task<IActionResult> LibroVentaPDF()
         {
+
             try
             {
                 var modelo = new List<LibroVentasVM>();
+
+                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var listaLibroVenta = _context.LibroVentas
+                    .Include(l => l.IdCondominioNavigation)
+                    .Include(l => l.IdFacturaNavigation)
+                    .Where(c => c.IdCondominio == idCondominio);
 
                 foreach (var item in listaLibroVenta)
                 {
@@ -190,7 +244,7 @@ namespace Prueba.Controllers
                     if (factura != null)
                     {
                         var producto = await _context.Productos.FindAsync(factura.IdProducto);
-                        var cliente  = await _context.Clientes.FindAsync(factura.IdCliente);
+                        var cliente = await _context.Clientes.FindAsync(factura.IdCliente);
 
                         modelo.Add(new LibroVentasVM
                         {
@@ -200,18 +254,29 @@ namespace Prueba.Controllers
                             cliente = cliente
                         });
                     }
-                }                
+                }
+
+                TempData.Keep();
 
                 var data = _servicesPDF.LibroVentas(modelo);
-                var base64 = Convert.ToBase64String(data);
-                return Content(base64, "application/pdf");
+                //var base64 = Convert.ToBase64String(data);
+                //return Content(base64, "application/pdf");
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "LibroVenta" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error generando PDF: {e.Message}");
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+                //Console.WriteLine($"Error generando PDF: {e.Message}");
+                //Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                //return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
             }
+
         }
 
         private bool LibroVentaExists(int id)

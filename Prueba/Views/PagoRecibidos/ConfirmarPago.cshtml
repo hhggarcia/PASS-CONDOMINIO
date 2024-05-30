@@ -53,12 +53,12 @@
                                                 <label class="control-label">Monto</label>
                                                 <input type="number" asp-for="Monto" class="form-control" readonly />
 
-                                                <label for="last-name-column">¿Desea enviar correo a los propietarios?</label>
+                                                @* <label for="last-name-column">¿Desea enviar correo a los propietarios?</label>
                                                 <select id="selectEnviarCorreo" class="form-select nav-tabs-selector" onchange="mostrarModal()">
                                                     <option value="no">No</option>
                                                     <option value="si">Sí</option>
                                                 </select>
-                                                <hr />
+                                                <hr /> *@
                                                 <button class="btn btn-primary" type="submit">Confirmar</button>
                                                 <a class="btn btn-secondary" asp-action="PagosConfirmados">Cancelar</a>
                                             </form>
@@ -76,7 +76,7 @@
 
 
 <!-- Modal -->
-<div id="exampleModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+@* <div id="exampleModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -96,10 +96,10 @@
 
         </div>
     </div>
-</div>
+</div> *@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script>
+@* <script>
     $("#selectEnviarCorreo").on("change", function () {
         // Si el valor del select es "si", abre el modal
         if (this.value === "si") {
@@ -141,6 +141,6 @@
         });
     });
 
-</script>
+</script> *@
 
 

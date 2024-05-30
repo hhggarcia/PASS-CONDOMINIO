@@ -7,15 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Services;
 
 namespace Prueba.Controllers
 {
     public class ReciboNominasController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public ReciboNominasController(NuevaAppContext context)
+        public ReciboNominasController(IPDFServices servicesPDF,
+            NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _context = context;
         }
 
@@ -167,6 +171,19 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> ReciboPDF(int id)
+        {
+            var reciboNomina = await _context.ReciboNominas.FindAsync(id);
+            if (reciboNomina != null)
+            {
+                var data = await _servicesPDF.ReciboNominaPDF(reciboNomina);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ReciboNomina.pdf");
+            }
+
+            return RedirectToAction("Index", "Empleados");
         }
 
         private bool ReciboNominaExists(int id)

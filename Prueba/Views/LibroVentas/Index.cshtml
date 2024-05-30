@@ -23,10 +23,10 @@
         </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        <button id="create_pdf" value="Generate PDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <a asp-action="LibroVentaPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
-        </button>
+        </a>
         @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
 
         @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
@@ -170,7 +170,7 @@
 
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = 'Comprobante.pdf';
+                    a.download = 'LibroVenta.pdf';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);

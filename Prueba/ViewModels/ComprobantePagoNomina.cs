@@ -21,5 +21,6 @@ namespace Prueba.ViewModels
         public IList<Percepcion> Percepciones { get; set; } = new List<Percepcion>();
         public IList<Deduccion> Deducciones { get; set; } = new List<Deduccion>();
         public IList<Bonificacion> Bonos { get; set; } = new List<Bonificacion>();
+        public IList<AnticipoNomina> Anticipos { get; set; } = new List<AnticipoNomina>();
     }
 }

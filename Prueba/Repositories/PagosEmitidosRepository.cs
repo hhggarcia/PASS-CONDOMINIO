@@ -1363,8 +1363,8 @@ namespace Prueba.Repositories
                 var empleado = await _context.Empleados.FindAsync(modelo.IdEmpleado);
                 var resultado = string.Empty;
                 decimal montoReferencia = 0;
-                decimal deducciones = 0;
-                decimal percepciones = 0;
+                //decimal deducciones = 0;
+                //decimal percepciones = 0;
 
                 // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
                 // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -1379,8 +1379,8 @@ namespace Prueba.Repositories
                                   where c.IdCodGasto == modelo.IdSubcuenta
                                   select c;
 
-                var diario = from l in _context.LdiarioGlobals
-                             select l;
+                //var diario = from l in _context.LdiarioGlobals
+                //             select l;
 
                 int numAsiento = 0;
 
@@ -1620,6 +1620,30 @@ namespace Prueba.Repositories
                                     context.Add(asientoBono);
                                 }
                             }
+
+                            //if (modelo.Anticipos)
+                            //{
+                            //    foreach (var idBono in modelo.ListAnticiposIDs)
+                            //    {
+                            //        var anticipo = _context.AnticipoNominas.Find(idBono);
+
+                            //        LdiarioGlobal asientoBono = new LdiarioGlobal
+                            //        {
+                            //            IdCodCuenta = anticipo.Id,
+                            //            Fecha = modelo.Fecha,
+                            //            Concepto = "Anticipo: " + anticipo.Monto + "Bs",
+                            //            Monto = anticipo.Monto,
+                            //            TipoOperacion = true,
+                            //            NumAsiento = numAsiento + 1,
+                            //            ValorDolar = monedaPrincipal.First().ValorDolar,
+                            //            SimboloMoneda = moneda.First().Simbolo,
+                            //            SimboloRef = monedaPrincipal.First().Simbolo
+
+                            //        };
+
+                            //        context.Add(asientoBono);
+                            //    }
+                            //}
 
                             context.Add(asientoProvisionGasto);
                             context.Add(asientoProvision);

@@ -766,5 +766,15 @@ namespace Prueba.Controllers
 
             return Json(new { success = true, message = "Datos almacenados correctamente" });
         }
+
+
+        public IActionResult EditCondominio()
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            TempData.Keep();
+
+            return RedirectToAction("Edit", "Condominios", new { id = idCondominio });
+        }
     }
 }

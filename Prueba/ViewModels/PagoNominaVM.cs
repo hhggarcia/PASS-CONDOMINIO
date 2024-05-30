@@ -18,6 +18,7 @@ namespace Prueba.ViewModels
         public bool deducciones { get; set; }
         public bool percepciones { get; set; }
         public bool Bonos { get; set; }
+        public bool Anticipos { get; set; }
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
         public decimal ValorDolar { get; set; }
@@ -35,5 +36,8 @@ namespace Prueba.ViewModels
         public IList<int>? ListPercepcionesIDs { get; set; } = new List<int>();
         public IList<SelectListItem>? ListBonos { get; set; } = new List<SelectListItem>(); 
         public IList<int>? ListBonosIDs { get; set; } = new List<int>();
+
+        public IList<SelectListItem>? ListAnticipos { get; set; } = new List<SelectListItem>();
+        public IList<int>? ListAnticiposIDs { get; set; } = new List<int>();
     }
 }

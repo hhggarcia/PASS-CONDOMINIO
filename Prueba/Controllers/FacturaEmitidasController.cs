@@ -138,6 +138,7 @@ namespace Prueba.Controllers
                     return NotFound();
                 }
 
+
                 var rtiva = await _context.Ivas.FindAsync(cliente.IdRetencionIva);
 
                 var rtislr = await _context.Islrs.FindAsync(cliente.IdRetencionIslr);
@@ -155,6 +156,10 @@ namespace Prueba.Controllers
                 {
                     montoRTISLR = facturaEmitida.SubTotal * (rtislr.Tarifa / 100) - rtislr.Sustraendo;
                 }
+
+                // actualizar deuda del cliente
+
+                cliente.Deuda += facturaEmitida.MontoTotal - montoRTIVA - montoRTISLR;
 
 
                 // registrar en libro de ventas
@@ -184,6 +189,7 @@ namespace Prueba.Controllers
 
                 _context.Add(itemLibroVenta);
                 _context.Add(itemCuentaPorCobrar);
+                _context.Clientes.Update(cliente);
 
                 await _context.SaveChangesAsync();
 
@@ -594,6 +600,24 @@ namespace Prueba.Controllers
                 //return File(stream, "application/pdf", "Recibo.pdf");
                 TempData.Keep();
                 return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">Id del pago recibido por el cliente</param>
+        /// <returns></returns>
+        public async Task<IActionResult> CobroPDF(int id)
+        {
+            var pago = await _context.PagoRecibidos.FindAsync(id);
+
+            if (pago != null)
+            {
+                var data = await _servicesPDF.ComprobantePagoRecibidoClientePDF(pago);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "CompCliente.pdf");
             }
             return RedirectToAction("Index");
         }

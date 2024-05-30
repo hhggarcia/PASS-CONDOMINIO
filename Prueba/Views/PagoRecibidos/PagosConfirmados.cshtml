@@ -65,8 +65,8 @@
                                             @Html.DisplayFor(modelItem => item.IdPagoNavigation.Monto)
                                         </td>                                        
                                         <td>
-                                            <a asp-action="" asp-route-id="@item.IdPagoPropiedad">PDF</a> |
-                                            <a asp-action="" asp-route-id="@item.IdPagoPropiedad">Correo</a>
+                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdPagoPropiedad">PDF</a> |
+                                            <a asp-action="SendEmailCompPago" asp-route-id="@item.IdPagoPropiedad">Correo</a>
                                         </td>
                                     </tr>
                                 }

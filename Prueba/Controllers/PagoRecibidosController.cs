@@ -20,6 +20,7 @@ namespace Prueba.Controllers
 {
     public class PagoRecibidosController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
         private readonly IPagosRecibidosRepository _repoPagosRecibidos;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICuentasContablesRepository _repoCuentas;
@@ -27,13 +28,15 @@ namespace Prueba.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly NuevaAppContext _context;
 
-        public PagoRecibidosController(IPagosRecibidosRepository repoPagosRecibidos,
+        public PagoRecibidosController(IPDFServices servicesPDF,
+            IPagosRecibidosRepository repoPagosRecibidos,
             IWebHostEnvironment webHostEnvironment,
             ICuentasContablesRepository repoCuentas,
             IEmailService serviceEmail,
             SignInManager<ApplicationUser> signInManager,
             NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _repoPagosRecibidos = repoPagosRecibidos;
             _webHostEnvironment = webHostEnvironment;
             _repoCuentas = repoCuentas;
@@ -210,6 +213,61 @@ namespace Prueba.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="valor"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "RequireAdmin")]
+        public async Task<JsonResult> AjaxCargarRecibos(int valor)
+        {
+            PagoRecibidoVM modelo = new PagoRecibidoVM();
+
+            if (valor > 0)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(valor);
+
+                if (propiedad != null)
+                {
+                    //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+
+                    //CARGAR SELECT DE SUB CUENTAS DE BANCOS
+                    var subcuentasBancos = await _repoCuentas.ObtenerBancos(condominio.IdCondominio);
+                    var subcuentasCaja = await _repoCuentas.ObtenerCaja(condominio.IdCondominio);
+
+
+                    var recibos = from c in _context.ReciboCobros
+                                  where c.IdPropiedad == valor
+                                  select c;
+
+                    modelo.Interes = propiedad.MontoIntereses;
+                    modelo.Indexacion = propiedad.MontoMulta != null ? (decimal)propiedad.MontoMulta : 0;
+                    modelo.Credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
+                    modelo.Saldo = propiedad.Saldo;
+                    modelo.Deuda = propiedad.Deuda;
+
+                    modelo.Recibos = await recibos.Where(c => (!c.EnProceso && !c.Pagado) || (c.EnProceso && !c.Pagado)).ToListAsync();
+                    modelo.Abonado = modelo.Recibos[0].Abonado;
+
+                    if (modelo.Recibos.Any())
+                    {
+                        modelo.RecibosModel = await recibos.Where(c => !c.EnProceso && !c.Pagado)
+                            .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
+                            .ToListAsync();
+                        modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToList();
+                        modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
+                            .ToList();
+
+                    }
+                }
+            }
+
+            return Json(modelo);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> RegistrarPagosAdmin()
@@ -239,7 +297,6 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
-
 
         }
 
@@ -280,7 +337,7 @@ namespace Prueba.Controllers
                 if (resultado == "exito")
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
+                    //var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
                     var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
 
                     var comprobante = new ComprobanteVM()
@@ -295,7 +352,7 @@ namespace Prueba.Controllers
                             IdCondominio = modelo.IdCondominio,
                             Fecha = modelo.Fecha,
                             FormaPago = modelo.FormaPago,
-                            Monto = recibo.Monto
+                            Monto = modelo.Monto
                         },
                         Mensaje = "Gracias por su pago!"
                     };
@@ -350,81 +407,27 @@ namespace Prueba.Controllers
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="valor"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Authorize(Policy = "RequireAdmin")]
-
-        public async Task<JsonResult> AjaxCargarRecibos(int valor)
-        {
-            PagoRecibidoVM modelo = new PagoRecibidoVM();
-
-            if (valor > 0)
-            {
-                var propiedad = await _context.Propiedads.FindAsync(valor);
-
-                if (propiedad != null)
-                {
-                    //var inmueble = await _context.Inmuebles.FindAsync(propiedad.IdInmueble);
-                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
-
-                    //CARGAR SELECT DE SUB CUENTAS DE BANCOS
-                    var subcuentasBancos = await _repoCuentas.ObtenerBancos(condominio.IdCondominio);
-                    var subcuentasCaja = await _repoCuentas.ObtenerCaja(condominio.IdCondominio);
-
-
-                    var recibos = from c in _context.ReciboCobros
-                                  where c.IdPropiedad == valor
-                                  select c;
-
-                    modelo.Interes = propiedad.MontoIntereses;
-                    modelo.Indexacion = propiedad.MontoMulta != null ? (decimal)propiedad.MontoMulta : 0;
-                    modelo.Credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
-                    modelo.Saldo = propiedad.Saldo;
-                    modelo.Deuda = propiedad.Deuda;
-
-                    modelo.Recibos = await recibos.Where(c => (!c.EnProceso && !c.Pagado) || (c.EnProceso && !c.Pagado)).ToListAsync();
-                    modelo.Abonado = modelo.Recibos[0].Abonado;
-
-                    if (modelo.Recibos.Any())
-                    {
-                        modelo.RecibosModel = await recibos.Where(c => !c.EnProceso && !c.Pagado)
-                            .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
-                            .ToListAsync();
-                        modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                            .ToList();
-                        modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
-                            .ToList();
-
-                    }
-                }
-            }
-
-            return Json(modelo);
-        }
+        
 
         [Authorize(Policy = "RequireAdmin")]
-        public IActionResult ConfirmarPago(PagoRecibidoVM modelo, IFormFile file)
+        public IActionResult ConfirmarPago(PagoRecibidoVM modelo)
         {
-            var recibo = _context.ReciboCobros.Find(modelo.IdRecibo);
-            modelo.Monto = recibo.Monto;
+            //var recibo = _context.ReciboCobros.Find(modelo.IdRecibo);
+            //modelo.Monto = recibo.Monto;
 
-            string uniqueFileName = null;  //to contain the filename
-            if (file != null)  //handle iformfile
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
-                uniqueFileName = file.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(fileStream);
-                }
-            }
+            //string uniqueFileName = null;  //to contain the filename
+            //if (file != null)  //handle iformfile
+            //{
+            //    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
+            //    uniqueFileName = file.FileName;
+            //    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            //    using (var fileStream = new FileStream(filePath, FileMode.Create))
+            //    {
+            //        file.CopyTo(fileStream);
+            //    }
+            //}
 
-            modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
+            //modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
 
             return View(modelo);
         }
@@ -440,7 +443,6 @@ namespace Prueba.Controllers
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         [Authorize(Policy = "RequireAdmin")]
-
         public async Task<IActionResult> RegistrarPagos(PagoRecibidoVM modelo, IFormFile file)
         {
             try
@@ -654,7 +656,7 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    var contrasena = TempData["Contrasena"] != null ? TempData["Contrasena"].ToString() : "";
+                    //var contrasena = TempData["Contrasena"] != null ? TempData["Contrasena"].ToString() : "";
                     // buscar pagoPropiedad
                     var pagoPropiedad = await _context.PagoPropiedads.FirstAsync(c => c.IdPago == id);
                     var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
@@ -662,7 +664,7 @@ namespace Prueba.Controllers
                     if (pagoPropiedad != null && condominio != null)
                     {
                         var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
-                        //var usuario = await _signInManager.UserManager.FindByIdAsync(propiedad.IdUsuario);
+                        var usuario = await _signInManager.UserManager.FindByIdAsync(propiedad.IdUsuario);
                         var referencia = new ReferenciasPr();
 
                         if (pago.FormaPago)
@@ -675,9 +677,24 @@ namespace Prueba.Controllers
                         await _context.SaveChangesAsync();
 
                         // enviar correo
-                        _serviceEmail.RectificarPago("g.hector9983@gmail.com", "ydeagrela@password.com.ve", "rrmbjahggwhvkrgi", pago, referencia);
-                    }
+                        var resultado = _serviceEmail.RectificarPago("g.hector9983@gmail.com", "ydeagrela@password.com.ve", condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);
 
+                        // si se envia el correo 
+                        if (resultado.Contains("OK"))
+                        {
+                            // -> eliminar pago propiedad
+                            _context.PagoPropiedads.Remove(pagoPropiedad);
+                            // -> eliminar pago recibos
+                            var pagoRecibo = await _context.PagosRecibos.FirstAsync(c => c.IdPago == pago.IdPagoRecibido);
+                            _context.PagosRecibos.Remove(pagoRecibo);
+                            // -> eliminar referencia
+                            _context.ReferenciasPrs.Remove(referencia);
+                            // -> eliminar pago
+                            _context.PagoRecibidos.Remove(pago);
+
+                            await _context.SaveChangesAsync();
+                        }
+                    }
                 }
 
                 TempData.Keep();
@@ -696,14 +713,14 @@ namespace Prueba.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Policy = "RequireAdmin")]
-        public IActionResult UsuarioContraseña(string contrasena)
-        {
-            TempData["Contrasena"] = contrasena;
+        //[HttpPost]
+        //[Authorize(Policy = "RequireAdmin")]
+        //public IActionResult UsuarioContraseña(string contrasena)
+        //{
+        //    TempData["Contrasena"] = contrasena;
 
-            return Json(new { success = true, message = "Datos almacenados correctamente" });
-        }
+        //    return Json(new { success = true, message = "Datos almacenados correctamente" });
+        //}
 
         [Authorize(Policy = "RequirePropietario")]
         public async Task<IActionResult> PagosRecibidosPropietario()
@@ -744,6 +761,71 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">Id del pago de la propiedad</param>
+        /// <returns></returns>
+        public async Task<IActionResult> ComprobantePDF(int id)
+        {
+
+            var pagoPropiedad = await _context.PagoPropiedads.FindAsync(id);
+            if (pagoPropiedad != null)
+            {
+                var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobantePago.pdf");
+            }
+
+            return View("PagosConfirmados");
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        //[HttpPost]
+        //[AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> SendEmailCompPago(int id)
+        {
+            var pagoPropiedad = await _context.PagoPropiedads.FindAsync(id);
+            if (pagoPropiedad != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
+                var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
+                var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
+
+                EmailAttachmentPdf email = new EmailAttachmentPdf()
+                {
+                    From = condominio.Email,
+                    To = usuario.Email,
+                    Pdf = data,
+                    FileName = "ComprobantePago_"+propiedad.Codigo+"_"+DateTime.Today.ToString("dd/MM/yyyy"),
+                    Subject = "Comprobante de Pago - "+ condominio.Nombre,
+                    Password = condominio.ClaveCorreo != null ? condominio.ClaveCorreo : ""
+                };
+
+                var result = _serviceEmail.SendEmailRG(email);
+
+                if (!result.Contains("OK"))
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = result
+                    };
+
+                    return View("Error", modeloError);
+                }
+            }       
+
+            return RedirectToAction("PagosConfirmados");
         }
 
         private bool PagoRecibidoExists(int id)

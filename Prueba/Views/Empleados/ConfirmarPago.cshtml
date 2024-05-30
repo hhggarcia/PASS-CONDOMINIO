@@ -58,6 +58,7 @@
                                                 <input type="hidden" asp-for="deducciones" />
                                                 <input type="hidden" asp-for="percepciones" />
                                                 <input type="hidden" asp-for="Bonos" />
+                                                <input type="hidden" asp-for="Anticipos" />
                                                 @if (Model.ListDeduccionesIDs != null && Model.ListDeduccionesIDs.Any())
                                                 {
                                                     for (int i = 0; i < Model.ListDeduccionesIDs.Count; i++)
@@ -79,6 +80,14 @@
                                                     for (int i = 0; i < Model.ListBonosIDs.Count; i++)
                                                     {
                                                         @Html.HiddenFor(model => Model.ListBonosIDs[i])
+                                                    }
+                                                }
+
+                                                @if (Model.ListAnticiposIDs != null && Model.ListAnticiposIDs.Any())
+                                                {
+                                                    for (int i = 0; i < Model.ListAnticiposIDs.Count; i++)
+                                                    {
+                                                        @Html.HiddenFor(model => Model.ListAnticiposIDs[i])
                                                     }
                                                 }
                                                 <hr />

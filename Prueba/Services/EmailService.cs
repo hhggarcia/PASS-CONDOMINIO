@@ -125,11 +125,15 @@ namespace Prueba.Services
                                 <tr>
                                     <th style='background-color: #3950a2; color: white;'>Fecha</th>
                                     <th style='background-color: #3950a2; color: white;'>Método de Pago</th>
+                                    <th style='background-color: #3950a2; color: white;'>Referencia #</th>
+                                    <th style='background-color: #3950a2; color: white;'>Banco</th>
                                     <th style='background-color: #3950a2; color: white;'>Monto</th>
                                 </tr>
                                 <tr>
                                     <td>{pago.Fecha.ToString("dd/MM/yyyy")}</td>
                                     <td>{(pago.FormaPago ? "Transferencia" : "Efectivo")}</td>
+                                    <td>{referencia.NumReferencia}</td>
+                                    <td>{referencia.Banco}</td>
                                     <td>{pago.Monto.ToString("N")} Bs</td>
                                 </tr>
                             </table>

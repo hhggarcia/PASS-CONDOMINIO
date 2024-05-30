@@ -85,18 +85,17 @@ namespace Prueba.Repositories
 
             return modelo;
         }
+
+        /// <summary>
+        /// Registrar pago recibido de los clientes
+        /// a sus facturas de ventas
+        /// </summary>
+        /// <param name="modelo"></param>
+        /// <returns></returns>
         public async Task<string> RegistrarPago(PagoFacturaEmitidaVM modelo)
         {
             var resultado = string.Empty;
             decimal montoReferencia = 0;
-
-            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
-            //var idCodCuenta = from c in _context.CodigoCuentasGlobals
-            //                  where c.IdSubCuenta == modelo.IdSubcuenta
-            //                  select c;
-
-            //var cc = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).First();
-            //modelo.IdSubcuenta = cc.IdCodCuenta;
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -112,17 +111,18 @@ namespace Prueba.Repositories
 
             var factura = await _context.FacturaEmitida.Where(c => c.IdFacturaEmitida == modelo.IdFactura).FirstAsync();
 
+            var cliente = await _context.Clientes.FirstAsync(c => c.IdCliente == modelo.IdCliente);
+
             var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
 
             var itemCuentaCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
 
-            if (itemLibroVenta != null)
+            if (itemLibroVenta != null && cliente != null)
             {
                 if (modelo.RetencionesIva && !modelo.RetencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroVenta.RetIva;
                     pago.Monto -= itemLibroVenta.RetIva;
-
                 }
                 else if (!modelo.RetencionesIva && modelo.RetencionesIslr)
                 {
@@ -136,13 +136,6 @@ namespace Prueba.Repositories
                     pago.Monto -= itemLibroVenta.RetIva + itemLibroVenta.RetIslr;
                 }
             }
-
-            //var provisiones = from c in _context.Provisiones
-            //                  where c.IdCodGasto == modelo.IdSubcuenta
-            //                  select c;
-
-            var diario = from l in _context.LdiarioGlobals
-                         select l;
 
             int numAsiento = 0;
 
@@ -187,9 +180,6 @@ namespace Prueba.Repositories
                     else if (!moneda.First().Equals(monedaPrincipal.First()))
                     {
                         montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-
-                        //montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
-                        //montoReferencia = montoDolares;
                     }
 
                     // disminuir saldo de la cuenta de CAJA
@@ -212,7 +202,7 @@ namespace Prueba.Repositories
                         if (pago.Monto < factura.MontoTotal)
                         {
                             factura.Abonado += pago.Monto;
-
+                            cliente.Deuda -= pago.Monto;
                         }
                         else if (pago.Monto == factura.MontoTotal)
                         {
@@ -220,6 +210,8 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                             factura.Pagada = true;
                             itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
+
                         }
                         else
                         {
@@ -231,7 +223,7 @@ namespace Prueba.Repositories
                         if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
                         {
                             factura.Abonado += pago.Monto;
-
+                            cliente.Deuda -= pago.Monto;
                         }
                         else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
                         {
@@ -239,6 +231,7 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                             factura.Pagada = true;
                             itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
                         }
                         else
                         {
@@ -335,6 +328,7 @@ namespace Prueba.Repositories
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _context.Update(itemCuentaCobrar);
+                        _context.Update(cliente);
 
                         _dbContext.SaveChanges();
                     }
@@ -465,6 +459,7 @@ namespace Prueba.Repositories
                         if (pago.Monto < factura.MontoTotal)
                         {
                             factura.Abonado += pago.Monto;
+                            cliente.Deuda -= pago.Monto;
 
                         }
                         else if (pago.Monto == factura.MontoTotal)
@@ -473,6 +468,8 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                             factura.Pagada = true;
                             itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
+
                         }
                         else
                         {
@@ -484,6 +481,7 @@ namespace Prueba.Repositories
                         if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
                         {
                             factura.Abonado += pago.Monto;
+                            cliente.Deuda -= pago.Monto;
 
                         }
                         else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
@@ -492,6 +490,8 @@ namespace Prueba.Repositories
                             factura.EnProceso = false;
                             factura.Pagada = true;
                             itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
+
                         }
                         else
                         {
@@ -568,6 +568,7 @@ namespace Prueba.Repositories
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _context.Update(itemCuentaCobrar);
+                        _context.Update(cliente);
 
                         _dbContext.SaveChanges();
                     }
@@ -1282,9 +1283,9 @@ namespace Prueba.Repositories
                 if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);                                       
+                    //var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);                                       
 
-                    if (propiedad != null && recibo != null)
+                    if (propiedad != null)
                     {
                         var pago = new PagoRecibido()
                         {
@@ -1293,8 +1294,7 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Confirmado = true,
-                            Imagen = modelo.Imagen,
-                            Monto = recibo.Monto
+                            Monto = modelo.Monto
                         };
 
                         // validar num referencia repetido
@@ -1360,135 +1360,147 @@ namespace Prueba.Repositories
                                     Activo = false
                                 };
 
-                                var pagoRecibo = new PagosRecibo()
-                                {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdRecibo = modelo.IdRecibo
-                                };
+                                //var pagoRecibo = new PagosRecibo()
+                                //{
+                                //    IdPago = pago.IdPagoRecibido,
+                                //    IdRecibo = modelo.IdRecibo
+                                //};
 
-                                recibo.EnProceso = false;
-                                recibo.Pagado = true;
-
+                                //recibo.EnProceso = false;
+                                //recibo.Pagado = true;
                                 // VERIFICAR SI ES UN RECIBO VENCIDO
-                                if (recibo.Fecha.Month != DateTime.Today.Month - 1)
-                                {
-                                    // es un recibo vencido
-                                    propiedad.Deuda -= recibo.Monto;
-                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                }
-                                else
-                                {
-                                    propiedad.Saldo -= recibo.Monto;
-                                }
+                                //if (recibo.Fecha.Month != DateTime.Today.Month - 1)
+                                //{
+                                //    // es un recibo vencido
+                                //    propiedad.Deuda -= recibo.Monto;
+                                //    propiedad.MontoIntereses -= recibo.MontoMora;
+                                //    propiedad.MontoMulta -= recibo.MontoIndexacion;
+                                //}
+                                //else
+                                //{
+                                //    propiedad.Saldo -= recibo.Monto;
+                                //}
 
-                                // VERIFICAR SOLVENCIA DE LA PROPIEDAD
-                                if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
-                                {
-                                    propiedad.Solvencia = true;
-                                }
-                                else
-                                {
-                                    propiedad.Solvencia = false;
-                                }
+                                //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                                //if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                //{
+                                //    propiedad.Solvencia = true;
+                                //}
+                                //else
+                                //{
+                                //    propiedad.Solvencia = false;
+                                //}
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);
-                                _context.PagosRecibos.Add(pagoRecibo);
-                                _context.ReciboCobros.Update(recibo);
-                                _context.Propiedads.Update(propiedad);
+                                //_context.PagosRecibos.Add(pagoRecibo);
+                                //_context.ReciboCobros.Update(recibo);
+                                //_context.Propiedads.Update(propiedad);
 
                                 await _context.SaveChangesAsync();
 
                                 #region PAGO RECIBIENDO CUALQUIER MONTO
                                 // PROCESO DE CONFIRMAR PAGO
-                                //var montoPago = modelo.Monto; // auxiliar para recorrer los recibos
+                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos
 
-                                //// recibos pendientes de pago
-                                //var recibos = await _context.ReciboCobros
-                                //    .Where(r => r.IdPropiedad == modelo.IdPropiedad
-                                //    && !r.Pagado)
-                                //    .OrderByDescending(r => r.Fecha)
-                                //    .ToListAsync();
+                                // recibos pendientes de pago
+                                var recibos = await _context.ReciboCobros
+                                    .Where(r => r.IdPropiedad == modelo.IdPropiedad
+                                    && !r.Pagado)
+                                    .OrderByDescending(r => r.Fecha)
+                                    .ToListAsync();
 
-                                //if (recibos != null && recibos.Any())
-                                //{
-                                //    foreach (var recibo in recibos)
-                                //    {
-                                //        if (recibo.Abonado == 0)
-                                //        {
-                                //            if (montoPago < recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if (montoPago == recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                recibo.Pagado = true;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if (montoPago > recibo.Monto)
-                                //            {
+                                if (recibos != null && recibos.Any())
+                                {
+                                    foreach (var recibo in recibos)
+                                    {
+                                        if (recibo.Abonado == 0)
+                                        {
+                                            if (montoPago < recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                            else if (montoPago == recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                recibo.Pagado = true;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                            else if (montoPago > recibo.Monto)
+                                            {
 
-                                //                recibo.Abonado += montoPago;
-                                //                recibo.Pagado = true;
-                                //                montoPago -= recibo.Monto;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //        }
-                                //        else if(recibo.Abonado > 0)
-                                //        {
-                                //            if ((montoPago + recibo.Abonado) < recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if ((montoPago + recibo.Abonado) == recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                recibo.Pagado = true;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if ((montoPago + recibo.Abonado) > recibo.Monto)
-                                //            {
-                                //                recibo.Pagado = true;
-                                //                montoPago -= recibo.Monto - recibo.Abonado;
-                                //                recibo.Abonado = recibo.Monto;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //        }
+                                                recibo.Abonado += montoPago;
+                                                recibo.Pagado = true;
+                                                montoPago -= recibo.Monto;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                        }
+                                        else if (recibo.Abonado > 0)
+                                        {
+                                            if ((montoPago + recibo.Abonado) < recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                            else if ((montoPago + recibo.Abonado) == recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                recibo.Pagado = true;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                            else if ((montoPago + recibo.Abonado) > recibo.Monto)
+                                            {
+                                                recibo.Pagado = true;
+                                                montoPago -= recibo.Monto - recibo.Abonado;
+                                                recibo.Abonado = recibo.Monto;
+                                                _context.ReciboCobros.Update(recibo);
+                                                continue;
+                                            }
+                                        }
 
-                                //        if (recibo.Pagado && recibo.Fecha.Month != DateTime.Today.Month - 1)
-                                //        {
-                                //            propiedad.Deuda -= recibo.Monto;
-                                //            propiedad.MontoIntereses -= recibo.MontoMora;
-                                //            propiedad.MontoMulta -= recibo.MontoIndexacion;                                            
-                                //        }                                        
-                                //    }
+                                        if (recibo.Pagado && recibo.Fecha.Month != DateTime.Today.Month - 1)
+                                        {
+                                            propiedad.Deuda -= recibo.Monto;
+                                            propiedad.MontoIntereses -= recibo.MontoMora;
+                                            propiedad.MontoMulta -= recibo.MontoIndexacion;
 
-                                //    if (montoPago > 0)
-                                //    {
-                                //        propiedad.Creditos += montoPago;
-                                //    }
+                                        } else {
+                                            propiedad.Saldo -= recibo.Monto;
+                                        }
+                                    }
 
-                                //    _context.Propiedads.Update(propiedad);
+                                    if (montoPago > 0)
+                                    {
+                                        propiedad.Creditos += montoPago;
+                                    }
 
-                                //    await _context.SaveChangesAsync();
-                                //}
-                                //else
-                                //{
-                                //    return "Esta propiedad no tiene recibos pendiente!";
-                                //}
+                                    //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                    {
+                                        propiedad.Solvencia = true;
+                                    }
+                                    else
+                                    {
+                                        propiedad.Solvencia = false;
+                                    }
+
+                                    _context.Propiedads.Update(propiedad);
+
+                                    await _context.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    return "Esta propiedad no tiene recibos pendiente!";
+                                }
                                 #endregion                                
 
                                 // REGISTRAR ASIENTOS CONTABLES
@@ -1629,136 +1641,143 @@ namespace Prueba.Repositories
                                     Banco = banco.Descricion
                                 };
 
-                                var pagoRecibo = new PagosRecibo()
-                                {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdRecibo = modelo.IdRecibo
-                                };
+                                //var pagoRecibo = new PagosRecibo()
+                                //{
+                                //    IdPago = pago.IdPagoRecibido,
+                                //    IdRecibo = modelo.IdRecibo
+                                //};
 
-                                recibo.EnProceso = false;
-                                recibo.Pagado = true;
+                                //recibo.EnProceso = false;
+                                //recibo.Pagado = true;
 
                                 // VERIFICAR SI ES UN RECIBO VENCIDO
-                                if (recibo.Fecha.Month != DateTime.Today.Month - 1)
-                                {
-                                    // es un recibo vencido
-                                    propiedad.Deuda -= recibo.Monto;
-                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                }
-                                else
-                                {
-                                    propiedad.Saldo -= recibo.Monto;
-                                }
+                                //if (recibo.Fecha.Month != DateTime.Today.Month - 1)
+                                //{
+                                //    // es un recibo vencido
+                                //    propiedad.Deuda -= recibo.Monto;
+                                //    propiedad.MontoIntereses -= recibo.MontoMora;
+                                //    propiedad.MontoMulta -= recibo.MontoIndexacion;
+                                //}
+                                //else
+                                //{
+                                //    propiedad.Saldo -= recibo.Monto;
+                                //}
 
-                                // VERIFICAR SOLVENCIA DE LA PROPIEDAD
-                                if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
-                                {
-                                    propiedad.Solvencia = true;
-                                }
-                                else
-                                {
-                                    propiedad.Solvencia = false;
-                                }
+                                //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                                //if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                //{
+                                //    propiedad.Solvencia = true;
+                                //}
+                                //else
+                                //{
+                                //    propiedad.Solvencia = false;
+                                //}
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);
-                                _context.PagosRecibos.Add(pagoRecibo);
+                                //_context.PagosRecibos.Add(pagoRecibo);
                                 _context.ReferenciasPrs.Add(referencia);
-                                _context.ReciboCobros.Update(recibo);
-                                _context.Propiedads.Update(propiedad);
+                                //_context.ReciboCobros.Update(recibo);
+                                //_context.Propiedads.Update(propiedad);
 
                                 await _context.SaveChangesAsync();
 
                                 #region PAGO RECIBIENDO CUALQUIER MONTO
                                 // PROCESO DE CONFIRMAR PAGO
-                                //var montoPago = modelo.Monto; // auxiliar para recorrer los recibos
+                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos
 
-                                // recibos pendientes de pago
-                                //var recibos = await _context.ReciboCobros
-                                //    .Where(r => r.IdPropiedad == modelo.IdPropiedad
-                                //    && !r.Pagado)
-                                //    .OrderByDescending(r => r.Fecha)
-                                //    .ToListAsync();
+                                //recibos pendientes de pago
+                                var recibos = await _context.ReciboCobros
+                                    .Where(r => r.IdPropiedad == modelo.IdPropiedad
+                                    && !r.Pagado)
+                                    .OrderByDescending(r => r.Fecha)
+                                    .ToListAsync();
 
-                                //if (recibos != null && recibos.Any())
-                                //{
-                                //    foreach (var recibo in recibos)
-                                //    {
-                                //        if (recibo.Abonado == 0)
-                                //        {
-                                //            if (montoPago < recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if (montoPago == recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                recibo.Pagado = true;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if (montoPago > recibo.Monto)
-                                //            {
+                                if (recibos != null && recibos.Any())
+                                {
+                                    foreach (var recibo in recibos)
+                                    {
+                                        if (recibo.Abonado == 0)
+                                        {
+                                            if (montoPago < recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                            else if (montoPago == recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                recibo.Pagado = true;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                            else if (montoPago > recibo.Monto)
+                                            {
 
-                                //                recibo.Abonado += montoPago;
-                                //                recibo.Pagado = true;
-                                //                montoPago -= recibo.Monto;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //        }
-                                //        else if (recibo.Abonado > 0)
-                                //        {
-                                //            if ((montoPago + recibo.Abonado) < recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if ((montoPago + recibo.Abonado) == recibo.Monto)
-                                //            {
-                                //                recibo.Abonado += montoPago;
-                                //                montoPago = 0;
-                                //                recibo.Pagado = true;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //            else if ((montoPago + recibo.Abonado) > recibo.Monto)
-                                //            {
-                                //                recibo.Pagado = true;
-                                //                montoPago -= recibo.Monto - recibo.Abonado;
-                                //                recibo.Abonado = recibo.Monto;
-                                //                _context.ReciboCobros.Update(recibo);
-                                //                continue;
-                                //            }
-                                //        }
+                                                recibo.Abonado += montoPago;
+                                                recibo.Pagado = true;
+                                                montoPago -= recibo.Monto;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                        }
+                                        else if (recibo.Abonado > 0)
+                                        {
+                                            if ((montoPago + recibo.Abonado) < recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                            else if ((montoPago + recibo.Abonado) == recibo.Monto)
+                                            {
+                                                recibo.Abonado += montoPago;
+                                                montoPago = 0;
+                                                recibo.Pagado = true;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                            else if ((montoPago + recibo.Abonado) > recibo.Monto)
+                                            {
+                                                recibo.Pagado = true;
+                                                montoPago -= recibo.Monto - recibo.Abonado;
+                                                recibo.Abonado = recibo.Monto;
+                                                _context.ReciboCobros.Update(recibo);
+                                            }
+                                        }
 
-                                //        if (recibo.Pagado && recibo.Fecha.Month != DateTime.Today.Month - 1)
-                                //        {
-                                //            propiedad.Deuda -= recibo.Monto;
-                                //            propiedad.MontoIntereses -= recibo.MontoMora;
-                                //            propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                //        }
-                                //    }
+                                        if (recibo.Pagado && recibo.Fecha.Month != DateTime.Today.Month)
+                                        {
+                                            propiedad.Deuda -= recibo.Monto;
+                                            propiedad.MontoIntereses -= recibo.MontoMora;
+                                            propiedad.MontoMulta -= recibo.MontoIndexacion;
+                                        } else
+                                        {
+                                            propiedad.Saldo -= recibo.Monto;
+                                        }
+                                    }
 
-                                //    if (montoPago > 0)
-                                //    {
-                                //        propiedad.Creditos += montoPago;
-                                //    }
+                                    if (montoPago > 0)
+                                    {
+                                        propiedad.Creditos += montoPago;
+                                    }
 
-                                //    _context.Propiedads.Update(propiedad);
+                                    //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                    {
+                                        propiedad.Solvencia = true;
+                                    }
+                                    else
+                                    {
+                                        propiedad.Solvencia = false;
+                                    }
 
-                                //    await _context.SaveChangesAsync();
-                                //}
-                                //else
-                                //{
-                                //    return "Esta propiedad no tiene recibos pendiente!";
-                                //}
+                                    _context.Propiedads.Update(propiedad);
+
+                                    await _context.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    return "Esta propiedad no tiene recibos pendiente!";
+                                }
                                 #endregion                                
 
                                 // REGISTRAR ASIENTOS CONTABLES

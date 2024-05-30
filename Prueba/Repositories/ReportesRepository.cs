@@ -91,7 +91,7 @@ namespace Prueba.Repositories
                 {
                     var recibos = _context.ReciboCobros
                         .Where(c => c.IdPropiedad == propiedad.IdPropiedad
-                        && c.EnProceso == true);
+                        && c.EnProceso);
 
                     cantidadRecibosPendientes += recibos.Count();
                 }
