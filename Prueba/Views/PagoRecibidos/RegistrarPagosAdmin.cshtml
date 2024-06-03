@@ -133,13 +133,13 @@
                                         </div>
                                         <!-- Fin modal-->
                                         <!-- Select Recibo a pagar -->
-                                        <div class="col-md-12 col-12">
+                                        @* <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative">
+                                                <div class="position-relative"> *@
 
                                                     @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
-                                                    <select asp-for="IdRecibo"
+                                                    @* <select asp-for="IdRecibo"
                                                             asp-items="Model.RecibosModel" required
                                                             class="form-select" id="recibos">
                                                         <option value="0">Seleccionar</option>
@@ -150,7 +150,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> *@
 
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">

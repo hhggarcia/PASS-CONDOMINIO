@@ -656,7 +656,7 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    //var contrasena = TempData["Contrasena"] != null ? TempData["Contrasena"].ToString() : "";
+                    
                     // buscar pagoPropiedad
                     var pagoPropiedad = await _context.PagoPropiedads.FirstAsync(c => c.IdPago == id);
                     var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
@@ -671,13 +671,14 @@ namespace Prueba.Controllers
                         {
                             referencia = await _context.ReferenciasPrs.FirstAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
                         }
+
                         pagoPropiedad.Rectificado = true;
                         // guardar 
                         _context.PagoPropiedads.Update(pagoPropiedad);
                         await _context.SaveChangesAsync();
 
                         // enviar correo
-                        var resultado = _serviceEmail.RectificarPago("g.hector9983@gmail.com", "ydeagrela@password.com.ve", condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);
+                        var resultado = _serviceEmail.RectificarPago(condominio.Email, usuario.Email, condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);
 
                         // si se envia el correo 
                         if (resultado.Contains("OK"))

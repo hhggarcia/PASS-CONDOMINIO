@@ -53,6 +53,12 @@ namespace Prueba.Repositories
                               where c.IdCondominio == idCondominio
                               select c).Include(c => c.IdCondominioNavigation);
 
+            var lista = (from c in _context.PagoFacturas
+                         join p in _context.PagoEmitidos
+                         on c.IdPagoEmitido equals p.IdPagoEmitido
+                         where p.IdCondominio == idCondominio
+                         select p).Include(c => c.IdCondominioNavigation);
+
             var referencias = from p in _context.PagoEmitidos
                               where p.IdCondominio == idCondominio
                               join r in _context.ReferenciasPes
@@ -62,7 +68,7 @@ namespace Prueba.Repositories
             var subcuentasBancos = await _repoCuentas.ObtenerBancos(idCondominio);
 
 
-            modelo.PagosEmitidos = await listaPagos.ToListAsync();
+            modelo.PagosEmitidos = await lista.ToListAsync();
             modelo.Referencias = await referencias.ToListAsync();
             modelo.BancosCondominio = subcuentasBancos.ToList();
 

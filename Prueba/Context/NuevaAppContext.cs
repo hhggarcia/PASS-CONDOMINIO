@@ -1649,6 +1649,7 @@ public partial class NuevaAppContext : DbContext
                 .HasColumnName("fecha");
             entity.Property(e => e.IdPropiedad).HasColumnName("id_propiedad");
             entity.Property(e => e.IdRgastos).HasColumnName("id_rgastos");
+            entity.Property(e => e.Mes).HasMaxLength(20);
             entity.Property(e => e.Monto)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("monto");
@@ -1783,6 +1784,7 @@ public partial class NuevaAppContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("fecha");
             entity.Property(e => e.IdCondominio).HasColumnName("id_condominio");
+            entity.Property(e => e.Mes).HasMaxLength(20);
             entity.Property(e => e.MontoRef).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
             entity.Property(e => e.SimboloRef).HasMaxLength(2);

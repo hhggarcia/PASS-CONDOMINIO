@@ -66,7 +66,7 @@
                                         </td>                                        
                                         <td>
                                             <a asp-action="ComprobantePDF" asp-route-id="@item.IdPagoPropiedad">PDF</a> |
-                                            <a asp-action="SendEmailCompPago" asp-route-id="@item.IdPagoPropiedad">Correo</a>
+                                            <a asp-action="SendCompPagoPropietario" asp-controller="Correo" asp-route-id="@item.IdPagoPropiedad">Correo</a>
                                         </td>
                                     </tr>
                                 }

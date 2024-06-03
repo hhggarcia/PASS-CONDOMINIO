@@ -35,6 +35,8 @@ public partial class ReciboCobro
 
     public decimal Acumulado { get; set; }
 
+    public string Mes { get; set; } = null!;
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

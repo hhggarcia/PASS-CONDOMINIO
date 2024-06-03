@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\PruebaMigrations\" />
+    <Folder Include="Views\Correo\" />
     <Folder Include="wwwroot\ComprobantesPU\" />
   </ItemGroup>
 

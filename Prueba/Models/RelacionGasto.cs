@@ -23,6 +23,8 @@ public partial class RelacionGasto
 
     public string SimboloRef { get; set; } = null!;
 
+    public string Mes { get; set; } = null!;
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<ReciboCobro> ReciboCobros { get; set; } = new List<ReciboCobro>();

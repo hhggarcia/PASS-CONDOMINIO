@@ -502,7 +502,7 @@ namespace Prueba.Controllers
         //}
 
         /// <summary>
-        /// 
+        /// Creacion de los recibos de cobro
         /// </summary>
         /// <returns>Index Realcion de Gastos</returns>
         public async Task<IActionResult> RecibosCobroTransacciones()
@@ -526,7 +526,7 @@ namespace Prueba.Controllers
                         // buscar transacciones
                         var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
-
+                        var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM") + DateTime.Today.ToString("yyyy");
                         // generar Relacion de Gastos con las transacciones
                         // y sus relaciones
                         var relacionGasto = new RelacionGasto
@@ -538,7 +538,8 @@ namespace Prueba.Controllers
                             MontoRef = transaccionesDelMes.Total / monedaPrincipal.First().ValorDolar,
                             ValorDolar = monedaPrincipal.First().ValorDolar,
                             SimboloMoneda = monedaPrincipal.First().Simbolo,
-                            SimboloRef = "$"
+                            SimboloRef = "$",
+                            Mes = mes
                         };
 
                         _context.RelacionGastos.Add(relacionGasto);
@@ -548,6 +549,8 @@ namespace Prueba.Controllers
                         {
                             foreach (var transaccion in transaccionesDelMes.Transaccions)
                             {
+                                transaccion.Activo = false;
+
                                 var relacionTransaccion = new RelacionGastoTransaccion
                                 {
                                     IdRelacionGasto = relacionGasto.IdRgastos,
@@ -555,6 +558,7 @@ namespace Prueba.Controllers
                                 };
 
                                 _context.RelacionGastoTransaccions.Add(relacionTransaccion);
+                                _context.Transaccions.Update(transaccion);
                                 await _context.SaveChangesAsync();
                             }
 
@@ -626,22 +630,29 @@ namespace Prueba.Controllers
                                     if (individuales.Any())
                                     {
                                         monto += individuales.Sum(c => c.MontoTotal);
-                                    }
 
+                                        foreach (var item in individuales)
+                                        {
+                                            item.Activo = false;
+                                            _context.Transaccions.Update(item);
+                                        }
+                                    }
+                                    var credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
                                     // VALIDAR DEUDAS PARA ACTUALIZAR  PROPIEDAD
                                     if (propiedad.Solvencia)
                                     {
-                                        propiedad.Saldo = monto;
+                                        propiedad.Saldo = monto - credito;
+                                        propiedad.Creditos = 0;
                                         propiedad.Solvencia = false;
                                     }
                                     else
                                     {
                                         propiedad.Deuda += propiedad.Saldo;
-                                        propiedad.Saldo = monto;
-
+                                        propiedad.Saldo = monto - credito;
+                                        propiedad.Creditos = 0;
                                         // buscar recibos anteriores no pagados
                                         var recibosAnt = await _context.ReciboCobros
-                                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad && c.Pagado == false && c.EnProceso == false)
+                                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && !c.EnProceso)
                                             .ToListAsync();
 
                                         // mora para cada recibo y sumar a la propiedad
@@ -665,7 +676,7 @@ namespace Prueba.Controllers
                                     {
                                         IdPropiedad = propiedad.IdPropiedad,
                                         IdRgastos = relacionGasto.IdRgastos,
-                                        Monto = monto,
+                                        Monto = monto - credito,
                                         Fecha = DateTime.Today,
                                         Pagado = false,
                                         EnProceso = false,
@@ -675,7 +686,8 @@ namespace Prueba.Controllers
                                         SimboloMoneda = monedaPrincipal.First().Simbolo,
                                         SimboloRef = "$",
                                         MontoMora = monto * (condominio.InteresMora / 100),
-                                        MontoIndexacion = monto * ((decimal)condominio.Multa / 100)
+                                        MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
+                                        Mes = mes
                                     };
 
                                     recibosCobroCond.Add(recibo);

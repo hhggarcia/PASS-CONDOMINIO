@@ -80,6 +80,9 @@
                                         @Html.DisplayNameFor(model => model.EnProceso)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.Anulada)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.IdProveedorNavigation)
                                     </th>
                                     <th></th>
@@ -121,6 +124,9 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.EnProceso)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Anulada)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
