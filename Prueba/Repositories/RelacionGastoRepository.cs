@@ -492,7 +492,7 @@ namespace Prueba.Repositories
                                            where cc.IdCondominio == condominio.IdCondominio
                                            where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
                                            where tt.IdRelacionGasto == rg.IdRgastos
-                                           where t.Activo != null && (bool)t.Activo
+                                           where t.Activo != null
                                            select t).ToListAsync();
 
                 var transaccionesInd = await (from t in _context.Transaccions
@@ -504,7 +504,7 @@ namespace Prueba.Repositories
                                               where cc.IdCondominio == condominio.IdCondominio
                                               where t.IdPropiedad != null
                                               where tt.IdRelacionGasto == rg.IdRgastos
-                                              where t.Activo != null && (bool)t.Activo
+                                              where t.Activo != null
                                               select t).ToListAsync();
 
                 var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);
@@ -926,9 +926,27 @@ namespace Prueba.Repositories
             if (relacionGasto != null)
             {
                 var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == relacionGasto.IdRgastos).ToListAsync();
+                var transaccionesRG = await _context.RelacionGastoTransaccions.Where(c => c.IdRelacionGasto == relacionGasto.IdRgastos).ToListAsync();
+
+                if (transaccionesRG.Any())
+                {
+                    foreach (var item in transaccionesRG)
+                    {
+                        var transaccion = await _context.Transaccions.FindAsync(item.IdRelacionGasto);
+
+                        if (transaccion != null)
+                        {
+                            transaccion.Activo = true;
+                            _context.Transaccions.Update(transaccion);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
 
                 foreach (var recibo in recibos)
                 {
+
                     // buscar la propiedad 
                     var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
 

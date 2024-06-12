@@ -513,7 +513,7 @@ namespace Prueba.Controllers
 
                 var relacionesDeGasto = await (from c in _context.RelacionGastos
                                                where c.IdCondominio == idCondominio
-                                               where c.Fecha.Month == DateTime.Today.Month
+                                               where DateTime.Compare(c.Fecha, DateTime.Today) == 0
                                                select c).ToListAsync();
 
                 if (!relacionesDeGasto.Any())

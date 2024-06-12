@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -257,6 +258,12 @@ namespace Prueba.Controllers
                             .ToList();
                         modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
                             .ToList();
+                        modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
+                        {
+                            Text = recibo.Mes + " " + recibo.Monto.ToString("N") + "Bs",
+                            Value = recibo.IdReciboCobro.ToString(),
+                            Selected = false,
+                        }).ToList();
 
                     }
                 }
@@ -303,7 +310,6 @@ namespace Prueba.Controllers
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         [Authorize(Policy = "RequireAdmin")]
-
         public async Task<IActionResult> RegistrarPagosAdmin(PagoRecibidoVM modelo)
         {
             try
@@ -407,27 +413,24 @@ namespace Prueba.Controllers
             }
         }
 
-        
+
 
         [Authorize(Policy = "RequireAdmin")]
-        public IActionResult ConfirmarPago(PagoRecibidoVM modelo)
+        public async IActionResult ConfirmarPago(PagoRecibidoVM modelo)
         {
-            //var recibo = _context.ReciboCobros.Find(modelo.IdRecibo);
-            //modelo.Monto = recibo.Monto;
-
-            //string uniqueFileName = null;  //to contain the filename
-            //if (file != null)  //handle iformfile
-            //{
-            //    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
-            //    uniqueFileName = file.FileName;
-            //    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            //    using (var fileStream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        file.CopyTo(fileStream);
-            //    }
-            //}
-
-            //modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
+            foreach (var item in modelo.ListRecibos)
+            {
+                if (item.Selected)
+                {
+                    var idRecibo = Convert.ToInt32(item.Value);
+                    var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                    if (recibo != null)
+                    {
+                        modelo.ListRecibosIDs.Add(idRecibo);
+                        modelo.Monto += recibo.Monto;
+                    }                    
+                }
+            }
 
             return View(modelo);
         }
@@ -656,7 +659,7 @@ namespace Prueba.Controllers
 
                 if (pago != null)
                 {
-                    
+
                     // buscar pagoPropiedad
                     var pagoPropiedad = await _context.PagoPropiedads.FirstAsync(c => c.IdPago == id);
                     var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
@@ -808,8 +811,8 @@ namespace Prueba.Controllers
                     From = condominio.Email,
                     To = usuario.Email,
                     Pdf = data,
-                    FileName = "ComprobantePago_"+propiedad.Codigo+"_"+DateTime.Today.ToString("dd/MM/yyyy"),
-                    Subject = "Comprobante de Pago - "+ condominio.Nombre,
+                    FileName = "ComprobantePago_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy"),
+                    Subject = "Comprobante de Pago - " + condominio.Nombre,
                     Password = condominio.ClaveCorreo != null ? condominio.ClaveCorreo : ""
                 };
 
@@ -824,7 +827,7 @@ namespace Prueba.Controllers
 
                     return View("Error", modeloError);
                 }
-            }       
+            }
 
             return RedirectToAction("PagosConfirmados");
         }

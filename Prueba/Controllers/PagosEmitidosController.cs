@@ -495,6 +495,115 @@ namespace Prueba.Controllers
             }
         }
 
+        public async Task<IActionResult> PagoProveedorPDF(int id)
+        {
+            var pago = await _context.PagoEmitidos.FindAsync(id);
+            if (pago != null)
+            {
+                var pagoFactura = await _context.PagoFacturas.FirstAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+                // factura
+                // item del libro de compras
+                var factura = await _context.Facturas.Where(c => c.IdFactura == pagoFactura.IdFactura).FirstAsync();
+                var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
+                var itemLibroCompra = await _context.LibroCompras.FirstAsync(c => c.IdFactura == factura.IdFactura);
+
+                var idSubCuenta = (from c in _context.CodigoCuentasGlobals
+                                   join f in _context.Facturas
+                                   on c.IdCodCuenta equals f.IdCodCuenta
+                                   where f.IdFactura == pagoFactura.IdFactura
+                                   select c.IdSubCuenta).First();
+
+                var gasto = from c in _context.SubCuenta
+                            where c.Id == idSubCuenta
+                            select c;
+
+                var comprobante = new ComprobantePEVM()
+                {
+                    Condominio = condominio,
+                    Concepto = factura.Descripcion,
+                    Pagoforma = pago.FormaPago ? FormaPago.Transferencia : FormaPago.Efectivo,
+                    Mensaje = "¡Gracias por su pago!",
+                    Gasto = gasto.First(),
+                    Pago = pago
+                };
+
+                if (pago.FormaPago)
+                {
+                    var referencia = await _context.ReferenciasPes.FirstAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+
+                    //var banco = from c in _context.SubCuenta
+                    //            join cc in _context.CodigoCuentasGlobals
+                    //            on c.Id equals cc.IdSubCuenta
+                    //            where cc.IdCodCuenta == pago.IdCod
+                    //            select c;
+
+                    comprobante.Banco.Descricion = referencia.Banco;
+                    comprobante.NumReferencia = referencia.NumReferencia;
+
+                }
+                else
+                {
+                    //var caja = from c in _context.SubCuenta
+                    //           where c.Id == modelo.IdCodigoCuentaCaja
+                    //           select c;
+
+                    comprobante.Caja.Descricion = "CAJA CHICA";
+                }
+                if (pagoFactura.IdAnticipo != null && pagoFactura.IdAnticipo != 0)
+                {
+                    var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == pagoFactura.IdAnticipo).FirstAsync();
+                    comprobante.Anticipo = anticipo;
+                }
+                //var proovedores = from p in _context.Proveedors
+                //                  where p.IdCondominio == modelo.IdCondominio
+                //                  select p;
+                //var proveedor =  await proovedores.ToListAsync();
+                var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstAsync();
+                var retIslr = _context.Islrs.Where(c => c.Id == proveedor.IdRetencionIslr).FirstOrDefault();
+                var retIva = _context.Ivas.Where(c => c.Id == proveedor.IdRetencionIva).FirstOrDefault();
+
+                comprobante.Factura = factura;
+
+                if (retIslr != null)
+                {
+                    comprobante.Islr = (factura.Subtotal * (retIslr.Tarifa / 100)) - retIslr.Sustraendo;
+                }
+
+                if (retIva != null)
+                {
+                    comprobante.Iva = factura.Iva * (retIva.Porcentaje / 100);
+                }
+                comprobante.Pago.Monto = pago.Monto;
+                comprobante.Pago.Fecha = pago.Fecha;
+                comprobante.Pago.ValorDolar = pago.ValorDolar;
+                comprobante.Pago.MontoRef = pago.MontoRef;
+                comprobante.Pago.SimboloRef = pago.SimboloRef;
+                comprobante.Pago.SimboloMoneda = pago.SimboloMoneda;
+                comprobante.Beneficiario = proveedor.Nombre;
+
+                if (itemLibroCompra != null && itemLibroCompra.RetIva > 0)
+                {
+                    comprobante.retencionesIva = true;
+
+                }
+                if (itemLibroCompra != null && itemLibroCompra.RetIslr > 0)
+                {
+                    comprobante.retencionesIslr = true;
+                }
+
+                foreach (var item in condominio.MonedaConds)
+                {
+                    comprobante.ValorDolar = item.ValorDolar;
+                }
+
+                var data = _servicePDF.ComprobantePEVMPDF(comprobante);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobantePago.pdf");
+            }
+
+            return RedirectToAction("Index");
+        }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerFacturasPorProveedor(int proveedorId)
         {

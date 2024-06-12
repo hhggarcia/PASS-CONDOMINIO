@@ -1,4 +1,6 @@
-﻿namespace Prueba.ViewModels
+﻿using System.Net.Mail;
+
+namespace Prueba.ViewModels
 {
     public class EmailAttachmentPdf
     {
@@ -9,5 +11,6 @@
         public string Body { get; set; } = string.Empty;
         public byte[] Pdf { get; set; } = null!;
         public string FileName { get; set; } = string.Empty;
+        public IFormFile Attachment { get; set; } = null!;
     }
 }

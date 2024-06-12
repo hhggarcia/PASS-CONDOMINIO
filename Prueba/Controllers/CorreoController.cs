@@ -6,6 +6,8 @@ using Prueba.Context;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
+using System.Net.Mail;
+using System.Text;
 
 namespace Prueba.Controllers
 {
@@ -13,21 +15,25 @@ namespace Prueba.Controllers
 
     public class CorreoController : Controller
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IPDFServices _servicesPDF;
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IEmailService _servicesEmail;
         private readonly NuevaAppContext _context;
 
-        public CorreoController(IPDFServices servicesPDF,
+        public CorreoController(IWebHostEnvironment webHostEnvironment,
+            IPDFServices servicesPDF,
             IRelacionGastoRepository repoRelacionGastos,
             IEmailService servicesEmail,
             NuevaAppContext context)
         {
+            _webHostEnvironment = webHostEnvironment;
             _servicesPDF = servicesPDF;
             _repoRelacionGastos = repoRelacionGastos;
             _servicesEmail = servicesEmail;
             _context = context;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -142,7 +148,7 @@ namespace Prueba.Controllers
 
             return RedirectToAction("Index", "RelacionGastos");
         }
-        
+
         // enviar comprobante de pago propietario
         public async Task<IActionResult> SendCompPagoPropietario(int id)
         {
@@ -180,7 +186,74 @@ namespace Prueba.Controllers
 
             return RedirectToAction("PagosConfirmados", "PagoRecibidos");
         }
+
         // enviar correo general a todos los propietarios
+        public IActionResult CorreoGlobal()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> CorreoGlobal(EmailAttachmentPdf modelo, IFormFile file)
+        {
+            try
+            {
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var condominio = await _context.Condominios.FindAsync(idCondominio);
+
+                if (condominio != null)
+                {
+                    modelo.From = condominio.Email;
+                    modelo.Password = condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "";
+                    // pdf a enviar
+
+                    modelo.Attachment = file;
+
+                    // buscar usuarios del condominio si poseen propiedades
+                    // recorrer a los usuarios y enviar un correo a cada uno
+                    var usuarios = await (from p in _context.Propiedads.Where(c => c.IdCondominio == idCondominio)
+                                          join c in _context.AspNetUsers
+                                          on p.IdUsuario equals c.Id
+                                          select c.Email
+                                          ).ToListAsync();
+
+                    foreach (var user in usuarios)
+                    {
+                        modelo.To = user ?? "";
+
+                        var result = _servicesEmail.SendEmailAttachement(modelo);
+
+                        if (!result.Contains("OK"))
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = result
+                            };
+
+                            TempData.Keep();
+                            return View("Error", modeloError);
+                        }
+                    }
+                }
+
+                TempData.Keep();
+                return RedirectToAction("Dashboard", "Administrador", new { id = idCondominio });
+            }
+            catch (Exception ex)
+            {
+
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                TempData.Keep();
+                return View("Error", modeloError);
+            }
+            
+        }
 
         // enviar correo a todos los clientes
 

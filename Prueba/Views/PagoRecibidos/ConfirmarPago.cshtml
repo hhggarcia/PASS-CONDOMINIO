@@ -34,6 +34,14 @@
                                                 <input type="hidden" asp-for="IdPropiedad" />
                                                 <input type="hidden" asp-for="IdRecibo" />
                                                 <input type="hidden" asp-for="Imagen" />
+
+                                                @if (Model.ListRecibosIDs != null && Model.ListRecibosIDs.Any())
+                                                {
+                                                    for (int i = 0; i < Model.ListRecibosIDs.Count; i++)
+                                                    {
+                                                        @Html.HiddenFor(model => Model.ListRecibosIDs[i])
+                                                    }
+                                                }
                                                 <label class="control-label">Forma de pago</label>
                                                 @if (Model.Pagoforma == FormaPago.Efectivo)
                                                 {

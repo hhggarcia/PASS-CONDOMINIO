@@ -10,6 +10,7 @@ using Prueba.Context;
 using Prueba.Controllers;
 using Prueba.Models;
 using Prueba.ViewModels;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -1956,7 +1957,7 @@ namespace Prueba.Services
                                     tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     comprobanteVM.Factura.MontoTotal -= comprobanteVM.Islr;
-                                    comprobanteVM.Pago.Monto -= comprobanteVM.Islr;
+                                    //comprobanteVM.Pago.Monto -= comprobanteVM.Islr;
                                 }
 
                                 if (comprobanteVM.retencionesIva && retIva != null)
@@ -1966,7 +1967,7 @@ namespace Prueba.Services
                                     tabla.Cell().Padding(5).Text(comprobanteVM.Iva.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     comprobanteVM.Factura.MontoTotal -= comprobanteVM.Iva;
-                                    comprobanteVM.Pago.Monto -= comprobanteVM.Iva;
+                                    //comprobanteVM.Pago.Monto -= comprobanteVM.Iva;
                                 }
 
                                 tabla.Cell().Padding(5).Text("");
@@ -2793,7 +2794,9 @@ namespace Prueba.Services
             //var recibo = await _context.ReciboCobros.FindAsync(pagoRecibo.IdRecibo);
             var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
             var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-            var reciboActual = await _context.ReciboCobros.FirstAsync(c => c.Fecha.Month == DateTime.Today.Month && c.IdPropiedad == propiedad.IdPropiedad);
+            //var reciboActual = await _context.ReciboCobros.FirstAsync(c => c.Fecha.Month == DateTime.Today.Month && c.IdPropiedad == propiedad.IdPropiedad);
+            
+                        
             var data = Document.Create(container =>
             {
                 container.Page(page =>
@@ -2897,16 +2900,16 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                 });
 
-                                tabla.Cell().Padding(5).Text("Estado de Cuenta ").FontColor("#607080").Bold().FontSize(8);
-                                tabla.Cell().Padding(5).Text("Saldo Anterior: ").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5)
-                                .Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + reciboActual.Monto).ToString("N"))
-                                .FontColor("#607080").FontSize(8);
+                                tabla.Cell().ColumnSpan(2).Padding(5).Text("Estado de Cuenta ").FontColor("#607080").Bold().FontSize(8);
+                                //tabla.Cell().Padding(5).Text("Saldo Anterior: ").FontColor("#607080").FontSize(8);
+                                //tabla.Cell().Padding(5)
+                                //.Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + reciboActual.Monto).ToString("N"))
+                                //.FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Padding(5).Text("Menos este pago: ").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text("Saldo Actual: ").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + reciboActual.Monto - pago.Monto).ToString("N")).FontColor("#607080").FontSize(8);
+                                //tabla.Cell().Padding(5).Text("Menos este pago: ").FontColor("#607080").FontSize(8);
+                                //tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().ColumnSpan(2).Padding(5).Text("Saldo Actual: ").FontColor("#607080").FontSize(8);
+                                tabla.Cell().ColumnSpan(3).Padding(5).Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + propiedad.Saldo - (decimal)propiedad.Creditos).ToString("N")).FontColor("#607080").FontSize(8);
 
                             });
 
@@ -4653,13 +4656,15 @@ namespace Prueba.Services
         {
             var cliente = await _context.Clientes.FindAsync(factura.IdCliente);
 
+            FontManager.RegisterFont(File.OpenRead("wwwroot\\fonts\\fuentesPDF\\SansSerifFLF-Demibold.otf"));
+
             var data = Document.Create(container =>
             {
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(1, Unit.Centimetre);
-                    page.DefaultTextStyle(x => x.FontFamily("Times New Roman"));
+                    page.DefaultTextStyle(x => x.FontFamily("SansSerifFLF-Demibold"));
                     page.Header().ShowOnce().Row(row =>
                     {
                         row.RelativeItem().Padding(10).Column(col =>
@@ -4694,21 +4699,21 @@ namespace Prueba.Services
 
                                 tabla.Cell().ColumnSpan(5).Text("Razón Social: " + cliente.Nombre).Bold().FontSize(10);
                                 tabla.Cell().Text("");
-                                tabla.Cell().Text("Factura Nro:").FontSize(10);
-                                tabla.Cell().Text(factura.NumFactura.ToString()).FontSize(10);
+                                tabla.Cell().Text("Factura Nro:").Bold().FontSize(10);
+                                tabla.Cell().Text(factura.NumFactura.ToString()).Bold().FontSize(10);
 
-                                tabla.Cell().Text("R.I.F: ").FontSize(10);
-                                tabla.Cell().Text(cliente.Rif).FontSize(10);
-                                tabla.Cell().Text("Inmueble:").FontSize(10);
+                                tabla.Cell().Text("R.I.F: ").Bold().FontSize(10);
+                                tabla.Cell().Text(cliente.Rif).Bold().FontSize(10);
+                                tabla.Cell().Text("Inmueble:").Bold().FontSize(10);
                                 tabla.Cell().Text("").FontSize(10);
-                                tabla.Cell().Text("Telef. ").FontSize(10);
-                                tabla.Cell().Text(cliente.Telefono).FontSize(10);
-                                tabla.Cell().Text("Fecha: ").FontSize(10);
-                                tabla.Cell().Text(factura.FechaEmision.ToString("dd/MM/yyyy")).FontSize(10);
+                                tabla.Cell().Text("Telef. ").Bold().FontSize(10);
+                                tabla.Cell().Text(cliente.Telefono).Bold().FontSize(10);
+                                tabla.Cell().Text("Fecha: ").Bold().FontSize(10);
+                                tabla.Cell().Text(factura.FechaEmision.ToString("dd/MM/yyyy")).Bold().FontSize(10);
 
-                                tabla.Cell().ColumnSpan(6).Text("Dirección: " + cliente.Direccion).FontSize(10);
-                                tabla.Cell().Text("Condición:").FontSize(10);
-                                tabla.Cell().Text("Crédito").FontSize(10);
+                                tabla.Cell().ColumnSpan(6).Text("Dirección: " + cliente.Direccion).Bold().FontSize(10);
+                                tabla.Cell().Text("Condición:").Bold().FontSize(10);
+                                tabla.Cell().Text("Crédito").Bold().FontSize(10);
 
                             });
 
@@ -4728,17 +4733,17 @@ namespace Prueba.Services
 
                                 tabla.Header(header =>
                                 {
-                                    header.Cell().ColumnSpan(5).BorderBottom(1).AlignLeft().Text("Descrición").Bold().FontSize(9);
+                                    header.Cell().ColumnSpan(5).BorderBottom(1).AlignLeft().Text("Descripción").Bold().FontSize(9);
                                     header.Cell().BorderBottom(1).AlignRight().Text("Precio").Bold().FontSize(9);
                                     header.Cell().BorderBottom(1).AlignRight().Text("Cant.").Bold().FontSize(9);
                                     header.Cell().BorderBottom(1).AlignRight().Text("Total").Bold().FontSize(9);
 
                                 });
 
-                                tabla.Cell().ColumnSpan(5).AlignLeft().Text(factura.Descripcion).FontSize(9);
-                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).FontSize(9);
-                                tabla.Cell().AlignRight().Text("1").FontSize(9);
-                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).FontSize(9);
+                                tabla.Cell().ColumnSpan(5).AlignLeft().Text(factura.Descripcion).Bold().FontSize(9);
+                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
+                                tabla.Cell().AlignRight().Text("1").Bold().FontSize(9);
+                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
 
                                 tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
                                 tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
@@ -4762,24 +4767,24 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                 });
 
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("Forma de Pago: Nro:").FontSize(10);
+                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("Forma de Pago: Nro:").Bold().FontSize(10);
                                 tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Sub-Total: ").FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).FontSize(10);
+                                tabla.Cell().Border(0).Text("Sub-Total: ").Bold().FontSize(10);
+                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
 
                                 tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
                                 tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Exento: ").FontSize(10);
-                                tabla.Cell().Border(0).Text("0,00").FontSize(10);
+                                tabla.Cell().Border(0).Text("Exento: ").Bold().FontSize(10);
+                                tabla.Cell().Border(0).Text("0,00").Bold().FontSize(10);
 
                                 tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
                                 tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Gravable: ").FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).FontSize(10);
+                                tabla.Cell().Border(0).Text("Gravable: ").Bold().FontSize(10);
+                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
 
                                 tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
                                 tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("I.V.A 16,00%: ").FontSize(10);
+                                tabla.Cell().Border(0).Text("I.V.A 16,00%: ").Bold().FontSize(10);
                                 tabla.Cell().Border(0).Text(factura.Iva.ToString("N")).FontSize(10);
 
                                 tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);

@@ -136,10 +136,8 @@
                                         @* <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative"> *@
-
-                                                    @*Html.DropDownListFor(r => r.IdRecibo, Model.RecibosModel, "Recibo", new {@class = "form-control form-select nav-tabs-selector"})*@
-                                                    @* <select asp-for="IdRecibo"
+                                                <div class="position-relative">
+                                                    <select asp-for="IdRecibo"
                                                             asp-items="Model.RecibosModel" required
                                                             class="form-select" id="recibos">
                                                         <option value="0">Seleccionar</option>
@@ -151,6 +149,14 @@
                                                 </div>
                                             </div>
                                         </div> *@
+
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Recibos Pendientes</label>
+                                                <div class="position-relative" id="containerRecibos">
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
@@ -180,6 +186,7 @@
 
                                                 <div class="position-relative">
                                                     <input type="number"
+                                                           readonly
                                                            class="form-control"
                                                            placeholder="Monto"
                                                            id="first-name-icon"
@@ -406,6 +413,7 @@
                     dataType: "json",
                     success: function (response) {
 
+                        console.log("Response: ");
                         console.log(response);
                         var data = response;
 
@@ -470,6 +478,30 @@
                         $("#Total").html("<hr/><p> <strong> Total </strong> = " + total + "</p>");
 
 
+                        // CONSTRUIR LIST DE RECIBOS A PAGAR
+                        if(response.listRecibos.length > 0){
+                           
+                            var container = document.getElementById("containerRecibos");
+                            container.innerHTML = "";
+                            var text = "<div class=\"form-group\" >" +
+                                "<div class=\"form-check\" >";
+
+                            for (let i = 0; i < response.listRecibos.length; i++) {
+                                const item = response.listRecibos[i];
+                                console.log("Item: ");
+                                console.log(item);
+
+                                text += "<input type=\"hidden\" name=ListRecibos[" + i + "].Value" + " value= " +  item.value  +" />" +
+                                    "<input type=\"checkbox\" name=ListRecibos[" + i + "].Selected" + " id=\"z" + i 
+                                    + "__Selected\" " + " class=\"form-check-input\" value=true  /> " +
+                                    "<label for=\"z" + i + "__Selected\" >" + item.text + "</label></br>" 
+                            }
+
+                            text += "</div></div>";
+
+                            container.insertAdjacentHTML('beforeend', text);
+                        }
+
 
                     },
                     failure: function (response) {
@@ -512,7 +544,6 @@
         function ClearDropDown(dropdownId) {
             $(dropdownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');;
         }
-
     </script>
 
 }
