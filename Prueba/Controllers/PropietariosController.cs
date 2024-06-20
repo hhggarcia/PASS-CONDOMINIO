@@ -184,30 +184,34 @@ namespace Prueba.Controllers
                     var subcuentasCaja = await _repoCuentas.ObtenerCaja(condominio.IdCondominio);
 
 
-                    var recibos = from c in _context.ReciboCobros
-                                  where c.IdPropiedad == valor
-                                  select c;
+                    var recibos = await (from c in _context.ReciboCobros
+                                         where c.IdPropiedad == valor
+                                         where !c.Pagado
+                                         select c).ToListAsync();
 
                     modelo.Interes = propiedad.MontoIntereses;
                     modelo.Indexacion = propiedad.MontoMulta != null ? (decimal)propiedad.MontoMulta : 0;
                     modelo.Credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
                     modelo.Saldo = propiedad.Saldo;
                     modelo.Deuda = propiedad.Deuda;
-
-                    //modelo.Recibos = await recibos.ToListAsync();
-                    modelo.Recibos = await recibos.Where(c => (!c.EnProceso && !c.Pagado) || (c.EnProceso && !c.Pagado)).ToListAsync();
-                    //modelo.Recibos = await _context.ReciboCobros.FindAsync(valor);
+                    modelo.Recibos = recibos;
                     modelo.Abonado = modelo.Recibos[0].Abonado;
 
                     if (modelo.Recibos.Any())
                     {
-                        modelo.RecibosModel = await recibos.Where(c => !c.EnProceso && !c.Pagado)
+                        modelo.RecibosModel = recibos.Where(c => !c.EnProceso && !c.Pagado)
                             .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
-                            .ToListAsync();
+                            .ToList();
                         modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
                             .ToList();
                         modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem { Text = c.Descricion, Value = c.Id.ToString() })
                             .ToList();
+                        modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
+                        {
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ? recibo.Monto : (recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado)).ToString("N") + "Bs",
+                            Value = recibo.IdReciboCobro.ToString(),
+                            Selected = false,
+                        }).ToList();
 
                     }
                 }

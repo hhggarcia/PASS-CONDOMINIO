@@ -236,6 +236,7 @@ namespace Prueba.Controllers
                 var listaLibroVenta = _context.LibroVentas
                     .Include(l => l.IdCondominioNavigation)
                     .Include(l => l.IdFacturaNavigation)
+                    .Where(c => c.Activo)
                     .Where(c => c.IdCondominio == idCondominio);
 
                 foreach (var item in listaLibroVenta)

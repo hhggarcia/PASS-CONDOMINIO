@@ -37,6 +37,8 @@ public partial class ReciboCobro
 
     public string Mes { get; set; } = null!;
 
+    public bool ReciboActual { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

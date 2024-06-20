@@ -349,35 +349,76 @@ namespace Prueba.Controllers
                 }
             }
 
-            if (modelo.deducciones || modelo.Anticipos && !modelo.percepciones && !modelo.Bonos)
-            {
-                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            // evaluar percepciones y deducciones
+            //if (!modelo.percepciones && modelo.deducciones)
+            //{
+            //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+            //    modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
 
-                TempData.Keep();
+            //    TempData.Keep();
 
-                ViewBag.FormaPago = "fallido";
-                ViewBag.Mensaje = "No es posible seleccionar solo las deducciones o Anticipos!";
+            //    ViewBag.FormaPago = "fallido";
+            //    ViewBag.Mensaje = "No es posible seleccionar solo las deducciones!";
 
-                return View("PagoNomina", modelo);
-            }
+            //    return View("PagoNomina", modelo);
+            //}
+            //if (!modelo.Bonos && modelo.deducciones)
+            //{
+            //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            if (modelo.Anticipos && !modelo.Bonos)
-            {
-                var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            //    modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
 
-                modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+            //    TempData.Keep();
 
-                TempData.Keep();
+            //    ViewBag.FormaPago = "fallido";
+            //    ViewBag.Mensaje = "No es posible seleccionar solo las deducciones!";
 
-                ViewBag.FormaPago = "fallido";
-                ViewBag.Mensaje = "Solo debe seleccionar los anticipos con los bonos!";
+            //    return View("PagoNomina", modelo);
+            //}
+            //if (!modelo.percepciones && modelo.Anticipos)
+            //{
+            //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                return View("PagoNomina", modelo);
-            }
+            //    modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
 
-            if (monto < 0)
+            //    TempData.Keep();
+
+            //    ViewBag.FormaPago = "fallido";
+            //    ViewBag.Mensaje = "No es posible seleccionar solo los Anticipos!";
+
+            //    return View("PagoNomina", modelo);
+            //}
+
+            //if (!modelo.Bonos && modelo.Anticipos)
+            //{
+            //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            //    modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+
+            //    TempData.Keep();
+
+            //    ViewBag.FormaPago = "fallido";
+            //    ViewBag.Mensaje = "No es posible seleccionar solo los Anticipos!";
+
+            //    return View("PagoNomina", modelo);
+            //}
+
+            //if (modelo.Anticipos && !modelo.Bonos)
+            //{
+            //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            //    modelo = await _repoPagosEmitidos.FormRegistrarPagoNomina(idCondominio);
+
+            //    TempData.Keep();
+
+            //    ViewBag.FormaPago = "fallido";
+            //    ViewBag.Mensaje = "Solo debe seleccionar los anticipos con los bonos!";
+
+            //    return View("PagoNomina", modelo);
+            //}
+
+            if (monto <= 0)
             {
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 

@@ -166,51 +166,6 @@ namespace Prueba.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> DeudoresPDF()
-        {
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
-
-            if (modelo.Propiedades != null && modelo.Propiedades.Any()
-                && modelo.Propietarios != null && modelo.Propietarios.Any()
-                && modelo.Recibos != null && modelo.Recibos.Any())
-            {
-                var data = await _servicePDF.Deudores(modelo, idCondominio);
-                Stream stream = new MemoryStream(data);
-                TempData.Keep();
-                return File(stream, "application/pdf", "Deudores_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
-            }
-
-            TempData.Keep();
-
-            return RedirectToAction("Index");
-
-        }
-
-        public async Task<IActionResult> DeudoresResumenPDF()
-        {
-            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
-
-            if (modelo.Propiedades != null && modelo.Propiedades.Any()
-                && modelo.Propietarios != null && modelo.Propietarios.Any()
-                && modelo.Recibos != null && modelo.Recibos.Any())
-            {
-                var data = await _servicePDF.DeudoresResumen(modelo, idCondominio);
-                Stream stream = new MemoryStream(data);
-                TempData.Keep();
-                return File(stream, "application/pdf", "Deudores_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
-            }
-
-            TempData.Keep();
-
-            return RedirectToAction("Index");
-
-        }
-
         /// <summary>
         /// 
         /// </summary>

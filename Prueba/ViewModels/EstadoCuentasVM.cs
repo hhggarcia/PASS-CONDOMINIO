@@ -4,10 +4,10 @@ namespace Prueba.ViewModels
 {
     public class EstadoCuentasVM
     {
-        public ReciboCobro ReciboCobro { get; set; }
-        public Condominio Condominio { get; set; }
-        public Propiedad Propiedad { get; set; }
-        public AspNetUser AspNetUser { get; set; } = new AspNetUser();
+        public IList<ReciboCobro> ReciboCobro { get; set; } = new List<ReciboCobro>();
+        public Condominio Condominio { get; set; } = null!;
+        public Propiedad Propiedad { get; set; } = null!;
+        public AspNetUser User { get; set; } = new AspNetUser();
 
     }
 }

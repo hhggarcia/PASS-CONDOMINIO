@@ -526,7 +526,7 @@ namespace Prueba.Controllers
                         // buscar transacciones
                         var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
-                        var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM") + DateTime.Today.ToString("yyyy");
+                        var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper() + "-" + DateTime.Today.ToString("yyyy");
                         // generar Relacion de Gastos con las transacciones
                         // y sus relaciones
                         var relacionGasto = new RelacionGasto
@@ -588,13 +588,13 @@ namespace Prueba.Controllers
                                         {
                                             if (!transaccion.TipoTransaccion)
                                             {
-                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+                                                var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
 
                                                 monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
                                             }
                                             else
                                             {
-                                                var grupo = gruposPropiedad.FirstOrDefault(c => c.IdGrupoGasto == transaccion.IdGrupo);
+                                                var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
 
                                                 monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
                                             }
@@ -609,7 +609,7 @@ namespace Prueba.Controllers
                                                  join c in _context.CodigoCuentasGlobals
                                                  on f.IdCodCuenta equals c.IdCodCuenta
                                                  where c.IdCondominio == condominio.IdCondominio
-                                                 //where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                                 where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
                                                  select f;
 
                                     foreach (var fondo in fondos)
@@ -651,21 +651,33 @@ namespace Prueba.Controllers
                                         propiedad.Saldo = monto - credito;
                                         propiedad.Creditos = 0;
                                         // buscar recibos anteriores no pagados
-                                        var recibosAnt = await _context.ReciboCobros
-                                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && !c.EnProceso)
-                                            .ToListAsync();
+                                        //var recibosAnt = await _context.ReciboCobros
+                                        //    .Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
+                                        //    .ToListAsync();
+
+                                        var reciboVencido = await _context.ReciboCobros
+                                            .FirstAsync(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && c.ReciboActual);
 
                                         // mora para cada recibo y sumar a la propiedad
                                         // indexacion por cada recibo y sumar a la propiedad
                                         decimal mora = 0;
                                         decimal indexacion = 0;
 
-                                        if (recibosAnt.Any())
+                                        //if (recibosAnt.Any())
+                                        //{
+                                        //    mora = recibosAnt.Sum(c => c.MontoMora);
+                                        //    indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                        //}
+
+                                        if (reciboVencido != null)
                                         {
-                                            mora = recibosAnt.Sum(c => c.MontoMora);
-                                            indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                            mora = reciboVencido.MontoMora;
+                                            indexacion = reciboVencido.MontoIndexacion;
+
+                                            reciboVencido.ReciboActual = false;
+
+                                            _context.ReciboCobros.Update(reciboVencido);
                                         }
-                                        
 
                                         propiedad.MontoIntereses += mora;
                                         propiedad.MontoMulta += indexacion;
@@ -687,7 +699,8 @@ namespace Prueba.Controllers
                                         SimboloRef = "$",
                                         MontoMora = monto * (condominio.InteresMora / 100),
                                         MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
-                                        Mes = mes
+                                        Mes = mes,
+                                        ReciboActual = true
                                     };
 
                                     recibosCobroCond.Add(recibo);

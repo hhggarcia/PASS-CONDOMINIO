@@ -67,4 +67,6 @@ public partial class LibroVenta
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;
+
+    public bool Activo { get; set; }
 }

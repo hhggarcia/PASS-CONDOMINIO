@@ -111,8 +111,9 @@
                                                                     <tr>
                                                                         <th>Fecha</th>
                                                                         <th>Monto</th>
-                                                                        <th>Tasa de Cambio $</th>
-                                                                        <th>Monto Ref</th>
+                                                                        <th>Abonado</th>
+                                                                        <th>1% Mora</th>
+                                                                        <th>30% Indexación</th>
                                                                     </tr>
                                                                 </thead>
 
@@ -186,7 +187,6 @@
 
                                                 <div class="position-relative">
                                                     <input type="number"
-                                                           readonly
                                                            class="form-control"
                                                            placeholder="Monto"
                                                            id="first-name-icon"
@@ -533,7 +533,7 @@
             $.each(list, function (idex, value) {
                 //var fechita = new Date(value.fecha);
 
-                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + + value.valorDolar.toFixed(2) + "</td><td>" + value.montoRef + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + value.abonado.toFixed(2) + "</td><td>" + + value.montoMora.toFixed(2) + "</td><td>" + value.montoIndexacion + "</td><tr>");
             });
         }
 

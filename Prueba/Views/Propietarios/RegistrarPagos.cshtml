@@ -110,8 +110,9 @@
                                                                     <tr>
                                                                         <th>Fecha</th>
                                                                         <th>Monto</th>
-                                                                        <th>Tasa de Cambio $</th>
-                                                                        <th>Monto Ref</th>
+                                                                        <th>Abonado</th>
+                                                                        <th>1% Mora</th>
+                                                                        <th>30% Indexación</th>
                                                                     </tr>
                                                                 </thead>
 
@@ -134,12 +135,11 @@
 
                                         <!-- Select Recibo a pagar -->
 
-                                        <div class="col-md-12 col-12">
+                                        @* <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione un Recibo</label>
                                                 <div class="position-relative">
                                                     
-                                                    @* html.dropdownlistfor(r => r.idrecibo, model.recibosmodel, "recibo", new {@class = "form-control form-select nav-tabs-selector"}) *@
                                                     <select asp-for="IdRecibo"
                                                         asp-items="Model.RecibosModel"
                                                         class="form-select" id="recibos">
@@ -149,6 +149,14 @@
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div> *@
+
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Recibos Pendientes</label>
+                                                <div class="position-relative" id="containerRecibos">
                                                 </div>
                                             </div>
                                         </div>
@@ -469,7 +477,29 @@
                         //$("#Total").innerText(response.saldo);
                         $("#Total").html("<hr/><p> <strong> Total </strong> = " + total + "</p>");
 
+                        // CONSTRUIR LIST DE RECIBOS A PAGAR
+                        if (response.listRecibos.length > 0) {
 
+                            var container = document.getElementById("containerRecibos");
+                            container.innerHTML = "";
+                            var text = "<div class=\"form-group\" >" +
+                                "<div class=\"form-check\" >";
+
+                            for (let i = 0; i < response.listRecibos.length; i++) {
+                                const item = response.listRecibos[i];
+                                console.log("Item: ");
+                                console.log(item);
+
+                                text += "<input type=\"hidden\" name=ListRecibos[" + i + "].Value" + " value= " + item.value + " />" +
+                                    "<input type=\"checkbox\" name=ListRecibos[" + i + "].Selected" + " id=\"z" + i
+                                    + "__Selected\" " + " class=\"form-check-input\" value=true  /> " +
+                                    "<label for=\"z" + i + "__Selected\" >" + item.text + "</label></br>"
+                            }
+
+                            text += "</div></div>";
+
+                            container.insertAdjacentHTML('beforeend', text);
+                        }
 
                     },
                     failure: function (response) {
@@ -501,7 +531,7 @@
             $.each(list, function (idex, value) {
                 //var fechita = new Date(value.fecha);
 
-                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + + value.valorDolar.toFixed(2) + "</td><td>" + value.montoRef + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + value.abonado.toFixed(2) + "</td><td>" + + value.montoMora.toFixed(2) + "</td><td>" + value.montoIndexacion + "</td><tr>");
             });
         }
 
