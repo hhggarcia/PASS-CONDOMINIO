@@ -58,7 +58,7 @@ namespace Prueba.Controllers
                     TempData.Keep();
                     var data = _servicesPDF.EstadoCuentas(modelo);
                     Stream stream = new MemoryStream(data);
-                    return File(stream, "application/pdf", "ComprobanteRetencion.pdf");
+                    return File(stream, "application/pdf", "EstadoCuentasOficina_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
                 }
                 
             }

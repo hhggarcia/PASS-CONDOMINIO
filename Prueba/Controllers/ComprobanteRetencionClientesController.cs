@@ -25,7 +25,14 @@ namespace Prueba.Controllers
         // GET: ComprobanteRetencionClientes
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.ComprobanteRetencionClientes.Include(c => c.IdClienteNavigation).Include(c => c.IdFacturaNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.ComprobanteRetencionClientes
+                .Include(c => c.IdClienteNavigation)
+                .Include(c => c.IdFacturaNavigation)
+                .Where(c => c.IdClienteNavigation.IdCondominio == IdCondominio);
+
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -52,8 +59,8 @@ namespace Prueba.Controllers
         // GET: ComprobanteRetencionClientes/Create
         public IActionResult Create()
         {
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente");
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida");
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre");
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura");
             return View();
         }
 
@@ -62,16 +69,18 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto")] ComprobanteRetencionCliente comprobanteRetencionCliente)
+        public async Task<IActionResult> Create([Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto,NumCompRet,NumComprobante,TotalFactura,BaseImponible")] ComprobanteRetencionCliente comprobanteRetencionCliente)
         {
+            ModelState.Remove("IdClienteNavigation");
+            ModelState.Remove("IdFacturaNavigation");
             if (ModelState.IsValid)
             {
                 _context.Add(comprobanteRetencionCliente);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", comprobanteRetencionCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", comprobanteRetencionCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
             return View(comprobanteRetencionCliente);
         }
 
@@ -88,8 +97,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", comprobanteRetencionCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", comprobanteRetencionCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
             return View(comprobanteRetencionCliente);
         }
 
@@ -98,13 +107,15 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto")] ComprobanteRetencionCliente comprobanteRetencionCliente)
+        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto,NumCompRet,NumComprobante,TotalFactura,BaseImponible")] ComprobanteRetencionCliente comprobanteRetencionCliente)
         {
             if (id != comprobanteRetencionCliente.IdComprobanteCliente)
             {
                 return NotFound();
             }
 
+            ModelState.Remove("IdClienteNavigation");
+            ModelState.Remove("IdFacturaNavigation");
             if (ModelState.IsValid)
             {
                 try
@@ -125,8 +136,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", comprobanteRetencionCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", comprobanteRetencionCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
             return View(comprobanteRetencionCliente);
         }
 

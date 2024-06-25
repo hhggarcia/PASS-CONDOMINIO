@@ -39,10 +39,22 @@
                                         @Html.DisplayNameFor(model => model.FechaEmision)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdClienteNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>                                    
+                                    <th>
                                         @Html.DisplayNameFor(model => model.TipoTransaccion)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.NumFacturaAfectada)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.NumCompRet)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.NumComprobante)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.TotalCompraIva)
@@ -65,12 +77,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.TotalCompraRetIva)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdClienteNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
+                                    
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
                                     </th>
@@ -88,10 +95,22 @@
                                             @Html.DisplayFor(modelItem => item.FechaEmision)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.IdClienteNavigation.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>                                        
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.TipoTransaccion)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NumCompRet)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NumComprobante)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalCompraIva)
@@ -113,13 +132,7 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalCompraRetIva)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
-                                        </td>
+                                        </td>                                        
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
                                         </td>

@@ -65,8 +65,8 @@ namespace Prueba.Controllers
         // GET: ComprobanteRetencions/Create
         public IActionResult Create()
         {
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura");
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor");
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
             return View();
         }
 
@@ -83,8 +83,8 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", comprobanteRetencion.IdFactura);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", comprobanteRetencion.IdProveedor);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
             return View(comprobanteRetencion);
         }
 
@@ -101,8 +101,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", comprobanteRetencion.IdFactura);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", comprobanteRetencion.IdProveedor);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
             return View(comprobanteRetencion);
         }
 
@@ -138,8 +138,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", comprobanteRetencion.IdFactura);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", comprobanteRetencion.IdProveedor);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
             return View(comprobanteRetencion);
         }
 

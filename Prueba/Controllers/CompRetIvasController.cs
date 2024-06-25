@@ -34,7 +34,16 @@ namespace Prueba.Controllers
         // GET: CompRetIvas
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.CompRetIvas.Include(c => c.IdFacturaNavigation).Include(c => c.IdNotaCreditoNavigation).Include(c => c.IdNotaDebitoNavigation).Include(c => c.IdProveedorNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.CompRetIvas
+                .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdNotaCreditoNavigation)
+                .Include(c => c.IdNotaDebitoNavigation)
+                .Include(c => c.IdProveedorNavigation)
+                .Where(c => c.IdProveedorNavigation.IdCondominio == IdCondominio);
+
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -63,10 +72,10 @@ namespace Prueba.Controllers
         // GET: CompRetIvas/Create
         public IActionResult Create()
         {
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura");
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura");
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito");
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito");
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor");
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
             return View();
         }
 
@@ -83,10 +92,10 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", compRetIva.IdFactura);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", compRetIva.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
             return View(compRetIva);
         }
 
@@ -103,10 +112,10 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", compRetIva.IdFactura);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", compRetIva.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
             return View(compRetIva);
         }
 
@@ -142,10 +151,10 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "IdFactura", compRetIva.IdFactura);
+            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", compRetIva.IdProveedor);
+            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
             return View(compRetIva);
         }
 

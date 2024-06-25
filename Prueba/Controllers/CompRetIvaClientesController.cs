@@ -25,7 +25,16 @@ namespace Prueba.Controllers
         // GET: CompRetIvaClientes
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.CompRetIvaClientes.Include(c => c.IdClienteNavigation).Include(c => c.IdFacturaNavigation).Include(c => c.IdNotaCreditoNavigation).Include(c => c.IdNotaDebitoNavigation);
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.CompRetIvaClientes
+                .Include(c => c.IdClienteNavigation)
+                .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdNotaCreditoNavigation)
+                .Include(c => c.IdNotaDebitoNavigation)
+                .Where(c => c.IdClienteNavigation.IdCondominio == IdCondominio);
+
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -54,8 +63,8 @@ namespace Prueba.Controllers
         // GET: CompRetIvaClientes/Create
         public IActionResult Create()
         {
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente");
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida");
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre");
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura");
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito");
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito");
             return View();
@@ -66,16 +75,21 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva")] CompRetIvaCliente compRetIvaCliente)
+        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva,NumComprobante,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
         {
+            ModelState.Remove("IdClienteNavigation");
+            ModelState.Remove("IdFacturaNavigation");
+            ModelState.Remove("IdNotaCreditoNavigation");
+            ModelState.Remove("IdNotaDebitoNavigation");
+
             if (ModelState.IsValid)
             {
                 _context.Add(compRetIvaCliente);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", compRetIvaCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", compRetIvaCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
             return View(compRetIvaCliente);
@@ -94,8 +108,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", compRetIvaCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", compRetIvaCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
             return View(compRetIvaCliente);
@@ -106,12 +120,17 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva")] CompRetIvaCliente compRetIvaCliente)
+        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva,NumComprobante,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
         {
             if (id != compRetIvaCliente.IdComprobanteIva)
             {
                 return NotFound();
             }
+
+            ModelState.Remove("IdClienteNavigation");
+            ModelState.Remove("IdFacturaNavigation");
+            ModelState.Remove("IdNotaCreditoNavigation");
+            ModelState.Remove("IdNotaDebitoNavigation");
 
             if (ModelState.IsValid)
             {
@@ -133,8 +152,8 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", compRetIvaCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", compRetIvaCliente.IdFactura);
+            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
             ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
             ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
             return View(compRetIvaCliente);
