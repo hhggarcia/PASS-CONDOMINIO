@@ -128,6 +128,7 @@ void AddTransient()
     builder.Services.AddTransient<ICuentasContablesRepository, CuentasContablesRepository>();    
     builder.Services.AddTransient<IMonedaRepository, MonedaRepository>();
     builder.Services.AddTransient<IPdfReportesServices, PdfReportesServices>();
+    builder.Services.AddTransient<IExcelServices, ExcelServices>();
 
 }
 

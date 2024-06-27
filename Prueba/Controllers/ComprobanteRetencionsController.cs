@@ -12,6 +12,7 @@ using Prueba.Services;
 using Prueba.ViewModels;
 using ceTe.DynamicPDF.Printing;
 using System.Net;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
@@ -19,14 +20,20 @@ namespace Prueba.Controllers
 
     public class ComprobanteRetencionsController : Controller
     {
+        private readonly IPdfReportesServices _reportesPDf;
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly IPrintServices _printServices;
         private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public ComprobanteRetencionsController(IPrintServices printServices,
+        public ComprobanteRetencionsController(IPdfReportesServices reportesPDf,
+            IFiltroFechaRepository reposFiltroFecha,
+            IPrintServices printServices,
             IPDFServices servicesPDF,
             NuevaAppContext context)
         {
+            _reportesPDf = reportesPDf;
+            _reposFiltroFecha = reposFiltroFecha;
             _printServices = printServices;
             _servicesPDF = servicesPDF;
             _context = context;
@@ -35,10 +42,14 @@ namespace Prueba.Controllers
         // GET: ComprobanteRetencions
         public async Task<IActionResult> Index()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             var nuevaAppContext = _context.ComprobanteRetencions
                 .Include(c => c.IdFacturaNavigation)
-                .Include(c => c.IdProveedorNavigation);
+                .Include(c => c.IdProveedorNavigation)
+                .Where(c => c.IdProveedorNavigation.IdCondominio == IdCondominio);
 
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -239,6 +250,38 @@ namespace Prueba.Controllers
 
         }
 
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var cuotas = await _reposFiltroFecha.ObtenerCompIslr(filtrarFechaVM, idCondominio);
+
+            TempData.Keep();
+            return View("Index", cuotas);
+        }
+
+        [HttpPost]
+        public async Task<ContentResult> ReportePDF([FromBody] IEnumerable<ComprobanteRetencion> modelo)
+        {
+            try
+            {
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var data = await _reportesPDf.ReporteCompIslr(modelo, IdCondominio);
+                var base64 = Convert.ToBase64String(data);
+
+                TempData.Keep();
+
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ceTe.DynamicPDF.Printing;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
 
@@ -18,14 +21,20 @@ namespace Prueba.Controllers
 
     public class CompRetIvasController : Controller
     {
+        private readonly IPdfReportesServices _reportesPDf;
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly IPrintServices _printServices;
         private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public CompRetIvasController(IPrintServices printServices,
+        public CompRetIvasController(IPdfReportesServices reportesPDF,
+            IFiltroFechaRepository reposFiltroFecha,
+            IPrintServices printServices,
             IPDFServices servicesPDF,
             NuevaAppContext context)
         {
+            _reportesPDf = reportesPDF;
+            _reposFiltroFecha = reposFiltroFecha;
             _printServices = printServices;
             _servicesPDF = servicesPDF;
             _context = context;
@@ -266,6 +275,39 @@ namespace Prueba.Controllers
 
             return View("Index");
 
+        }
+
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var cuotas = await _reposFiltroFecha.ObtenerCompIva(filtrarFechaVM, idCondominio);
+
+            TempData.Keep();
+            return View("Index", cuotas);
+        }
+
+        [HttpPost]
+        public async Task<ContentResult> ReportePDF([FromBody] IEnumerable<CompRetIva> modelo)
+        {
+            try
+            {
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var data = await _reportesPDf.ReporteCompIva(modelo, IdCondominio);
+                var base64 = Convert.ToBase64String(data);
+
+                TempData.Keep();
+
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
     }
 }

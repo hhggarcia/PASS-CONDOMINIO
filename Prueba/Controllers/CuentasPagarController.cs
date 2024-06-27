@@ -31,9 +31,10 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var nuevaAppContext = _context.CuentasPagars
+            var nuevaAppContext = _context.CuentasPagars.OrderByDescending(c => c.Status)
                 .Include(c => c.IdCondominioNavigation)
                 .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdFacturaNavigation.IdProveedorNavigation)
                 .Where(c => c.IdCondominio == IdCondominio);
 
             return View(await nuevaAppContext.ToListAsync());

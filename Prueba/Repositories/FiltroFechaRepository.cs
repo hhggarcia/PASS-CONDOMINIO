@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
@@ -17,6 +18,8 @@ namespace Prueba.Repositories
         Task<ICollection<LibroVenta>> ObtenerLibroVentas(FiltrarFechaVM filtrarFechaVM);
         Task<ICollection<CuentasCobrar>> ObtenerCuentaCobrar(FiltrarFechaVM filtrarFechaVM);
         Task<ICollection<CuentasPagar>> ObtenerCuentasPagar(FiltrarFechaVM filtrarFechaVM);
+        Task<ICollection<CompRetIva>> ObtenerCompIva(FiltrarFechaVM fecha, int id);
+        Task<ICollection<ComprobanteRetencion>> ObtenerCompIslr(FiltrarFechaVM fecha, int id);
     }
     public class FiltroFechaRepository : IFiltroFechaRepository
     {
@@ -33,6 +36,7 @@ namespace Prueba.Repositories
           .Where(c => c.IdCondominio == idCondominio && c.FechaInicio >= filtrarFechaVM.Desde && c.FechaInicio <= filtrarFechaVM.Hasta);
             return cuotasCondominio.ToList();
         }
+        // DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
         public async Task<ICollection<Anticipo>> ObtenerAnticipos(FiltrarFechaVM filtrarFechaVM)
         {
             var nuevaAppContext = _context.Anticipos.Where(c=>c.Fecha >= filtrarFechaVM.Desde && c.Fecha <= filtrarFechaVM.Hasta).Include(a => a.IdProveedorNavigation);
@@ -137,9 +141,9 @@ namespace Prueba.Repositories
         {
             //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
             var consulta = _context.LibroVentas
-                .Join(_context.Facturas,
+                .Join(_context.FacturaEmitida,
                     libro => libro.IdFactura,
-                    factura => factura.IdFactura,
+                    factura => factura.IdFacturaEmitida,
                     (libro, factura) => new { Libro = libro, Factura = factura })
                 .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
                                       c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
@@ -154,9 +158,9 @@ namespace Prueba.Repositories
         {
             //var nuevaAppContext = _context.LibroCompras.Include(l => l.IdCondominioNavigation).Include(l => l.IdFacturaNavigation);
             var consulta = _context.CuentasCobrars
-                .Join(_context.Facturas,
+                .Join(_context.FacturaEmitida,
                     libro => libro.IdFactura,
-                    factura => factura.IdFactura,
+                    factura => factura.IdFacturaEmitida,
                     (libro, factura) => new { Libro = libro, Factura = factura })
                 .Where(c => c.Factura.FechaEmision >= filtrarFechaVM.Desde &&
                                       c.Factura.FechaEmision <= filtrarFechaVM.Hasta)
@@ -183,6 +187,29 @@ namespace Prueba.Repositories
 
             return await consulta.ToListAsync();
             //return await nuevaAppContext.ToListAsync();
+        }
+
+        public async Task<ICollection<CompRetIva>> ObtenerCompIva(FiltrarFechaVM fecha, int id)
+        {
+            var nuevaAppContext = _context.CompRetIvas.Where(c => c.FechaEmision >= fecha.Desde && c.FechaEmision <= fecha.Hasta)
+                .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdNotaCreditoNavigation)
+                .Include(c => c.IdNotaDebitoNavigation)
+                .Include(c => c.IdProveedorNavigation)
+                .Where(c => c.IdProveedorNavigation.IdCondominio == id);
+
+            return await nuevaAppContext.ToListAsync();
+        }
+
+
+        public async Task<ICollection<ComprobanteRetencion>> ObtenerCompIslr(FiltrarFechaVM fecha, int id)
+        {
+            var nuevaAppContext = _context.ComprobanteRetencions.Where(c => c.FechaEmision >= fecha.Desde && c.FechaEmision <= fecha.Hasta)
+                .Include(c => c.IdFacturaNavigation)
+                .Include(c => c.IdProveedorNavigation)
+                .Where(c => c.IdProveedorNavigation.IdCondominio == id);
+
+            return await nuevaAppContext.ToListAsync();
         }
 
 

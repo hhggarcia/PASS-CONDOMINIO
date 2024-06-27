@@ -46,17 +46,21 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.FechaEmision)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.NumFactura)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.IdProveedorNavigation.Nombre)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Status)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdCondominioNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
+                                    
                                     <th></th>
                                 </tr>
                             </thead>
@@ -65,16 +69,20 @@
                                 {
                                     <tr>
                                         <td>
+                                            @* @Html.DisplayFor(modelItem => item.IdFacturaNavigation.FechaEmision) *@
+                                            @item.IdFacturaNavigation.FechaEmision.ToString("dd/MM/yyyy")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdProveedorNavigation.Nombre)
+                                        </td>
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Status)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
                                         </td>
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |

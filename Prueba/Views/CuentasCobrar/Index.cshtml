@@ -43,41 +43,47 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table text-center"
-                               id="dataTable"
                                width="100%"
                                cellspacing="0">
                             <thead>
-                                <tr>
+                                <tr>                                    
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.FechaEmision)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.NumFactura)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.IdClienteNavigation.Nombre)
+                                    </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Status)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdCondominioNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
+                                    </th>                                    
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
+                                    <tr>                                        
+                                        <td>
+                                            @* @Html.DisplayFor(modelItem => item.IdFacturaNavigation.FechaEmision.ToString("dd/MM/yyyy")) *@
+                                            @item.IdFacturaNavigation.FechaEmision.ToString("dd/MM/yyyy")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdClienteNavigation.Nombre)
+                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Status)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
                                         </td>
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |

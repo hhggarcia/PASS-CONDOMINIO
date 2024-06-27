@@ -2872,7 +2872,7 @@ namespace Prueba.Services
 
                                 });
 
-                                var referencia = _context.ReferenciasPrs.First(c => c.IdPagoRecibido == pago.IdPagoRecibido);
+                                var referencia = _context.ReferenciasPrs.FirstOrDefault(c => c.IdPagoRecibido == pago.IdPagoRecibido);
 
                                 tabla.Cell().Padding(5).Text(pago.FormaPago ? "Transferencia" : "Efectivo").FontColor("#607080").FontSize(8);
                                 tabla.Cell().Padding(5).Text(referencia != null ? referencia.Banco.ToString() : "Efectivo").FontColor("#607080").FontSize(8);
@@ -5134,146 +5134,169 @@ namespace Prueba.Services
 
             FontManager.RegisterFont(File.OpenRead("wwwroot\\fonts\\fuentesPDF\\SansSerifFLF-Demibold.otf"));
 
-            var data = Document.Create(container =>
-            {
-                container.Page(page =>
+                var data = Document.Create(container =>
                 {
-                    page.Size(PageSizes.A4);
-                    page.Margin(1, Unit.Centimetre);
-                    page.DefaultTextStyle(x => x.FontFamily("SansSerifFLF-Demibold"));
-                    page.Header().ShowOnce().Row(row =>
+                    container.Page(page =>
                     {
-                        row.RelativeItem().Padding(10).Column(col =>
+                        page.Size(PageSizes.A4);
+                        page.Margin(1, Unit.Centimetre);
+                        page.DefaultTextStyle(x => x.FontFamily("SansSerifFLF-Demibold"));
+
+                        if (factura.Anulada)
                         {
-                            //col.Item().MaxWidth(100).MaxHeight(60).Image("wwwroot/images/yllenAzul.png");
-                            //col.Item().PaddingTop(10).Text("Condominio " + modelo.Transacciones.Condominio.Nombre).FontSize(10).FontColor("#004581").Bold();
-                            //col.Item().Text("Relación de Gastos").FontSize(10).FontColor("#004581").Bold();
+                            page.Foreground().AlignTop().ExtendHorizontal()
+                            .Decoration(decoration =>
+                            {
+                                decoration.Before().Element(DrawSide);
+
+                                void DrawSide(IContainer container)
+                                {
+                                    container
+                                        .AlignMiddle()                                        
+                                        .Row(row =>
+                                        {
+                                            row.RelativeItem().PaddingTop(150).ExtendHorizontal().LineHorizontal(2).LineColor(Colors.Red.Medium);
+                                            row.AutoItem().Padding(10).PaddingTop(140).Text("ANULADA").FontSize(16).FontColor(Colors.Red.Medium);
+                                            row.RelativeItem().PaddingTop(150).ExtendHorizontal().LineHorizontal(2).LineColor(Colors.Red.Medium);
+                                        });
+                                }
+                            });
+                        }
+                        page.Header().ShowOnce().Row(row =>
+                        {
+                            row.RelativeItem().Padding(10).Column(col =>
+                            {
+                                //col.Item().MaxWidth(100).MaxHeight(60).Image("wwwroot/images/yllenAzul.png");
+                                //col.Item().PaddingTop(10).Text("Condominio " + modelo.Transacciones.Condominio.Nombre).FontSize(10).FontColor("#004581").Bold();
+                                //col.Item().Text("Relación de Gastos").FontSize(10).FontColor("#004581").Bold();
+                            });
+
+
                         });
 
+                        page.Content()
+                            .PaddingVertical(1, Unit.Centimetre)
+                            .Column(x =>
+                            {
+                                x.Spacing(2);
+                                //x.Item().AlignCenter().Text("DATOS FACTURA").FontColor("#004581").Bold().FontSize(8);
+                                x.Item().Border(0).Table(tabla =>
+                                {
+                                    tabla.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                    });
 
+                                    tabla.Cell().ColumnSpan(5).Text("Razón Social: " + cliente.Nombre).Bold().FontSize(10);
+                                    tabla.Cell().Text("");
+                                    tabla.Cell().Text("Factura Nro:").Bold().FontSize(10);
+                                    tabla.Cell().Text(factura.NumFactura.ToString()).Bold().FontSize(10);
+
+                                    tabla.Cell().Text("R.I.F: ").Bold().FontSize(10);
+                                    tabla.Cell().Text(cliente.Rif).Bold().FontSize(10);
+                                    tabla.Cell().Text("Inmueble:").Bold().FontSize(10);
+                                    tabla.Cell().Text("").FontSize(10);
+                                    tabla.Cell().Text("Telef. ").Bold().FontSize(10);
+                                    tabla.Cell().Text(cliente.Telefono).Bold().FontSize(10);
+                                    tabla.Cell().Text("Fecha: ").Bold().FontSize(10);
+                                    tabla.Cell().Text(factura.FechaEmision.ToString("dd/MM/yyyy")).Bold().FontSize(10);
+
+                                    tabla.Cell().ColumnSpan(6).Text("Dirección: " + cliente.Direccion).Bold().FontSize(10);
+                                    tabla.Cell().Text("Condición:").Bold().FontSize(10);
+                                    tabla.Cell().Text("Crédito").Bold().FontSize(10);
+
+                                });
+
+                                x.Item().BorderTop(1).BorderBottom(1).Table(tabla =>
+                                {
+                                    tabla.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                    });
+
+                                    tabla.Header(header =>
+                                    {
+                                        header.Cell().ColumnSpan(5).BorderBottom(1).AlignLeft().Text("Descripción").Bold().FontSize(9);
+                                        header.Cell().BorderBottom(1).AlignRight().Text("Precio").Bold().FontSize(9);
+                                        header.Cell().BorderBottom(1).AlignRight().Text("Cant.").Bold().FontSize(9);
+                                        header.Cell().BorderBottom(1).AlignRight().Text("Total").Bold().FontSize(9);
+
+                                    });
+
+                                    tabla.Cell().ColumnSpan(5).AlignLeft().Text(factura.Descripcion).Bold().FontSize(9);
+                                    tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
+                                    tabla.Cell().AlignRight().Text("1").Bold().FontSize(9);
+                                    tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
+
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                    tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
+                                });
+
+                                x.Item().Border(0).Table(tabla =>
+                                {
+                                    tabla.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                    });
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("Forma de Pago: Nro:").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("Sub-Total: ").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("Exento: ").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text("0,00").Bold().FontSize(10);
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("Gravable: ").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("I.V.A 16,00%: ").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text(factura.Iva.ToString("N")).FontSize(10);
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("").FontSize(10);
+                                    tabla.Cell().Border(0).Text("Total Factura: ").Bold().FontSize(10);
+                                    tabla.Cell().Border(0).Text(factura.MontoTotal.ToString("N")).Bold().FontSize(10);
+
+                                });
+                            });
                     });
-
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(x =>
-                        {
-                            x.Spacing(2);
-                            //x.Item().AlignCenter().Text("DATOS FACTURA").FontColor("#004581").Bold().FontSize(8);
-                            x.Item().Border(0).Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Cell().ColumnSpan(5).Text("Razón Social: " + cliente.Nombre).Bold().FontSize(10);
-                                tabla.Cell().Text("");
-                                tabla.Cell().Text("Factura Nro:").Bold().FontSize(10);
-                                tabla.Cell().Text(factura.NumFactura.ToString()).Bold().FontSize(10);
-
-                                tabla.Cell().Text("R.I.F: ").Bold().FontSize(10);
-                                tabla.Cell().Text(cliente.Rif).Bold().FontSize(10);
-                                tabla.Cell().Text("Inmueble:").Bold().FontSize(10);
-                                tabla.Cell().Text("").FontSize(10);
-                                tabla.Cell().Text("Telef. ").Bold().FontSize(10);
-                                tabla.Cell().Text(cliente.Telefono).Bold().FontSize(10);
-                                tabla.Cell().Text("Fecha: ").Bold().FontSize(10);
-                                tabla.Cell().Text(factura.FechaEmision.ToString("dd/MM/yyyy")).Bold().FontSize(10);
-
-                                tabla.Cell().ColumnSpan(6).Text("Dirección: " + cliente.Direccion).Bold().FontSize(10);
-                                tabla.Cell().Text("Condición:").Bold().FontSize(10);
-                                tabla.Cell().Text("Crédito").Bold().FontSize(10);
-
-                            });
-
-                            x.Item().BorderTop(1).BorderBottom(1).Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Header(header =>
-                                {
-                                    header.Cell().ColumnSpan(5).BorderBottom(1).AlignLeft().Text("Descripción").Bold().FontSize(9);
-                                    header.Cell().BorderBottom(1).AlignRight().Text("Precio").Bold().FontSize(9);
-                                    header.Cell().BorderBottom(1).AlignRight().Text("Cant.").Bold().FontSize(9);
-                                    header.Cell().BorderBottom(1).AlignRight().Text("Total").Bold().FontSize(9);
-
-                                });
-
-                                tabla.Cell().ColumnSpan(5).AlignLeft().Text(factura.Descripcion).Bold().FontSize(9);
-                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
-                                tabla.Cell().AlignRight().Text("1").Bold().FontSize(9);
-                                tabla.Cell().AlignRight().Text(factura.SubTotal.ToString("N")).Bold().FontSize(9);
-
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(9);
-                            });
-
-                            x.Item().Border(0).Table(tabla =>
-                            {
-                                tabla.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                });
-
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("Forma de Pago: Nro:").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Sub-Total: ").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
-
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Exento: ").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text("0,00").Bold().FontSize(10);
-
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Gravable: ").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.SubTotal.ToString("N")).Bold().FontSize(10);
-
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("I.V.A 16,00%: ").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.Iva.ToString("N")).FontSize(10);
-
-                                tabla.Cell().ColumnSpan(4).Border(0).AlignLeft().Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("").FontSize(10);
-                                tabla.Cell().Border(0).Text("Total Factura: ").Bold().FontSize(10);
-                                tabla.Cell().Border(0).Text(factura.MontoTotal.ToString("N")).Bold().FontSize(10);
-
-                            });
-                        });
-                });
-            })
+                })
             .GeneratePdf();
-            return data;
+                return data;
+            
+            
         }
         #endregion
 
