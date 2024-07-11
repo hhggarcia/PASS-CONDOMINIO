@@ -207,7 +207,7 @@ namespace Prueba.Controllers
 
             return View(modelo);
         }
-        
+
         public async Task<IActionResult> RegistrarPagosPost(OrdenPagoVM modelo)
         {
             try
@@ -333,6 +333,59 @@ namespace Prueba.Controllers
         private bool OrdenPagoExists(int id)
         {
             return _context.OrdenPagos.Any(e => e.IdOrdenPago == id);
+        }
+
+        public async Task<IActionResult> OrdenPagoPDF(int id)
+        {
+            var ordenPago = await _context.OrdenPagos.FindAsync(id);
+            if (ordenPago != null)
+            {
+                var pago = await _context.PagoEmitidos.FindAsync(ordenPago.IdPagoEmitido);
+
+                if (pago != null)
+                {
+                    var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
+
+
+                    var comprobante = new ComprobanteOrdenPago()
+                    {
+                        Condominio = condominio,
+                        Pagoforma = pago.FormaPago ? FormaPago.Transferencia : FormaPago.Efectivo,
+                        Mensaje = "¡Gracias por su pago!",
+                        Pago = pago
+                    };
+
+                    if (pago.FormaPago)
+                    {
+                        var referencia = await _context.ReferenciasPes.FirstAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+
+                        var idBanco = Convert.ToInt32(referencia.Banco);
+                        var banco = await _context.SubCuenta.FindAsync(idBanco);
+
+                        comprobante.Banco.Descricion = banco != null ? banco.Descricion : "";
+                        comprobante.NumReferencia = referencia.NumReferencia;
+
+                    }
+                    else
+                    {
+                        comprobante.Caja.Descricion = "CAJA CHICA";
+
+                    }
+                    var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == ordenPago.IdProveedor).FirstAsync();
+
+                    comprobante.Beneficiario = proveedor.Nombre;
+                    comprobante.Concepto = proveedor.Nombre;
+
+                    TempData.Keep();
+
+                    var data = _servicesPDF.ComprobanteOrdenPagoPDF(comprobante);
+                    Stream stream = new MemoryStream(data);
+                    return File(stream, "application/pdf", "ComprobanteOrdenPago.pdf");
+                }
+            }
+
+            return RedirectToAction("Index");
+
         }
 
         [HttpPost]

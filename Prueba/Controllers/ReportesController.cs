@@ -6,7 +6,6 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Prueba.Context;
-using Prueba.Models;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
@@ -53,7 +52,10 @@ namespace Prueba.Controllers
                     foreach (var propiedad in propiedades)
                     {
                         var usuario = await _context.AspNetUsers.FirstAsync(c => c.Id == propiedad.IdUsuario);
-                        var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado).ToListAsync();
+                        var recibos = await _context.ReciboCobros.
+                            Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
+                            .OrderBy(c => c.Fecha)
+                            .ToListAsync();
 
                         modelo.Add(new EstadoCuentasVM()
                         {

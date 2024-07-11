@@ -952,11 +952,22 @@ namespace Prueba.Repositories
 
                     var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdRecibo == recibo.IdReciboCobro).ToListAsync();
 
+                    //var fechaAnterior = recibo.Fecha.AddMonths(-1);
+
                     if (propiedad != null)
                     {
+                        // buscar recibo anterior 
+                        //var reciboAnterior = await _context.ReciboCobros.FirstAsync(c => c.Fecha.Month == fechaAnterior.Month && c.IdPropiedad == propiedad.IdPropiedad);
+
+                        // actualizar recibo anterior a Actual
+                        //if (reciboAnterior != null && !recibo.ReciboActual)
+                        //{
+                        //    reciboAnterior.ReciboActual = true;
+                        //    _context.ReciboCobros.Update(reciboAnterior);
+                        //}
                         // verificar si es el recibo atual o uno viejo
 
-                        if (recibo.Fecha.Month == DateTime.Today.Month)
+                        if (recibo.ReciboActual)
                         {
                             // si es actual eliminar saldo = 0
                             propiedad.Saldo = 0;
@@ -970,7 +981,7 @@ namespace Prueba.Repositories
                             // actualizar propiedad
                             _context.Propiedads.Update(propiedad);
                         }
-                        else if (recibo.Fecha.Month != DateTime.Today.Month)
+                        else
                         {
                             // si es viejo restar de la deuda -= Monto
                             propiedad.Deuda -= recibo.Monto;

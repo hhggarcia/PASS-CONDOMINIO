@@ -514,6 +514,7 @@ namespace Prueba.Controllers
                 var relacionesDeGasto = await (from c in _context.RelacionGastos
                                                where c.IdCondominio == idCondominio
                                                where DateTime.Compare(c.Fecha, DateTime.Today) == 0
+                                               //where DateTime.Today.Month == c.Fecha.Month
                                                select c).ToListAsync();
 
                 if (!relacionesDeGasto.Any())
@@ -589,14 +590,18 @@ namespace Prueba.Controllers
                                             if (!transaccion.TipoTransaccion)
                                             {
                                                 var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
-
-                                                monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                                if (grupo != null)
+                                                {
+                                                    monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                                }
                                             }
                                             else
                                             {
                                                 var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
-
-                                                monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                                if (grupo != null)
+                                                {
+                                                    monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                                }
                                             }
                                         }
                                     }
@@ -656,7 +661,7 @@ namespace Prueba.Controllers
                                         //    .ToListAsync();
 
                                         var reciboVencido = await _context.ReciboCobros
-                                            .FirstAsync(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && c.ReciboActual);
+                                            .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && c.ReciboActual);
 
                                         // mora para cada recibo y sumar a la propiedad
                                         // indexacion por cada recibo y sumar a la propiedad
@@ -677,10 +682,12 @@ namespace Prueba.Controllers
                                             reciboVencido.ReciboActual = false;
 
                                             _context.ReciboCobros.Update(reciboVencido);
+
+
+                                            propiedad.MontoIntereses += reciboVencido.Pagado ? 0 : mora;
+                                            propiedad.MontoMulta += reciboVencido.Pagado ? 0 : indexacion;
                                         }
 
-                                        propiedad.MontoIntereses += mora;
-                                        propiedad.MontoMulta += indexacion;
                                     }
 
                                     // generar recibos
@@ -752,10 +759,241 @@ namespace Prueba.Controllers
                 return View(aux);
             }
         }
-        public IActionResult RecibosCreados()
+        public async Task<IActionResult> PreRecibos()
         {
-            var aux = new RecibosCreadosVM();
-            return View(aux);
+            try
+            {
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+
+
+                // buscar condominio                
+                var condominio = await _context.Condominios.FindAsync(idCondominio);
+
+                if (condominio != null)
+                {
+                    // buscar transacciones
+                    var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+                    var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper() + "-" + DateTime.Today.ToString("yyyy");
+                    // generar Relacion de Gastos con las transacciones
+                    // y sus relaciones
+                    var relacionGasto = new RelacionGasto
+                    {
+                        IdCondominio = idCondominio,
+                        SubTotal = transaccionesDelMes.Total,
+                        TotalMensual = transaccionesDelMes.Total,
+                        Fecha = DateTime.Today,
+                        MontoRef = transaccionesDelMes.Total / monedaPrincipal.First().ValorDolar,
+                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        SimboloMoneda = monedaPrincipal.First().Simbolo,
+                        SimboloRef = "$",
+                        Mes = mes
+                    };
+
+                    //_context.RelacionGastos.Add(relacionGasto);
+                    var idRelacionGatos = 1;
+
+                    if (idRelacionGatos != 0)
+                    {
+                        //foreach (var transaccion in transaccionesDelMes.Transaccions)
+                        //{
+                        //    transaccion.Activo = false;
+
+                        //    var relacionTransaccion = new RelacionGastoTransaccion
+                        //    {
+                        //        IdRelacionGasto = relacionGasto.IdRgastos,
+                        //        IdTransaccion = transaccion.IdTransaccion
+                        //    };
+
+                        //    //_context.RelacionGastoTransaccions.Add(relacionTransaccion);
+                        //    //_context.Transaccions.Update(transaccion);
+                        //    //await _context.SaveChangesAsync();
+                        //}
+
+                        IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
+                        // buscar propiedades
+                        var propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+
+                        if (propiedades.Any())
+                        {
+                            // para cada propiedad
+
+                            foreach (var propiedad in propiedades)
+                            {
+                                decimal monto = 0;
+
+                                // --> ver sus grupos y alicuota
+                                var gruposPropiedad = await _context.PropiedadesGrupos
+                                    .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                                    .ToListAsync();
+
+                                // -----> recorrer transacciones si grupoCuenta == transaccionCuenta
+                                foreach (var transaccion in transaccionesDelMes.Transaccions)
+                                {
+                                    // por cada transaccion 
+                                    // revisar si esta entre los grupos de la propiedad
+                                    if (transaccion.IdPropiedad == null && gruposPropiedad.Exists(c => c.IdGrupoGasto == transaccion.IdGrupo))
+                                    {
+                                        if (!transaccion.TipoTransaccion)
+                                        {
+                                            var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                                            monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                        }
+                                        else
+                                        {
+                                            var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
+
+                                            monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                        }
+                                    }
+                                }
+
+                                // buscar fondosd 
+
+                                // aplicar con la alicuota de la propiedad
+                                // BUSCAR FONDOS
+                                var fondos = from f in _context.Fondos
+                                             join c in _context.CodigoCuentasGlobals
+                                             on f.IdCodCuenta equals c.IdCodCuenta
+                                             where c.IdCondominio == condominio.IdCondominio
+                                             where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                             select f;
+
+                                if (fondos != null && fondos.Any())
+                                {
+                                    foreach (var fondo in fondos)
+                                    {
+                                        if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
+                                        {
+                                            monto += (transaccionesDelMes.Total * (decimal)fondo.Porcentaje / 100) * (propiedad.Alicuota / 100);
+                                        }
+
+                                        if (fondo.Monto != null && fondo.Monto > 0)
+                                        {
+                                            monto += (decimal)fondo.Monto * (propiedad.Alicuota / 100);
+                                        }
+                                    }
+                                }
+
+
+                                // revisar transacciones individuales
+
+                                if (transaccionesDelMes.TransaccionesIndividuales != null && transaccionesDelMes.TransaccionesIndividuales.Any())
+                                {
+                                    var individuales = transaccionesDelMes.TransaccionesIndividuales.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+
+                                    monto += individuales.Sum(c => c.MontoTotal);
+
+                                    foreach (var item in individuales)
+                                    {
+                                        item.Activo = false;
+                                        // _context.Transaccions.Update(item);
+                                    }
+                                }
+                                var credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
+                                // VALIDAR DEUDAS PARA ACTUALIZAR  PROPIEDAD
+                                if (propiedad.Solvencia)
+                                {
+                                    propiedad.Saldo = monto - credito;
+                                    propiedad.Creditos = 0;
+                                    propiedad.Solvencia = false;
+                                }
+                                else
+                                {
+                                    propiedad.Deuda += propiedad.Saldo;
+                                    propiedad.Saldo = monto - credito;
+                                    propiedad.Creditos = 0;
+                                    // buscar recibos anteriores no pagados
+                                    //var recibosAnt = await _context.ReciboCobros
+                                    //    .Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
+                                    //    .ToListAsync();
+
+                                    var reciboVencido = await _context.ReciboCobros
+                                        .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && c.ReciboActual);
+
+                                    // mora para cada recibo y sumar a la propiedad
+                                    // indexacion por cada recibo y sumar a la propiedad
+                                    decimal mora = 0;
+                                    decimal indexacion = 0;
+
+                                    //if (recibosAnt.Any())
+                                    //{
+                                    //    mora = recibosAnt.Sum(c => c.MontoMora);
+                                    //    indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
+                                    //}
+
+                                    if (reciboVencido != null)
+                                    {
+                                        mora = reciboVencido.MontoMora;
+                                        indexacion = reciboVencido.MontoIndexacion;
+
+                                        reciboVencido.ReciboActual = false;
+
+                                        //_context.ReciboCobros.Update(reciboVencido);
+                                    }
+
+                                    propiedad.MontoIntereses += mora;
+                                    propiedad.MontoMulta += indexacion;
+                                }
+
+                                // generar recibos
+                                var recibo = new ReciboCobro
+                                {
+                                    IdPropiedad = propiedad.IdPropiedad,
+                                    IdRgastos = relacionGasto.IdRgastos,
+                                    Monto = monto - credito,
+                                    Fecha = DateTime.Today,
+                                    Pagado = false,
+                                    EnProceso = false,
+                                    Abonado = 0,
+                                    MontoRef = monto / monedaPrincipal.First().ValorDolar,
+                                    ValorDolar = monedaPrincipal.First().ValorDolar,
+                                    SimboloMoneda = monedaPrincipal.First().Simbolo,
+                                    SimboloRef = "$",
+                                    MontoMora = monto * (condominio.InteresMora / 100),
+                                    MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
+                                    Mes = mes,
+                                    ReciboActual = true
+                                };
+
+                                recibosCobroCond.Add(recibo);
+                                // registrar recibo 
+                                // actualizar propiedad
+
+                                //_context.ReciboCobros.Add(recibo);
+                                //_context.Propiedads.Update(propiedad);
+                            }
+                        }
+                        //await _context.SaveChangesAsync();
+
+                        // CREAR MODELO PARA NUEVA VISTA
+                        var aux = new RecibosCreadosVM
+                        {
+                            Propiedades = propiedades,
+                            Recibos = recibosCobroCond,
+                            RelacionGastosTransacciones = transaccionesDelMes,
+                            RelacionGasto = relacionGasto
+                        };
+
+                        return View("RecibosCreados", aux);
+
+                    }
+
+                    return RedirectToAction("Index");
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Recibos = "Fallido";
+                ViewBag.MsgError = "Error: " + ex.Message;
+                var aux = new RecibosCreadosVM();
+                TempData.Keep();
+                return View(aux);
+            }
         }
 
         /// <summary>
@@ -836,7 +1074,7 @@ namespace Prueba.Controllers
 
                 var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
                 Stream stream = new MemoryStream(data);
-                return File(stream, "application/pdf", "Recibo_" + propiedad.Codigo+ "_"+ recibo.Fecha.ToString("dd/MM/yyyy") + ".pdf");
+                return File(stream, "application/pdf", "Recibo_" + propiedad.Codigo + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + ".pdf");
             }
 
             return RedirectToAction("Index");

@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller=""
+           asp-action="">
+            Registrar
+        </a>
+        <a class="btn btn-light mb-3" asp-controller=""
+           asp-action="">
+           Hola
+        </a>
+        <a class="btn btn-light mb-3" asp-controller=""
+           asp-action="">
+           Hola
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Conciliación Bancaria
+                    </h6>
+                    <partial name="_FiltroBanco" model="@(new Prueba.ViewModels.FiltroBancoVM())" />
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-center"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Fecha
+                                    </th>
+                                    <th>
+                                        Cuenta
+                                    </th>
+                                    <th>
+                                        Concepto
+                                    </th>
+                                    <th>
+                                        Ingreso
+                                    </th>
+                                    <th>
+                                        Egreso
+                                    </th>
+                                    <th>
+                                        Saldo
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        06/06/1999
+                                    </td>
+                                    <td>
+                                        Cuenta
+                                    </td>
+                                    <td>
+                                        Concepto
+                                    </td>
+                                    <td>
+                                        0,00
+                                    </td>
+                                    <td>
+                                        0,00
+                                    </td>
+                                    <td>
+                                        0,00
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>

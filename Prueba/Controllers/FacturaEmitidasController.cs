@@ -240,7 +240,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdFacturaEmitida,IdCliente,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
+        public async Task<IActionResult> Edit(int id, [Bind("IdFacturaEmitida,IdCliente,IdCodCuenta,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
         {
             if (id != facturaEmitida.IdFacturaEmitida)
             {

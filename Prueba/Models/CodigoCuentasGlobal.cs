@@ -23,9 +23,17 @@ public partial class CodigoCuentasGlobal
 
     public int IdCondominio { get; set; }
 
+    public bool? Aumenta { get; set; }
+
+    public bool? Disminuye { get; set; }
+
+    public bool? Activo { get; set; }
+
     public virtual ICollection<Anticipo> Anticipos { get; set; } = new List<Anticipo>();
 
     public virtual ICollection<Bonificacion> Bonificaciones { get; set; } = new List<Bonificacion>();
+
+    public virtual ICollection<Conciliacion> Conciliacions { get; set; } = new List<Conciliacion>();
 
     public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
 

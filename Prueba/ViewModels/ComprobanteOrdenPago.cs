@@ -11,8 +11,8 @@ namespace Prueba.ViewModels
         public SubCuenta? Gasto { get; set; }
         public int NumReferencia { get; set; }
         public decimal ValorDolar { get; set; }
-        public SubCuenta? Banco { get; set; }
-        public SubCuenta? Caja { get; set; }
+        public SubCuenta? Banco { get; set; } = new SubCuenta();
+        public SubCuenta? Caja { get; set; } = new SubCuenta();
         public string Mensaje { get; set; } = string.Empty;
         public string Beneficiario { get; set; } = string.Empty;
         public bool RelacionGasto { get; set; }

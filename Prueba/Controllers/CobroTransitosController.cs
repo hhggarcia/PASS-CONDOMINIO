@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -17,14 +18,17 @@ namespace Prueba.Controllers
 
     public class CobroTransitosController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
         private readonly IPagosRecibidosRepository _repoPagosRecibidos;
         private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
 
-        public CobroTransitosController(IPagosRecibidosRepository repoPagosRecibidos,
+        public CobroTransitosController(IPDFServices servicesPDF,
+            IPagosRecibidosRepository repoPagosRecibidos,
             IMonedaRepository repoMoneda,
             NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _repoPagosRecibidos = repoPagosRecibidos;
             _repoMoneda = repoMoneda;
             _context = context;
@@ -281,6 +285,20 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
+        }
+
+        public async Task<IActionResult> CobroTransitoPDF(int id)
+        {
+            var cobroTransito = await _context.CobroTransitos.FindAsync(id);
+
+            if (cobroTransito != null)
+            {
+                var data = await _servicesPDF.ComprobanteCobroTransitoPDF(cobroTransito);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobanteCobroTransito.pdf");
+            }
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult AsignarFactura()

@@ -42,6 +42,8 @@ public partial class Condominio
 
     public virtual ICollection<CodigoCuentasGlobal> CodigoCuentasGlobals { get; set; } = new List<CodigoCuentasGlobal>();
 
+    public virtual ICollection<Conciliacion> Conciliacions { get; set; } = new List<Conciliacion>();
+
     public virtual ICollection<CondominioNomina> CondominioNominas { get; set; } = new List<CondominioNomina>();
 
     public virtual ICollection<CuentasCobrar> CuentasCobrars { get; set; } = new List<CuentasCobrar>();

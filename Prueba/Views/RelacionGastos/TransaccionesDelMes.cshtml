@@ -35,9 +35,8 @@
         </a> *@
             <a type="button" asp-action="ReciboPdf" asp-controller="RelacionGastos" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</a>
 
-            <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
-                <i class="fas fa-download fa-sm text-white-50"></i> Generar
-                Excel
+            <a asp-action="PreRecibos" asp-controller="RelacionGastos" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> Previsualizar Recibos
             </a>
         </div>
     }

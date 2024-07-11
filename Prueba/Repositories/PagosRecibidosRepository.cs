@@ -1403,13 +1403,13 @@ namespace Prueba.Repositories
                                             montoPago = 0;
                                         }
 
-                                        if (recibo.Pagado && !recibo.ReciboActual)
+                                        if (!recibo.ReciboActual)
                                         {
                                             propiedad.Deuda = recibo.Monto - recibo.Abonado;
                                             propiedad.MontoIntereses -= recibo.MontoMora;
                                             propiedad.MontoMulta -= recibo.MontoIndexacion;
 
-                                        } else if(recibo.Pagado && recibo.ReciboActual) {
+                                        } else if(recibo.ReciboActual) {
                                             propiedad.Saldo = recibo.Monto - recibo.Abonado;
                                         }
                                     }
@@ -1610,14 +1610,14 @@ namespace Prueba.Repositories
                                             montoPago = 0;
                                         }
 
-                                        if (recibo.Pagado && !recibo.ReciboActual)
+                                        if (!recibo.ReciboActual)
                                         {
                                             propiedad.Deuda = recibo.Monto - recibo.Abonado;
                                             propiedad.MontoIntereses -= recibo.MontoMora;
                                             propiedad.MontoMulta -= recibo.MontoIndexacion;
 
                                         }
-                                        else if (recibo.Pagado && recibo.ReciboActual)
+                                        else if (recibo.ReciboActual)
                                         {
                                             propiedad.Saldo = recibo.Monto - recibo.Abonado;
                                         }

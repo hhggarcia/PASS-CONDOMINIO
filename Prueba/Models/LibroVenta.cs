@@ -64,9 +64,9 @@ public partial class LibroVenta
 
     public string? ComprobanteRetencion { get; set; }
 
+    public bool Activo { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;
-
-    public bool Activo { get; set; }
 }

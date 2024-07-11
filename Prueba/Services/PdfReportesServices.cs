@@ -31,6 +31,13 @@ namespace Prueba.Services
         public async Task<byte[]> Deudores(RecibosCreadosVM modelo, int id)
         {
             var condominio = await _context.Condominios.FindAsync(id);
+            decimal totalDeuda = 0;
+            decimal totalIntereses = 0;
+            decimal totalMulta = 0;
+            decimal totalCredito = 0;
+            decimal totalSaldo = 0;
+            decimal totalPagar = 0;
+
             var data = Document.Create(container =>
             {
                 container.Page(page =>
@@ -135,7 +142,41 @@ namespace Prueba.Services
 
                                     tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                     .Padding(5).Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta - (decimal)propiedad.Creditos + propiedad.Saldo).ToString("N")).Bold().FontColor("#607080").FontSize(8);
+
+                                    totalSaldo += propiedad.Saldo;
+                                    totalDeuda += propiedad.Deuda;
+                                    totalMulta += (decimal)propiedad.MontoMulta;
+                                    totalIntereses += propiedad.MontoIntereses;
+                                    totalCredito += (decimal)propiedad.Creditos;
+                                    totalPagar += propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta - (decimal)propiedad.Creditos + propiedad.Saldo;
                                 }
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("Totales").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalDeuda.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalIntereses.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9")
+                                .Padding(5).Text(totalMulta.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalCredito.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalSaldo.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalPagar.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
                             });
                         });
@@ -154,6 +195,10 @@ namespace Prueba.Services
         public async Task<byte[]> DeudoresResumen(RecibosCreadosVM modelo, int id)
         {
             var condominio = await _context.Condominios.FindAsync(id);
+            decimal totalAcumulado = 0;
+            decimal totalSaldo = 0;
+            decimal totalMontosPagar = 0;
+
             var data = Document.Create(container =>
             {
                 container.Page(page =>
@@ -238,7 +283,29 @@ namespace Prueba.Services
 
                                     tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                     .Padding(5).Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta - (decimal)propiedad.Creditos + propiedad.Saldo).ToString("N")).Bold().FontColor("#607080").FontSize(8);
+
+                                    totalAcumulado += propiedad.Deuda;
+                                    totalSaldo += propiedad.Saldo;
+                                    totalMontosPagar += propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta - (decimal)propiedad.Creditos + propiedad.Saldo;
                                 }
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("Totales").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalAcumulado.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalSaldo.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                .Padding(5).Text(totalMontosPagar.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
                             });
                         });

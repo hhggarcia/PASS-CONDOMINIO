@@ -9,6 +9,7 @@ public partial class NuevaAppContext : DbContext
 {
     public NuevaAppContext()
     {
+
     }
 
     public NuevaAppContext(DbContextOptions<NuevaAppContext> options)
@@ -55,6 +56,8 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<ComprobanteRetencion> ComprobanteRetencions { get; set; }
 
     public virtual DbSet<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; }
+
+    public virtual DbSet<Conciliacion> Conciliacions { get; set; }
 
     public virtual DbSet<Condominio> Condominios { get; set; }
 
@@ -179,11 +182,20 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<SubCuenta> SubCuenta { get; set; }
 
     public virtual DbSet<Transaccion> Transaccions { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Development.json")
+                .Build();
 
+            var connectionString = configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
+
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -599,6 +611,29 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdFactura)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ComprobanteRetencionCliente_FacturaEmitida");
+        });
+
+        modelBuilder.Entity<Conciliacion>(entity =>
+        {
+            entity.HasKey(e => e.IdConciliacion);
+
+            entity.ToTable("Conciliacion");
+
+            entity.Property(e => e.FechaEmision).HasColumnType("datetime");
+            entity.Property(e => e.FechaFin).HasColumnType("datetime");
+            entity.Property(e => e.FechaInicio).HasColumnType("datetime");
+            entity.Property(e => e.SaldoFinal).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.SaldoInicial).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Conciliacions)
+                .HasForeignKey(d => d.IdCodCuenta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Conciliacion_CodigoCuentas_Global");
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.Conciliacions)
+                .HasForeignKey(d => d.IdCondominio)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Conciliacion_Condominio");
         });
 
         modelBuilder.Entity<Condominio>(entity =>

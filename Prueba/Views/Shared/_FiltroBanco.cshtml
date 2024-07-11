@@ -1,0 +1,41 @@
+﻿@using Prueba.ViewModels
+
+@model FiltroBancoVM
+
+<form method="post" asp-action="BuscarConciliacion">
+    <div class="row">
+        <div class="col-md-3 mt-2">
+            <label for="last-name-column">Fecha Inicio</label>
+            <div class="input-group date">
+                <input class="form-control"
+                       type="date"
+                       id="fechaDesde"
+                       value="@DateTime.Today.AddDays(-1)"
+                       asp-for="FechaInicio"
+                       required>
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <label for="last-name-column">Fecha Fin</label>
+            <div class="position-relative">
+                <input class="form-control"
+                       type="date"
+                       id="fechaHasta"
+                       required
+                       value="@DateTime.Today"
+                       asp-for="FechaFin">
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <label for="last-name-column">Banco o Caja</label>
+            <select asp-for="IdCodCuenta" class="form-control" asp-items="ViewBag.IdCodCuenta"></select>
+        </div>
+        
+        <div class="col-md-2 mt-auto">
+            <button type="submit" class="btn btn-primary" value="Filtrar">Buscar</button>
+        </div>
+    </div>
+</form>
