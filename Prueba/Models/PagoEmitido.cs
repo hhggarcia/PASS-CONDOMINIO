@@ -23,6 +23,8 @@ public partial class PagoEmitido
 
     public string SimboloRef { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();

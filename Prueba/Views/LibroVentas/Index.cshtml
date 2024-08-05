@@ -23,7 +23,7 @@
         </a>
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        <a asp-action="LibroVentaPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <a id="create_pdf" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
         </a>
@@ -145,13 +145,14 @@
         </div>
     </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#create_pdf").click(function () {
             var datos = @Html.Raw(Json.Serialize(Model));
             $.ajax({
-                url: '/LibroVentas/LibroPDF',
+                url: '/LibroVentas/LibroVentaPDF',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(datos),
@@ -174,10 +175,12 @@
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    // console.log("Exito")
+                    console.log("Exito");
                 },
-                error: function () {
-                    alert('Error al descargar detalle del recibo');
+                error: function (error) {
+                    console.log("Exito");
+                    console.log(error);
+                    //alert('Error al descargar detalle del recibo');
                 }
             });
         });

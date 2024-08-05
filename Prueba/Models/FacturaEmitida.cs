@@ -37,6 +37,8 @@ public partial class FacturaEmitida
 
     public bool Anulada { get; set; }
 
+    public bool Activo { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();

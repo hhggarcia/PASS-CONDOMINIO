@@ -27,6 +27,8 @@ public partial class LdiarioGlobal
 
     public string SimboloRef { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     public virtual ICollection<Activo> Activos { get; set; } = new List<Activo>();
 
     public virtual ICollection<Gasto> Gastos { get; set; } = new List<Gasto>();

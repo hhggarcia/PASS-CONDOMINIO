@@ -62,7 +62,9 @@ namespace Prueba.Controllers
         {
             int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var NuevaAppContext = _context.RelacionGastos.Where(r => r.IdCondominio == idCondominio);
+            var NuevaAppContext = _context.RelacionGastos
+                .Where(r => r.IdCondominio == idCondominio)
+                .OrderBy(c => c.Fecha);
 
             TempData.Keep();
 
@@ -683,7 +685,6 @@ namespace Prueba.Controllers
 
                                             _context.ReciboCobros.Update(reciboVencido);
 
-
                                             propiedad.MontoIntereses += reciboVencido.Pagado ? 0 : mora;
                                             propiedad.MontoMulta += reciboVencido.Pagado ? 0 : indexacion;
                                         }
@@ -764,9 +765,6 @@ namespace Prueba.Controllers
             try
             {
                 int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-
-
                 // buscar condominio                
                 var condominio = await _context.Condominios.FindAsync(idCondominio);
 
@@ -977,7 +975,31 @@ namespace Prueba.Controllers
                             RelacionGasto = relacionGasto
                         };
 
-                        return View("RecibosCreados", aux);
+                        //return View("RecibosCreados", aux);
+                        var modelo = new List<DetalleReciboTransaccionesVM>();
+                        foreach (var recibo in aux.Recibos)
+                        {
+                            var item = new DetalleReciboTransaccionesVM();
+                            if (recibo != null)
+                            {
+                                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                                //var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+                                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                                //var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+
+                                item.Recibo = recibo;
+                                item.Propiedad = propiedad;
+                                item.GruposPropiedad = gruposPropiedad;
+                                item.RelacionGasto = aux.RelacionGasto;
+                                item.Transacciones = aux.RelacionGastosTransacciones;
+                            }
+
+                            modelo.Add(item);
+                        }
+
+                        var data = _servicePDF.TodosRecibosTransaccionesPDF(modelo);
+                        Stream stream = new MemoryStream(data);
+                        return File(stream, "application/pdf", "RecibosCondominio.pdf");
 
                     }
 

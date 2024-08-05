@@ -17,6 +17,7 @@ namespace Prueba.Repositories
         Task<decimal> EgresosPorMes(int mes, int idCondominio);
         Task<InformacionDashboardVM> InformacionGeneral(int id);
         Task<decimal> IngresosPorMes(int mes, int idCondominio);
+        Task<ItemConciliacionVM> LoadConciliacionCuenta(FiltroBancoVM filtro);
         Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio);
     }
     public class ReportesRepository : IReportesRepository
@@ -396,5 +397,59 @@ namespace Prueba.Repositories
 
             return new RecibosCreadosVM();
         }        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filtro"></param>
+        /// <returns></returns>
+        public async Task<ItemConciliacionVM> LoadConciliacionCuenta(FiltroBancoVM filtro)
+        {
+            var subCuenta = await _context.SubCuenta.FindAsync(filtro.IdCodCuenta);
+            if (subCuenta != null)
+            {
+                var cc = await _context.CodigoCuentasGlobals.FirstOrDefaultAsync(c => c.IdSubCuenta == subCuenta.Id);
+
+                var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo);
+
+                var asientosIngresos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio 
+                    && c.Fecha <= filtro.FechaFin 
+                    && c.IdCodCuenta == cc.IdCodCuenta
+                    && c.TipoOperacion == cc.Aumenta)
+                    .ToListAsync();
+
+                var asientosEgresos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
+                    && c.IdCodCuenta == cc.IdCodCuenta
+                    && c.TipoOperacion == cc.Disminuye)
+                    .ToListAsync();
+
+                var asientos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
+                    && c.IdCodCuenta == cc.IdCodCuenta)
+                    .ToListAsync();
+
+                return new ItemConciliacionVM()
+                {
+                    CodigoCuenta = cc,
+                    SubCuenta = subCuenta,
+                    Asientos = asientos,
+                    ConciliacionAnterior = conciliacionAnterior,
+                    SaldoInicial = conciliacionAnterior != null ? conciliacionAnterior.SaldoFinal : 0,
+                    FechaInicio = filtro.FechaInicio,
+                    FechaFin = filtro.FechaFin,
+                    TotalEgreso = asientosEgresos.Where(c => !c.TipoOperacion).Sum(c => c.Monto),
+                    TotalIngreso = asientosIngresos.Where(c => c.TipoOperacion).Sum(c => c.Monto),
+                    SaldoFinal = asientosIngresos.Sum(c => c.Monto) - asientosEgresos.Sum(c => c.Monto)
+                };
+
+            }
+
+            return new ItemConciliacionVM();
+        }
+
     }
 }

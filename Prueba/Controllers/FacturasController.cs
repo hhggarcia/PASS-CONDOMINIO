@@ -102,11 +102,6 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFactura,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,Subtotal,Iva,MontoTotal,IdProveedor,IdCodCuenta,Abonado,Pagada,EnProceso,Anulada")] Factura factura)
         {
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-
-            factura.IdCodCuenta = idCodCuenta;
-            factura.MontoTotal = factura.Subtotal + factura.Iva;
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
@@ -114,8 +109,12 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
-                factura.EnProceso = true;
+                var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
                 var proveedor = await _context.Proveedors.FindAsync(factura.IdProveedor);
+                factura.IdCodCuenta = idCodCuenta;
+                factura.MontoTotal = factura.Subtotal + factura.Iva;
+                factura.EnProceso = true;
 
                 if (proveedor == null)
                 {
@@ -207,7 +206,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", factura.IdCodCuenta);
 
             TempData.Keep();
             return View(factura);
@@ -227,6 +226,8 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             var cc = await _context.CodigoCuentasGlobals.FindAsync(factura.IdCodCuenta);
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == factura.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
+
             if (cc == null)
             {
                 return NotFound();
@@ -236,7 +237,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
 
             TempData.Keep();
 
@@ -253,11 +254,7 @@ namespace Prueba.Controllers
             if (id != factura.IdFactura)
             {
                 return NotFound();
-            }
-
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-            factura.IdCodCuenta = idCodCuenta;
+            }            
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
@@ -266,6 +263,9 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                    factura.IdCodCuenta = idCodCuenta;
                     _context.Update(factura);
                     await _context.SaveChangesAsync();
                 }
@@ -287,7 +287,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", factura.IdCodCuenta);
 
             TempData.Keep();
             return View(factura);

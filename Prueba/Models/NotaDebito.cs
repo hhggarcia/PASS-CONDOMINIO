@@ -15,6 +15,8 @@ public partial class NotaDebito
 
     public decimal Abonado { get; set; }
 
+    public bool Activo { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();

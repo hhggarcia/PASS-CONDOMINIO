@@ -112,7 +112,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", anticipo.IdCodCuenta);
 
             TempData.Keep();
 
@@ -133,11 +133,12 @@ namespace Prueba.Controllers
                 return NotFound();
             }
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == anticipo.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
 
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
 
             TempData.Keep();
 
@@ -156,10 +157,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-            anticipo.IdCodCuenta = idCodCuenta;
-            anticipo.Activo = true;
+           
 
             ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
             ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
@@ -168,6 +166,10 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                    anticipo.IdCodCuenta = idCodCuenta;
+                    anticipo.Activo = true;
                     _context.Update(anticipo);
                     await _context.SaveChangesAsync();
                 }
@@ -189,7 +191,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", anticipo.IdCodCuenta);
 
             TempData.Keep();
             return View(anticipo);

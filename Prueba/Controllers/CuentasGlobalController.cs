@@ -22,7 +22,12 @@ namespace Prueba.Controllers
         // GET: CuentasGlobal
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.CodigoCuentasGlobals.Include(c => c.IdClaseNavigation).Include(c => c.IdCondominioNavigation).Include(c => c.IdCuentaNavigation).Include(c => c.IdGrupoNavigation).Include(c => c.IdSubCuentaNavigation);
+            var nuevaAppContext = _context.CodigoCuentasGlobals
+                .Include(c => c.IdClaseNavigation)
+                .Include(c => c.IdCondominioNavigation)
+                .Include(c => c.IdCuentaNavigation)
+                .Include(c => c.IdGrupoNavigation)
+                .Include(c => c.IdSubCuentaNavigation);
             return View(await nuevaAppContext.ToListAsync());
         }
 

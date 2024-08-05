@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -15,17 +17,29 @@ namespace Prueba.Controllers
 
     public class ConciliacionsController : Controller
     {
+        private readonly IReportesRepository _repoReportes;
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
 
-        public ConciliacionsController(NuevaAppContext context)
+        public ConciliacionsController(IReportesRepository repoReportes,
+            ICuentasContablesRepository repoCuentas,
+            NuevaAppContext context)
         {
+            _repoReportes = repoReportes;
+            _repoCuentas = repoCuentas;
             _context = context;
         }
 
         // GET: Conciliacions
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.Conciliacions.Include(c => c.IdCodCuentaNavigation).Include(c => c.IdCondominioNavigation);
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.Conciliacions.Include(c => c.IdCodCuentaNavigation)
+                .Include(c => c.IdCondominioNavigation)
+                .Where(c => c.IdCondominio == idCondominio);
+
+            TempData.Keep();
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -50,10 +64,17 @@ namespace Prueba.Controllers
         }
 
         // GET: Conciliacions/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta");
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio");
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", idCondominio);
+
+            TempData.Keep();
+
             return View();
         }
 
@@ -64,14 +85,28 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdConciliacion,IdCondominio,IdCodCuenta,FechaEmision,SaldoInicial,SaldoFinal,Actual,Activo,FechaInicio,FechaFin")] Conciliacion conciliacion)
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ModelState.Remove(nameof(conciliacion.IdCodCuentaNavigation));
+            ModelState.Remove(nameof(conciliacion.IdCondominioNavigation));
+
             if (ModelState.IsValid)
             {
+                var idCuenta = _context.SubCuenta.Where(c => c.Id == conciliacion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                conciliacion.IdCodCuenta = idCodCuenta;
+
                 _context.Add(conciliacion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCodCuenta"] = new SelectList(_context.CodigoCuentasGlobals, "IdCodCuenta", "IdCodCuenta", conciliacion.IdCodCuenta);
+
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", conciliacion.IdCodCuenta);
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", conciliacion.IdCondominio);
+
+            TempData.Keep();
             return View(conciliacion);
         }
 
@@ -170,9 +205,36 @@ namespace Prueba.Controllers
             return _context.Conciliacions.Any(e => e.IdConciliacion == id);
         }
 
-        public IActionResult Conciliacion()
+        public async Task<IActionResult> Conciliacion()
         {
-            return View();
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var cajas = await _repoCuentas.ObtenerCaja(idCondominio);
+            var bancos = await _repoCuentas.ObtenerBancos(idCondominio);
+            var subcuentas = bancos.Concat(cajas).ToList();
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
+            return View(new ItemConciliacionVM());
+        }
+
+        public async Task<IActionResult> BuscarConciliacion(FiltroBancoVM filtro)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            var modelo = await _repoReportes.LoadConciliacionCuenta(filtro);
+
+            return View("Conciliacion", modelo);
+        }
+
+        //[HttpPost]
+        //[AutoValidateAntiforgeryToken]
+        public IActionResult ConfirmarConciliacion([FromBody] ItemConciliacionVM modelo)
+        {
+            return View(modelo);
         }
     }
 }

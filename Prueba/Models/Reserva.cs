@@ -15,6 +15,8 @@ public partial class Reserva
 
     public string Descripcion { get; set; } = null!;
 
+    public bool? Activo { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual ICollection<ReciboReserva> ReciboReservas { get; set; } = new List<ReciboReserva>();

@@ -25,6 +25,10 @@ public partial class Conciliacion
 
     public DateTime FechaFin { get; set; }
 
+    public decimal TotalIngreso { get; set; }
+
+    public decimal TotalEgreso { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;

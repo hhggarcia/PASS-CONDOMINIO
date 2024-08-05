@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
@@ -186,45 +187,8 @@ namespace Prueba.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ContentResult> LibroPDF([FromBody] IEnumerable<LibroVenta> listaLibroVenta)
-        //{
-        //    try
-        //    {
-        //        var modelo = new List<LibroVentasVM>();
-
-        //        foreach (var item in listaLibroVenta)
-        //        {
-        //            var factura = await _context.FacturaEmitida.FindAsync(item.IdFactura);
-        //            if (factura != null)
-        //            {
-        //                var producto = await _context.Productos.FindAsync(factura.IdProducto);
-        //                var cliente  = await _context.Clientes.FindAsync(factura.IdCliente);
-
-        //                modelo.Add(new LibroVentasVM
-        //                {
-        //                    libroVenta = item,
-        //                    FacturaEmitida = factura,
-        //                    Producto = producto,
-        //                    cliente = cliente
-        //                });
-        //            }
-        //        }                
-
-        //        var data = _servicesPDF.LibroVentas(modelo);
-        //        var base64 = Convert.ToBase64String(data);
-        //        return Content(base64, "application/pdf");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"Error generando PDF: {e.Message}");
-        //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
-        //    }
-        //}
-
-        public async Task<IActionResult> LibroVentaPDF()
+        [HttpPost]
+        public ContentResult LibroVentaPDF([FromBody] IEnumerable<LibroVenta> facturas)
         {
 
             try
@@ -233,19 +197,19 @@ namespace Prueba.Controllers
 
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                var listaLibroVenta = _context.LibroVentas
-                    .Include(l => l.IdCondominioNavigation)
-                    .Include(l => l.IdFacturaNavigation)
-                    .Where(c => c.Activo)
-                    .Where(c => c.IdCondominio == idCondominio);
+                //var listaLibroVenta = _context.LibroVentas
+                //    .Include(l => l.IdCondominioNavigation)
+                //    .Include(l => l.IdFacturaNavigation)
+                //    .Where(c => c.Activo)
+                //    .Where(c => c.IdCondominio == idCondominio);
 
-                foreach (var item in listaLibroVenta)
+                foreach (var item in facturas)
                 {
-                    var factura = await _context.FacturaEmitida.FindAsync(item.IdFactura);
+                    var factura = _context.FacturaEmitida.Find(item.IdFactura);
                     if (factura != null)
                     {
-                        var producto = await _context.Productos.FindAsync(factura.IdProducto);
-                        var cliente = await _context.Clientes.FindAsync(factura.IdCliente);
+                        var producto = _context.Productos.Find(factura.IdProducto);
+                        var cliente = _context.Clientes.Find(factura.IdCliente);
 
                         modelo.Add(new LibroVentasVM
                         {
@@ -260,22 +224,22 @@ namespace Prueba.Controllers
                 TempData.Keep();
 
                 var data = _servicesPDF.LibroVentas(modelo);
-                //var base64 = Convert.ToBase64String(data);
-                //return Content(base64, "application/pdf");
-                Stream stream = new MemoryStream(data);
-                return File(stream, "application/pdf", "LibroVenta" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+                var base64 = Convert.ToBase64String(data);
+                return Content(base64, "application/pdf");
+                //Stream stream = new MemoryStream(data);
+                //return File(stream, "application/pdf", "LibroVenta" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
             }
             catch (Exception ex)
             {
-                //Console.WriteLine($"Error generando PDF: {e.Message}");
-                //Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                //return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
+                Console.WriteLine($"Error generando PDF: {ex.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{ex.Message}\", \"innerException\": \"{ex.InnerException?.Message}\" }}");
+                //var modeloError = new ErrorViewModel()
+                //{
+                //    RequestId = ex.Message
+                //};
 
-                return View("Error", modeloError);
+                //return View("Error", modeloError);
             }
 
         }

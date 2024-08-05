@@ -31,6 +31,8 @@ public partial class CobroTransito
 
     public bool Asignado { get; set; }
 
+    public bool Activo { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();

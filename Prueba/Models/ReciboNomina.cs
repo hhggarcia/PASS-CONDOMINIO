@@ -21,6 +21,8 @@ public partial class ReciboNomina
 
     public decimal RefMonto { get; set; }
 
+    public bool Activo { get; set; }
+
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
 
     public virtual ICollection<PagosNomina> PagosNominas { get; set; } = new List<PagosNomina>();

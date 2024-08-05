@@ -112,11 +112,7 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdCliente,IdProducto,IdCodCuenta,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
         {
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-
-            facturaEmitida.IdCodCuenta = idCodCuenta;
-            facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
+            
 
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
@@ -125,6 +121,11 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
+                var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                facturaEmitida.IdCodCuenta = idCodCuenta;
+                facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
                 facturaEmitida.EnProceso = true;
                 _context.Add(facturaEmitida);
                 await _context.SaveChangesAsync();
@@ -201,7 +202,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
             TempData.Keep();
 
@@ -223,12 +224,13 @@ namespace Prueba.Controllers
             }
 
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == facturaEmitida.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
 
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
 
             TempData.Keep();
 
@@ -247,11 +249,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-
-            facturaEmitida.IdCodCuenta = idCodCuenta;
-            facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
+            
 
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
@@ -261,6 +259,11 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+
+                    facturaEmitida.IdCodCuenta = idCodCuenta;
+                    facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
                     _context.Update(facturaEmitida);
                     await _context.SaveChangesAsync();
                 }
@@ -284,7 +287,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
             TempData.Keep();
 

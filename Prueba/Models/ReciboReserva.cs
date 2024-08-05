@@ -25,6 +25,8 @@ public partial class ReciboReserva
 
     public string SimboloRef { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     public virtual Reserva IdReservaNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoReserva> PagoReservas { get; set; } = new List<PagoReserva>();

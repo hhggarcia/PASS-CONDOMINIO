@@ -107,7 +107,7 @@ namespace Prueba.Controllers
 
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", bonificacion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
 
             TempData.Keep();
@@ -189,7 +189,7 @@ namespace Prueba.Controllers
 
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", bonificacion.IdCodCuenta);
             ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", bonificacion.IdEmpleado);
 
             TempData.Keep();

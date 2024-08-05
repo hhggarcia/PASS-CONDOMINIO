@@ -5330,9 +5330,6 @@ namespace Prueba.Services
                                 tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
                                 tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
                                 tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
-                                tabla.Cell().ColumnSpan(8).Padding(5).Text("").FontSize(11);
                             });
 
                             x.Item().Border(0).Table(tabla =>
