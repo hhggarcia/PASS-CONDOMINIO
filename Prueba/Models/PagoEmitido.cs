@@ -25,6 +25,8 @@ public partial class PagoEmitido
 
     public bool Activo { get; set; }
 
+    public string? Concepto { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();

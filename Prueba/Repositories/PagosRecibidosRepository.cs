@@ -107,6 +107,7 @@ namespace Prueba.Repositories
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto,
                 Confirmado = true,
+                Activo = true
             };
             // Anticipo anticipo1 = new Anticipo();
 
@@ -705,6 +706,7 @@ namespace Prueba.Repositories
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto,
                 Confirmado = true,
+                Activo = true
             };
 
             //var provisiones = from c in _context.Provisiones
@@ -789,7 +791,8 @@ namespace Prueba.Repositories
                         MontoRef = montoReferencia,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
-                        Asignado = false
+                        Asignado = false,
+                        Activo = true
                     };
 
                     // registrar transaccion
@@ -952,7 +955,8 @@ namespace Prueba.Repositories
                         MontoRef = montoReferencia,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
-                        Asignado = false
+                        Asignado = false,
+                        Activo = true
                     };
 
                     // registrar transaccion
@@ -1094,7 +1098,8 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Confirmado = false,
                             Imagen = modelo.Imagen,
-                            Monto = recibo.Monto
+                            Monto = recibo.Monto,
+                            Activo = true
                         };
 
                         // validar num referencia repetido
@@ -1238,7 +1243,7 @@ namespace Prueba.Repositories
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
                                     NumReferencia = modelo.NumReferencia,
-                                    Banco = banco.Descricion
+                                    Banco = banco.Id.ToString()
                                 };
 
                                 var pagoRecibo = new PagosRecibo()
@@ -1293,7 +1298,8 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto,
                             Confirmado = true,
-                            Monto = modelo.Monto
+                            Monto = modelo.Monto,
+                            Activo = true
                         };
 
                         // validar num referencia repetido
@@ -1369,7 +1375,7 @@ namespace Prueba.Repositories
                                     IdPropiedad = propiedad.IdPropiedad,
                                     Confirmado = true,
                                     Rectificado = false,
-                                    Activo = false
+                                    Activo = true
                                 };
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);
@@ -1605,14 +1611,14 @@ namespace Prueba.Repositories
                                     IdPropiedad = propiedad.IdPropiedad,
                                     Confirmado = true,
                                     Rectificado = false,
-                                    Activo = false
+                                    Activo = true
                                 };
 
                                 var referencia = new ReferenciasPr()
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
                                     NumReferencia = modelo.NumReferencia,
-                                    Banco = banco.Descricion
+                                    Banco = banco.Id.ToString()
                                 };
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);

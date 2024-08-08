@@ -39,6 +39,8 @@ public partial class ReciboCobro
 
     public bool ReciboActual { get; set; }
 
+    public decimal TotalPagar { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

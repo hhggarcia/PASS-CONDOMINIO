@@ -13,19 +13,19 @@ public partial class Transaccion
 
     public int IdCodCuenta { get; set; }
 
-    public string Descripcion { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = null!;
 
     public int? IdProveedor { get; set; }
 
-    public string Documento { get; set; } = string.Empty;
+    public string Documento { get; set; } = null!;
 
     public decimal MontoTotal { get; set; }
 
     public decimal Cancelado { get; set; }
 
-    public string SimboloMoneda { get; set; } = string.Empty;
+    public string SimboloMoneda { get; set; } = null!;
 
-    public string SimboloRef { get; set; } = string.Empty;
+    public string SimboloRef { get; set; } = null!;
 
     public decimal ValorDolar { get; set; }
 

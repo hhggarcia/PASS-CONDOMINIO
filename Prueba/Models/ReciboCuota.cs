@@ -31,7 +31,7 @@ public partial class ReciboCuota
 
     public string SimboloRef { get; set; } = null!;
 
-    public bool? Activo { get; set; }
+    public bool Activo { get; set; }
 
     public virtual CuotasEspeciale IdCuotaEspecialNavigation { get; set; } = null!;
 

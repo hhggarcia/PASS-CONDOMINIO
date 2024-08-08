@@ -172,20 +172,20 @@ namespace Prueba.Repositories
         }
 
         /// <summary>
-        /// 
+        /// Registrar los pagos de las facturas a proveedores
+        /// y las facturas de los beneficiarios (no implican retenciones)
+        /// Genera los comprobantes de retencion si aplican 
         /// </summary>
         /// <param name="modelo"></param>
-        /// <returns></returns>
+        /// <returns>false si existe un error de registro | true si se realizaron todas acciones</returns>
         public async Task<string> RegistrarPago(RegistroPagoVM modelo)
         {
             string resultado = "";
             decimal montoReferencia = 0;
-
-            //var idCodCuenta = await _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == modelo.IdSubcuenta).ToListAsync();
-            //var idCodCuenta = from c in _context.CodigoCuentasGlobals
-            //                  where c.IdSubCuenta == modelo.IdSubcuenta
-            //                  select c;
-
+            var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
+            var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+            var itemCuentasPagar = await _context.CuentasPagars.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
+            var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstOrDefaultAsync();
 
             // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
             // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -193,18 +193,12 @@ namespace Prueba.Repositories
             {
                 IdCondominio = modelo.IdCondominio,
                 Fecha = modelo.Fecha,
-                Monto = modelo.Monto
+                Monto = modelo.Monto,
+                Concepto = modelo.Concepto + " - " + proveedor.Nombre,
+                Activo = true
             };
-            Anticipo anticipo1 = new Anticipo();
 
-            var factura = await _context.Facturas.Where(c => c.IdFactura == modelo.IdFactura).FirstAsync();
-
-            //var cc = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == factura.IdCodCuenta).First();
-            //modelo.IdSubcuenta = cc.IdCodCuenta;
-
-            var itemLibroCompra = await _context.LibroCompras.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
-            var itemCuentasPagar = await _context.CuentasPagars.Where(c => c.IdFactura == factura.IdFactura).FirstOrDefaultAsync();
-            var proveedor = await _context.Proveedors.Where(c => c.IdProveedor == factura.IdProveedor).FirstOrDefaultAsync();
+            Anticipo anticipo1 = new Anticipo();            
 
             if (itemLibroCompra != null)
             {
@@ -644,7 +638,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = provisiones.First().IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = provisiones.First().Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -657,7 +651,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = idCaja.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
@@ -671,7 +665,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = provisiones.First().IdCodGasto,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto - provisiones.First().Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -721,7 +715,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = factura.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -735,7 +729,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = idCaja.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
@@ -1195,7 +1189,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = provisiones.First().IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = provisiones.First().Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -1209,7 +1203,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = idBanco.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
@@ -1223,7 +1217,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = provisiones.First().IdCodGasto,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto - provisiones.First().Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -1276,7 +1270,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = factura.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = true,
@@ -1290,7 +1284,7 @@ namespace Prueba.Repositories
                         {
                             IdCodCuenta = idBanco.IdCodCuenta,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + proveedor.Nombre,
                             Monto = modelo.Monto,
                             MontoRef = montoReferencia,
                             TipoOperacion = false,
@@ -1369,8 +1363,6 @@ namespace Prueba.Repositories
                 var empleado = await _context.Empleados.FindAsync(modelo.IdEmpleado);
                 var resultado = string.Empty;
                 decimal montoReferencia = 0;
-                //decimal deducciones = 0;
-                //decimal percepciones = 0;
 
                 // REGISTRAR PAGO EMITIDO (idCondominio, fecha, monto, forma de pago)
                 // forma de pago 1 -> Registrar referencia de transferencia. 0 -> seguir
@@ -1378,7 +1370,9 @@ namespace Prueba.Repositories
                 {
                     IdCondominio = modelo.IdCondominio,
                     Fecha = modelo.Fecha,
-                    Monto = modelo.Monto
+                    Monto = modelo.Monto,
+                    Concepto = modelo.Concepto + " - " + empleado.Nombre,
+                    Activo = true
                 };
 
                 var provisiones = from c in _context.Provisiones
@@ -1451,11 +1445,12 @@ namespace Prueba.Repositories
                         {
                             IdEmpleado = modelo.IdEmpleado,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + empleado.Nombre,
                             PagoTotal = pago.Monto,
                             RefMonto = pago.MontoRef,
                             Entregado = true,
-                            Periodo = true
+                            Periodo = true,
+                            Activo = true
                         };
 
                         // buscar grupo de la cuenta
@@ -1513,7 +1508,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -1526,7 +1521,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -1540,7 +1535,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -1763,7 +1758,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -1777,7 +1772,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -1885,11 +1880,12 @@ namespace Prueba.Repositories
                         {
                             IdEmpleado = modelo.IdEmpleado,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + empleado.Nombre,
                             PagoTotal = pago.Monto,
                             RefMonto = pago.MontoRef,
                             Entregado = true,
-                            Periodo = true
+                            Periodo = true,
+                            Activo = true
                         };
 
                         // buscar grupo de la cuenta
@@ -1953,7 +1949,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -1967,7 +1963,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -1981,7 +1977,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2183,7 +2179,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2197,7 +2193,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
                                 Fecha = modelo.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + empleado.Nombre,
                                 Monto = modelo.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -2291,7 +2287,9 @@ namespace Prueba.Repositories
                 {
                     IdCondominio = modelo.Pago.IdCondominio,
                     Fecha = modelo.Pago.Fecha,
-                    Monto = modelo.Pago.Monto
+                    Monto = modelo.Pago.Monto,
+                    Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
+                    Activo = true
                 };
 
                 var provisiones = from c in context.Provisiones
@@ -2407,7 +2405,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2420,7 +2418,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -2434,7 +2432,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2477,7 +2475,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2491,7 +2489,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idCaja.IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -2615,7 +2613,8 @@ namespace Prueba.Repositories
                         {
                             IdPagoEmitido = pago.IdPagoEmitido,
                             IdProveedor = modelo.IdProveedor,
-                            Fecha = pago.Fecha
+                            Fecha = pago.Fecha,
+                            Activo = true
                         };
 
                         ReferenciasPe referencia = new ReferenciasPe
@@ -2639,7 +2638,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2653,7 +2652,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -2667,7 +2666,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = provisiones.First().IdCodGasto,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto - provisiones.First().Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2713,7 +2712,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = modelo.IdSubcuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = true,
@@ -2727,7 +2726,7 @@ namespace Prueba.Repositories
                             {
                                 IdCodCuenta = idBanco.IdCodCuenta,
                                 Fecha = modelo.Pago.Fecha,
-                                Concepto = modelo.Concepto,
+                                Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
                                 Monto = modelo.Pago.Monto,
                                 MontoRef = montoReferencia,
                                 TipoOperacion = false,
@@ -2812,7 +2811,9 @@ namespace Prueba.Repositories
                 {
                     IdCondominio = modelo.IdCondominio,
                     Fecha = modelo.Fecha,
-                    Monto = modelo.Monto
+                    Monto = modelo.Monto,
+                    Concepto = modelo.Concepto,
+                    Activo = true
                 };
 
                 var provisiones = from c in context.Provisiones

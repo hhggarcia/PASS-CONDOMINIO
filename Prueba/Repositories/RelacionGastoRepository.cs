@@ -927,6 +927,8 @@ namespace Prueba.Repositories
             {
                 var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == relacionGasto.IdRgastos).ToListAsync();
                 var transaccionesRG = await _context.RelacionGastoTransaccions.Where(c => c.IdRelacionGasto == relacionGasto.IdRgastos).ToListAsync();
+                var mesAnterior = (DateTime.Today.Month - 2).ToString() + "-" + DateTime.Today.AddMonths(-2).ToString("MMM").ToUpper() + ".-" + DateTime.Today.ToString("yyyy");
+                var recibosAnteriores = await _context.ReciboCobros.Where(c => c.Mes == mesAnterior).ToListAsync();
 
                 if (transaccionesRG.Any())
                 {
@@ -1008,6 +1010,15 @@ namespace Prueba.Repositories
                         }
                     }
 
+                }
+
+                foreach(var item in recibosAnteriores)
+                {
+                    // a cada recibo anterior
+                    // hacerlo recibo actual
+                    item.ReciboActual = true;
+
+                    _context.ReciboCobros.Update(item);
                 }
 
                 await _context.SaveChangesAsync();
