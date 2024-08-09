@@ -219,22 +219,19 @@ namespace Prueba.Controllers
                                           select c.Email
                                           ).ToListAsync();
 
-                    foreach (var user in usuarios)
+                    //List<string> usuarios = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
+
+                    var result = _servicesEmail.SendEmailAList(modelo, usuarios);
+
+                    if (!result.Contains("OK"))
                     {
-                        modelo.To = user ?? "";
-
-                        var result = _servicesEmail.SendEmailAttachement(modelo);
-
-                        if (!result.Contains("OK"))
+                        var modeloError = new ErrorViewModel()
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = result
-                            };
+                            RequestId = result
+                        };
 
-                            TempData.Keep();
-                            return View("Error", modeloError);
-                        }
+                        TempData.Keep();
+                        return View("Error", modeloError);
                     }
                 }
 

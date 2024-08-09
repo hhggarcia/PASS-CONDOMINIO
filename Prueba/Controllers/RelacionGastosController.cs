@@ -647,80 +647,92 @@ namespace Prueba.Controllers
                                     var reciboVencido = await _context.ReciboCobros
                                             .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && c.ReciboActual);
 
+
+                                    /// AGREGAR LAS MODIFICACIONES 
+                                    /// A LAS PROPIEDADES CON Solvencia = false
+                                    /// si la propiedad esta solvente solo necesita
+                                    /// modificar saldo = x | 
+
+                                    // mora para cada recibo y sumar a la propiedad
+                                    // indexacion por cada recibo y sumar a la propiedad
+                                    decimal mora = 0;
+                                    decimal indexacion = 0;
+
                                     if (propiedad.Solvencia)
                                     {
                                         propiedad.Saldo = monto - credito;
                                         propiedad.Creditos = 0;
                                         propiedad.Solvencia = false;
 
-                                        if (reciboVencido != null)
+                                        if (reciboVencido != null && reciboVencido.Pagado)
                                         {
                                             reciboVencido.ReciboActual = false;
                                             _context.ReciboCobros.Update(reciboVencido);
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        propiedad.Saldo = monto - credito;
+                                        propiedad.Creditos = 0;
+                                        propiedad.Solvencia = false;
+
+                                        if (reciboVencido != null && !reciboVencido.Pagado)
                                         {
-                                            propiedad.Deuda += propiedad.Saldo;
-                                            propiedad.Saldo = monto - credito;
-                                            propiedad.Creditos = 0;
-
-                                            // mora para cada recibo y sumar a la propiedad
-                                            // indexacion por cada recibo y sumar a la propiedad
-                                            decimal mora = 0;
-                                            decimal indexacion = 0;
-
-                                            if (reciboVencido != null)
+                                            if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
                                             {
-                                                if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
-                                                {
-                                                    mora = (reciboVencido.Monto - reciboVencido.Abonado) * condominio.InteresMora / 100;
-                                                    indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
+                                                mora = (reciboVencido.Monto - reciboVencido.Abonado) * condominio.InteresMora / 100;
+                                                indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
 
-                                                }
-                                                else if (reciboVencido.Abonado == 0)
-                                                {
-                                                    mora = reciboVencido.MontoMora;
-                                                    indexacion = reciboVencido.MontoIndexacion;
-                                                }
-                                                reciboVencido.ReciboActual = false;
-
-                                                _context.ReciboCobros.Update(reciboVencido);
-
-                                                propiedad.MontoIntereses += reciboVencido.Pagado ? 0 : mora;
-                                                propiedad.MontoMulta += reciboVencido.Pagado ? 0 : indexacion;
+                                            }
+                                            else if (reciboVencido.Abonado == 0)
+                                            {
+                                                mora = reciboVencido.MontoMora;
+                                                indexacion = reciboVencido.MontoIndexacion;
                                             }
 
+                                            propiedad.Deuda += propiedad.Saldo;
+
+                                            reciboVencido.TotalPagar = reciboVencido.Monto + reciboVencido.MontoMora + reciboVencido.MontoIndexacion - reciboVencido.Abonado;
+                                            reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
+                                            reciboVencido.ReciboActual = false;
+
+                                            _context.ReciboCobros.Update(reciboVencido);
+
+                                            propiedad.MontoIntereses += mora;
+                                            propiedad.MontoMulta += indexacion;
                                         }
-
-                                        // generar recibos
-                                        var recibo = new ReciboCobro
-                                        {
-                                            IdPropiedad = propiedad.IdPropiedad,
-                                            IdRgastos = relacionGasto.IdRgastos,
-                                            Monto = monto - credito,
-                                            Fecha = DateTime.Today,
-                                            Pagado = false,
-                                            EnProceso = false,
-                                            Abonado = 0,
-                                            MontoRef = monto / monedaPrincipal.First().ValorDolar,
-                                            ValorDolar = monedaPrincipal.First().ValorDolar,
-                                            SimboloMoneda = monedaPrincipal.First().Simbolo,
-                                            SimboloRef = "$",
-                                            MontoMora = monto * (condominio.InteresMora / 100),
-                                            MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
-                                            Mes = mes,
-                                            ReciboActual = true
-                                        };
-
-                                        recibosCobroCond.Add(recibo);
-                                        // registrar recibo 
-                                        // actualizar propiedad
-
-                                        _context.ReciboCobros.Add(recibo);
-                                        _context.Propiedads.Update(propiedad);
                                     }
+
+                                    // generar recibo nuevo
+                                    var recibo = new ReciboCobro
+                                    {
+                                        IdPropiedad = propiedad.IdPropiedad,
+                                        IdRgastos = relacionGasto.IdRgastos,
+                                        Monto = monto - credito,
+                                        Fecha = DateTime.Today,
+                                        Pagado = false,
+                                        EnProceso = false,
+                                        Abonado = 0,
+                                        MontoRef = monto / monedaPrincipal.First().ValorDolar,
+                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        SimboloMoneda = monedaPrincipal.First().Simbolo,
+                                        SimboloRef = "$",
+                                        MontoMora = monto * (condominio.InteresMora / 100),
+                                        MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
+                                        Mes = mes,
+                                        ReciboActual = true,
+                                        TotalPagar = 0
+                                    };
+
+                                    recibosCobroCond.Add(recibo);
+                                    // registrar recibo 
+                                    // actualizar propiedad
+
+                                    _context.ReciboCobros.Add(recibo);
+                                    _context.Propiedads.Update(propiedad);
+                                    await _context.SaveChangesAsync();
+
                                 }
-                                await _context.SaveChangesAsync();
 
                                 // CREAR MODELO PARA NUEVA VISTA
                                 var aux = new RecibosCreadosVM
@@ -730,38 +742,54 @@ namespace Prueba.Controllers
                                     RelacionGastosTransacciones = transaccionesDelMes,
                                     RelacionGasto = relacionGasto
                                 };
+                                TempData.Keep();
 
                                 return View("RecibosCreados", aux);
-
                             }
 
-                            return RedirectToAction("Index");
+                            TempData.Keep();
+
+                            var modeloError3 = new ErrorViewModel()
+                            {
+                                RequestId = "Error al buscar propiedades!"
+                            };
+
+                            return View("Error", modeloError3);
                         }
 
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
                         TempData.Keep();
 
-                        var modeloError = new ErrorViewModel()
+                        var modeloError2 = new ErrorViewModel()
                         {
                             RequestId = "Ya existe una Relación de Gastos para este mes!"
                         };
 
-                        return View("Error", modeloError);
+                        return View("Error", modeloError2);
+
                     }
+                    TempData.Keep();
+
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = "Error buscando su condominio!"
+                    };
+
+                    return View("Error", modeloError);
                 }
+
                 return RedirectToAction("Index");
 
             }
             catch (Exception ex)
             {
-                ViewBag.Recibos = "Fallido";
-                ViewBag.MsgError = "Error: " + ex.Message;
-                var aux = new RecibosCreadosVM();
                 TempData.Keep();
-                return View(aux);
+
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = "Error: " + ex.Message
+                };
+
+                return View("Error", modeloError);
             }
         }
         public async Task<IActionResult> PreRecibos()

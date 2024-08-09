@@ -19,6 +19,7 @@ namespace Prueba.Services
         void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
         string SendEmailRG(EmailAttachmentPdf model);
         string SendEmailAttachement(EmailAttachmentPdf model);
+        string SendEmailAList(EmailAttachmentPdf model, IList<string> receptores);
     }
     public class EmailService : IEmailService
     {
@@ -405,6 +406,48 @@ namespace Prueba.Services
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(model.From));
                 email.To.Add(MailboxAddress.Parse(model.To));
+                email.Subject = model.Subject;
+
+                var pdfAttachment = new MimePart("application", "pdf")
+                {
+                    Content = new MimeContent(model.Attachment.OpenReadStream()),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = model.FileName + ".pdf"
+                };
+
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.TextBody = model.Body;
+                bodyBuilder.Attachments.Add(pdfAttachment);
+                email.Body = bodyBuilder.ToMessageBody();
+
+                using var smtpClient = new SmtpClient();
+                smtpClient.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtpClient.Authenticate(model.From, model.Password);
+                result = smtpClient.Send(email);
+                smtpClient.Disconnect(true);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                // Maneja el error según tus necesidades (registra, notifica, etc.)
+                return $"Error al enviar el correo: {ex.Message}";
+            }
+        }
+
+        public string SendEmailAList(EmailAttachmentPdf model, IList<string> receptores)
+        {
+            try
+            {
+                var result = string.Empty;
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(model.From));
+                foreach (var item in receptores)
+                {
+                    email.To.Add(MailboxAddress.Parse(item));
+                }
                 email.Subject = model.Subject;
 
                 var pdfAttachment = new MimePart("application", "pdf")
