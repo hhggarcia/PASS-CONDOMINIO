@@ -69,20 +69,20 @@ namespace Prueba.Controllers
             ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
 
             var selectIslrs = await (from c in _context.Islrs
-                              where c.Tarifa > 0
-                              select new
-                              {
-                                  DataValue = c.Id,
-                                  DataText =  c.Concepto 
-                                  + ((c.Pjuridica) ? " PJ" : "") 
-                                  + ((c.Pnatural) ? " PN" : "") 
-                                  + ((c.Domiciliada) ? " Domiciliado" : "") 
-                                  + ((c.NoDomiciliada) ? " No Domiciliado" : "") 
-                                  + ((c.Residenciada) ? " Residenciada" : "")
-                                  + ((c.NoResidenciada) ? " No Residenciada" : "")
-                                  + " " + c.Tarifa + "%"
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
 
-                              }).ToListAsync();
+                                     }).ToListAsync();
 
             ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
 
@@ -149,27 +149,20 @@ namespace Prueba.Controllers
                 {
 
                     proveedor.IdRetencionIslr = null;
-                    //proveedor.IdRetencionIva = null;
-                    _context.Add(proveedor);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                    
+                    //proveedor.IdRetencionIva = null;                    
                 }
                 if (checkBeneficiario)
                 {
-                    proveedor.IdRetencionIslr = null;
-                    proveedor.IdRetencionIva = null;
+                    //proveedor.IdRetencionIslr = null;
+                    //proveedor.IdRetencionIva = null;
                     proveedor.Beneficiario = true;
-                    _context.Add(proveedor);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+
                 }
-                else
-                {
-                    _context.Add(proveedor);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
+
+                _context.Add(proveedor);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+
 
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", proveedor.IdCondominio);
@@ -267,7 +260,7 @@ namespace Prueba.Controllers
                         _context.Update(proveedor);
                         await _context.SaveChangesAsync();
                     }
-                    
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

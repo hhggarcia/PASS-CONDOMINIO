@@ -1383,80 +1383,46 @@ namespace Prueba.Repositories
 
                                 #region PAGO RECIBIENDO CUALQUIER MONTO
                                 // PROCESO DE CONFIRMAR PAGO
-                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos                                
+                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
 
                                 if (recibos != null && recibos.Any())
                                 {
                                     foreach (var recibo in recibos)
                                     {
-                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
-                                        propiedad.Deuda += recibo.Abonado;
+                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
 
-                                        if (pendientePago > montoPago)
+                                        if (pendientePago != 0 && pendientePago > montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             montoPago = 0;
                                         }
-                                        else if (pendientePago < montoPago)
+                                        else if (pendientePago != 0 && pendientePago < montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
                                         }
-                                        else if (pendientePago == montoPago)
+                                        else if (pendientePago != 0 && pendientePago == montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             recibo.Pagado = true;
                                             montoPago = 0;
                                         }
 
-                                        if (!recibo.ReciboActual && recibo.Pagado)
-                                        {
-                                            var deudaTotal = recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion;
+                                        recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                        recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
-                                            if (recibo.Abonado >= deudaTotal)
-                                            {
-                                                propiedad.Deuda -= recibo.Monto;
-                                                propiedad.MontoIntereses -= recibo.MontoMora;
-                                                propiedad.MontoMulta -= recibo.MontoIndexacion;
-
-                                            }
-                                            else if (recibo.Abonado == recibo.Monto)
-                                            {
-                                                propiedad.Deuda -= recibo.Monto;
-                                            }
-                                            else if (recibo.Abonado < deudaTotal && recibo.Abonado > recibo.Monto)
-                                            {
-                                                var diferencia = recibo.Abonado - recibo.Monto;
-
-                                                if (diferencia == recibo.MontoMora)
-                                                {
-                                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                                }
-                                                else if (diferencia == recibo.MontoIndexacion)
-                                                {
-                                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                                }
-                                                else if (diferencia == recibo.MontoMora + recibo.MontoIndexacion)
-                                                {
-                                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                                }
-                                            }
-                                        }
-                                        else if (!recibo.ReciboActual && !recibo.Pagado && recibo.Abonado > 0 && recibo.Abonado < recibo.Monto)
-                                        {
-                                            propiedad.Deuda -= recibo.Abonado;
-                                        }
-                                        else if (recibo.ReciboActual && recibo.Pagado)
-                                        {
-                                            propiedad.Saldo = 0;
-                                        }
-                                        else if (recibo.ReciboActual && !recibo.Pagado && recibo.Abonado > 0 && recibo.Abonado < recibo.Monto)
-                                        {
-                                            propiedad.Saldo -= recibo.Abonado;
-                                        }
+                                        _context.ReciboCobros.Update(recibo);
                                     }
+
+                                    await _context.SaveChangesAsync();
+
+                                    var recibosActualizados = await _context.ReciboCobros
+                                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                                    propiedad.Deuda = recibosActualizados
+                                        .Where(c => !c.Pagado && !c.ReciboActual)
+                                        .Sum(c => c.TotalPagar);
 
                                     if (montoPago > 0)
                                     {
@@ -1464,7 +1430,7 @@ namespace Prueba.Repositories
                                     }
 
                                     //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
-                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
                                     {
                                         propiedad.Solvencia = true;
                                     }
@@ -1634,73 +1600,40 @@ namespace Prueba.Repositories
                                 {
                                     foreach (var recibo in recibos)
                                     {
-                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
-                                        propiedad.Deuda += recibo.Abonado;
+                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
 
-                                        if (pendientePago > montoPago)
+                                        if (pendientePago != 0 && pendientePago > montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             montoPago = 0;
                                         }
-                                        else if (pendientePago < montoPago)
+                                        else if (pendientePago != 0 && pendientePago < montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
                                         }
-                                        else if (pendientePago == montoPago)
+                                        else if (pendientePago != 0 && pendientePago == montoPago)
                                         {
                                             recibo.Abonado += montoPago;
                                             recibo.Pagado = true;
                                             montoPago = 0;
                                         }
 
-                                        if (!recibo.ReciboActual && recibo.Pagado)
-                                        {
-                                            var deudaTotal = recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion;
+                                        recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                        recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
-                                            if (recibo.Abonado >= deudaTotal)
-                                            {
-                                                propiedad.Deuda -= recibo.Monto;
-                                                propiedad.MontoIntereses -= recibo.MontoMora;
-                                                propiedad.MontoMulta -= recibo.MontoIndexacion;
-
-                                            }
-                                            else if (recibo.Abonado == recibo.Monto)
-                                            {
-                                                propiedad.Deuda -= recibo.Monto;
-                                            }
-                                            else if (recibo.Abonado < deudaTotal && recibo.Abonado > recibo.Monto)
-                                            {
-                                                var diferencia = recibo.Abonado - recibo.Monto;
-
-                                                if (diferencia == recibo.MontoMora)
-                                                {
-                                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                                }
-                                                else if (diferencia == recibo.MontoIndexacion)
-                                                {
-                                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                                }
-                                                else if (diferencia == recibo.MontoMora + recibo.MontoIndexacion)
-                                                {
-                                                    propiedad.MontoIntereses -= recibo.MontoMora;
-                                                    propiedad.MontoMulta -= recibo.MontoIndexacion;
-                                                }
-                                            }
-                                        } else if (!recibo.ReciboActual && !recibo.Pagado && recibo.Abonado > 0 && recibo.Abonado < recibo.Monto)
-                                        {
-                                            propiedad.Deuda -= recibo.Abonado;
-                                        }
-                                        else if (recibo.ReciboActual && recibo.Pagado)
-                                        {
-                                            propiedad.Saldo = 0;
-                                        }
-                                        else if (recibo.ReciboActual && !recibo.Pagado && recibo.Abonado > 0 && recibo.Abonado < recibo.Monto)
-                                        {
-                                            propiedad.Saldo -= recibo.Abonado;
-                                        }
+                                        _context.ReciboCobros.Update(recibo);
                                     }
+
+                                    await _context.SaveChangesAsync();
+
+                                    var recibosActualizados = await _context.ReciboCobros
+                                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                                    propiedad.Deuda = recibosActualizados
+                                        .Where(c => !c.Pagado && !c.ReciboActual)
+                                        .Sum(c => c.TotalPagar);
 
                                     if (montoPago > 0)
                                     {
@@ -1708,7 +1641,7 @@ namespace Prueba.Repositories
                                     }
 
                                     //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
-                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0 && propiedad.MontoMulta == 0 && propiedad.MontoIntereses == 0)
+                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
                                     {
                                         propiedad.Solvencia = true;
                                     }

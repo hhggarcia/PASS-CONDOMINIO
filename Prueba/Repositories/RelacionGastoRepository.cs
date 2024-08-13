@@ -987,9 +987,7 @@ namespace Prueba.Repositories
                         {
                             /// Y LO ABONADO?
                             // si es viejo restar de la deuda -= Monto
-                            propiedad.Deuda -= recibo.Monto;
-                            propiedad.MontoIntereses -= recibo.MontoMora;
-                            propiedad.MontoMulta -= recibo.MontoIndexacion;
+                            propiedad.Deuda -= recibo.TotalPagar;
 
                             // verificar solvencia de la propiedad
                             if (propiedad.Deuda == 0 && propiedad.Saldo == 0)
