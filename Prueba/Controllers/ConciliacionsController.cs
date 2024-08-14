@@ -225,14 +225,14 @@ namespace Prueba.Controllers
 
             ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
-            var modelo = await _repoReportes.LoadConciliacionCuenta(filtro);
+            var modelo = await _repoReportes.LoadConciliacionPagos(filtro);
 
             return View("Conciliacion", modelo);
         }
 
-        //[HttpPost]
-        //[AutoValidateAntiforgeryToken]
-        public IActionResult ConfirmarConciliacion([FromBody] ItemConciliacionVM modelo)
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult ConfirmarConciliacion(ItemConciliacionVM modelo)
         {
             return View(modelo);
         }

@@ -3,6 +3,7 @@ using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
 using System.Linq;
+using System.Web.Mvc;
 
 namespace Prueba.Repositories
 {
@@ -18,6 +19,7 @@ namespace Prueba.Repositories
         Task<InformacionDashboardVM> InformacionGeneral(int id);
         Task<decimal> IngresosPorMes(int mes, int idCondominio);
         Task<ItemConciliacionVM> LoadConciliacionCuenta(FiltroBancoVM filtro);
+        Task<ItemConciliacionVM> LoadConciliacionPagos(FiltroBancoVM filtro);
         Task<RecibosCreadosVM> LoadDataDeudores(int idCondominio);
     }
     public class ReportesRepository : IReportesRepository
@@ -257,7 +259,7 @@ namespace Prueba.Repositories
 
                 //IList<Propiedad> propiedades = new List<Propiedad>();
 
-               // IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+                // IList<Propiedad> propiedades = await _context.Propiedads.Where(c => c.IdCondominio == idCondominio).ToListAsync();
 
                 //var aux = propiedades.Concat(propiedad).ToList();
                 //propiedades = aux.ToList();
@@ -285,7 +287,7 @@ namespace Prueba.Repositories
             if (condominio != null)
             {
                 var pagosEmitidosMes = _context.PagoEmitidos
-                    .Where(c => c.IdCondominio == condominio.IdCondominio 
+                    .Where(c => c.IdCondominio == condominio.IdCondominio
                     && c.Fecha.Month == mes)
                     .Sum(c => c.Monto);
 
@@ -325,7 +327,7 @@ namespace Prueba.Repositories
                     modelo.Egresos.Add(i, egreso);
                 }
             }
-            
+
             return modelo;
         }
 
@@ -396,7 +398,7 @@ namespace Prueba.Repositories
             }
 
             return new RecibosCreadosVM();
-        }        
+        }
 
         /// <summary>
         /// 
@@ -413,8 +415,8 @@ namespace Prueba.Repositories
                 var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo);
 
                 var asientosIngresos = await _context.LdiarioGlobals
-                    .Where(c => c.Fecha >= filtro.FechaInicio 
-                    && c.Fecha <= filtro.FechaFin 
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
                     && c.IdCodCuenta == cc.IdCodCuenta
                     && c.TipoOperacion == cc.Aumenta)
                     .ToListAsync();
@@ -451,5 +453,86 @@ namespace Prueba.Repositories
             return new ItemConciliacionVM();
         }
 
+        public async Task<ItemConciliacionVM> LoadConciliacionPagos(FiltroBancoVM filtro)
+        {
+            var subCuenta = await _context.SubCuenta.FindAsync(filtro.IdCodCuenta);
+            if (subCuenta != null)
+            {
+                var cc = await _context.CodigoCuentasGlobals.FirstOrDefaultAsync(c => c.IdSubCuenta == subCuenta.Id);
+
+                var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo);
+
+                var asientosIngresos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
+                    && c.IdCodCuenta == cc.IdCodCuenta
+                    && c.TipoOperacion == cc.Aumenta)
+                    .ToListAsync();
+
+                var asientosEgresos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
+                    && c.IdCodCuenta == cc.IdCodCuenta
+                    && c.TipoOperacion == cc.Disminuye)
+                    .ToListAsync();
+
+                var asientos = await _context.LdiarioGlobals
+                    .Where(c => c.Fecha >= filtro.FechaInicio
+                    && c.Fecha <= filtro.FechaFin
+                    && c.IdCodCuenta == cc.IdCodCuenta)
+                    .ToListAsync();
+
+                var pagosRecibidos = await (from pr in _context.PagoRecibidos
+                                            join referencia in _context.ReferenciasPrs
+                                            on pr.IdPagoRecibido equals referencia.IdPagoRecibido
+                                            where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
+                                            where cc.IdSubCuenta.ToString() == referencia.Banco
+                                            select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+                var pagosEmitidos = await (from pr in _context.PagoEmitidos
+                                           join referencia in _context.ReferenciasPes
+                                           on pr.IdPagoEmitido equals referencia.IdPagoEmitido
+                                           where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
+                                           where cc.IdSubCuenta.ToString() == referencia.Banco
+                                           select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+                var pagosRecibidosItems = pagosRecibidos.Select(c => new SelectListItem
+                {
+                    Text = c.Fecha.ToString("dd/MM/yyyy") + " " + c.Concepto + " " + c.Monto.ToString("N"),
+                    Value = c.IdPagoRecibido.ToString(),
+                    Selected = false
+                })
+                            .ToList();
+
+                var pagosEmitidosItems = pagosEmitidos.Select(c => new SelectListItem
+                {
+                    Text = c.Fecha.ToString("dd/MM/yyyy") + " " + c.Concepto + " " + c.Monto.ToString("N"),
+                    Value = c.IdPagoEmitido.ToString(),
+                    Selected = false
+                })
+                            .ToList();
+
+                return new ItemConciliacionVM()
+                {
+                    CodigoCuenta = cc,
+                    SubCuenta = subCuenta,
+                    Asientos = asientos,
+                    ConciliacionAnterior = conciliacionAnterior,
+                    SaldoInicial = conciliacionAnterior != null ? conciliacionAnterior.SaldoFinal : 0,
+                    FechaInicio = filtro.FechaInicio,
+                    FechaFin = filtro.FechaFin,
+                    TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
+                    TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
+                    SaldoFinal = pagosRecibidos.Sum(c => c.Monto) - pagosEmitidos.Sum(c => c.Monto),
+                    PagosRecibidos = pagosRecibidos,
+                    PagosEmitidos = pagosEmitidos,
+                    PagosRecibidosIds = pagosRecibidosItems,
+                    PagosEmitidosIds = pagosEmitidosItems
+                };
+
+            }
+
+            return new ItemConciliacionVM();
+        }
     }
 }
