@@ -1639,6 +1639,8 @@ namespace Prueba.Repositories
                                         .Where(c => c.ReciboActual)
                                         .Sum(c => c.Monto - c.Abonado);
 
+                                    propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
+
                                     if (montoPago > 0)
                                     {
                                         propiedad.Creditos += montoPago;

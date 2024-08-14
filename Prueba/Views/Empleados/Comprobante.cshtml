@@ -100,7 +100,6 @@
                                     {
                                         <h6>Transferencia</h6>
                                         <p><strong>Fecha</strong>: @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
-
                                         <p><strong>Cuenta</strong>: @Model.Banco.Descricion.ToString()</p>
                                         <p><strong>Referencia</strong>: @Model.NumReferencia</p>
                                         <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N") Bs</p>
@@ -110,13 +109,10 @@
                                     {
                                         <h6>Efectivo</h6>
                                         <p><strong>Cuenta</strong>: @Model.Caja.Descricion</p>
-
                                         <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N") Bs</p>
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }
-
-
                             </div>
                         </div>
 

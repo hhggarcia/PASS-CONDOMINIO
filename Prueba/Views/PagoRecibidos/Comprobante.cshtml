@@ -44,7 +44,7 @@
                                     <p><strong>Deuda</strong>: @Model.Propiedad.Deuda.ToString("N2") Bs.</p>
                                     @* <p><strong>Monto Mora</strong>: @Model.Propiedad.MontoIntereses.ToString("N2") Bs.</p> *@
                                     @* <p><strong>Monto Indexación</strong>: @(((decimal)Model.Propiedad.MontoMulta).ToString("N2")) Bs.</p> *@
-                                    @* <p><strong>Saldo Actual</strong>: @Model.Propiedad.Saldo.ToString("N2") Bs.</p> *@
+                                    <p><strong>Saldo</strong>: @Model.Propiedad.Saldo.ToString("N2") Bs.</p>
                                     <hr />
                                     <p><strong>Saldo Actual</strong>: @((Model.Propiedad.Deuda + Model.Propiedad.Saldo).ToString("N2")) Bs.</p>
                                 }
@@ -75,7 +75,6 @@
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }
-
 
                             </div>
                         </div>

@@ -260,7 +260,7 @@ namespace Prueba.Controllers
                             .ToList();
                         modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
                         {
-                            Text = recibo.Mes + " " + (recibo.ReciboActual ?  recibo.Monto : recibo.TotalPagar).ToString("N") + "Bs",
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ?  recibo.Monto - recibo.Abonado : recibo.TotalPagar).ToString("N") + "Bs",
                             Value = recibo.IdReciboCobro.ToString(),
                             Selected = false,
                         }).ToList();

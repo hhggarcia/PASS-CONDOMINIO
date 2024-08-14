@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -22,11 +23,14 @@ namespace Prueba.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
-        private readonly IEmailSender _emailSender;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
+        private readonly IEmailService _emailServices;
+        private readonly IPdfReportesServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public PropiedadesController(UserManager<ApplicationUser> userManager,
+        public PropiedadesController(IPdfReportesServices servicesPDF,
+            IEmailService emailService,
+            UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
@@ -36,8 +40,9 @@ namespace Prueba.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _userStore = userStore;
-            _emailSender = emailSender;
             _emailStore = GetEmailStore();
+            _emailServices = emailService;
+            _servicesPDF = servicesPDF;
         }
 
         // GET: Propiedades
@@ -318,6 +323,50 @@ namespace Prueba.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+        /// <summary>
+        /// Descargar PDF del estado de cuenta 
+        /// de la propiedad especifica
+        /// </summary>
+        /// <param name="id">Id de la propiedad</param>
+        /// <returns>PDF</returns>
+        public async Task<IActionResult> EstadoCuentaPropiedad(int id)
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var condominio = await _context.Condominios.FindAsync(idCondominio);
+
+            if (condominio != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(id);
+                var modelo = new List<EstadoCuentasVM>();
+
+                if (propiedad != null)
+                {
+                    var usuario = await _context.AspNetUsers.FirstAsync(c => c.Id == propiedad.IdUsuario);
+                    var recibos = await _context.ReciboCobros.
+                        Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
+                        .OrderBy(c => c.Fecha)
+                        .ToListAsync();
+
+                    modelo.Add(new EstadoCuentasVM()
+                    {
+                        Condominio = condominio,
+                        Propiedad = propiedad,
+                        User = usuario,
+                        ReciboCobro = recibos
+                    });
+
+                    TempData.Keep();
+                    var data = _servicesPDF.EstadoCuentas(modelo);
+                    Stream stream = new MemoryStream(data);
+                    return File(stream, "application/pdf", "EstadoCuentasOficina_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+                }
+
+            }
+            return View("Index");
+        }
+
 
         // GET: Propiedades/Edit/5
         public async Task<IActionResult> Edit(int? id)
