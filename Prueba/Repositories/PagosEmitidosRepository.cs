@@ -340,7 +340,7 @@ namespace Prueba.Repositories
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         anticipo1 = anticipos;
-                        //pago.MontoRef = anticipos.Saldo;
+                        //Math.Round(pago.MontoRef, 2) = anticipos.Saldo;
                         anticipo1.Activo = false;
 
                         if (factura.Abonado == 0)
@@ -881,7 +881,7 @@ namespace Prueba.Repositories
                     {
                         var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
                         anticipo1 = anticipos;
-                        //pago.MontoRef = anticipos.Saldo;
+                        //Math.Round(pago.MontoRef, 2) = anticipos.Saldo;
                         anticipo1.Activo = false;
 
                         if (factura.Abonado == 0)
@@ -1438,7 +1438,7 @@ namespace Prueba.Repositories
                         pago.SimboloMoneda = moneda.First().Simbolo;
                         pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = montoReferencia;                       
+                        pago.MontoRef = Math.Round(montoReferencia, 2);                       
 
                         // armar Recibo Nomina
                         var reciboNomina = new ReciboNomina
@@ -1447,7 +1447,7 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto + " - " + empleado.Nombre,
                             PagoTotal = pago.Monto,
-                            RefMonto = pago.MontoRef,
+                            RefMonto = Math.Round(pago.MontoRef, 2),
                             Entregado = true,
                             Periodo = true,
                             Activo = true
@@ -1471,7 +1471,7 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
+                            MontoRef = Math.Round(pago.MontoRef, 2),
                             Fecha = DateTime.Today,
                             IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
                             Activo = true
@@ -1870,7 +1870,7 @@ namespace Prueba.Repositories
                         pago.FormaPago = true;
                         pago.SimboloMoneda = moneda.First().Simbolo;
                         pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                        pago.MontoRef = montoReferencia;
+                        pago.MontoRef = Math.Round(montoReferencia, 2);
                         pago.SimboloRef = "$";
 
                         
@@ -1882,7 +1882,7 @@ namespace Prueba.Repositories
                             Fecha = modelo.Fecha,
                             Concepto = modelo.Concepto + " - " + empleado.Nombre,
                             PagoTotal = pago.Monto,
-                            RefMonto = pago.MontoRef,
+                            RefMonto = Math.Round(pago.MontoRef, 2),
                             Entregado = true,
                             Periodo = true,
                             Activo = true
@@ -1906,7 +1906,7 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
+                            MontoRef = Math.Round(pago.MontoRef, 2),
                             Fecha = DateTime.Today,
                             IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
                             Activo = true
@@ -2375,7 +2375,7 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
+                            MontoRef = Math.Round(pago.MontoRef, 2),
                             Fecha = DateTime.Today,
                             IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
                             Activo = modelo.RelacionGasto
@@ -2598,7 +2598,7 @@ namespace Prueba.Repositories
                             SimboloMoneda = pago.SimboloMoneda,
                             SimboloRef = pago.SimboloRef,
                             ValorDolar = pago.ValorDolar,
-                            MontoRef = pago.MontoRef,
+                            MontoRef = Math.Round(pago.MontoRef, 2),
                             Fecha = DateTime.Today,
                             IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
                             Activo = modelo.RelacionGasto
@@ -2899,7 +2899,7 @@ namespace Prueba.Repositories
                         //    SimboloMoneda = pago.SimboloMoneda,
                         //    SimboloRef = pago.SimboloRef,
                         //    ValorDolar = pago.ValorDolar,
-                        //    MontoRef = pago.MontoRef,
+                        //    MontoRef = Math.Round(pago.MontoRef, 2),
                         //    Fecha = DateTime.Today,
                         //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         //};
@@ -3126,7 +3126,7 @@ namespace Prueba.Repositories
                         //    SimboloMoneda = pago.SimboloMoneda,
                         //    SimboloRef = pago.SimboloRef,
                         //    ValorDolar = pago.ValorDolar,
-                        //    MontoRef = pago.MontoRef,
+                        //    MontoRef = Math.Round(pago.MontoRef, 2),
                         //    Fecha = DateTime.Today,
                         //    IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0
                         //};

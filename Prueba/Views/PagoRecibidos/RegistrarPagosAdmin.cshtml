@@ -114,6 +114,7 @@
                                                                         <th>Abonado</th>
                                                                         <th>1% Mora</th>
                                                                         <th>30% Indexación</th>
+                                                                        <th>Total a Pagar</th>
                                                                     </tr>
                                                                 </thead>
 
@@ -467,8 +468,8 @@
                         }
                         // LLENAR DEUDA
                         //$("#Deuda").innerText(response.deuda);
-                        $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");
-                        $("#Indexacion").html("<p> <strong>Indexación</strong> = " + indexacion + "</p>");
+                        // $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");
+                        // $("#Indexacion").html("<p> <strong>Indexación</strong> = " + indexacion + "</p>");
                         $("#Deuda").html("<p> <strong>Deuda</strong> = " + deuda + "</p>");
                         $("#Saldo").html("<p> <strong>Saldo</strong> = " + saldo + "</p>");
                         $("#Credito").html("<p> <strong>Credito</strong> = " + credito + "</p>");
@@ -533,7 +534,13 @@
             $.each(list, function (idex, value) {
                 //var fechita = new Date(value.fecha);
 
-                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) + "</td><td>" + value.monto.toFixed(2) + "</td><td>" + value.abonado.toFixed(2) + "</td><td>" + + value.montoMora.toFixed(2) + "</td><td>" + value.montoIndexacion + "</td><tr>");
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) 
+                + "</td><td>" + value.monto.toFixed(2) 
+                + "</td><td>" + value.abonado.toFixed(2) 
+                + "</td><td>" + value.montoMora.toFixed(2) 
+                + "</td><td>" + value.montoIndexacion 
+                + "</td><td>" + value.totalPagar
+                + "</td><tr>" );
             });
         }
 

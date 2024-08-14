@@ -42,11 +42,11 @@
                                     <p><strong>Propiedad</strong>: @Model.Propiedad.Codigo</p>
                                     <hr />
                                     <p><strong>Deuda</strong>: @Model.Propiedad.Deuda.ToString("N2") Bs.</p>
-                                    <p><strong>Monto Mora</strong>: @Model.Propiedad.MontoIntereses.ToString("N2") Bs.</p>
-                                    <p><strong>Monto Indexación</strong>: @(((decimal)Model.Propiedad.MontoMulta).ToString("N2")) Bs.</p>
+                                    @* <p><strong>Monto Mora</strong>: @Model.Propiedad.MontoIntereses.ToString("N2") Bs.</p> *@
+                                    @* <p><strong>Monto Indexación</strong>: @(((decimal)Model.Propiedad.MontoMulta).ToString("N2")) Bs.</p> *@
                                     @* <p><strong>Saldo Actual</strong>: @Model.Propiedad.Saldo.ToString("N2") Bs.</p> *@
                                     <hr />
-                                    <p><strong>Saldo Actual</strong>: @((Model.Propiedad.Deuda + Model.Propiedad.MontoIntereses + (decimal)Model.Propiedad.MontoMulta + Model.Propiedad.Saldo).ToString("N2")) Bs.</p>
+                                    <p><strong>Saldo Actual</strong>: @((Model.Propiedad.Deuda + Model.Propiedad.Saldo).ToString("N2")) Bs.</p>
                                 }
                             </div>
                         </div>
