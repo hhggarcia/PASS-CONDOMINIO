@@ -29,21 +29,51 @@
                                 <div class="form form-horizontal">
                                     <div class="form-body">
                                         <dl class="row">
-                                            <form asp-action="Conciliar">                                              
-                                                <label class="control-label">Saldo Inicial</label>
-                                                <input type="number" asp-for="SaldoInicial" class="form-control" readonly />
-                                                <label class="control-label">Total Ingreso</label>
-                                                <input type="text" asp-for="TotalIngreso" class="form-control" readonly />
-                                                <label class="control-label">Total Egreso</label>
-                                                <input asp-for="TotalEgreso" class="form-control" readonly />
-                                                <label class="control-label">Saldo Final</label>
-                                                <input type="number" asp-for="SaldoFinal" class="form-control" readonly />
+                                            <form asp-action="Conciliar">
+                                                <input type="hidden" asp-for="IdCodigoCuenta" />
+                                                @for (int i = 0; i < @Model.PagosIds.Count(); i++)
+                                                {
+                                                    <input type="hidden" asp-for="@Model.PagosIds[i]" />
+                                                }
 
-                                                <label class="control-label">Saldo En Banco</label>
-                                                <input type="number" asp-for="SaldoBanco" class="form-control"/>
+                                                @if (Model.ConciliacionAnterior == null)
+                                                {
+                                                    <div asp-validation-summary="ModelOnly" class="text-danger">
+                                                        No existe una conciliación anterior. Por favor ingrese el saldo inicial
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Saldo Inicial</label>
+                                                        <input type="number" asp-for="SaldoInicial" class="form-control" />
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="form-group">
+                                                        <label class="control-label">Saldo Inicial</label>
+                                                        <input type="number" asp-for="SaldoInicial" class="form-control" readonly />
+                                                    </div>
+                                                }
+                                                <div class="form-group">
+                                                    <label class="control-label">Total Ingreso</label>
+                                                    <input type="text" asp-for="TotalIngreso" class="form-control" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Total Egreso</label>
+                                                    <input asp-for="TotalEgreso" class="form-control" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Saldo Final</label>
+                                                    <input type="number" asp-for="SaldoFinal" class="form-control" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Saldo En Banco</label>
+                                                    <input type="number" asp-for="SaldoBanco" class="form-control" />
+                                                </div>
                                                 <hr />
-                                                <button class="btn btn-primary" type="submit">Si</button>
-                                                <a asp-action="RegistrarPagos" class="btn btn-secondary">No</a>
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary" type="submit">Si</button>
+                                                    <a asp-action="Index" class="btn btn-secondary">No</a>
+                                                </div>
                                             </form>
                                         </dl>
                                     </div>

@@ -221,20 +221,62 @@ namespace Prueba.Controllers
         public async Task<IActionResult> BuscarConciliacion(FiltroBancoVM filtro)
         {
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+            var cajas = await _repoCuentas.ObtenerCaja(idCondominio);
+            var bancos = await _repoCuentas.ObtenerBancos(idCondominio);
+            var subcuentas = bancos.Concat(cajas).ToList();
 
             ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
             var modelo = await _repoReportes.LoadConciliacionPagos(filtro);
+            TempData.Keep();
 
             return View("Conciliacion", modelo);
         }
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult ConfirmarConciliacion(ItemConciliacionVM modelo)
+        public async Task<IActionResult> ConfirmarConciliacion(ItemConciliacionVM modelo)
         {
+            // calcular total ingresos
+            var ingresos = modelo.PagosIds.Where(c => c.Text == "Ingreso").ToList();
+            // calcular total egresos
+            var egresos = modelo.PagosIds.Where(c => c.Text == "Egreso").ToList();
+
+            foreach (var item in egresos)
+            {
+                if (item.Selected)
+                {
+                    var pago = await _context.PagoEmitidos.FindAsync(Convert.ToInt32(item.Value));
+                    modelo.TotalEgreso += pago != null ? pago.Monto : 0;
+                }                
+            }
+
+            foreach (var item in ingresos)
+            {
+                if (item.Selected)
+                {
+                    var pago = await _context.PagoRecibidos.FindAsync(Convert.ToInt32(item.Value));
+                    modelo.TotalIngreso += pago != null ? pago.Monto : 0;
+                }
+            }
+            // calcular saldo final
+            modelo.SaldoFinal = modelo.TotalIngreso - modelo.TotalEgreso;
+            // saldo inicial
+            // si el saldo inicial es 0 -> permitir guardar un saldo inicial
             return View(modelo);
+        }
+
+
+        public IActionResult Conciliar(ItemConciliacionVM modelo)
+        {
+            // validar saldo de banco
+            // tomar los ids seleccionados
+            // buscar los pagos emitidos
+            // budcar los pagos recibidos
+            // desactivar los pagos
+            // desactivar los objetos relacionados
+            // registrar conciliacion
+            return View();
         }
     }
 }

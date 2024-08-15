@@ -407,7 +407,7 @@ namespace Prueba.Services
                                        .Padding(5).Text("Intereses").FontColor("#607080").Bold().FontSize(8);
 
                                         header.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
-                                       .Padding(5).Text("Multa").FontColor("#607080").Bold().FontSize(8);
+                                       .Padding(5).Text("Indexación").FontColor("#607080").Bold().FontSize(8);
 
                                         header.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
                                        .Padding(5).Text("Abono").FontColor("#607080").Bold().FontSize(8);

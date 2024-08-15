@@ -6,6 +6,7 @@ namespace Prueba.ViewModels
     public class ItemConciliacionVM
     {
         public CodigoCuentasGlobal CodigoCuenta { get; set; } = null!;
+        public int IdCodigoCuenta { get; set; }
         public SubCuenta SubCuenta { get; set; } = null!;
         public IList<LdiarioGlobal> Asientos { get; set; } = new List<LdiarioGlobal>();
         public Conciliacion ConciliacionAnterior { get; set; } = null!;
@@ -16,11 +17,7 @@ namespace Prueba.ViewModels
         public decimal TotalIngreso { get; set; }
         public decimal TotalEgreso { get; set; }
         public decimal SaldoBanco { get; set; }
-
-        public IList<PagoRecibido> PagosRecibidos { get; set; } = new List<PagoRecibido>();
-        public IList<PagoEmitido> PagosEmitidos { get; set; } = new List<PagoEmitido>();
-
-        public IList<SelectListItem> PagosRecibidosIds { get; set; } = new List<SelectListItem>();
-        public IList<SelectListItem> PagosEmitidosIds { get; set; } = new List<SelectListItem>();
+        public IList<PagosConciliacionVM> Pagos { get; set; } = new List<PagosConciliacionVM>();
+        public IList<SelectListItem> PagosIds { get; set; } = new List<SelectListItem>();
     }
 }

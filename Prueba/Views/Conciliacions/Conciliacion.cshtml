@@ -6,13 +6,7 @@
     var saldo = Model.ConciliacionAnterior != null ? Model.ConciliacionAnterior.SaldoFinal : 0;
 }
 
-<div class="container-fluid">
-
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        @* <a class="btn btn-light mb-3" id="conciliar">
-            Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
-        </a> *@
-    </div>
+<div class="container-fluid">   
 
     <div class="row">
         <div class="col-lg-12 mb-4">
@@ -25,14 +19,14 @@
                     <partial name="_FiltroBanco" model="@(new Prueba.ViewModels.FiltroBancoVM(){ FechaFin = Model.FechaFin, FechaInicio = Model.FechaInicio})" />
 
                     <div class="tr_s">
+                        @* <strong>SELECCIONAR TODOS</strong> <input type="checkbox" id="selectAll" onchange="toggleAll()" /> *@
                         <h6 class="m-0 font-weight-bold text-primary">Saldo Inicial: @saldo</h6>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        
-                        <form asp-action="ConfirmarConciliacion">
-                            
+                <form asp-action="ConfirmarConciliacion">
+                    <input type="hidden" asp-for="IdCodigoCuenta" />
+                    <div class="card-body">
+                        <div class="table-responsive">
                             <table class="table text-center"
                                    id="dataTable"
                                    width="100%"
@@ -57,11 +51,11 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                
+
                                 <tbody>
-                                    @foreach (var item in Model.PagosRecibidosIds)
+                                    @for (int i = 0; i < @Model.PagosIds.Count(); i++)
                                     {
-                                        var pago = Model.PagosRecibidos.FirstOrDefault(c => c.IdPagoRecibido == Convert.ToInt32(item.Value));
+                                        var pago = Model.Pagos.FirstOrDefault(c => c.Id == Convert.ToInt32(Model.PagosIds[i].Value));
 
                                         @if (pago != null)
                                         {
@@ -72,66 +66,70 @@
                                                 <td>
                                                     @pago.Concepto
                                                 </td>
-                                                <td>
-                                                    @pago.Monto.ToString("N")
-                                                </td>
-                                                <td></td>
-                                                <td>
-                                                    @((saldo += pago.Monto).ToString("N"))
-                                                </td>
-                                                <td>
-                                                    @Html.CheckBoxFor(c => item.Selected)
-                                                    @Html.HiddenFor(h => item.Value)
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
+                                                @if (pago.TipoOperacion)
+                                                {
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td></td>
 
-                                    @foreach (var item in Model.PagosEmitidosIds)
-                                    {
-                                        var pago = Model.PagosEmitidos.FirstOrDefault(c => c.IdPagoEmitido == Convert.ToInt32(item.Value));
+                                                    <td>
+                                                        @((saldo += pago.Monto).ToString("N"))
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
 
-                                        @if (pago != null)
-                                        {
-                                            <tr>
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td>
+                                                        @((saldo -= pago.Monto).ToString("N"))
+                                                    </td>
+                                                }                                                
+                                                
                                                 <td>
-                                                    @pago.Fecha.ToString("dd/MM/yyyy")
-                                                </td>
-                                                <td>
-                                                    @pago.Concepto
-                                                </td>
-                                                <td></td>
-                                                <td>
-                                                    @pago.Monto.ToString("N")
-                                                </td>
-                                                <td>
-                                                    @((saldo += pago.Monto).ToString("N"))
-                                                </td>
-                                                <td>
-                                                    @Html.CheckBoxFor(c => item.Selected)
-                                                    @Html.HiddenFor(h => item.Value)
+                                                    @Html.CheckBoxFor(c => Model.PagosIds[i].Selected, new { @class = "itemCheckbox" })
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Value)
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Text)
+
                                                 </td>
                                             </tr>
                                         }
                                     }
 
                                 </tbody>
-                            </table>  
-                            
-                            <div class="col-12 d-flex justify-content-end">
-                                <button type="submit"
-                                        class="btn btn-primary me-1 mb-1">
-                                    Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
-                                </button>
-                            </div>
-                        </form>
-                        
+                            </table>
+                        </div>
                     </div>
-                </div>
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        @* <a class="btn btn-light mb-3" id="conciliar">
+                        Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
+                        </a> *@
+                        <div class="col-12 d-flex justify-content-end">
+                            <button type="submit"
+                                    class="btn btn-light mb-3">
+                                Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
+    
+</div>
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    function toggleAll() {
+        const checkboxes = document.querySelectorAll('.itemCheckbox');
+        const selectAll = document.getElementById('selectAll');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+    }
+</script>

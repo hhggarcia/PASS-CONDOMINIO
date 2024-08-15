@@ -462,20 +462,6 @@ namespace Prueba.Repositories
 
                 var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo);
 
-                var asientosIngresos = await _context.LdiarioGlobals
-                    .Where(c => c.Fecha >= filtro.FechaInicio
-                    && c.Fecha <= filtro.FechaFin
-                    && c.IdCodCuenta == cc.IdCodCuenta
-                    && c.TipoOperacion == cc.Aumenta)
-                    .ToListAsync();
-
-                var asientosEgresos = await _context.LdiarioGlobals
-                    .Where(c => c.Fecha >= filtro.FechaInicio
-                    && c.Fecha <= filtro.FechaFin
-                    && c.IdCodCuenta == cc.IdCodCuenta
-                    && c.TipoOperacion == cc.Disminuye)
-                    .ToListAsync();
-
                 var asientos = await _context.LdiarioGlobals
                     .Where(c => c.Fecha >= filtro.FechaInicio
                     && c.Fecha <= filtro.FechaFin
@@ -496,25 +482,41 @@ namespace Prueba.Repositories
                                            where cc.IdSubCuenta.ToString() == referencia.Banco
                                            select pr).OrderBy(c => c.Fecha).ToListAsync();
 
-                var pagosRecibidosItems = pagosRecibidos.Select(c => new SelectListItem
-                {
-                    Text = c.Fecha.ToString("dd/MM/yyyy") + " " + c.Concepto + " " + c.Monto.ToString("N"),
-                    Value = c.IdPagoRecibido.ToString(),
-                    Selected = false
-                })
-                            .ToList();
+                IList<PagosConciliacionVM> pagos = new List<PagosConciliacionVM>();
 
-                var pagosEmitidosItems = pagosEmitidos.Select(c => new SelectListItem
+                foreach (var item in pagosRecibidos)
                 {
-                    Text = c.Fecha.ToString("dd/MM/yyyy") + " " + c.Concepto + " " + c.Monto.ToString("N"),
-                    Value = c.IdPagoEmitido.ToString(),
-                    Selected = false
-                })
-                            .ToList();
+                    pagos.Add(new PagosConciliacionVM()
+                    {
+                        Id = item.IdPagoRecibido,
+                        IdCondominio = item.IdCondominio,
+                        Fecha = item.Fecha,
+                        Monto = item.Monto,
+                        FormaPago = item.FormaPago,
+                        Concepto = item.Concepto,
+                        TipoOperacion = true,
+                        Activo = item.Activo
+                    });
+                }
+                foreach (var item in pagosEmitidos)
+                {
+                    pagos.Add(new PagosConciliacionVM()
+                    {
+                        Id = item.IdPagoEmitido,
+                        IdCondominio = item.IdCondominio,
+                        Fecha = item.Fecha,
+                        Monto = item.Monto,
+                        FormaPago = item.FormaPago,
+                        Concepto = item.Concepto,
+                        TipoOperacion = false,
+                        Activo = item.Activo
+                    });
+                }
 
                 return new ItemConciliacionVM()
                 {
                     CodigoCuenta = cc,
+                    IdCodigoCuenta = cc != null ? cc.IdCodCuenta : 0,
                     SubCuenta = subCuenta,
                     Asientos = asientos,
                     ConciliacionAnterior = conciliacionAnterior,
@@ -524,10 +526,13 @@ namespace Prueba.Repositories
                     TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
                     TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
                     SaldoFinal = pagosRecibidos.Sum(c => c.Monto) - pagosEmitidos.Sum(c => c.Monto),
-                    PagosRecibidos = pagosRecibidos,
-                    PagosEmitidos = pagosEmitidos,
-                    PagosRecibidosIds = pagosRecibidosItems,
-                    PagosEmitidosIds = pagosEmitidosItems
+                    Pagos = pagos,
+                    PagosIds = pagos.Select(c => new SelectListItem
+                    {
+                        Text = c.TipoOperacion ? "Ingreso" : "Egreso",
+                        Value = c.Id.ToString(),
+                        Selected = false
+                    }).ToList()
                 };
 
             }
