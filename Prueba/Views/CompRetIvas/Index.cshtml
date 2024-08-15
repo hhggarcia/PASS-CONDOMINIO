@@ -15,6 +15,11 @@
 
         <button type="button" class="btn btn-light mb-3" id="PagosEmitidos">Crear pdf</button>
 
+        <a class="btn btn-light mb-3"
+           asp-action="Index"
+           asp-controller="LibroCompras">
+            Volver
+        </a>
     </div>
 
 
@@ -44,16 +49,16 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdFacturaNavigation)
                                     </th>
-                                    
+
                                     <th>
                                         @Html.DisplayNameFor(model => model.NumCompRet)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.FechaEmision)
                                     </th>
-                                    
+
                                     @* <th>
-                                        @Html.DisplayNameFor(model => model.NumFacturaAfectada)
+                                    @Html.DisplayNameFor(model => model.NumFacturaAfectada)
                                     </th> *@
                                     <th>
                                         @Html.DisplayNameFor(model => model.TotalCompraIva)
@@ -76,14 +81,14 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.TotalCompraRetIva)
                                     </th>
-                                    
+
                                     @* <th>
-                                        @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
+                                    @Html.DisplayNameFor(model => model.IdNotaCreditoNavigation)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
+                                    @Html.DisplayNameFor(model => model.IdNotaDebitoNavigation)
                                     </th> *@
-                                    
+
                                     <th></th>
                                 </tr>
                             </thead>
@@ -103,9 +108,9 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.FechaEmision)
                                         </td>
-                                       @*  <td>
-                                            @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
-                                        </td> *@
+                                        @*  <td>
+                                    @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
+                                    </td> *@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalCompraIva)
                                         </td>
@@ -127,14 +132,14 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalCompraRetIva)
                                         </td>
-                                        
+
                                         @* <td>
-                                            @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdNotaDebitoNavigation.IdNotaDebito)
-                                        </td> *@
-                                        
+                                    @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
+                                    </td>
+                                    <td>
+                                    @Html.DisplayFor(modelItem => item.IdNotaDebitoNavigation.IdNotaDebito)
+                                    </td> *@
+
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdComprobanteIva">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdComprobanteIva">Detalles</a> |
