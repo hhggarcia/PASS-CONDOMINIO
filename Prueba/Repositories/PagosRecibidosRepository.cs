@@ -1286,7 +1286,7 @@ namespace Prueba.Repositories
         {
             try
             {
-                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0 || modelo.Pagoforma == FormaPago.NotaCredito)
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
 
@@ -1823,6 +1823,8 @@ namespace Prueba.Repositories
                                     _context.Propiedads.Update(propiedad);
 
                                     await _context.SaveChangesAsync();
+
+                                    return "exito";
                                 }
                                 else
                                 {
@@ -1833,7 +1835,6 @@ namespace Prueba.Repositories
                             {
                                 return "Error al registrar Nota de Credito. Intentar nuevamente";
                             }
-
                         }
                     }
 

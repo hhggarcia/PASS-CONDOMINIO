@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Services;
 
 namespace Prueba.Controllers
 {
@@ -15,10 +16,13 @@ namespace Prueba.Controllers
 
     public class NotaCreditosController : Controller
     {
+        private readonly IPDFServices _servicesPDF;
         private readonly NuevaAppContext _context;
 
-        public NotaCreditosController(NuevaAppContext context)
+        public NotaCreditosController(IPDFServices servicesPDF,
+            NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _context = context;
         }
 
@@ -192,6 +196,22 @@ namespace Prueba.Controllers
         private bool NotaCreditoExists(int id)
         {
             return _context.NotaCreditos.Any(e => e.IdNotaCredito == id);
+        }
+
+        public async Task<IActionResult> ComprobantePDF(int id)
+        {
+
+            var notaCredito = await _context.NotaCreditos.FindAsync(id);
+            if (notaCredito != null)
+            {
+                var data = await _servicesPDF.ComprobanteNotaCredito(notaCredito);
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "NotaCredito.pdf");
+            }
+
+            return RedirectToAction("Index");
+
         }
     }
 }

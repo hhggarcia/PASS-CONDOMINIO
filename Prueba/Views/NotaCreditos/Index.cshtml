@@ -8,10 +8,10 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3"
-           asp-action="NotaCreditos">
+        @* <a class="btn btn-light mb-3"
+           asp-action="Create">
             Registrar
-        </a>
+        </a> *@
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
@@ -46,19 +46,13 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Concepto)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Comprobante)
-                                    </th>
-                                    <th>
                                         @Html.DisplayNameFor(model => model.Fecha)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Monto)
-                                    </th>
+                                        @Html.DisplayNameFor(model => model.Concepto)
+                                    </th>                                    
                                     <th>
-                                        @Html.DisplayNameFor(model => model.IdPagoRecibido)
+                                        @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdClienteNavigation)
@@ -69,12 +63,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdRetIslrNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdRetIvaNavigation)
-                                    </th>
+                                   
                                     <th></th>
                                 </tr>
                             </thead>
@@ -83,38 +72,55 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Concepto)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Comprobante)
-                                        </td>
-                                        <td>
                                             @Html.DisplayFor(modelItem => item.Fecha)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.Concepto)
+                                        </td>                                        
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdPagoRecibido)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.IdPropiedad)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdRetIslrNavigation.Id)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.IdRetIvaNavigation.Id)
-                                        </td>
+                                        @if (item.IdClienteNavigation != null)
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IdClienteNavigation.Nombre)
+                                            </td>
+                                        } else
+                                        {
+                                            <td>
+                                                N/A
+                                            </td>
+                                        }
+                                        @if (item.IdFacturaNavigation != null)
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                N/A
+                                            </td>
+                                        }
+                                        @if (item.IdPropiedadNavigation != null)
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.Codigo)
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                N/A
+                                            </td>
+                                        }
+
+                                        
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdNotaCredito">Editar</a> |
                                             <a asp-action="Details" asp-route-id="@item.IdNotaCredito">Detalles</a> |
+                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdNotaCredito">PDF</a> |
                                             <a asp-action="Delete" asp-route-id="@item.IdNotaCredito">Eliminar</a>
                                         </td>
                                     </tr>
