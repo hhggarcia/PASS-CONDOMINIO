@@ -91,29 +91,30 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
+        public async Task<IActionResult> Create([Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool checkIslr, bool checkIva)
         {
             ModelState.Remove(nameof(cliente.IdCondominioNavigation));
             ModelState.Remove(nameof(cliente.IdRetencionIslrNavigation));
             ModelState.Remove(nameof(cliente.IdRetencionIvaNavigation));
             if (ModelState.IsValid)
             {
-                if (check)
+                if (checkIslr)
                 {
 
-                    cliente.IdRetencionIslr = null;
-                    //proveedor.IdRetencionIva = null;
-                    _context.Add(cliente);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    cliente.IdRetencionIslr = null;                  
 
                 }
-                else
+
+                if (checkIva)
                 {
-                    _context.Add(cliente);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+
+                    cliente.IdRetencionIva = null;
+
                 }
+
+                _context.Add(cliente);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cliente.IdCondominio);
             
@@ -182,7 +183,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool check)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCliente,IdCondominio,Nombre,Direccion,Telefono,Rif,Email,IdRetencionIslr,IdRetencionIva,Saldo,Representante,ContribuyenteEspecial")] Cliente cliente, bool checkIslr, bool checkIva)
         {
             if (id != cliente.IdCliente)
             {
@@ -197,20 +198,21 @@ namespace Prueba.Controllers
             {
                 try
                 {
-                    if (check)
+                    if (checkIslr)
                     {
 
                         cliente.IdRetencionIslr = null;
-                        //proveedor.IdRetencionIva = null;
-                        _context.Update(cliente);
-                        await _context.SaveChangesAsync();
 
                     }
-                    else
+
+                    if (checkIva)
                     {
-                        _context.Update(cliente);
-                        await _context.SaveChangesAsync();
+
+                        cliente.IdRetencionIva = null;
+
                     }
+                    _context.Update(cliente);
+                    await _context.SaveChangesAsync();                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -54,13 +53,19 @@
                                 </div>
                                 <div class="form-group form-check">
                                     <label class="form-check-label">
-                                        @Html.CheckBox("check")  @Html.Label("No aplica Retenciones ISLR")
+                                        @Html.CheckBox("checkIslr")  @Html.Label("No aplica Retenciones ISLR")
                                     </label>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="IdRetencionIslr" class="control-label"></label>
                                     <select asp-for="IdRetencionIslr" class="form-control" asp-items="ViewBag.IdRetencionIslr"></select>
                                     <span asp-validation-for="IdRetencionIslr" class="text-danger"></span>
+
+                                </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        @Html.CheckBox("checkIva")  @Html.Label("No aplica Retenciones IVA")
+                                    </label>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="IdRetencionIva" class="control-label"></label>
