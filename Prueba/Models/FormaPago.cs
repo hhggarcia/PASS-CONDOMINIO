@@ -3,6 +3,7 @@
     public enum FormaPago
     {
         Efectivo = 0,
-        Transferencia = 1
+        Transferencia = 1,
+        NotaCredito = 2
     }
 }

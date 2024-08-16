@@ -1745,6 +1745,96 @@ namespace Prueba.Repositories
                                 return "Error al registrar su pago. Intente nuevamente!";
                             }
                         }
+                        else if (modelo.Pagoforma == FormaPago.NotaCredito)
+                        {
+                            // REGISTRAR NOTA DE CREDITO
+                            // NO  VA A BANCOS NI EFECTIVO
+                            var nota = new NotaCredito
+                            {
+                                Concepto = modelo.Concepto + " - " + propiedad.Codigo,
+                                Comprobante = "",
+                                Fecha = modelo.Fecha,
+                                Monto = modelo.Monto,
+                                IdPropiedad = modelo.IdPropiedad
+                            };
+
+                            _context.NotaCreditos.Add(nota);
+                            var registro = await _context.SaveChangesAsync();
+                            if (registro > 0)
+                            {
+                                #region PAGO RECIBIENDO CUALQUIER MONTO
+                                // PROCESO DE CONFIRMAR PAGO
+                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
+
+                                if (recibos != null && recibos.Any())
+                                {
+                                    foreach (var recibo in recibos)
+                                    {
+                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+
+                                        if (pendientePago != 0 && pendientePago > montoPago)
+                                        {
+                                            recibo.Abonado += montoPago;
+                                            montoPago = 0;
+                                        }
+                                        else if (pendientePago != 0 && pendientePago < montoPago)
+                                        {
+                                            recibo.Abonado += montoPago;
+                                            recibo.Pagado = true;
+                                            montoPago -= pendientePago;
+                                        }
+                                        else if (pendientePago != 0 && pendientePago == montoPago)
+                                        {
+                                            recibo.Abonado += montoPago;
+                                            recibo.Pagado = true;
+                                            montoPago = 0;
+                                        }
+
+                                        recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                        recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+
+                                        _context.ReciboCobros.Update(recibo);
+                                    }
+
+                                    await _context.SaveChangesAsync();
+
+                                    var recibosActualizados = await _context.ReciboCobros
+                                        .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                                    propiedad.Deuda = recibosActualizados
+                                        .Where(c => !c.Pagado && !c.ReciboActual)
+                                        .Sum(c => c.TotalPagar);
+
+                                    if (montoPago > 0)
+                                    {
+                                        propiedad.Creditos += montoPago;
+                                    }
+
+                                    //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                                    if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
+                                    {
+                                        propiedad.Solvencia = true;
+                                    }
+                                    else
+                                    {
+                                        propiedad.Solvencia = false;
+                                    }
+
+                                    _context.Propiedads.Update(propiedad);
+
+                                    await _context.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    return "Esta propiedad no tiene recibos pendiente!";
+                                }
+                                #endregion
+                            } else
+                            {
+                                return "Error al registrar Nota de Credito. Intentar nuevamente";
+                            }
+
+                        }
                     }
 
                     return "No existe esta Propiedad! Comunicarse con la Administración!";

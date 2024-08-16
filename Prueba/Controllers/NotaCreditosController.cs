@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Prueba.Models;
 
 namespace Prueba.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
+
     public class NotaCreditosController : Controller
     {
         private readonly NuevaAppContext _context;
@@ -22,7 +25,13 @@ namespace Prueba.Controllers
         // GET: NotaCreditos
         public async Task<IActionResult> Index()
         {
-            var nuevaAppContext = _context.NotaCreditos.Include(n => n.IdClienteNavigation).Include(n => n.IdFacturaNavigation);
+            var nuevaAppContext = _context.NotaCreditos
+                .Include(n => n.IdClienteNavigation)
+                .Include(n => n.IdFacturaNavigation)
+                .Include(n => n.IdPropiedadNavigation)
+                .Include(n => n.IdRetIslrNavigation)
+                .Include(n => n.IdRetIvaNavigation);
+
             return View(await nuevaAppContext.ToListAsync());
         }
 
@@ -37,6 +46,9 @@ namespace Prueba.Controllers
             var notaCredito = await _context.NotaCreditos
                 .Include(n => n.IdClienteNavigation)
                 .Include(n => n.IdFacturaNavigation)
+                .Include(n => n.IdPropiedadNavigation)
+                .Include(n => n.IdRetIslrNavigation)
+                .Include(n => n.IdRetIvaNavigation)
                 .FirstOrDefaultAsync(m => m.IdNotaCredito == id);
             if (notaCredito == null)
             {
@@ -51,6 +63,9 @@ namespace Prueba.Controllers
         {
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente");
             ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida");
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad");
+            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id");
+            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id");
             return View();
         }
 
@@ -59,7 +74,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto")] NotaCredito notaCredito)
+        public async Task<IActionResult> Create([Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto,IdRetIva,IdRetIslr,IdPagoRecibido,IdPropiedad")] NotaCredito notaCredito)
         {
             if (ModelState.IsValid)
             {
@@ -69,6 +84,9 @@ namespace Prueba.Controllers
             }
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
             ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
+            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
+            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
             return View(notaCredito);
         }
 
@@ -87,6 +105,9 @@ namespace Prueba.Controllers
             }
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
             ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
+            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
+            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
             return View(notaCredito);
         }
 
@@ -95,7 +116,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto")] NotaCredito notaCredito)
+        public async Task<IActionResult> Edit(int id, [Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto,IdRetIva,IdRetIslr,IdPagoRecibido,IdPropiedad")] NotaCredito notaCredito)
         {
             if (id != notaCredito.IdNotaCredito)
             {
@@ -124,6 +145,9 @@ namespace Prueba.Controllers
             }
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
             ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
+            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
+            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
             return View(notaCredito);
         }
 
@@ -138,6 +162,9 @@ namespace Prueba.Controllers
             var notaCredito = await _context.NotaCreditos
                 .Include(n => n.IdClienteNavigation)
                 .Include(n => n.IdFacturaNavigation)
+                .Include(n => n.IdPropiedadNavigation)
+                .Include(n => n.IdRetIslrNavigation)
+                .Include(n => n.IdRetIvaNavigation)
                 .FirstOrDefaultAsync(m => m.IdNotaCredito == id);
             if (notaCredito == null)
             {

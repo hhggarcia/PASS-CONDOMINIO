@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
@@ -13,7 +12,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Notas de Credito
+                        Notas de Creditos
                     </h6>
                 </div>
                 <div class="card-body">
@@ -49,8 +48,28 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Monto" class="control-label"></label>
-                                    <input type="number" asp-for="Monto" class="form-control" />
+                                    <input asp-for="Monto" class="form-control" />
                                     <span asp-validation-for="Monto" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetIva" class="control-label"></label>
+                                    <select asp-for="IdRetIva" class="form-control" asp-items="ViewBag.IdRetIva"></select>
+                                    <span asp-validation-for="IdRetIva" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetIslr" class="control-label"></label>
+                                    <select asp-for="IdRetIslr" class="form-control" asp-items="ViewBag.IdRetIslr"></select>
+                                    <span asp-validation-for="IdRetIslr" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdPagoRecibido" class="control-label"></label>
+                                    <input asp-for="IdPagoRecibido" class="form-control" />
+                                    <span asp-validation-for="IdPagoRecibido" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdPropiedad" class="control-label"></label>
+                                    <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
+                                    <span asp-validation-for="IdPropiedad" class="text-danger"></span>
                                 </div>
                                 <div class="form-group pt-2">
                                     <input type="submit" value="Guardar" class="btn btn-primary" />

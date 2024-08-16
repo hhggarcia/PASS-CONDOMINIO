@@ -7,9 +7,9 @@ public partial class NotaCredito
 {
     public int IdNotaCredito { get; set; }
 
-    public int IdFactura { get; set; }
+    public int? IdFactura { get; set; }
 
-    public int IdCliente { get; set; }
+    public int? IdCliente { get; set; }
 
     public string Concepto { get; set; } = null!;
 
@@ -23,13 +23,19 @@ public partial class NotaCredito
 
     public int? IdRetIslr { get; set; }
 
+    public int? IdPagoRecibido { get; set; }
+
+    public int? IdPropiedad { get; set; }
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
 
-    public virtual Cliente IdClienteNavigation { get; set; } = null!;
+    public virtual Cliente? IdClienteNavigation { get; set; }
 
-    public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;
+    public virtual FacturaEmitida? IdFacturaNavigation { get; set; }
+
+    public virtual Propiedad? IdPropiedadNavigation { get; set; }
 
     public virtual Islr? IdRetIslrNavigation { get; set; }
 

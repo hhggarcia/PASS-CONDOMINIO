@@ -9,7 +9,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <a class="btn btn-light mb-3"
-           asp-action="Create">
+           asp-action="NotaCreditos">
             Registrar
         </a>
     </div>
@@ -58,10 +58,22 @@
                                         @Html.DisplayNameFor(model => model.Monto)
                                     </th>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.IdPagoRecibido)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.IdClienteNavigation)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdRetIslrNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdRetIvaNavigation)
                                     </th>
                                     <th></th>
                                 </tr>
@@ -83,10 +95,22 @@
                                             @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.IdPagoRecibido)
+                                        </td>
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.IdClienteNavigation.IdCliente)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdFacturaEmitida)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.IdPropiedad)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdRetIslrNavigation.Id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdRetIvaNavigation.Id)
                                         </td>
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@item.IdNotaCredito">Editar</a> |
@@ -103,5 +127,5 @@
         </div>
     </div>
 </div>
-                        
+
 
