@@ -27,6 +27,8 @@ public partial class PagoEmitido
 
     public string? Concepto { get; set; }
 
+    public virtual ICollection<AnticipoNomina> AnticipoNominas { get; set; } = new List<AnticipoNomina>();
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();

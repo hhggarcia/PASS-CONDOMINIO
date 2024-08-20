@@ -15,5 +15,9 @@ public partial class AnticipoNomina
 
     public bool Activo { get; set; }
 
+    public int? IdPagoEmitido { get; set; }
+
     public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
+
+    public virtual PagoEmitido? IdPagoEmitidoNavigation { get; set; }
 }
