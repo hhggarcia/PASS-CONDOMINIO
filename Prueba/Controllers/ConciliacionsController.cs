@@ -267,16 +267,43 @@ namespace Prueba.Controllers
         }
 
 
-        public IActionResult Conciliar(ItemConciliacionVM modelo)
+        public async Task<IActionResult> Conciliar(ItemConciliacionVM modelo)
         {
             // validar saldo de banco
+
+            // calcular total ingresos
+            var ingresos = modelo.PagosIds.Where(c => c.Text == "Ingreso").ToList();
+            // calcular total egresos
+            var egresos = modelo.PagosIds.Where(c => c.Text == "Egreso").ToList();
+
             // tomar los ids seleccionados
             // buscar los pagos emitidos
             // budcar los pagos recibidos
+            foreach (var item in egresos)
+            {
+                if (item.Selected)
+                {
+                    var pago = await _context.PagoEmitidos.FindAsync(Convert.ToInt32(item.Value));
+                    modelo.TotalEgreso += pago != null ? pago.Monto : 0;
+                }
+            }
+
+            foreach (var item in ingresos)
+            {
+                if (item.Selected)
+                {
+                    var pago = await _context.PagoRecibidos.FindAsync(Convert.ToInt32(item.Value));
+                    modelo.TotalIngreso += pago != null ? pago.Monto : 0;
+                }
+            }
+            // calcular saldo final
+            modelo.SaldoFinal = modelo.TotalIngreso - modelo.TotalEgreso;
+            
             // desactivar los pagos
             // desactivar los objetos relacionados
             // registrar conciliacion
-            return View();
+
+            return RedirectToAction("Index");
         }
     }
 }

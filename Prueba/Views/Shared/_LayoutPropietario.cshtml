@@ -94,31 +94,37 @@
 
                 <!-- Registrar Pagos -->
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="RegistrarPagos">
+                    <a class="nav-link" asp-controller="Propietarios" asp-action="RegistrarPagos">
                         <i class="fas fa-fw fa-dollar-sign"></i>
                         <span>Pagar</span>
                     </a>
                 </li>
 
 
-                <!-- Registrar Pagos -->
+                <!-- Registrar Pagos Cuotas Especiales-->
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="ReciboCuotasEspeciales">
+                    <a class="nav-link" asp-controller="Propietarios" asp-action="ReciboCuotasEspeciales">
                         <i class="fas fa-fw bi-cash-stack"></i>
                         <span>Cuotas Especiales</span>
                     </a>
                 </li>
-                <!-- Registrar Pagos -->
+                <!-- Recibos Cargados -->
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Recibos">
+                    <a class="nav-link" asp-controller="Propietarios" asp-action="Recibos">
                         <i class="fas fa-fw fa-dollar-sign"></i>
                         <span>Recibos</span>
                     </a>
                 </li>
-
+                <!-- Estado de Cuenta -->
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Propietarios" asp-action="EstadoCuenta">
+                        <i class="fas fa-fw fa-dollar-sign"></i>
+                        <span>Estado de Cuenta</span>
+                    </a>
+                </li>
                 <!-- Deudores -->
                 <li class="nav-item">
-                    <a class="nav-link" asp-action="Deudores">
+                    <a class="nav-link" asp-controller="Propietarios" asp-action="Deudores">
                         <i class="fas fa-fw bi bi-building"></i>
                         <span>Deudores</span>
                     </a>
@@ -130,13 +136,6 @@
                         <span>Historial</span>
                     </a>
                 </li>
-
-
-
-
-
-
-
                 <!-- Reservaciones -->
                 @*<li class="nav-item">
                 <a class="nav-link collapsed"

@@ -39,41 +39,45 @@
 
                                                 @if (Model.ConciliacionAnterior == null)
                                                 {
-                                                    <div asp-validation-summary="ModelOnly" class="text-danger">
-                                                        No existe una conciliación anterior. Por favor ingrese el saldo inicial
+                                                    <div class="text-danger">
+                                                        <span id="mensaje">No existe una conciliación anterior. Por favor ingrese el saldo inicial</span>
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="control-label">Saldo Inicial</label>
-                                                        <input type="number" asp-for="SaldoInicial" class="form-control" />
+                                                        <input id="saldoInicial" onchange="CalcularSaldoFinal()" type="number" asp-for="SaldoInicial" class="form-control" />
                                                     </div>
                                                 }
                                                 else
                                                 {
                                                     <div class="form-group">
                                                         <label class="control-label">Saldo Inicial</label>
-                                                        <input type="number" asp-for="SaldoInicial" class="form-control" readonly />
+                                                        <input id="saldoInicial" onchange="CalcularSaldoFinal()" type="number" asp-for="SaldoInicial" class="form-control" readonly />
                                                     </div>
                                                 }
                                                 <div class="form-group">
                                                     <label class="control-label">Total Ingreso</label>
-                                                    <input type="text" asp-for="TotalIngreso" class="form-control" readonly />
+                                                    <input id="totalIngreso" type="text" asp-for="TotalIngreso" class="form-control" readonly />
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Total Egreso</label>
-                                                    <input asp-for="TotalEgreso" class="form-control" readonly />
+                                                    <input id="totalEgreso" asp-for="TotalEgreso" class="form-control" readonly />
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Saldo Final</label>
-                                                    <input type="number" asp-for="SaldoFinal" class="form-control" readonly />
+                                                    <input id="saldoFinal" type="number" asp-for="SaldoFinal" class="form-control" readonly />
+                                                </div>
+                                                <div class="text-danger">
+                                                    <span id="mensajeBanco"></span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="control-label">Saldo En Banco</label>
-                                                    <input type="number" asp-for="SaldoBanco" class="form-control" />
+                                                    <input id="saldoBanco" onchange="VerificarSaldoBanco()" type="number" asp-for="SaldoBanco" class="form-control" />
                                                 </div>
+
                                                 <hr />
                                                 <div class="form-group">
-                                                    <button class="btn btn-primary" type="submit">Aceptar</button>
-                                                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                                                    <button id="aceptar" class="btn btn-primary" type="submit" disabled>Aceptar</button>
+                                                    <button asp-action="Index" id="cancelar" class="btn btn-secondary" disabled>Cancelar</button>
                                                 </div>
                                             </form>
                                         </dl>
@@ -87,3 +91,60 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function CalcularSaldoFinal() {
+            let saldoInicial = document.getElementById('saldoInicial');
+            let totalIngreso = document.getElementById('totalIngreso');
+            let totalEgreso = document.getElementById('totalEgreso');
+            let saldoFinal = document.getElementById('saldoFinal');
+            let mensaje = document.getElementById('mensaje');
+
+            if (totalEgreso != null && totalEgreso != null && saldoInicial != null) {
+                saldoInicial = parseFloat(saldoInicial.value);
+                totalIngreso = parseFloat(totalIngreso.value);
+                totalEgreso = parseFloat(totalEgreso.value);
+
+                let monto = saldoInicial + totalIngreso - totalEgreso;
+
+                console.log("Saldo final: " + monto);
+                saldoFinal.value = monto.toFixed(2);
+
+                mensaje.textContent = "";
+            } else {
+                console.log("Error en la suma");
+            }
+
+        }
+
+        function VerificarSaldoBanco() {
+            let saldoFinal = document.getElementById('saldoFinal');
+            let saldoBanco = document.getElementById('saldoBanco');
+            let mensaje = document.getElementById('mensajeBanco');
+
+            if (saldoFinal != null && saldoBanco != null) {
+                mensaje.textContent = "";
+                saldoFinal = parseFloat(saldoFinal.value);
+                saldoBanco = parseFloat(saldoBanco.value);
+
+                let diferencia = saldoFinal - saldoBanco;
+                console.log("Diferencia: " + diferencia)
+                if (diferencia !== 0) {
+                    mensaje.textContent = "El saldo final y el del banco no coinciden. Revisar los movimientos nuevamente!";
+                    saldoBanco.value = 0;
+                } else {
+                    let btnAceptar = document.getElementById('aceptar');
+                    let btnCancelar = document.getElementById('cancelar');
+
+                    btnAceptar.disabled = false;
+                    btnCancelar.disabled = false;
+                }
+            }
+
+        }
+    </script>
+}

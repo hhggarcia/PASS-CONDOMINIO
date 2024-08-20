@@ -247,7 +247,7 @@ namespace Prueba.Controllers
                     modelo.Saldo = propiedad.Saldo;
                     modelo.Deuda = propiedad.Deuda;
                     modelo.Recibos = recibos;
-                    modelo.Abonado = modelo.Recibos[0].Abonado;
+                    //modelo.Abonado = modelo.Recibos[0].Abonado;
 
                     if (modelo.Recibos.Any())
                     {
@@ -746,7 +746,7 @@ namespace Prueba.Controllers
                         var pagos = await (from pago in _context.PagoPropiedads
                                            join pagoRecibido in _context.PagoRecibidos
                                            on pago.IdPago equals pagoRecibido.IdPagoRecibido
-                                           where pago.IdPago == pagoRecibido.IdPagoRecibido
+                                           where pago.IdPropiedad == item.IdPropiedad
                                            select pagoRecibido).ToListAsync();
 
                         modelo.Add(item, pagos);

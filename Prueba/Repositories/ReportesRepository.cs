@@ -534,7 +534,6 @@ namespace Prueba.Repositories
                         Selected = false
                     }).ToList()
                 };
-
             }
 
             return new ItemConciliacionVM();

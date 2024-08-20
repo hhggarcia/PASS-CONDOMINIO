@@ -43,8 +43,10 @@ namespace Prueba.Controllers
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
         private readonly IPDFServices _servicePDF;
+        private readonly IPdfReportesServices _servicesPDF;
 
-        public PropietariosController(IPagosRecibidosRepository repoPagosRecibidos,
+        public PropietariosController(IPdfReportesServices servicesPDF,
+            IPagosRecibidosRepository repoPagosRecibidos,
             IWebHostEnvironment webHostEnvironment,
             IUnitOfWork unitOfWork,
             SignInManager<ApplicationUser> signInManager,
@@ -72,6 +74,7 @@ namespace Prueba.Controllers
             _repoMoneda = repoMoneda;
             _repoCuentas = repoCuentas;
             _servicePDF = PDFService;
+            _servicesPDF = servicesPDF;
             _context = context;
         }
 
@@ -104,6 +107,7 @@ namespace Prueba.Controllers
                     var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
 
                     TempData["idCondominio"] = condominios.First().IdCondominio.ToString();
+                    TempData.Keep();
                     return View(modelo);
                 }
 
@@ -195,7 +199,7 @@ namespace Prueba.Controllers
                     modelo.Saldo = propiedad.Saldo;
                     modelo.Deuda = propiedad.Deuda;
                     modelo.Recibos = recibos;
-                    modelo.Abonado = modelo.Recibos[0].Abonado;
+                    //modelo.Abonado = modelo.Recibos[0].Abonado;
 
                     if (modelo.Recibos.Any())
                     {
@@ -1044,6 +1048,46 @@ namespace Prueba.Controllers
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "Recibo.pdf");
             }
+
+            return RedirectToAction("DashboardUsuario");
+        }
+
+        public async Task<IActionResult> EstadoCuenta()
+        {
+            string idPropietario = TempData.Peek("idUserLog").ToString();
+
+            var propiedades = await (from c in _context.Propiedads
+                              where c.IdUsuario == idPropietario
+                              select c).ToListAsync();
+
+            var modelo = new List<EstadoCuentasVM>();
+
+            if (propiedades != null && propiedades.Any())
+            {
+                foreach (var propiedad in propiedades)
+                {
+                    var usuario = await _context.AspNetUsers.FirstAsync(c => c.Id == propiedad.IdUsuario);
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+                    var recibos = await _context.ReciboCobros.
+                        Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
+                        .OrderBy(c => c.Fecha)
+                        .ToListAsync();
+
+                    modelo.Add(new EstadoCuentasVM()
+                    {
+                        Condominio = condominio,
+                        Propiedad = propiedad,
+                        User = usuario,
+                        ReciboCobro = recibos
+                    });
+                }
+
+                TempData.Keep();
+                var data = _servicesPDF.EstadoCuentas(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "EstadoCuentasOficina_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+            }
+            TempData.Keep();
 
             return RedirectToAction("DashboardUsuario");
         }
