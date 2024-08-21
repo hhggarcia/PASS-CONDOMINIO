@@ -254,7 +254,7 @@ namespace Prueba.Controllers
             // cargar formulario
             var modelo = await _repoPagosEmitidos.FormPagoAnticicipo(idCondominio);
             // usar el repositorio?
-
+            TempData.Keep();
             return View(modelo);
         }
 

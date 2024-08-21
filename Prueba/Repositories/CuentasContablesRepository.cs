@@ -22,6 +22,7 @@ namespace Prueba.Repositories
         Task<ICollection<Anticipo>> ObtenerAnticipos(ICollection<Proveedor> proveedores);
         Task<ICollection<Cliente>> ObtenerClientes(int id);
         Task<ICollection<SubCuenta>> ObtenerIngresos(int id);
+        Task<ICollection<Empleado>> ObtenerEmpleados(int id);
     }
     public class CuentasContablesRepository : ICuentasContablesRepository
     {
@@ -533,6 +534,17 @@ namespace Prueba.Repositories
                 return anticipos;
             }
                 
+        }
+
+        public async Task<ICollection<Empleado>> ObtenerEmpleados(int id)
+        {
+            var nomina = await (from c in _context.CondominioNominas
+                         join e in _context.Empleados
+                         on c.IdEmpleado equals e.IdEmpleado
+                         where c.IdCondominio == id
+                         select e).ToListAsync();
+
+            return nomina;
         }
     }
 }
