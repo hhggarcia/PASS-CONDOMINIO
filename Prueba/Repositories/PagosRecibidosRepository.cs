@@ -1623,7 +1623,15 @@ namespace Prueba.Repositories
                                         recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                         recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
+
+                                        var pagoRecibo = new PagosRecibo
+                                        {
+                                            IdPago = pago.IdPagoRecibido,
+                                            IdRecibo = recibo.IdReciboCobro
+                                        };
+
                                         _context.ReciboCobros.Update(recibo);
+                                        _context.PagosRecibos.Add(pagoRecibo);
                                     }
 
                                     await _context.SaveChangesAsync();

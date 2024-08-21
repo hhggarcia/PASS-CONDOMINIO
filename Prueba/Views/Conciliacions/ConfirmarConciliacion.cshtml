@@ -22,7 +22,6 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <h6>Seguro que quiere confirmar esta conciliación?</h6>
-                        @* <h6>Al confirmar el pago se verá reflejado en el Libro diario</h6> *@
                         <hr />
                         <div>
                             <div class="card-body">
@@ -77,7 +76,7 @@
                                                 <hr />
                                                 <div class="form-group">
                                                     <button id="aceptar" class="btn btn-primary" type="submit" disabled>Aceptar</button>
-                                                    <button asp-action="Index" id="cancelar" class="btn btn-secondary" disabled>Cancelar</button>
+                                                    <button asp-action="Index" id="cancelar" class="btn btn-secondary">Cancelar</button>
                                                 </div>
                                             </form>
                                         </dl>
@@ -118,7 +117,6 @@
             } else {
                 console.log("Error en la suma");
             }
-
         }
 
         function VerificarSaldoBanco() {
@@ -137,11 +135,9 @@
                     mensaje.textContent = "El saldo final y el del banco no coinciden. Revisar los movimientos nuevamente!";
                     saldoBanco.value = 0;
                 } else {
+                    mensaje.textContent = "";
                     let btnAceptar = document.getElementById('aceptar');
-                    let btnCancelar = document.getElementById('cancelar');
-
                     btnAceptar.disabled = false;
-                    btnCancelar.disabled = false;
                 }
             }
 

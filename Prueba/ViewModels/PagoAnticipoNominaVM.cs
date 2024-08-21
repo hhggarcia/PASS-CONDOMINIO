@@ -15,6 +15,5 @@ namespace Prueba.ViewModels
         public int IdCodigoCuentaCaja { get; set; }
         public int IdSubcuenta { get; set; }
         public int IdEmpleado { get; set; }
-
     }
 }
