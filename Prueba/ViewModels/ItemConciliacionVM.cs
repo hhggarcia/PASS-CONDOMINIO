@@ -1,5 +1,5 @@
 ﻿using Prueba.Models;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Prueba.ViewModels
 {

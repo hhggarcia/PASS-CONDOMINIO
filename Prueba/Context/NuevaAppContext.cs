@@ -189,19 +189,9 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Transaccion> Transaccions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.Development.json")
-                .Build();
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
-            var connectionString = configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
-
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -667,16 +657,14 @@ public partial class NuevaAppContext : DbContext
 
         modelBuilder.Entity<ConciliacionPagoEmitido>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ConciliacionPagoEmitido");
+            entity.ToTable("ConciliacionPagoEmitido");
 
-            entity.HasOne(d => d.IdConciliacionNavigation).WithMany()
+            entity.HasOne(d => d.IdConciliacionNavigation).WithMany(p => p.ConciliacionPagoEmitidos)
                 .HasForeignKey(d => d.IdConciliacion)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConciliacionPagoEmitido_Conciliacion");
 
-            entity.HasOne(d => d.IdPagoEmitidoNavigation).WithMany()
+            entity.HasOne(d => d.IdPagoEmitidoNavigation).WithMany(p => p.ConciliacionPagoEmitidos)
                 .HasForeignKey(d => d.IdPagoEmitido)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConciliacionPagoEmitido_Pago_Emitido");
@@ -684,16 +672,14 @@ public partial class NuevaAppContext : DbContext
 
         modelBuilder.Entity<ConciliacionPagoRecibido>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ConciliacionPagoRecibido");
+            entity.ToTable("ConciliacionPagoRecibido");
 
-            entity.HasOne(d => d.IdConciliacionNavigation).WithMany()
+            entity.HasOne(d => d.IdConciliacionNavigation).WithMany(p => p.ConciliacionPagoRecibidos)
                 .HasForeignKey(d => d.IdConciliacion)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConciliacionPagoRecibido_Conciliacion");
 
-            entity.HasOne(d => d.IdPagoRecibidoNavigation).WithMany()
+            entity.HasOne(d => d.IdPagoRecibidoNavigation).WithMany(p => p.ConciliacionPagoRecibidos)
                 .HasForeignKey(d => d.IdPagoRecibido)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConciliacionPagoRecibido_Pago_Recibido");

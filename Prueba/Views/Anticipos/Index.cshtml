@@ -80,11 +80,19 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
                                         </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdAnticipo">Edit</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdAnticipo">Details</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdAnticipo">Delete</a>
-                                        </td>
+                                        @if (item.Activo)
+                                        {
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.IdAnticipo">Edit</a> |
+                                                <a asp-action="Details" asp-route-id="@item.IdAnticipo">Details</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdAnticipo">Delete</a>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>Conciliado</td>
+                                        }
+
                                     </tr>
                                 }
                             </tbody>

@@ -61,7 +61,76 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            return View(conciliacion);
+            var cc = await _context.CodigoCuentasGlobals.FindAsync(conciliacion.IdCodCuenta);
+            var subCuenta = await _context.SubCuenta.FindAsync(cc.IdSubCuenta);
+
+            var pagosRecibidos = await (from pr in _context.PagoRecibidos
+                                        join referencia in _context.ReferenciasPrs
+                                        on pr.IdPagoRecibido equals referencia.IdPagoRecibido
+                                        where pr.Fecha >= conciliacion.FechaInicio && pr.Fecha <= conciliacion.FechaFin
+                                        where cc.IdSubCuenta.ToString() == referencia.Banco
+                                        select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+            var pagosEmitidos = await (from pr in _context.PagoEmitidos
+                                       join referencia in _context.ReferenciasPes
+                                       on pr.IdPagoEmitido equals referencia.IdPagoEmitido
+                                       where pr.Fecha >= conciliacion.FechaInicio && pr.Fecha <= conciliacion.FechaFin
+                                       where cc.IdSubCuenta.ToString() == referencia.Banco
+                                       select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+            IList<PagosConciliacionVM> pagos = new List<PagosConciliacionVM>();
+
+            foreach (var item in pagosRecibidos)
+            {
+                pagos.Add(new PagosConciliacionVM()
+                {
+                    Id = item.IdPagoRecibido,
+                    IdCondominio = item.IdCondominio,
+                    Fecha = item.Fecha,
+                    Monto = item.Monto,
+                    FormaPago = item.FormaPago,
+                    Concepto = item.Concepto,
+                    TipoOperacion = true,
+                    Activo = item.Activo
+                });
+            }
+            foreach (var item in pagosEmitidos)
+            {
+                pagos.Add(new PagosConciliacionVM()
+                {
+                    Id = item.IdPagoEmitido,
+                    IdCondominio = item.IdCondominio,
+                    Fecha = item.Fecha,
+                    Monto = item.Monto,
+                    FormaPago = item.FormaPago,
+                    Concepto = item.Concepto,
+                    TipoOperacion = false,
+                    Activo = item.Activo
+                });
+            }
+
+            var modelo = new ItemConciliacionVM()
+            {
+                CodigoCuenta = cc,
+                IdCodigoCuenta = cc != null ? cc.IdCodCuenta : 0,
+                SubCuenta = subCuenta,
+                ConciliacionAnterior = conciliacion,
+                SaldoInicial = conciliacion.SaldoInicial,
+                FechaInicio = conciliacion.FechaInicio,
+                FechaFin = conciliacion.FechaFin,
+                TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
+                TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
+                SaldoFinal = pagosRecibidos.Sum(c => c.Monto) - pagosEmitidos.Sum(c => c.Monto),
+                Pagos = pagos,
+                PagosIds = (IList<SelectListItem>)pagos.Select(c => new SelectListItem
+                {
+                    Text = c.TipoOperacion ? "Ingreso" : "Egreso",
+                    Value = c.Id.ToString(),
+                    Selected = false
+                }).ToList()
+            };
+
+            return View(modelo);
         }
 
         // GET: Conciliacions/Create
@@ -222,17 +291,46 @@ namespace Prueba.Controllers
         public async Task<IActionResult> BuscarConciliacion(FiltroBancoVM filtro)
         {
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            TempData["FechaInicio"] = filtro.FechaInicio.ToString("dd-MM-yyyy");
-            TempData["FechaFin"] = filtro.FechaFin.ToString("dd-MM-yyyy");
 
             var cajas = await _repoCuentas.ObtenerCaja(idCondominio);
             var bancos = await _repoCuentas.ObtenerBancos(idCondominio);
             var subcuentas = bancos.Concat(cajas).ToList();
 
+            if (filtro.FechaInicio > filtro.FechaFin || filtro.FechaInicio.Month != filtro.FechaFin.Month)
+            {
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "La fecha final debe ser posterior a la fecha de inicio y en el mismo mes.";
+
+                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+                TempData.Keep();
+                return View("Conciliacion", new ItemConciliacionVM());
+
+            }
+            TempData["FechaInicio"] = filtro.FechaInicio.ToString("dd-MM-yyyy");
+            TempData["FechaFin"] = filtro.FechaFin.ToString("dd-MM-yyyy");
+
             ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
             var modelo = await _repoReportes.LoadConciliacionPagos(filtro);
 
+            var cc = await _context.CodigoCuentasGlobals.FindAsync(modelo.ConciliacionAnterior.IdCodCuenta);
+
+            if (modelo.ConciliacionAnterior != null
+                && cc != null
+                && modelo.ConciliacionAnterior.FechaEmision.Month == DateTime.Today.Month
+                && modelo.ConciliacionAnterior.FechaEmision.Year == DateTime.Today.Year
+                && cc.IdSubCuenta == filtro.IdCodCuenta)
+            {
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "Ya existe una Conciliación en este mes y esta cuenta";
+
+                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+                TempData.Keep();
+                return View("Conciliacion", new ItemConciliacionVM());
+            }
+;
             TempData.Keep();
             return View("Conciliacion", modelo);
         }

@@ -2394,7 +2394,8 @@ namespace Prueba.Repositories
                         {
                             IdPagoEmitido = pago.IdPagoEmitido,
                             IdProveedor = modelo.IdProveedor,
-                            Fecha = pago.Fecha
+                            Fecha = pago.Fecha,
+                            Activo = true
                         };
 
                         context.OrdenPagos.Add(ordenPago);

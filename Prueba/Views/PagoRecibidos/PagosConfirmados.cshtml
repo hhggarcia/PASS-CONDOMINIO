@@ -63,11 +63,23 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdPagoNavigation.Monto)
-                                        </td>                                        
-                                        <td>
-                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdPagoPropiedad">PDF</a> |
-                                            <a asp-action="SendCompPagoPropietario" asp-controller="Correo" asp-route-id="@item.IdPagoPropiedad">Correo</a>
-                                        </td>
+                                        </td>   
+                                        @if (item.Activo)
+                                        {
+                                            <td>
+                                                <a asp-action="ComprobantePDF" asp-route-id="@item.IdPagoPropiedad">PDF</a> |
+                                                <a asp-action="SendCompPagoPropietario" asp-controller="Correo" asp-route-id="@item.IdPagoPropiedad">Correo</a>
+                                                <a asp-action="" asp-controller="" asp-route-id="@item.IdPagoPropiedad">Eliminar</a>
+                                            </td>
+                                        } else
+                                        {
+                                            <td>
+                                                Conciliado |
+                                                <a asp-action="ComprobantePDF" asp-route-id="@item.IdPagoPropiedad">PDF</a>
+
+                                            </td>
+                                        }
+
                                     </tr>
                                 }
                             </tbody>

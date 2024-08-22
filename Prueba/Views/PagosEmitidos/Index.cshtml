@@ -91,12 +91,23 @@
                                                             <td>@FormaPago.Transferencia</td>
                                                             <td>@referencia.NumReferencia</td>
                                                             <td>@banco.Descricion</td>
-                                                            <td>
-                                                                @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
-                                                                <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
-                                                                <a asp-action="PagoProveedorPDF" asp-route-id="@item.IdPagoEmitido">PDF</a> |
-                                                                <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
-                                                            </td>
+                                                            @if(item.Activo){
+                                                                <td>
+                                                                    @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
+                                                                    <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                                    <a asp-action="PagoProveedorPDF" asp-route-id="@item.IdPagoEmitido">PDF</a> |
+                                                                    <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
+                                                                </td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>
+                                                                    Conciliado |
+                                                                    <a asp-action="PagoProveedorPDF" asp-route-id="@item.IdPagoEmitido">PDF</a> |
+
+                                                                </td>
+                                                            }
+
                                                         </tr>
                                                     }
 
@@ -114,11 +125,23 @@
                                                 <td>@FormaPago.Efectivo</td>
                                                 <td></td>
                                                 <td></td>
-                                                <td>
-                                                    @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
-                                                    <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
-                                                    <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
-                                                </td>
+                                                @if (item.Activo)
+                                                {
+                                                    <td>
+                                                        @*<a asp-action="Edit" asp-route-id="@item.IdPagoEmitido">Editar</a> |*@
+                                                        <a asp-action="Details" asp-route-id="@item.IdPagoEmitido">Detalles</a> |
+                                                        <a asp-action="PagoProveedorPDF" asp-route-id="@item.IdPagoEmitido">PDF</a> |
+                                                        <a asp-action="Delete" asp-route-id="@item.IdPagoEmitido">Eliminar</a>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        Conciliado |
+                                                        <a asp-action="PagoProveedorPDF" asp-route-id="@item.IdPagoEmitido">PDF</a> |
+                                                    </td>
+                                                }
+
                                             </tr>
                                         }
 

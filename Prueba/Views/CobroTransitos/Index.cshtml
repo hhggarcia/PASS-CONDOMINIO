@@ -114,12 +114,22 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdCobroTransito">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdCobroTransito">Detalles</a> |
-                                            <a asp-action="CobroTransitoPDF" asp-route-id="@item.IdCobroTransito">PDF</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdCobroTransito">Eliminar</a>
-                                        </td>
+                                        @if (item.Activo)
+                                        {
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.IdCobroTransito">Editar</a> |
+                                                <a asp-action="Details" asp-route-id="@item.IdCobroTransito">Detalles</a> |
+                                                <a asp-action="CobroTransitoPDF" asp-route-id="@item.IdCobroTransito">PDF</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdCobroTransito">Eliminar</a>
+                                            </td>
+                                        } else
+                                        {
+                                            <td>
+                                                Conciliado |
+                                                <a asp-action="CobroTransitoPDF" asp-route-id="@item.IdCobroTransito">PDF</a>
+                                            </td>
+                                        }
+
                                     </tr>
                                 }
                             </tbody>

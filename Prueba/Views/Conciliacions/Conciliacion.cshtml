@@ -16,6 +16,13 @@
                     <h6 class="m-0 font-weight-bold text-primary">
                         Conciliación Bancaria
                     </h6>
+                    @if (@ViewBag.FormaPago == "fallido")
+                    {
+                        <div class="form-group text-danger">
+                            <span>@ViewBag.Mensaje</span>
+                        </div>
+                    }
+                    
                     <partial name="_FiltroBanco" model="@(new Prueba.ViewModels.FiltroBancoVM(){ FechaFin = Model.FechaFin, FechaInicio = Model.FechaInicio})" />
 
                     <div class="tr_s">
@@ -121,7 +128,6 @@
 
 </div>
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
 <script>
     function toggleAll() {
         const checkboxes = document.querySelectorAll('.itemCheckbox');

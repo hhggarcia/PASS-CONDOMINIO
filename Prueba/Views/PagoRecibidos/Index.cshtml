@@ -112,11 +112,19 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdCondominioNavigation.Nombre)
                                         </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdPagoRecibido">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdPagoRecibido">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdPagoRecibido">Eliminar</a>
-                                        </td>
+                                        @if (true)
+                                        {
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.IdPagoRecibido">Editar</a> |
+                                                <a asp-action="Details" asp-route-id="@item.IdPagoRecibido">Detalles</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdPagoRecibido">Eliminar</a>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>Conciliado</td>
+                                        }
+
                                     </tr>
                                 }
                             </tbody>

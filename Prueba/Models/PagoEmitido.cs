@@ -29,6 +29,8 @@ public partial class PagoEmitido
 
     public virtual ICollection<AnticipoNomina> AnticipoNominas { get; set; } = new List<AnticipoNomina>();
 
+    public virtual ICollection<ConciliacionPagoEmitido> ConciliacionPagoEmitidos { get; set; } = new List<ConciliacionPagoEmitido>();
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();

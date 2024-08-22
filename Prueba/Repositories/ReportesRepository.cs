@@ -3,7 +3,7 @@ using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Prueba.Repositories
 {
@@ -472,14 +472,14 @@ namespace Prueba.Repositories
                                             join referencia in _context.ReferenciasPrs
                                             on pr.IdPagoRecibido equals referencia.IdPagoRecibido
                                             where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
-                                            where cc.IdSubCuenta.ToString() == referencia.Banco
+                                            where cc.IdSubCuenta.ToString() == referencia.Banco && pr.Activo
                                             select pr).OrderBy(c => c.Fecha).ToListAsync();
 
                 var pagosEmitidos = await (from pr in _context.PagoEmitidos
                                            join referencia in _context.ReferenciasPes
                                            on pr.IdPagoEmitido equals referencia.IdPagoEmitido
                                            where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
-                                           where cc.IdSubCuenta.ToString() == referencia.Banco
+                                           where cc.IdSubCuenta.ToString() == referencia.Banco && pr.Activo
                                            select pr).OrderBy(c => c.Fecha).ToListAsync();
 
                 IList<PagosConciliacionVM> pagos = new List<PagosConciliacionVM>();

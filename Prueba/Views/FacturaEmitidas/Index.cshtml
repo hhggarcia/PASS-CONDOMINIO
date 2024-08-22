@@ -139,14 +139,24 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Anulada)
                                         </td>
-                                        
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdFacturaEmitida">Editar</a> |
-                                            <a asp-action="FacturaEmitidaPDF" asp-route-id="@item.IdFacturaEmitida">PDF</a> |
-                                            <a asp-action="PrintFacturaEmitida" asp-route-id="@item.IdFacturaEmitida">Imprimir</a> |
-                                            <a asp-action="Details" asp-route-id="@item.IdFacturaEmitida">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdFacturaEmitida">Eliminar</a>
-                                        </td>
+                                        @if (item.Activo)
+                                        {
+                                            <td>
+                                                <a asp-action="Edit" asp-route-id="@item.IdFacturaEmitida">Editar</a> |
+                                                <a asp-action="FacturaEmitidaPDF" asp-route-id="@item.IdFacturaEmitida">PDF</a> |
+                                                @* <a asp-action="PrintFacturaEmitida" asp-route-id="@item.IdFacturaEmitida">Imprimir</a> | *@
+                                                <a asp-action="Details" asp-route-id="@item.IdFacturaEmitida">Detalles</a> |
+                                                <a asp-action="Delete" asp-route-id="@item.IdFacturaEmitida">Eliminar</a>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                Conciliado |
+                                                <a asp-action="FacturaEmitidaPDF" asp-route-id="@item.IdFacturaEmitida">PDF</a>
+                                            </td>
+                                        }
+
                                     </tr>
                                 }
                             </tbody>

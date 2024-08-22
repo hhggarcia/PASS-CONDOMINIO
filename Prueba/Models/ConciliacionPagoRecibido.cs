@@ -9,6 +9,8 @@ public partial class ConciliacionPagoRecibido
 
     public int IdPagoRecibido { get; set; }
 
+    public int Id { get; set; }
+
     public virtual Conciliacion IdConciliacionNavigation { get; set; } = null!;
 
     public virtual PagoRecibido IdPagoRecibidoNavigation { get; set; } = null!;

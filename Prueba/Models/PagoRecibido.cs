@@ -33,6 +33,8 @@ public partial class PagoRecibido
 
     public bool Activo { get; set; }
 
+    public virtual ICollection<ConciliacionPagoRecibido> ConciliacionPagoRecibidos { get; set; } = new List<ConciliacionPagoRecibido>();
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();

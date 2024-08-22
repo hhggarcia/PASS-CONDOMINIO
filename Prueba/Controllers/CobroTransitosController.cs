@@ -90,6 +90,7 @@ namespace Prueba.Controllers
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(cobroTransito.IdCondominio)).First();
 
                 cobroTransito.MontoRef = cobroTransito.Monto / monedaPrincipal.ValorDolar;
+                cobroTransito.Activo = true;
                 _context.Add(cobroTransito);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

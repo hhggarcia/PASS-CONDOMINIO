@@ -115,6 +115,7 @@ namespace Prueba.Controllers
                 factura.IdCodCuenta = idCodCuenta;
                 factura.MontoTotal = factura.Subtotal + factura.Iva;
                 factura.EnProceso = true;
+                factura.Activo = true;
 
                 if (proveedor == null)
                 {

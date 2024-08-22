@@ -29,6 +29,10 @@ public partial class Conciliacion
 
     public decimal TotalEgreso { get; set; }
 
+    public virtual ICollection<ConciliacionPagoEmitido> ConciliacionPagoEmitidos { get; set; } = new List<ConciliacionPagoEmitido>();
+
+    public virtual ICollection<ConciliacionPagoRecibido> ConciliacionPagoRecibidos { get; set; } = new List<ConciliacionPagoRecibido>();
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;

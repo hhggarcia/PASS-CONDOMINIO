@@ -1,85 +1,148 @@
-﻿@model Prueba.Models.Conciliacion
+﻿@model Prueba.ViewModels.ItemConciliacionVM
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+    var saldo = Model.ConciliacionAnterior != null ? Model.ConciliacionAnterior.SaldoFinal : 0;
 }
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Conciliaciones
+                        Conciliación Bancaria
                     </h6>
+                    @if (@ViewBag.FormaPago == "fallido")
+                    {
+                        <div class="form-group text-danger">
+                            <span>@ViewBag.Mensaje</span>
+                        </div>
+                    }
                 </div>
                 <div class="card-body">
-                    <div class="form form-horizontal">
-                        <div class="form-body">
-                            <dl class="row">
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.FechaEmision)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.FechaEmision)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.SaldoInicial)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.SaldoInicial)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.SaldoFinal)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.SaldoFinal)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Actual)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Actual)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.Activo)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.Activo)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.FechaInicio)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.FechaInicio)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.FechaFin)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.FechaFin)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdCodCuentaNavigation.IdCodCuenta)
-                                </dd>
-                                <dt class="col-sm-2">
-                                    @Html.DisplayNameFor(model => model.IdCondominioNavigation)
-                                </dt>
-                                <dd class="col-sm-10">
-                                    @Html.DisplayFor(model => model.IdCondominioNavigation.IdCondominio)
-                                </dd>
-                            </dl>
-                            <div class="col-md-12">
-                                <a asp-action="Edit" asp-route-id="@Model?.IdConciliacion" class="btn btn-primary">Editar</a>
-                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
-                            </div>
+                    <div class="table-responsive">
+                        <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha Emisión</th>
+                                    <th>Cuenta</th>
+                                    <th>Total Ingresos</th>
+                                    <th>Total Egresos</th>
+                                    <th>Saldo Inicial</th>
+                                    <th>Saldo Final</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@Model.ConciliacionAnterior.FechaEmision</td>
+                                    <td>@Model.SubCuenta.Descricion</td>
+                                    <td>@Model.TotalIngreso</td>
+                                    <td>@Model.TotalEgreso</td>
+                                    <td>@Model.SaldoInicial</td>
+                                    <td>@Model.SaldoFinal</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    @* <input type="hidden" asp-for="IdCodigoCuenta" /> *@
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-center"
+                                   id="dataTable"
+                                   width="100%"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Fecha
+                                        </th>
+                                        <th>
+                                            Concepto
+                                        </th>
+                                        <th>
+                                            Ingreso
+                                        </th>
+                                        <th>
+                                            Egreso
+                                        </th>
+                                        <th>
+                                            Saldo
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @for (int i = 0; i < @Model.PagosIds.Count(); i++)
+                                    {
+                                        var pago = Model.Pagos.FirstOrDefault(c => c.Id == Convert.ToInt32(Model.PagosIds[i].Value));
+
+                                        @if (pago != null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @pago.Fecha.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td>
+                                                    @pago.Concepto
+                                                </td>
+                                                @if (pago.TipoOperacion)
+                                                {
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td></td>
+
+                                                    <td>
+                                                        @((saldo += pago.Monto).ToString("N"))
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td>
+                                                        @((saldo -= pago.Monto).ToString("N"))
+                                                    </td>
+                                                }
+
+                                                <td>
+                                                    @*  @Html.CheckBoxFor(c => Model.PagosIds[i].Selected, new { @class = "itemCheckbox" })
+                                            @Html.HiddenFor(h => Model.PagosIds[i].Value)
+                                            @Html.HiddenFor(h => Model.PagosIds[i].Text) *@
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                    @* <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <a class="btn btn-light mb-3" id="conciliar">
+                    Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
+                    </a>
+                    <div class="col-12 d-flex justify-content-end">
+                    <button type="submit"
+                    class="btn btn-light mb-3">
+                    Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
+                    </button>
+                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>
