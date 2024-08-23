@@ -260,14 +260,231 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var conciliacion = await _context.Conciliacions.FindAsync(id);
-            if (conciliacion != null)
+            try
             {
-                _context.Conciliacions.Remove(conciliacion);
-            }
+                var conciliacion = await _context.Conciliacions.FindAsync(id);
+                if (conciliacion != null)
+                {
+                    var conciliacionPagosEmitidos = await _context.ConciliacionPagoEmitidos.Where(c => c.IdConciliacion == conciliacion.IdConciliacion).ToListAsync();
+                    var conciliacionPagosRecibidos = await _context.ConciliacionPagoRecibidos.Where(c => c.IdConciliacion == conciliacion.IdConciliacion).ToListAsync();
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                    // buscar pagos emitidos
+                    var pagosEmitidos = await (from c in _context.PagoEmitidos
+                                               join cp in conciliacionPagosEmitidos
+                                               on c.IdPagoEmitido equals cp.IdPagoEmitido
+                                               select c).ToListAsync();
+                    // cambiar activo = true en:
+                    // Aniticipo Nomina
+                    // Orden pago
+                    // Anticipo
+                    // Factura
+                    // Recibo Nomina
+                    foreach (var pago in pagosEmitidos)
+                    {
+
+                        var anticiposNomina = await _context.AnticipoNominas.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
+                        var ordenPago = await _context.OrdenPagos.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
+                        var pagoAnticipo = await _context.PagoAnticipos.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
+                        var pagoFactura = await _context.PagoFacturas.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
+                        var pagoNomina = await _context.PagosNominas.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
+
+                        if (anticiposNomina != null)
+                        {
+                            foreach (var relacion in anticiposNomina)
+                            {
+                                var anticipo = await _context.AnticipoNominas.FindAsync(relacion.IdAnticipoNomina);
+
+                                if (anticipo != null)
+                                {
+                                    anticipo.Activo = true;
+                                    _context.AnticipoNominas.Update(anticipo);
+                                }
+                            }
+                        }
+
+                        if (ordenPago != null)
+                        {
+                            foreach (var relacion in ordenPago)
+                            {
+                                var ordenpago = await _context.OrdenPagos.FindAsync(relacion.IdOrdenPago);
+
+                                if (ordenpago != null)
+                                {
+                                    ordenpago.Activo = true;
+                                    _context.OrdenPagos.Update(ordenpago);
+                                }
+                            }
+                        }
+
+                        if (pagoAnticipo != null)
+                        {
+                            foreach (var relacion in pagoAnticipo)
+                            {
+                                var anticipo = await _context.Anticipos.FindAsync(relacion.IdAnticipo);
+
+                                if (anticipo != null)
+                                {
+                                    anticipo.Activo = true;
+                                    _context.Anticipos.Update(anticipo);
+                                }
+                            }
+                        }
+
+                        if (pagoFactura != null)
+                        {
+                            foreach (var relacion in pagoFactura)
+                            {
+                                var factura = await _context.Facturas.FindAsync(relacion.IdFactura);
+
+                                if (factura != null)
+                                {
+                                    factura.Activo = true;
+                                    _context.Facturas.Update(factura);
+                                }
+                            }
+                        }
+
+                        if (pagoNomina != null)
+                        {
+                            foreach (var relacion in pagoNomina)
+                            {
+                                var recibo = await _context.ReciboNominas.FindAsync(relacion.IdReciboNomina);
+
+                                if (recibo != null)
+                                {
+                                    recibo.Activo = true;
+                                    _context.ReciboNominas.Update(recibo);
+                                }
+                            }
+                        }
+
+                        pago.Activo = false;
+
+                        _context.PagoEmitidos.Update(pago);
+                    }
+
+                    // buscar pagos recibidos
+                    var pagosRecibidos = await (from c in _context.PagoRecibidos
+                                                join cp in conciliacionPagosRecibidos
+                                                on c.IdPagoRecibido equals cp.IdPagoRecibido
+                                                select c).ToListAsync();
+
+                    // cambiar activo = true en:
+                    // Cobro transito
+                    // Factura Emitida
+                    // Pago Propiedad
+                    // Pago Reserva
+                    // Pago Cuota
+                    // Pago Recibos
+                    foreach (var pago in pagosRecibidos)
+                    {
+
+                        // desactivar los pagos
+                        // desactivar los objetos relacionados
+                        var cobroTransito = await _context.PagoCobroTransitos.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                        var pagoFacturaEmitida = await _context.PagoFacturaEmitida.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                        var pagoPropiedad = await _context.PagoPropiedads.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+                        var pagoReserva = await _context.PagoReservas.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+                        var pagoCuotas = await _context.PagosCuotas.Where(c => c.IdPagoRecibido == pago.IdPagoRecibido).ToListAsync();
+                        //var pagoRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+
+                        if (cobroTransito != null)
+                        {
+                            foreach (var relacion in cobroTransito)
+                            {
+                                var cobro = await _context.CobroTransitos.FindAsync(relacion.IdCobroTransito);
+
+                                if (cobro != null)
+                                {
+                                    cobro.Activo = true;
+                                    _context.CobroTransitos.Update(cobro);
+                                }
+                            }
+                        }
+
+                        if (pagoFacturaEmitida != null)
+                        {
+                            foreach (var relacion in pagoFacturaEmitida)
+                            {
+                                var factura = await _context.FacturaEmitida.FindAsync(relacion.IdFactura);
+
+                                if (factura != null)
+                                {
+                                    factura.Activo = true;
+                                    _context.FacturaEmitida.Update(factura);
+                                }
+                            }
+                        }
+
+                        if (pagoPropiedad != null)
+                        {
+                            foreach (var relacion in pagoPropiedad)
+                            {
+                                var pagoProp = await _context.PagoPropiedads.FindAsync(relacion.IdPagoPropiedad);
+
+                                if (pagoProp != null)
+                                {
+                                    pagoProp.Activo = true;
+                                    _context.PagoPropiedads.Update(pagoProp);
+                                }
+                            }
+                        }
+
+                        if (pagoReserva != null)
+                        {
+                            foreach (var relacion in pagoReserva)
+                            {
+                                var reserva = await _context.ReciboReservas.FindAsync(relacion.IdReciboReserva);
+
+                                if (reserva != null)
+                                {
+                                    reserva.Activo = true;
+                                    _context.ReciboReservas.Update(reserva);
+                                }
+                            }
+                        }
+
+                        if (pagoCuotas != null)
+                        {
+                            foreach (var relacion in pagoCuotas)
+                            {
+                                var cuota = await _context.ReciboCuotas.FindAsync(relacion.IdReciboCuota);
+
+                                if (cuota != null)
+                                {
+                                    cuota.Activo = true;
+                                    _context.ReciboCuotas.Update(cuota);
+                                }
+                            }
+                        }
+
+                        pago.Activo = true;
+
+                        _context.PagoRecibidos.Update(pago);
+
+                    }
+                    // eliminar relaciones
+                    // ConciliacionPagoEmitidos
+                    // ConciliacionPagoRecibidos
+                    _context.ConciliacionPagoEmitidos.RemoveRange(conciliacionPagosEmitidos);
+                    _context.ConciliacionPagoRecibidos.RemoveRange(conciliacionPagosRecibidos);
+
+                    // eliminar conciliacion
+                    _context.Conciliacions.Remove(conciliacion);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
         }
 
         private bool ConciliacionExists(int id)
@@ -314,21 +531,23 @@ namespace Prueba.Controllers
 
             var modelo = await _repoReportes.LoadConciliacionPagos(filtro);
 
-            var cc = await _context.CodigoCuentasGlobals.FindAsync(modelo.ConciliacionAnterior.IdCodCuenta);
-
             if (modelo.ConciliacionAnterior != null
-                && cc != null
                 && modelo.ConciliacionAnterior.FechaEmision.Month == DateTime.Today.Month
                 && modelo.ConciliacionAnterior.FechaEmision.Year == DateTime.Today.Year
-                && cc.IdSubCuenta == filtro.IdCodCuenta)
+                )
             {
-                ViewBag.FormaPago = "fallido";
-                ViewBag.Mensaje = "Ya existe una Conciliación en este mes y esta cuenta";
+                var cc = await _context.CodigoCuentasGlobals.FindAsync(modelo.ConciliacionAnterior.IdCodCuenta);
+                if (cc != null
+                    && cc.IdSubCuenta == filtro.IdCodCuenta)
+                {
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = "Ya existe una Conciliación en este mes y esta cuenta";
 
-                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+                    ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
 
-                TempData.Keep();
-                return View("Conciliacion", new ItemConciliacionVM());
+                    TempData.Keep();
+                    return View("Conciliacion", new ItemConciliacionVM());
+                }
             }
 ;
             TempData.Keep();
