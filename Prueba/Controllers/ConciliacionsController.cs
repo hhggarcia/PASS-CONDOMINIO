@@ -120,7 +120,7 @@ namespace Prueba.Controllers
                 FechaFin = conciliacion.FechaFin,
                 TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
                 TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
-                SaldoFinal = pagosRecibidos.Sum(c => c.Monto) - pagosEmitidos.Sum(c => c.Monto),
+                SaldoFinal = conciliacion.SaldoFinal,
                 Pagos = pagos,
                 PagosIds = (IList<SelectListItem>)pagos.Select(c => new SelectListItem
                 {
@@ -269,10 +269,11 @@ namespace Prueba.Controllers
                     var conciliacionPagosRecibidos = await _context.ConciliacionPagoRecibidos.Where(c => c.IdConciliacion == conciliacion.IdConciliacion).ToListAsync();
 
                     // buscar pagos emitidos
-                    var pagosEmitidos = await (from c in _context.PagoEmitidos
+                    var pagosEmitidos = from c in _context.PagoEmitidos.ToList()
                                                join cp in conciliacionPagosEmitidos
                                                on c.IdPagoEmitido equals cp.IdPagoEmitido
-                                               select c).ToListAsync();
+                                               select c;
+
                     // cambiar activo = true en:
                     // Aniticipo Nomina
                     // Orden pago
@@ -358,16 +359,16 @@ namespace Prueba.Controllers
                             }
                         }
 
-                        pago.Activo = false;
+                        pago.Activo = true;
 
                         _context.PagoEmitidos.Update(pago);
                     }
 
                     // buscar pagos recibidos
-                    var pagosRecibidos = await (from c in _context.PagoRecibidos
+                    var pagosRecibidos = from c in _context.PagoRecibidos.ToList()
                                                 join cp in conciliacionPagosRecibidos
                                                 on c.IdPagoRecibido equals cp.IdPagoRecibido
-                                                select c).ToListAsync();
+                                                select c;
 
                     // cambiar activo = true en:
                     // Cobro transito
