@@ -237,9 +237,9 @@ namespace Prueba.Controllers
 
 
                     var recibos = await (from c in _context.ReciboCobros
-                                  where c.IdPropiedad == valor
-                                  where !c.Pagado
-                                  select c).ToListAsync();
+                                         where c.IdPropiedad == valor
+                                         where !c.Pagado
+                                         select c).ToListAsync();
 
                     modelo.Interes = propiedad.MontoIntereses;
                     modelo.Indexacion = propiedad.MontoMulta != null ? (decimal)propiedad.MontoMulta : 0;
@@ -260,11 +260,10 @@ namespace Prueba.Controllers
                             .ToList();
                         modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
                         {
-                            Text = recibo.Mes + " " + (recibo.ReciboActual ?  recibo.Monto - recibo.Abonado : recibo.TotalPagar).ToString("N") + "Bs",
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar).ToString("N") + "Bs",
                             Value = recibo.IdReciboCobro.ToString(),
                             Selected = false,
                         }).ToList();
-
                     }
                 }
             }
@@ -418,17 +417,20 @@ namespace Prueba.Controllers
         [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> ConfirmarPago(PagoRecibidoVM modelo)
         {
-            foreach (var item in modelo.ListRecibos)
+            if (modelo.ListRecibos != null && modelo.ListRecibos.Any())
             {
-                if (item.Selected)
+                foreach (var item in modelo.ListRecibos)
                 {
-                    var idRecibo = Convert.ToInt32(item.Value);
-                    var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
-                    if (recibo != null)
+                    if (item.Selected)
                     {
-                        modelo.ListRecibosIDs.Add(idRecibo);
-                        //modelo.Monto += recibo.Monto;
-                    }                    
+                        var idRecibo = Convert.ToInt32(item.Value);
+                        var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                        if (recibo != null)
+                        {
+                            modelo.ListRecibosIDs.Add(idRecibo);
+                            //modelo.Monto += recibo.Monto;
+                        }
+                    }
                 }
             }
 
@@ -620,6 +622,116 @@ namespace Prueba.Controllers
             }
         }
 
+
+        public async Task<IActionResult> DownloadImage(int id)
+        {
+            var pagoRecibido = await _context.PagoRecibidos.FindAsync(id);
+            if (pagoRecibido == null)
+            {
+                return NotFound();
+            }
+
+            // Forzar la descarga y codificar el nombre del archivo
+            return File(pagoRecibido.Imagen, "image/jpeg", "referencia.jpg");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">Id del pago recibido</param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireAdmin")]
+        public async Task<IActionResult> ConfirmarPagoRecibidoPropietario(int id)
+        {
+            // buscar pago recibido 
+            var pagoRecibido = await _context.PagoRecibidos.FindAsync(id);
+
+            if (pagoRecibido != null)
+            {
+                var referencia = await _context.ReferenciasPrs.FirstOrDefaultAsync(c => c.IdPagoRecibido == pagoRecibido.IdPagoRecibido);
+                // buscar pagoPropiedad
+                var pagoPropiedad = await _context.PagoPropiedads.FirstOrDefaultAsync(c => c.IdPago == pagoRecibido.IdPagoRecibido);
+                // buscar pagoRecibos
+                var pagoRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pagoRecibido.IdPagoRecibido).ToListAsync();
+                // buscar recibos relacionados al pago
+                List<ReciboCobro> recibos = new List<ReciboCobro>();
+                if (pagoRecibos != null && pagoRecibos.Any())
+                {
+                    foreach (var relacion in pagoRecibos)
+                    {
+                        var recibo = await _context.ReciboCobros.FindAsync(relacion.IdRecibo);
+                        if (recibo != null)
+                        {
+                            recibos.Add(recibo);
+                        }
+                    }
+                }
+                // actualizar recibos.Abonados, deuda y saldo
+                var result = await _repoPagosRecibidos.ConfirmarPagoPropietario(recibos, pagoRecibido, pagoPropiedad);
+
+                if (result == "exito")
+                {
+                    // propiedad y condominio
+                    if (pagoPropiedad != null)
+                    {
+                        var propiedad = await _context.Propiedads
+                            .Include(c => c.IdUsuarioNavigation)
+                            .Include(c => c.IdCondominioNavigation)
+                            .Where(c => c.IdPropiedad == pagoPropiedad.IdPropiedad)
+                            .FirstOrDefaultAsync();
+
+                        if (propiedad != null)
+                        {
+                            var bancoSubcuenta = await _context.SubCuenta.FindAsync(Convert.ToInt32(referencia.Banco));
+
+                            referencia.Banco = bancoSubcuenta.Descricion;
+
+                            var envioCorreo = _serviceEmail.ConfirmacionPago(propiedad.IdCondominioNavigation.Email,
+                                propiedad.IdUsuarioNavigation.Email,
+                                propiedad,
+                                recibos,
+                                pagoRecibido,
+                                referencia,
+                                propiedad.IdCondominioNavigation.ClaveCorreo);
+
+                            // si se envia el correo 
+                            if (envioCorreo.Contains("OK"))
+                            {
+                                return RedirectToAction("PagosRecibidosAdmin");
+
+                            }
+                            else
+                            {
+                                var modeloError = new ErrorViewModel()
+                                {
+                                    RequestId = envioCorreo
+                                };
+
+                                return View("Error", modeloError);
+                            }
+
+                        }
+                    }
+
+                    TempData.Keep();
+
+                    return RedirectToAction("PagosRecibidosAdmin");
+
+                }
+                else
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = result
+                    };
+
+                    return View("Error", modeloError);
+                }
+
+            }
+
+            return View();
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -674,11 +786,6 @@ namespace Prueba.Controllers
                         {
                             referencia = await _context.ReferenciasPrs.FirstAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
                         }
-
-                        pagoPropiedad.Rectificado = true;
-                        // guardar 
-                        _context.PagoPropiedads.Update(pagoPropiedad);
-                        await _context.SaveChangesAsync();
 
                         // enviar correo
                         var resultado = _serviceEmail.RectificarPago(condominio.Email, usuario.Email, condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);

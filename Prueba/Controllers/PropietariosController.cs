@@ -129,40 +129,7 @@ namespace Prueba.Controllers
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> RegistrarPagos()
-        {
-            try
-            {
-                var modelo = new PagoRecibidoVM();
-
-                string idPropietario = TempData.Peek("idUserLog").ToString();
-
-                var propiedades = from c in _context.Propiedads
-                                  where c.IdUsuario == idPropietario
-                                  select c;                
-
-                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
-
-                TempData.Keep();
-
-                return View(modelo);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
-
-                return View("Error", modeloError);
-            }
-
-
-        }
+        
 
         /// <summary>
         /// 
@@ -224,6 +191,8 @@ namespace Prueba.Controllers
             return Json(modelo);
         }
 
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -231,6 +200,41 @@ namespace Prueba.Controllers
         public IActionResult Comprobante()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> RegistrarPagos()
+        {
+            try
+            {
+                var modelo = new PagoRecibidoVM();
+
+                string idPropietario = TempData.Peek("idUserLog").ToString();
+
+                var propiedades = from c in _context.Propiedads
+                                  where c.IdUsuario == idPropietario
+                                  select c;
+
+                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
+
+                TempData.Keep();
+
+                return View(modelo);
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+
+
         }
 
         /// <summary>
@@ -267,19 +271,48 @@ namespace Prueba.Controllers
 
                 modelo.IdCondominio = idCondominio;
 
+                if (modelo.ListRecibos != null && modelo.ListRecibos.Any())
+                {
+                    foreach (var item in modelo.ListRecibos)
+                    {
+                        if (item.Selected)
+                        {
+                            var idRecibo = Convert.ToInt32(item.Value);
+                            var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                            if (recibo != null)
+                            {
+                                modelo.ListRecibosIDs.Add(idRecibo);
+                                //modelo.Monto += recibo.Monto;
+                            }
+                        }
+                    }
+                }
+                
+
                 string uniqueFileName = null;  //to contain the filename
                 if (file != null)  //handle iformfile
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "ComprobantesPU");
                     uniqueFileName = file.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
                         file.CopyTo(fileStream);
+
+                    }
+
+                    using (var fileStream = file.OpenReadStream())
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            fileStream.CopyTo(memoryStream);
+                            modelo.Imagen = memoryStream.ToArray();
+                        }
                     }
                 }
 
-                modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
+                //modelo.Imagen = Encoding.UTF8.GetBytes(uniqueFileName); //fill the image property
 
                 var resultado = await _repoPagosRecibidos.RegistrarPagoPropietario(modelo);
 
@@ -288,7 +321,6 @@ namespace Prueba.Controllers
                 {
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
                     var condominio = await _context.Condominios.FindAsync(modelo.IdCondominio);
-                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
 
                     var comprobante = new ComprobanteVM()
                     {
@@ -302,7 +334,7 @@ namespace Prueba.Controllers
                             IdCondominio = modelo.IdCondominio,
                             Fecha = modelo.Fecha,
                             FormaPago = modelo.Pagoforma == FormaPago.Transferencia,
-                            Monto = recibo.Monto
+                            Monto = modelo.Monto
                         },
                         Mensaje = "Gracias por su pago!"
                     };

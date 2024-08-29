@@ -2875,11 +2875,24 @@ namespace Prueba.Services
                                 });
 
                                 var referencia = _context.ReferenciasPrs.FirstOrDefault(c => c.IdPagoRecibido == pago.IdPagoRecibido);
+                                if (referencia != null)
+                                {
+                                    var banco = _context.CodigoCuentasGlobals.Find(Convert.ToInt32(referencia.Banco));
+                                    var subcuenta = _context.SubCuenta.First(c => c.Id == banco.IdSubCuenta);
 
-                                tabla.Cell().Padding(5).Text(pago.FormaPago ? "Transferencia" : "Efectivo").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text(referencia != null ? referencia.Banco.ToString() : "Efectivo").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text(referencia != null ? referencia.NumReferencia.ToString() : "Efectivo").FontColor("#607080").FontSize(8);
-                                tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text("Transferencia").FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text(subcuenta.Descricion.ToString()).FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text(referencia.NumReferencia.ToString()).FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+                                }
+                                else
+                                {
+                                    tabla.Cell().Padding(5).Text("Efectivo").FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text("Efectivo").FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text("Efectivo").FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+                                }
+                                
 
                             });
 

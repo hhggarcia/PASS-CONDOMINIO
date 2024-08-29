@@ -323,11 +323,7 @@ namespace Prueba.Controllers
             var relacionGasto = await _context.RelacionGastos.FindAsync(id);
             if (relacionGasto != null)
             {
-                var result = await _repoRelacionGastos.DeleteRecibosCobroRG(id);
-
-                var transaccions = await _context.RelacionGastoTransaccions.Where(c => c.IdRelacionGasto == id).ToListAsync();
-
-                _context.RelacionGastoTransaccions.RemoveRange(transaccions);
+                var result = await _repoRelacionGastos.DeleteRecibosCobroRG(id);               
 
                 if (result)
                 {
@@ -638,7 +634,15 @@ namespace Prueba.Controllers
                                         foreach (var item in individuales)
                                         {
                                             item.Activo = false;
+                                            var relacionTransaccionInd = new RelacionGastoTransaccion
+                                            {
+                                                IdRelacionGasto = relacionGasto.IdRgastos,
+                                                IdTransaccion = item.IdTransaccion
+                                            };
+
                                             _context.Transaccions.Update(item);
+                                            _context.RelacionGastoTransaccions.Add(relacionTransaccionInd);
+
                                         }
                                     }
                                     var credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;

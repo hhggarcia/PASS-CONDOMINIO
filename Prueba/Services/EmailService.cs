@@ -6,13 +6,13 @@ using MimeKit.Text;
 using Prueba.Models;
 using Prueba.ViewModels;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Prueba.Services
 {
     public interface IEmailService
     {
         void SendEmail(RegisterConfirm request);
-        void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password);
         string RectificarPago(string EmailFrom, string EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia);
         void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
         void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
@@ -20,6 +20,7 @@ namespace Prueba.Services
         string SendEmailRG(EmailAttachmentPdf model);
         string SendEmailAttachement(EmailAttachmentPdf model);
         string SendEmailAList(EmailAttachmentPdf model, IList<string> receptores);
+        string ConfirmacionPago(string EmailFrom, string EmailTo, Propiedad propiedad, IList<ReciboCobro> recibos, PagoRecibido pago, ReferenciasPr referencia, string password);
     }
     public class EmailService : IEmailService
     {
@@ -42,57 +43,113 @@ namespace Prueba.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
-        public void ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, ReciboCobro reciboCobro, PagoRecibido pagoRecibido, String password)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="EmailFrom"></param>
+        /// <param name="EmailTo"></param>
+        /// <param name="propiedad"></param>
+        /// <param name="recibos"></param>
+        /// <param name="pago"></param>
+        /// <param name="referencia"></param>
+        /// <param name="password"></param>
+        public string ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, IList<ReciboCobro> recibos, PagoRecibido pago, ReferenciasPr referencia, String password)
         {
 
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
             email.To.Add(MailboxAddress.Parse(EmailTo));
-            email.Subject = "Confirmación de pago";
-            email.Body = new TextPart(TextFormat.Html)
-            {
-                Text =
-                    $@"
-                        <html>
-                               <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 0; padding: 0;"">
+            email.Subject = "Confirmación de pago " + propiedad.Codigo;
 
-                                    <h3 style=""color: #3950a2;"">{{email.Subject}}</h3>
+            //var tableBody = new StringBuilder(); // Use StringBuilder for efficiency
+
+            //// Build table header row
+            //tableBody.AppendLine("<tr>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Recibo</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Fecha Emisión</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Monto</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Mora</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Indexación</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Abonado</th>");
+            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Total a Pagar</th>");
+            //// Add additional column headers as needed
+
+            //tableBody.AppendLine("</tr>");
+
+            //// Loop through recibos and build table rows
+            //foreach (var recibo in recibos)
+            //{
+            //    tableBody.AppendLine("<tr>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Mes}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Fecha.ToString("dd/MM/yyyy")}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Monto.ToString("N")}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.MontoMora.ToString("N")}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.MontoIndexacion.ToString("N")}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Abonado.ToString("N")}</td>");
+            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.TotalPagar.ToString("N")}</td>");
+
+            //    // Add values for additional columns
+
+            //    tableBody.AppendLine("</tr>");
+            //}
+
+            // Build the HTML body with the table
+            var htmlBody = $@"
+                    <html>
+                        <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 5rem; padding: 2rem;"">
+                            
+                                <div style="" margin: 1rem;"">
+                                    <h3 style=""color: #3950a2;"">{email.Subject}</h3>
                                     <h4>¡Gracias por realizar su pago!</h4>
                                     <p>Su pago fue confirmado con éxito. Se detallan los datos:</p>
-
-                                    <table style=""border-collapse: collapse; width: 100%;"">
+                                </div>
+                            
+                                <div
+                                    style="" margin: 0 auto; width: 100%;
+                                      overflow-x: auto;
+                                    ""
+                                  >
+                                    <table border='1' style='border-collapse: collapse; width: 100%'>
                                         <tr>
-                                            <th style=""background-color: #3950a2; color: white;"">Recibo</th>
-                                            <th style=""background-color: #3950a2; color: white;"">Fecha</th>
-                                            <th style=""background-color: #3950a2; color: white;"">Deuda</th>
-                                            <th style=""background-color: #3950a2; color: white;"">Abonado</th>
-                                            <th style=""background-color: #3950a2; color: white;"">Monto</th>
+                                            <th style='background-color: #3950a2; color: white; text-align: center; padding: 10px;'>Fecha</th>
+                                            <th style='background-color: #3950a2; color: white; text-align: center; padding: 10px;'>Método de Pago</th>
+                                            <th style='background-color: #3950a2; color: white; text-align: center; padding: 10px;'>Referencia #</th>
+                                            <th style='background-color: #3950a2; color: white; text-align: center; padding: 10px;'>Banco</th>
+                                            <th style='background-color: #3950a2; color: white; text-align: center; padding: 10px;'>Monto</th>
                                         </tr>
                                         <tr>
-                                            <td>{reciboCobro.IdReciboCobro}</td>
-                                            <td>{DateTime.Now.ToString("dd/MM/yyyy")}</td>
-                                            <td>{propiedad.Saldo + propiedad.Deuda} Bs</td>
-                                            <td>{reciboCobro.Abonado} Bs</td>
-                                            <td>{pagoRecibido.MontoRef} Bs</td>
+                                            <td style='text-align: center; padding: 10px;'>{pago.Fecha.ToString("dd/MM/yyyy")}</td>
+                                            <td style='text-align: center; padding: 10px;'>{(pago.FormaPago ? "Transferencia" : "Efectivo")}</td>
+                                            <td style='text-align: center; padding: 10px;'>{referencia.NumReferencia}</td>
+                                            <td style='text-align: center; padding: 10px;'>{referencia.Banco}</td>
+                                            <td style='text-align: center; padding: 10px;'>{pago.Monto.ToString("N")} Bs</td>
                                         </tr>
                                     </table>
+                                    <hr/>                                    
+                                </div>                                
 
-                                    <div class=""footer"" style=""background-color: #333; color: #fff; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;"">
-                                        Desarrollado por: Password Technology C.A.
-                                    </div>
+                                <div class=""footer"" style='color: #3950a2; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;'>
+                                    Desarrollado por: Password Technology C.A.
+                                </div>
+                                                      
+                        </body>
+                    </html>";
 
-                                </body>
-
-                        </html>"
+            email.Body = new TextPart(TextFormat.Html)
+            {
+                Text = htmlBody
             };
 
             using var smtp = new SmtpClient();
             smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
             smtp.Authenticate(EmailFrom, password);
-            smtp.Send(email);
+            var result = smtp.Send(email);
             smtp.Disconnect(true);
+
+            return result;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -160,7 +217,7 @@ namespace Prueba.Services
             catch (Exception ex)
             {
                 return $"Error al enviar el correo: {ex.Message}";
-            }            
+            }
         }
         public void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password)
         {

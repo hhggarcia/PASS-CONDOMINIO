@@ -19,7 +19,6 @@
         </a>
     </div>
 
-
     <!-- Content Row -->
     <div class="row">
         <div class="col-lg-12 mb-4">
@@ -30,7 +29,6 @@
                     <h6 class="m-0 font-weight-bold text-primary">
                         Verifique los Pagos Recibidos
                     </h6>
-
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -85,9 +83,17 @@
                                                                     <td>Efectivo</td>
                                                                 }
                                                                 <td>
+                                                                    @if (pago.Imagen != null)
+                                                                    {
+                                                                        <a asp-action="DownloadImage" asp-route-id="@pago.IdPagoRecibido">
+                                                                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                                                                        </a>
 
+                                                                        
+                                                                    }
                                                                     <a class="btn btn-outline-success"
-                                                                       asp-action="ConfirmarPagoRecibido"
+                                                                    asp-controller="PagoRecibidos"
+                                                                       asp-action="ConfirmarPagoRecibidoPropietario"
                                                                        asp-route-id="@pago.IdPagoRecibido">
                                                                         Confirmar Pago
                                                                     </a>

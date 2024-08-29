@@ -13,6 +13,7 @@ namespace Prueba.Repositories
 {
     public interface IPagosRecibidosRepository
     {
+        Task<string> ConfirmarPagoPropietario(IList<ReciboCobro> recibos, PagoRecibido pago, PagoPropiedad? pagoPropiedad);
         Task<CobroTransitoVM> FormCobroTransito(int id);
         Task<PagoFacturaEmitidaVM> FormPagoFacturaEmitida(int id);
         Task<IndexPagoFacturaEmitidaVM> GetPagosFacturasEmitidas(int id);
@@ -1087,9 +1088,15 @@ namespace Prueba.Repositories
 
                     //var ejemplo = await _context.Propiedads.FindAsync()
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                    var recibo = await _context.ReciboCobros.FindAsync(modelo.IdRecibo);
-                    if (propiedad != null && recibo != null)
+                   
+                    if (propiedad != null)
                     {
+                        var recibos = from rs in modelo.ListRecibosIDs
+                                      join r in _context.ReciboCobros.ToList()
+                                      on rs equals r.IdReciboCobro
+                                      where r.IdPropiedad == propiedad.IdPropiedad
+                                      select r;
+
                         var pago = new PagoRecibido()
                         {
                             //IdPropiedad = modelo.IdPropiedad,
@@ -1098,13 +1105,12 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto,
                             Confirmado = false,
                             Imagen = modelo.Imagen,
-                            Monto = recibo.Monto,
+                            Monto = modelo.Monto,
                             Activo = true
                         };
 
                         // validar num referencia repetido
                         decimal montoReferencia = 0;
-                        var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
 
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(propiedad.IdCondominio);
 
@@ -1128,11 +1134,11 @@ namespace Prueba.Repositories
                             }
                             else if (moneda.First().Equals(monedaPrincipal.First()))
                             {
-                                montoReferencia = recibo.Monto / monedaPrincipal.First().ValorDolar;
+                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
                             }
                             else if (!moneda.First().Equals(monedaPrincipal.First()))
                             {
-                                montoReferencia = recibo.Monto / moneda.First().ValorDolar;
+                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
                             }
 
                             // disminuir saldo de la cuenta de CAJA
@@ -1140,7 +1146,7 @@ namespace Prueba.Repositories
                                                 where m.IdCodCuenta == idCaja.IdCodCuenta
                                                 select m).First();
 
-                            monedaCuenta.SaldoFinal -= recibo.Monto;
+                            monedaCuenta.SaldoFinal -= modelo.Monto;
                             // añadir al pago
 
                             pago.FormaPago = false;
@@ -1163,20 +1169,24 @@ namespace Prueba.Repositories
                                     IdPropiedad = propiedad.IdPropiedad,
                                     Confirmado = false,
                                     Rectificado = false,
-                                    Activo = false
+                                    Activo = true
                                 };
 
-                                var pagoRecibo = new PagosRecibo()
+                                foreach (var recibo in recibos)
                                 {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdRecibo = modelo.IdRecibo
-                                };
+                                    var pagoRecibo = new PagosRecibo()
+                                    {
+                                        IdPago = pago.IdPagoRecibido,
+                                        IdRecibo = recibo.IdReciboCobro
+                                    };
 
-                                recibo.EnProceso = true;
+                                    recibo.EnProceso = true;
+                                    
+                                    _context.ReciboCobros.Update(recibo);
+                                    _context.PagosRecibos.Add(pagoRecibo);
+                                }                               
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);
-                                _context.PagosRecibos.Add(pagoRecibo);
-                                _context.ReciboCobros.Update(recibo);
 
                                 await _context.SaveChangesAsync();
 
@@ -1209,11 +1219,11 @@ namespace Prueba.Repositories
                             }
                             else if (moneda.First().Equals(monedaPrincipal.First()))
                             {
-                                montoReferencia = recibo.Monto / monedaPrincipal.First().ValorDolar;
+                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
                             }
                             else if (!moneda.First().Equals(monedaPrincipal.First()))
                             {
-                                montoReferencia = recibo.Monto / moneda.First().ValorDolar;
+                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
                             }
 
                             pago.FormaPago = true;
@@ -1230,15 +1240,6 @@ namespace Prueba.Repositories
 
                             if (valor > 0)
                             {
-                                var pagoPropiedad = new PagoPropiedad()
-                                {
-                                    IdPago = pago.IdPagoRecibido,
-                                    IdPropiedad = propiedad.IdPropiedad,
-                                    Confirmado = false,
-                                    Rectificado = false,
-                                    Activo = false
-                                };
-
                                 var referencia = new ReferenciasPr()
                                 {
                                     IdPagoRecibido = pago.IdPagoRecibido,
@@ -1246,18 +1247,32 @@ namespace Prueba.Repositories
                                     Banco = banco.Id.ToString()
                                 };
 
-                                var pagoRecibo = new PagosRecibo()
+
+                                var pagoPropiedad = new PagoPropiedad()
                                 {
                                     IdPago = pago.IdPagoRecibido,
-                                    IdRecibo = modelo.IdRecibo
+                                    IdPropiedad = propiedad.IdPropiedad,
+                                    Confirmado = false,
+                                    Rectificado = false,
+                                    Activo = true
                                 };
 
-                                recibo.EnProceso = true;
+                                foreach (var recibo in recibos)
+                                {
+                                    var pagoRecibo = new PagosRecibo()
+                                    {
+                                        IdPago = pago.IdPagoRecibido,
+                                        IdRecibo = recibo.IdReciboCobro
+                                    };
 
-                                _context.PagoPropiedads.Add(pagoPropiedad);
-                                _context.PagosRecibos.Add(pagoRecibo);
-                                _context.ReciboCobros.Update(recibo);
+                                    recibo.EnProceso = true;
+
+                                    _context.ReciboCobros.Update(recibo);
+                                    _context.PagosRecibos.Add(pagoRecibo);
+                                }
+
                                 _context.ReferenciasPrs.Add(referencia);
+                                _context.PagoPropiedads.Add(pagoPropiedad);
 
                                 await _context.SaveChangesAsync();
 
@@ -1282,6 +1297,120 @@ namespace Prueba.Repositories
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="recibos"></param>
+        /// <param name="pago"></param>
+        /// <param name="referencia"></param>
+        /// <param name="pagoPropiedad"></param>
+        /// <returns></returns>
+        public async Task<String> ConfirmarPagoPropietario(IList<ReciboCobro> recibos, PagoRecibido pago, PagoPropiedad? pagoPropiedad)
+        {
+            try
+            {
+                var result = string.Empty;
+
+                if (pagoPropiedad != null)
+                {
+                    var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
+
+                    if (propiedad != null)
+                    {
+                        #region PAGO RECIBIENDO CUALQUIER MONTO
+                        // PROCESO DE CONFIRMAR PAGO
+                        var montoPago = pago.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
+
+                        if (recibos != null && recibos.Any())
+                        {
+                            foreach (var recibo in recibos)
+                            {
+                                decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+
+                                if (pendientePago != 0 && pendientePago > montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    montoPago = 0;
+                                }
+                                else if (pendientePago != 0 && pendientePago < montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago -= pendientePago;
+                                }
+                                else if (pendientePago != 0 && pendientePago == montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago = 0;
+                                }
+
+                                recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+
+                                _context.ReciboCobros.Update(recibo);
+                            }
+
+                            await _context.SaveChangesAsync();
+
+                            var recibosActualizados = await _context.ReciboCobros
+                                .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                            propiedad.Deuda = recibosActualizados
+                                .Where(c => !c.Pagado && !c.ReciboActual)
+                                .Sum(c => c.TotalPagar);
+
+                            if (montoPago > 0)
+                            {
+                                propiedad.Creditos += montoPago;
+                            }
+
+                            //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                            if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
+                            {
+                                propiedad.Solvencia = true;
+                            }
+                            else
+                            {
+                                propiedad.Solvencia = false;
+                            }
+
+                            pago.Confirmado = true;
+                            pagoPropiedad.Confirmado = true;
+
+                            _context.Propiedads.Update(propiedad);
+                            _context.PagoRecibidos.Update(pago);
+                            _context.PagoPropiedads.Update(pagoPropiedad);
+
+                            await _context.SaveChangesAsync();
+
+                            // REGISTRAR ASIENTOS CONTABLES ????
+
+                            result = "exito";
+                        }
+                        else
+                        {
+                            result = "Esta propiedad no tiene recibos pendiente!";
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        result = "No existe esta Propiedad. Comunicarse con los administradores";
+                    }
+                }
+                else
+                {
+                    result = "Error al buscar el pago de esta propiedad";
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         public async Task<string> RegistrarPagoPropietarioAdmin(PagoRecibidoVM modelo)
         {
             try
@@ -1594,7 +1723,7 @@ namespace Prueba.Repositories
 
                                 #region PAGO RECIBIENDO CUALQUIER MONTO
                                 // PROCESO DE CONFIRMAR PAGO
-                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos
+                                var montoPago = modelo.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
 
                                 if (recibos != null && recibos.Any())
                                 {
@@ -1623,15 +1752,7 @@ namespace Prueba.Repositories
                                         recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                         recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
-
-                                        var pagoRecibo = new PagosRecibo
-                                        {
-                                            IdPago = pago.IdPagoRecibido,
-                                            IdRecibo = recibo.IdReciboCobro
-                                        };
-
                                         _context.ReciboCobros.Update(recibo);
-                                        _context.PagosRecibos.Add(pagoRecibo);
                                     }
 
                                     await _context.SaveChangesAsync();
@@ -1642,12 +1763,6 @@ namespace Prueba.Repositories
                                     propiedad.Deuda = recibosActualizados
                                         .Where(c => !c.Pagado && !c.ReciboActual)
                                         .Sum(c => c.TotalPagar);
-
-                                    propiedad.Saldo = recibosActualizados
-                                        .Where(c => c.ReciboActual)
-                                        .Sum(c => c.Monto - c.Abonado);
-
-                                    propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
 
                                     if (montoPago > 0)
                                     {
@@ -1672,7 +1787,7 @@ namespace Prueba.Repositories
                                 {
                                     return "Esta propiedad no tiene recibos pendiente!";
                                 }
-                                #endregion                                
+                                #endregion                        
 
                                 // REGISTRAR ASIENTOS CONTABLES
                                 int numAsiento = 1;

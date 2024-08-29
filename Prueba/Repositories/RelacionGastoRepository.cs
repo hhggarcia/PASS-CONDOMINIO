@@ -939,11 +939,9 @@ namespace Prueba.Repositories
                         if (transaccion != null)
                         {
                             transaccion.Activo = true;
-                            _context.Transaccions.Update(transaccion);
-                        }
+                            _context.Transaccions.Update(transaccion);                        }
                     }
 
-                    await _context.SaveChangesAsync();
                 }
 
                 foreach (var recibo in recibos)
@@ -1018,7 +1016,9 @@ namespace Prueba.Repositories
                     item.ReciboActual = true;
 
                     _context.ReciboCobros.Update(item);
-                }
+                }               
+
+                _context.RelacionGastoTransaccions.RemoveRange(transaccionesRG);
 
                 await _context.SaveChangesAsync();
 
