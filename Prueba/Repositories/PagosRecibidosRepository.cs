@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Ocsp;
 using Prueba.Context;
 using Prueba.Models;
@@ -14,6 +15,7 @@ namespace Prueba.Repositories
     public interface IPagosRecibidosRepository
     {
         Task<string> ConfirmarPagoPropietario(IList<ReciboCobro> recibos, PagoRecibido pago, PagoPropiedad? pagoPropiedad);
+        Task<string> EliminarPagoPropietarioConfirmado(PagoPropiedad pagoPropiedad);
         Task<CobroTransitoVM> FormCobroTransito(int id);
         Task<PagoFacturaEmitidaVM> FormPagoFacturaEmitida(int id);
         Task<IndexPagoFacturaEmitidaVM> GetPagosFacturasEmitidas(int id);
@@ -1425,7 +1427,7 @@ namespace Prueba.Repositories
                         {
                             IdCondominio = modelo.IdCondominio,
                             Fecha = modelo.Fecha,
-                            Concepto = modelo.Concepto,
+                            Concepto = modelo.Concepto + " - " + propiedad.Codigo,
                             Confirmado = true,
                             Monto = modelo.Monto,
                             Activo = true
@@ -1538,9 +1540,16 @@ namespace Prueba.Repositories
                                             montoPago = 0;
                                         }
 
+                                        var pagoRecibo = new PagosRecibo()
+                                        {
+                                            IdPago = pago.IdPagoRecibido,
+                                            IdRecibo = recibo.IdReciboCobro
+                                        };
+
                                         recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                         recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
+                                        _context.PagosRecibos.Add(pagoRecibo);
                                         _context.ReciboCobros.Update(recibo);
                                     }
 
@@ -1752,7 +1761,14 @@ namespace Prueba.Repositories
                                         recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                         recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
+                                        var pagoRecibo = new PagosRecibo()
+                                        {
+                                            IdPago = pago.IdPagoRecibido,
+                                            IdRecibo = recibo.IdReciboCobro
+                                        };
+
                                         _context.ReciboCobros.Update(recibo);
+                                        _context.PagosRecibos.Add(pagoRecibo);
                                     }
 
                                     await _context.SaveChangesAsync();
@@ -1970,6 +1986,115 @@ namespace Prueba.Repositories
             {
                 return ex.Message;
             }
+        }
+
+        public async Task<string> EliminarPagoPropietarioConfirmado(PagoPropiedad pagoPropiedad)
+        {
+            try
+            {
+                var result = string.Empty;
+                // BUSCAR PROPIEDAD Y RECIBOS AFECTADOS
+                var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
+                var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
+
+                if (propiedad != null && pago != null)
+                {
+                    // BUSCAR RECIBOS RELACIONADOS AL PAGO
+                    var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+                    var recibos = await (from r in _context.ReciboCobros
+                                       join c in _context.PagosRecibos
+                                       on r.IdReciboCobro equals c.IdRecibo
+                                       where c.IdPago == pago.IdPagoRecibido
+                                       select r).ToListAsync();
+                    var montoPago = pago.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
+
+                    // ACTUALIZAR RECIBOS
+                    // ---> ABONADO | TOTAL A PAGAR
+                    if (recibos != null)
+                    {
+                        foreach (var recibo in recibos)
+                        {
+                            decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+
+                            if (pendientePago != 0 && pendientePago > montoPago)
+                            {
+                                recibo.Abonado -= montoPago;
+                                montoPago = 0;
+                            }
+                            else if (pendientePago != 0 && pendientePago < montoPago)
+                            {
+                                recibo.Abonado -= montoPago;
+                                recibo.Pagado = true;
+                                montoPago -= pendientePago;
+                            }
+                            else if (pendientePago != 0 && pendientePago == montoPago)
+                            {
+                                recibo.Abonado -= montoPago;
+                                recibo.Pagado = true;
+                                montoPago = 0;
+                            }
+
+                            recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                            recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+
+                            _context.ReciboCobros.Update(recibo);
+                        }
+                        // ACTUALIZAR PROPIEDAD
+
+                        // ---> SALDO | DEUDA 
+
+                        // ----> VERIFICAR SOLVENCIA
+                        await _context.SaveChangesAsync();
+
+                        var recibosActualizados = await _context.ReciboCobros
+                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                        propiedad.Deuda = recibosActualizados
+                            .Where(c => !c.Pagado && !c.ReciboActual)
+                            .Sum(c => c.TotalPagar);
+
+                        if (montoPago > 0)
+                        {
+                            propiedad.Creditos -= montoPago;
+                        }
+
+                        //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                        if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
+                        {
+                            propiedad.Solvencia = true;
+                        }
+                        else
+                        {
+                            propiedad.Solvencia = false;
+                        }
+
+                        pago.Confirmado = true;
+                        pagoPropiedad.Confirmado = true;
+
+                        _context.Propiedads.Update(propiedad);
+                        _context.PagoRecibidos.Update(pago);
+                        _context.PagoPropiedads.Update(pagoPropiedad);
+
+                        await _context.SaveChangesAsync();
+
+                        // REGISTRAR ASIENTOS CONTABLES ????
+                        // ELIMINAR
+                        // ---> PagoPropiedad
+                        // ---> PagosRecibos
+                        // ---> Referencia si aplica
+                        // ---> PagoRecibido
+                    }
+
+
+                }
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                return "Error al eliminar Pago: " + ex.Message;
+            }            
         }
     }
 }

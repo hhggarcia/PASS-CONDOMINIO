@@ -91,8 +91,15 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
-                var idCuenta = _context.SubCuenta.Where(c => c.Id == transaccion.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-                var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                var idCuenta = _context.SubCuenta
+                    .Where(c => c.Id == transaccion.IdCodCuenta)
+                    .Select(c => c.Id)
+                    .FirstOrDefault();
+
+                var idCodCuenta = _context.CodigoCuentasGlobals
+                    .Where(c => c.IdSubCuenta == idCuenta)
+                    .Select(c => c.IdCodCuenta)
+                    .FirstOrDefault();
                 // buscar grupo de la cuenta
                 var grupo = await (from g in _context.GrupoGastos
                                    join cg in _context.CuentasGrupos

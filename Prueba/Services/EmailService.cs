@@ -57,45 +57,17 @@ namespace Prueba.Services
         public string ConfirmacionPago(String EmailFrom, String EmailTo, Propiedad propiedad, IList<ReciboCobro> recibos, PagoRecibido pago, ReferenciasPr referencia, String password)
         {
 
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUsername").Value));
-            email.To.Add(MailboxAddress.Parse(EmailTo));
-            email.Subject = "Confirmación de pago " + propiedad.Codigo;
+            try
+            {
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(EmailFrom));
+                email.To.Add(MailboxAddress.Parse(EmailTo));
+                email.Subject = "Confirmación de pago " + propiedad.Codigo;
+                var result = string.Empty;
 
-            //var tableBody = new StringBuilder(); // Use StringBuilder for efficiency
-
-            //// Build table header row
-            //tableBody.AppendLine("<tr>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Recibo</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Fecha Emisión</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Monto</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Mora</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Indexación</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Abonado</th>");
-            //tableBody.AppendLine("  <th style=\"background-color: #3950a2; color: white; text-align: center; padding: 10px;\">Total a Pagar</th>");
-            //// Add additional column headers as needed
-
-            //tableBody.AppendLine("</tr>");
-
-            //// Loop through recibos and build table rows
-            //foreach (var recibo in recibos)
-            //{
-            //    tableBody.AppendLine("<tr>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Mes}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Fecha.ToString("dd/MM/yyyy")}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Monto.ToString("N")}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.MontoMora.ToString("N")}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.MontoIndexacion.ToString("N")}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.Abonado.ToString("N")}</td>");
-            //    tableBody.AppendLine($"  <td style=\"text-align: center; padding: 10px;\">{recibo.TotalPagar.ToString("N")}</td>");
-
-            //    // Add values for additional columns
-
-            //    tableBody.AppendLine("</tr>");
-            //}
-
-            // Build the HTML body with the table
-            var htmlBody = $@"
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text = $@"
                     <html>
                         <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 5rem; padding: 2rem;"">
                             
@@ -134,20 +106,21 @@ namespace Prueba.Services
                                 </div>
                                                       
                         </body>
-                    </html>";
+                    </html>"
+                };
 
-            email.Body = new TextPart(TextFormat.Html)
+                using var smtp2 = new SmtpClient();
+                smtp2.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtp2.Authenticate(EmailFrom, password);
+                result = smtp2.Send(email);
+                smtp2.Disconnect(true);
+
+                return result;
+            }
+            catch (Exception ex)
             {
-                Text = htmlBody
-            };
-
-            using var smtp = new SmtpClient();
-            smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(EmailFrom, password);
-            var result = smtp.Send(email);
-            smtp.Disconnect(true);
-
-            return result;
+                return $"Error al enviar el correo: {ex.Message}";
+            }            
         }
 
         /// <summary>

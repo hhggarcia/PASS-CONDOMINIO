@@ -457,7 +457,7 @@ namespace Prueba.Repositories
                             numRet = compRetencionUltimo.Last().NumComprobante + 1;
                         }
 
-                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                         var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -476,7 +476,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -511,7 +511,7 @@ namespace Prueba.Repositories
                                 numRet = compRetIslrUltimo.Last().NumComprobante + 1;
                             }
 
-                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                             var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -528,7 +528,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
                                 FechaEmision = modelo.Fecha
                             };
@@ -555,7 +555,7 @@ namespace Prueba.Repositories
                             numRet = compRetencionUltimo.Last().NumComprobante + 1;
                         }
 
-                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                         var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -574,7 +574,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -605,7 +605,7 @@ namespace Prueba.Repositories
                                 numRetIslr = compRetIslrUltimo.Last().NumComprobante + 1;
                             }
 
-                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                             var diferenciaCerosIslr = 14 - (numRetIslr.ToString().Length + stringNumRetFechaIslr.Length);
 
@@ -622,7 +622,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
                                 FechaEmision = modelo.Fecha
                             };
@@ -1009,7 +1009,7 @@ namespace Prueba.Repositories
                             numRet = compRetencionUltimo.Last().NumComprobante + 1;
                         }
 
-                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                         var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -1028,7 +1028,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -1063,7 +1063,7 @@ namespace Prueba.Repositories
                                 numRet = compRetIslrUltimo.Last().NumComprobante + 1;
                             }
 
-                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                            var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                             var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -1080,7 +1080,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                                 NumComprobante = numRet,
                                 FechaEmision = modelo.Fecha
                             };
@@ -1107,7 +1107,7 @@ namespace Prueba.Repositories
                             numRet = compRetencionUltimo.Last().NumComprobante + 1;
                         }
 
-                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                        var stringNumRetFecha = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                         var diferenciaCeros = 14 - (numRet.ToString().Length + stringNumRetFecha.Length);
 
@@ -1126,7 +1126,7 @@ namespace Prueba.Repositories
                             Alicuota = 16,
                             ImpIva = factura.Iva,
                             IvaRetenido = itemLibroCompra.RetIva,
-                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + ceros + numRet.ToString(),
+                            NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + ceros + numRet.ToString(),
                             NumComprobante = numRet
                         };
 
@@ -1157,7 +1157,7 @@ namespace Prueba.Repositories
                                 numRetIslr = compRetIslrUltimo.Last().NumComprobante + 1;
                             }
 
-                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString();
+                            var stringNumRetFechaIslr = DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("MM");
 
                             var diferenciaCerosIslr = 14 - (numRetIslr.ToString().Length + stringNumRetFechaIslr.Length);
 
@@ -1174,7 +1174,7 @@ namespace Prueba.Repositories
                                 Sustraendo = islr.Sustraendo,
                                 ValorRetencion = itemLibroCompra.RetIslr,
                                 TotalImpuesto = itemLibroCompra.RetIslr,
-                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString() + "-" + cerosIslr + numRetIslr.ToString(),
+                                NumCompRet = DateTime.Today.Year.ToString() + "-" + DateTime.Today.Month.ToString("MM") + "-" + cerosIslr + numRetIslr.ToString(),
                                 NumComprobante = numRetIslr,
                                 FechaEmision = modelo.Fecha
                             };

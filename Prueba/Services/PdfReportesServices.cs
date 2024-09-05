@@ -7,11 +7,13 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using NetTopologySuite.Index.HPRtree;
 using Prueba.Models;
+using System.Text.RegularExpressions;
 
 namespace Prueba.Services
 {
     public interface IPdfReportesServices
     {
+        Task<byte[]> ConciliacionPDF(ItemConciliacionVM modelo);
         Task<byte[]> Deudores(RecibosCreadosVM modelo, int id);
         Task<byte[]> DeudoresResumen(RecibosCreadosVM modelo, int id);
         byte[] EstadoCuentas(List<EstadoCuentasVM> modelo);
@@ -42,7 +44,7 @@ namespace Prueba.Services
             {
                 container.Page(page =>
                 {
-                    page.Size(PageSizes.A4);
+                    page.Size(PageSizes.A4.Landscape());
                     page.Margin(1, Unit.Centimetre);
                     page.Header().ShowOnce().Row(row =>
                     {
@@ -103,7 +105,7 @@ namespace Prueba.Services
                                    .Padding(5).Text("Crédito").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Saldo Actual").FontColor("#607080").Bold().FontSize(8);
+                                   .Padding(5).Text("Cuota del Mes").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Total a Pagar").FontColor("#607080").Bold().FontSize(8);
@@ -611,13 +613,13 @@ namespace Prueba.Services
                                     .Padding(5).Text("Nro. Comprobante").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().ColumnSpan(2).Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text("Monto Retenido").FontColor("#607080").Bold().FontSize(8);                             
+                                    .Padding(5).Text("Monto Retenido").FontColor("#607080").Bold().FontSize(8);
 
                                 });
 
 
                                 foreach (var comprobante in comprobantes)
-                                {                                   
+                                {
 
                                     tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                         .Padding(5).Text(comprobante.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(8);
@@ -773,6 +775,187 @@ namespace Prueba.Services
                 });
             })
          .GeneratePdf();
+            return data;
+        }
+
+        public async Task<byte[]> ConciliacionPDF(ItemConciliacionVM modelo)
+        {
+            var condominio = await _context.Condominios.FindAsync(modelo.ConciliacionAnterior.IdCondominio);
+
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().Row(row =>
+                    {
+                        row.RelativeItem().Padding(10).Column(col =>
+                        {
+                            col.Item().MaxWidth(100).MaxHeight(60).Image("wwwroot/images/yllenAzul.png");
+                            col.Item().PaddingTop(10).Text("Condominio " + condominio.Nombre).FontSize(10).FontColor("#004581").Bold();
+                            //col.Item().Text("Relación de Gastos").FontSize(10).FontColor("#004581").Bold();
+                        });
+
+                        row.RelativeItem().Padding(10).Column(col =>
+                        {
+                            //col.Item().MaxWidth(100).MaxHeight(60).Image("wwwroot/images/yllenAzul.png");
+                            col.Item().BorderBottom(1).PaddingBottom(5).AlignCenter().Text("RESUMEN CONCILIACIÓN BANCARIA").FontSize(8).FontColor("#004581").Bold();
+
+                            col.Item().Text("Fecha de emisión: " + modelo.ConciliacionAnterior.FechaEmision.ToString("dd/MM/yyyy")).FontSize(8).FontColor("#004581").Bold();
+                            col.Item().Text("Cuenta: " + modelo.SubCuenta.Descricion).FontSize(8).FontColor("#004581").Bold();
+                            col.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(TextStyle.Default.FontSize(8).FontColor("#004581").Bold());
+                                text.CurrentPageNumber();
+                                text.Span(" / ");
+                                text.TotalPages();
+                            });
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Item().Border(0).BorderColor("#D9D9D9").Table(tabla =>
+                           {
+                               tabla.ColumnsDefinition(columns =>
+                               {
+                                   columns.RelativeColumn();
+                                   columns.RelativeColumn();
+                                   columns.RelativeColumn();
+                                   columns.RelativeColumn();
+                               });
+
+                               tabla.Header(header =>
+                               {
+                                   header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo Inicial").FontColor("#607080").Bold().FontSize(8);
+
+                                   header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total Ingresos").FontColor("#607080").Bold().FontSize(8);
+
+                                   header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Total Egresos").FontColor("#607080").Bold().FontSize(8);
+
+                                   header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                  .Padding(5).Text("Saldo Final").FontColor("#607080").Bold().FontSize(8);
+
+
+                               });
+
+                               tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(modelo.ConciliacionAnterior.SaldoInicial.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                               tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(modelo.TotalIngreso.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                               tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(modelo.TotalEgreso.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                               tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                               .Padding(5).Text(modelo.ConciliacionAnterior.SaldoFinal.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                           });
+                            //x.Item().AlignCenter().Text("Transacciones del Mes: " + modelo.Transacciones.Fecha.ToString("MM/yyyy")).FontSize(10).FontColor("#004581").Bold();
+                            x.Spacing(10);
+                            x.Item().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    // fecha
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+
+                                    // para span de la descripcion
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+
+                                    // ingreso
+                                    columns.RelativeColumn();
+
+                                    // egreso 
+                                    columns.RelativeColumn();
+
+                                    // saldo
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Header(header =>
+                                {
+                                    header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Fecha").FontColor("#607080").Bold().FontSize(8);
+
+                                    header.Cell().ColumnSpan(4).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text("Descripción").FontColor("#607080").Bold().FontSize(8);
+
+                                    header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Ingreso").FontColor("#607080").Bold().FontSize(8);
+
+                                    header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Egreso").FontColor("#607080").Bold().FontSize(8);
+
+                                    header.Cell().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Saldo").FontColor("#607080").Bold().FontSize(8);
+
+                                });                                
+
+                                decimal saldo = modelo.ConciliacionAnterior.SaldoInicial;
+
+                                foreach (var item in modelo.Pagos)
+                                {
+
+                                    tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(item.Fecha.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(8);
+
+                                    tabla.Cell().ColumnSpan(4).Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                    .Padding(5).Text(item.Concepto).FontColor("#607080").FontSize(8);
+
+                                    if (item.TipoOperacion)
+                                    {
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text(item.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9")
+                                        .Padding(5).Text("0.00").FontColor("#607080").FontSize(8);
+
+                                        saldo += item.Monto;
+
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text(saldo.ToString("N")).FontColor("#607080").FontSize(8);
+                                    }
+                                    else
+                                    {
+
+
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9")
+                                        .Padding(5).Text("0.00").FontColor("#607080").FontSize(8);
+
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text(item.Monto.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                        saldo -= item.Monto;
+
+                                        tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
+                                        .Padding(5).Text(saldo.ToString("N")).FontColor("#607080").FontSize(8);
+                                    }
+
+
+                                }
+                            });
+                        });
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Technology").FontSize(8);
+                        });
+                });
+            }).GeneratePdf();
+
             return data;
         }
     }

@@ -92,6 +92,7 @@ namespace Prueba.Controllers
                 cobroTransito.MontoRef = cobroTransito.Monto / monedaPrincipal.ValorDolar;
                 cobroTransito.Activo = true;
                 _context.Add(cobroTransito);
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -184,7 +185,23 @@ namespace Prueba.Controllers
 
                 if (pagosCobros.Any())
                 {
+                    foreach (var item in pagosCobros)
+                    {
+                        var pago = await _context.PagoRecibidos.FindAsync(item.IdPagoRecibido);
+
+                        if (pago != null)
+                        {
+                            var referencia = await _context.ReferenciasPrs.FirstOrDefaultAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
+                            if (referencia != null)
+                            {
+                                _context.ReferenciasPrs.Remove(referencia);
+                            }
+                                
+                            _context.PagoRecibidos.Remove(pago);
+                        }
+                    }
                     _context.PagoCobroTransitos.RemoveRange(pagosCobros);
+
                 }
                 _context.CobroTransitos.Remove(cobroTransito);
             }

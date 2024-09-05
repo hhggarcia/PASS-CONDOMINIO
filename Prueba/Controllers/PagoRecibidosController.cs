@@ -824,14 +824,60 @@ namespace Prueba.Controllers
             }
         }
 
-        //[HttpPost]
-        //[Authorize(Policy = "RequireAdmin")]
-        //public IActionResult UsuarioContraseña(string contrasena)
-        //{
-        //    TempData["Contrasena"] = contrasena;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">Id PagoPropiedad</param>
+        /// <returns></returns>
+        [Authorize(Policy = "RequireAdmin")]
+        public async Task<IActionResult> DeletePagoPropietarioConfirmado(int id)
+        {
+            var pagoPropiedad = await _context.PagoPropiedads
+                .Include(c => c.IdPropiedadNavigation)
+                .Include(c => c.IdPagoNavigation)
+                .FirstOrDefaultAsync();
 
-        //    return Json(new { success = true, message = "Datos almacenados correctamente" });
-        //}
+            if (pagoPropiedad == null)
+            {
+                return NotFound();
+            }
+
+            return View(pagoPropiedad); 
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        [Authorize(Policy = "RequireAdmin")]
+        public async Task<IActionResult> DeletePagoPropietarioConfirmadoConfirm(int id)
+        {
+            var pagoPropiedad = await _context.PagoPropiedads
+                .Include(c => c.IdPropiedadNavigation)
+                .Include(c => c.IdPagoNavigation)
+                .FirstOrDefaultAsync();
+
+            if (pagoPropiedad == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _repoPagosRecibidos.EliminarPagoPropietarioConfirmado(pagoPropiedad);
+
+            if (result == "exito")
+            {
+                pagoPropiedad.Activo = false;
+                return RedirectToAction("PagosConfirmados");
+
+            }
+            else
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = result
+                };
+
+                return View("Error", modeloError);
+            }
+        }
 
         [Authorize(Policy = "RequirePropietario")]
         public async Task<IActionResult> PagosRecibidosPropietario()
@@ -873,6 +919,7 @@ namespace Prueba.Controllers
             }
 
         }
+
 
         /// <summary>
         /// 

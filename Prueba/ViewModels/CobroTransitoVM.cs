@@ -3,7 +3,7 @@ using Prueba.Models;
 
 namespace Prueba.ViewModels
 {
-    public class CobroTransitoVM: PagoRecibido
+    public class CobroTransitoVM
     {
         public string? Descripcion { get; set; }
         public FormaPago Pagoforma { get; set; }
@@ -16,6 +16,20 @@ namespace Prueba.ViewModels
         public int IdCodigoCuentaCaja { get; set; }
         public bool Factura { get; set; }
         public bool Recibo { get; set; }
+
+        public int IdCondominio { get; set; }
+
+        public bool FormaPago { get; set; }
+
+        public decimal Monto { get; set; }
+
+        public DateTime Fecha { get; set; }
+
+
+        public string Concepto { get; set; } = null!;
+
+        public bool Confirmado { get; set; } 
+
 
     }
 }

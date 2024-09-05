@@ -526,7 +526,7 @@ namespace Prueba.Repositories
                     TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
                     TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
                     SaldoFinal = pagosRecibidos.Sum(c => c.Monto) - pagosEmitidos.Sum(c => c.Monto),
-                    Pagos = pagos,
+                    Pagos = pagos.OrderBy(c => c.Fecha).ToList(),
                     PagosIds = pagos.Select(c => new SelectListItem
                     {
                         Text = c.TipoOperacion ? "Ingreso" : "Egreso",

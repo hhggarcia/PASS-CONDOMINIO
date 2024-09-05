@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Engines;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
@@ -181,6 +182,18 @@ namespace Prueba.Controllers
             var ordenPago = await _context.OrdenPagos.FindAsync(id);
             if (ordenPago != null)
             {
+                var pago = await _context.PagoEmitidos.FindAsync(ordenPago.IdPagoEmitido);
+                if (pago != null)
+                {
+                    var referencia = await _context.ReferenciasPes.FirstOrDefaultAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+
+                    if (referencia != null)
+                    {
+                        _context.ReferenciasPes.Remove(referencia);
+                    }
+
+                    _context.PagoEmitidos.Remove(pago);
+                }
                 _context.OrdenPagos.Remove(ordenPago);
             }
 

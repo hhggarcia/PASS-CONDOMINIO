@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -18,14 +19,17 @@ namespace Prueba.Controllers
 
     public class ConciliacionsController : Controller
     {
+        private readonly IPdfReportesServices _servicesPDF;
         private readonly IReportesRepository _repoReportes;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
 
-        public ConciliacionsController(IReportesRepository repoReportes,
+        public ConciliacionsController(IPdfReportesServices servicesPDF,
+            IReportesRepository repoReportes,
             ICuentasContablesRepository repoCuentas,
             NuevaAppContext context)
         {
+            _servicesPDF = servicesPDF;
             _repoReportes = repoReportes;
             _repoCuentas = repoCuentas;
             _context = context;
@@ -844,6 +848,108 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
 
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                return View("Error", modeloError);
+            }
+        }
+
+        public async Task<IActionResult> ConciliacionPDF(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var conciliacion = await _context.Conciliacions
+                    .Include(c => c.IdCodCuentaNavigation)
+                    .Include(c => c.IdCondominioNavigation)
+                    .FirstOrDefaultAsync(m => m.IdConciliacion == id);
+                if (conciliacion == null)
+                {
+                    return NotFound();
+                }
+
+                var cc = await _context.CodigoCuentasGlobals.FindAsync(conciliacion.IdCodCuenta);
+                var subCuenta = await _context.SubCuenta.FindAsync(cc.IdSubCuenta);
+
+                var pagosRecibidos = await (from pr in _context.PagoRecibidos
+                                            join referencia in _context.ReferenciasPrs
+                                            on pr.IdPagoRecibido equals referencia.IdPagoRecibido
+                                            where pr.Fecha >= conciliacion.FechaInicio && pr.Fecha <= conciliacion.FechaFin
+                                            where cc.IdSubCuenta.ToString() == referencia.Banco
+                                            select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+                var pagosEmitidos = await (from pr in _context.PagoEmitidos
+                                           join referencia in _context.ReferenciasPes
+                                           on pr.IdPagoEmitido equals referencia.IdPagoEmitido
+                                           where pr.Fecha >= conciliacion.FechaInicio && pr.Fecha <= conciliacion.FechaFin
+                                           where cc.IdSubCuenta.ToString() == referencia.Banco
+                                           select pr).OrderBy(c => c.Fecha).ToListAsync();
+
+                IList<PagosConciliacionVM> pagos = new List<PagosConciliacionVM>();
+
+                foreach (var item in pagosRecibidos)
+                {
+                    pagos.Add(new PagosConciliacionVM()
+                    {
+                        Id = item.IdPagoRecibido,
+                        IdCondominio = item.IdCondominio,
+                        Fecha = item.Fecha,
+                        Monto = item.Monto,
+                        FormaPago = item.FormaPago,
+                        Concepto = item.Concepto,
+                        TipoOperacion = true,
+                        Activo = item.Activo
+                    });
+                }
+                foreach (var item in pagosEmitidos)
+                {
+                    pagos.Add(new PagosConciliacionVM()
+                    {
+                        Id = item.IdPagoEmitido,
+                        IdCondominio = item.IdCondominio,
+                        Fecha = item.Fecha,
+                        Monto = item.Monto,
+                        FormaPago = item.FormaPago,
+                        Concepto = item.Concepto,
+                        TipoOperacion = false,
+                        Activo = item.Activo
+                    });
+                }
+
+                var modelo = new ItemConciliacionVM()
+                {
+                    CodigoCuenta = cc,
+                    IdCodigoCuenta = cc != null ? cc.IdCodCuenta : 0,
+                    SubCuenta = subCuenta,
+                    ConciliacionAnterior = conciliacion,
+                    SaldoInicial = conciliacion.SaldoInicial,
+                    FechaInicio = conciliacion.FechaInicio,
+                    FechaFin = conciliacion.FechaFin,
+                    TotalEgreso = pagosEmitidos.Sum(c => c.Monto),
+                    TotalIngreso = pagosRecibidos.Sum(c => c.Monto),
+                    SaldoFinal = conciliacion.SaldoFinal,
+                    Pagos = pagos,
+                    PagosIds = (IList<SelectListItem>)pagos.Select(c => new SelectListItem
+                    {
+                        Text = c.TipoOperacion ? "Ingreso" : "Egreso",
+                        Value = c.Id.ToString(),
+                        Selected = false
+                    }).ToList()
+                };
+
+                var data = await _servicesPDF.ConciliacionPDF(modelo);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "Conciliacion_" + subCuenta.Descricion + "_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
             }
             catch (Exception ex)
             {
