@@ -508,5 +508,10 @@ namespace Prueba.Services
                 return $"Error al enviar el correo: {ex.Message}";
             }
         }
+
+        public void ResetPasswordUser()
+        {
+
+        }
     }
 }
