@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
@@ -87,11 +90,14 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="usuario"></param>
         /// <returns></returns>
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearInquilino([Bind("FirstName", "LastName", "Email", "Password")] Usuario usuario)
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            string returnUrl = Url.Content("~/");
             // crear usuario 
             var user = CreateUser();
             user.FirstName = usuario.FirstName;
@@ -102,12 +108,44 @@ namespace Prueba.Controllers
             var password = usuario.Password ?? "Pass1234_";
             //CREAR
             var resultAdminCreate = await _userManager.CreateAsync(user, password);
+
             //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
             if (resultAdminCreate.Succeeded)
             {
                 //AGREGAR ROL DE ADMINISTRADOR 
                 //AddToRoleAsync para añadir un rol (usuario, "Rol")
                 await _signInManager.UserManager.AddToRoleAsync(user, "Propietario");
+
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    protocol: Request.Scheme);
+
+                var msg = $"Por favor, confirmar su cuenta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+
+                var condominio = await _context.Condominios.FindAsync(IdCondominio);
+
+                //var resultCorreo = _emailServices.ConfirmEmail("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+                var resultCorreo = _emailServices.ConfirmEmail(condominio.Email, user.Email, condominio.ClaveCorreo, msg);
+
+                if (!resultCorreo.Contains("OK"))
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = resultCorreo
+                    };
+
+                    TempData.Keep();
+                    return RedirectToPage("Error", modeloError);
+                }
+
+                return RedirectToAction("Create", user);
+
             }
             else
             {
@@ -118,15 +156,6 @@ namespace Prueba.Controllers
 
                 return View(usuario);
             }
-
-            var aspUser = _context.AspNetUsers.Where(c => c.Email == usuario.Email).ToList();
-
-            if (aspUser.Count == 0)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction("Create", aspUser[0]);
         }
 
         // GET: Propiedades/Create
@@ -262,7 +291,7 @@ namespace Prueba.Controllers
         {
             var grupos = _context.GrupoGastos.ToList();
 
-            var modelo = grupos.Select(grupo => 
+            var modelo = grupos.Select(grupo =>
             new PropiedadGruposVM
             {
                 Text = grupo.NombreGrupo,
@@ -468,11 +497,11 @@ namespace Prueba.Controllers
                 //var recibos = await _context.ReciboCobros.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
                 var pagoRecibidos = await (from p in _context.PagoRecibidos
-                                   join cc in _context.PagosRecibos
-                                   on p.IdPagoRecibido equals cc.IdPago
-                                   join r in _context.ReciboCobros
-                                   on cc.IdRecibo equals r.IdReciboCobro
-                                   select p).ToListAsync();
+                                           join cc in _context.PagosRecibos
+                                           on p.IdPagoRecibido equals cc.IdPago
+                                           join r in _context.ReciboCobros
+                                           on cc.IdRecibo equals r.IdReciboCobro
+                                           select p).ToListAsync();
 
                 _context.PropiedadesGrupos.RemoveRange(propiedadesGrupos);
                 _context.ReciboCobros.RemoveRange(recibosPropiedad);
