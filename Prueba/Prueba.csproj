@@ -39,15 +39,14 @@
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Shared\_LayoutAccount.cshtml" />
+    <None Include="Areas\Identity\Pages\Account\Manage\_LayoutAccount.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Shared\_LayoutAccount.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Shared\_LayoutAccount.cshtml" />
+    <Content Update="Areas\Identity\Pages\Account\ResetPasswordId.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

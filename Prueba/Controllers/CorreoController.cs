@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
 using System.Net.Mail;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Prueba.Controllers
 {
@@ -15,19 +19,20 @@ namespace Prueba.Controllers
 
     public class CorreoController : Controller
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPDFServices _servicesPDF;
         private readonly IRelacionGastoRepository _repoRelacionGastos;
         private readonly IEmailService _servicesEmail;
         private readonly NuevaAppContext _context;
 
-        public CorreoController(IWebHostEnvironment webHostEnvironment,
+        public CorreoController(UserManager<ApplicationUser> userManager,
+            IWebHostEnvironment webHostEnvironment,
             IPDFServices servicesPDF,
             IRelacionGastoRepository repoRelacionGastos,
             IEmailService servicesEmail,
             NuevaAppContext context)
         {
-            _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
             _servicesPDF = servicesPDF;
             _repoRelacionGastos = repoRelacionGastos;
             _servicesEmail = servicesEmail;
@@ -255,5 +260,45 @@ namespace Prueba.Controllers
         // enviar correo a todos los clientes
 
         // enviar correo con factura de venta a un cliente
+
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                /// NOTIFICAR QUE EL USUARIO NO EXISTE
+                /// O INVITAR A COMPROBAR CORREO PARA LUEGO REESTABLECER CONTRASEÑA
+                return RedirectToPage("./ForgotPasswordConfirmation");
+            }
+
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ResetPassword",
+                pageHandler: null,
+                values: new { area = "Identity", code },
+                protocol: Request.Scheme);
+
+            var msg = $"Por favor restablezca su contraseña <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+            var resultado = _servicesEmail.ResetPasswordUser("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+
+            if (!resultado.Contains("OK"))
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = resultado
+                };
+
+                TempData.Keep();
+                return View("Error", modeloError);
+            }
+
+            return RedirectToPage("./ForgotPasswordConfirmation");
+
+        }
     }
 }

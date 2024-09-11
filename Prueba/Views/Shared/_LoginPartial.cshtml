@@ -12,37 +12,37 @@
         <!-- Nav Item - User Information -->
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle"
-           id="userDropdown manage"
-           asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"
-           role="button"
-           data-toggle="dropdown"
-           aria-haspopup="true"
-           aria-expanded="false">
+               id="userDropdown manage"
+               asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"
+               role="button"
+               data-toggle="dropdown"
+               aria-haspopup="true"
+               aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hola! @UserManager.GetUserName(User)</span>
                 <img class="img-profile rounded-circle"
-                 src="~/images/users/1.jpg" />
+                     src="~/images/users/1.jpg" />
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-             aria-labelledby="userDropdown">
-                <a class="dropdown-item" 
-                asp-controller="User"
-                asp-action="Edit"
-                asp-route-id="@UserManager.GetUserId(User)">
+                 aria-labelledby="userDropdown">
+                <a class="dropdown-item"
+                   asp-controller="User"
+                   asp-action="Edit"
+                   asp-route-id="@UserManager.GetUserId(User)">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Perfil
                 </a>
                 <a class="dropdown-item"
-                asp-area="Identity"
-                asp-page="/Account/ResetPassword"
-               asp-route-id="@UserManager.GetUserId(User)">
+                   asp-area="Identity"
+                   asp-page="/Account/ResetPasswordId"
+                   asp-route-id="@UserManager.GetUserId(User)">
                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                     Contraseña
                 </a>
-@*                <a class="dropdown-item" href="#">
-                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Activity Log
-                </a>*@
+                @*                <a class="dropdown-item" href="#">
+            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+            Activity Log
+            </a>*@
                 <div class="dropdown-divider"></div>
                 @*<a class="dropdown-item"
 
@@ -52,11 +52,12 @@
 
             </a>*@
                 <form id="logoutForm" data-toggle="modal"
-                  data-target="#logoutModal" class="dropdown-item" 
-                  asp-area="Identity" 
-                  asp-page="/Account/Logout" 
-                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button id="logout" class="b-nostyles" type="submit"><i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i> 
+                      data-target="#logoutModal" class="dropdown-item"
+                      asp-area="Identity"
+                      asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button id="logout" class="b-nostyles" type="submit">
+                        <i class="fad fa-sign-out fa-sm fa-fw mr-2 text-gray-400"></i>
                         Salir
                     </button>
                 </form>

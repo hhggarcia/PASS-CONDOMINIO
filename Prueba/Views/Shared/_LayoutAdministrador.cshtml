@@ -70,12 +70,12 @@
                 id="accordionSidebar">
                 <!-- Sidebar - Brand -->
                 <a class="sidebar-brand d-flex align-items-center justify-content-center"
-                   href="index.html">
+                   asp-controller="Administrador" asp-action="Index">
                     <div class="sidebar-brand-icon rotate-n-15">
                         <img src="~/images/isotipo-2.png" alt="" />
                     </div>
                     <div class="sidebar-brand-text mx-3">
-                        <img src="~/images/yllenAzul.png" alt="" />
+                        <img src="~/images/yllenBlanco.png" alt="" />
                     </div>
                 </a>
 
@@ -129,12 +129,12 @@
                 </li> *@
                 <!-- Cuotas Especiales -->
                 @* <li class="nav-item">
-                    <a class="nav-link collapsed"
-                       asp-controller="CuotasEspeciales" asp-action="Index"
-                       aria-expanded="true">
-                        <i class="fas fa-fw bi-cash-stack"></i>
-                        <span>Cuotas Especiales</span>
-                    </a>
+                <a class="nav-link collapsed"
+                asp-controller="CuotasEspeciales" asp-action="Index"
+                aria-expanded="true">
+                <i class="fas fa-fw bi-cash-stack"></i>
+                <span>Cuotas Especiales</span>
+                </a>
                 </li> *@
                 <!-- Cobros -->
                 @* <li class="nav-item">
@@ -166,7 +166,7 @@
                             <a class="collapse-item" asp-controller="Facturas" asp-action="Index">Facturas de Compras</a>
                             <a class="collapse-item" asp-controller="CuentasPagar" asp-action="Index">Cuentas por Pagar</a>
                             <a class="collapse-item" asp-controller="LibroCompras" asp-action="Index">Libro de Compras</a>
-                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a> 
+                            <a class="collapse-item" asp-controller="Proveedores" asp-action="Index">Proveedores</a>
                             <a class="collapse-item" asp-controller="OrdenPagos" asp-action="Index">Orden de Pago</a>
                             @* <a class="collapse-item" asp-controller="" asp-action="">Retenciones IVA e ISLR</a> *@
                         </div>
@@ -262,7 +262,7 @@
                             <a class="collapse-item" asp-controller="CodigoCuentasGlobals" asp-action="Index">Plan de Cuentas</a>
                             <a class="collapse-item" asp-controller="LdiarioGlobals" asp-action="Index">Libro Diario</a>
                             <a class="collapse-item" asp-controller="Ivas" asp-action="Index">IVA</a>
-                            <a class="collapse-item" asp-controller="Islrs" asp-action="Index">ISLR</a>                            
+                            <a class="collapse-item" asp-controller="Islrs" asp-action="Index">ISLR</a>
                         </div>
                     </div>
                 </li>
@@ -337,7 +337,7 @@
                             <a class="collapse-item" asp-action="Index"
                                asp-controller="MonedaCuentas">Cuentas</a>
                             <a class="collapse-item" asp-action="Index"
-                            asp-controller="Impresoras">Impresoras</a>
+                               asp-controller="Impresoras">Impresoras</a>
                             <a class="collapse-item" asp-action="EditCondominio"
                                asp-controller="Administrador">Datos Condominio</a>
                         </div>

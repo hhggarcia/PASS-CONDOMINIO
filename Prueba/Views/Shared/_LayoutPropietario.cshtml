@@ -65,7 +65,8 @@
                 id="accordionSidebar">
                 <!-- Sidebar - Brand -->
                 <a class="sidebar-brand d-flex align-items-center justify-content-center"
-                   href="index.html">
+                   asp-controller="Propietario"
+                   asp-action="DashboardUsuario">
                     <div class="sidebar-brand-icon rotate-n-15">
                         <img src="~/images/isotipo-2.png" alt="" />
                     </div>
@@ -80,6 +81,7 @@
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item">
                     <a class="nav-link"
+                       asp-controller="Propietario"
                        asp-action="DashboardUsuario">
                         <i class="far fa-fw fa-tachometer"></i>
                         <span>Inicio</span>
@@ -99,15 +101,13 @@
                         <span>Pagar</span>
                     </a>
                 </li>
-
-
                 <!-- Registrar Pagos Cuotas Especiales-->
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Propietarios" asp-action="ReciboCuotasEspeciales">
-                        <i class="fas fa-fw bi-cash-stack"></i>
-                        <span>Cuotas Especiales</span>
-                    </a>
-                </li>
+                @*  <li class="nav-item">
+                <a class="nav-link" asp-controller="Propietarios" asp-action="ReciboCuotasEspeciales">
+                <i class="fas fa-fw bi-cash-stack"></i>
+                <span>Cuotas Especiales</span>
+                </a>
+                </li> *@
                 <!-- Recibos Cargados -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Propietarios" asp-action="Recibos">

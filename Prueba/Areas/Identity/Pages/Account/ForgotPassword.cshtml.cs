@@ -13,19 +13,31 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Prueba.Areas.Identity.Data;
+using Prueba.Context;
+using Prueba.Services;
+using Prueba.ViewModels;
+using SQLitePCL;
 
 namespace Prueba.Areas.Identity.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {
+        private readonly NuevaAppContext _context;
+        private readonly IEmailService _servicesEmail;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _emailSender;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+
+        public ForgotPasswordModel(NuevaAppContext context,
+            IEmailService servicesEmail,
+            UserManager<ApplicationUser> userManager, 
+            IEmailSender emailSender)
         {
+            _context = context;
+            _servicesEmail = servicesEmail;
             _userManager = userManager;
-            _emailSender = emailSender;
         }
 
         /// <summary>
@@ -58,25 +70,44 @@ namespace Prueba.Areas.Identity.Pages.Account
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
+                    /// NOTIFICAR QUE EL USUARIO NO EXISTE
+                    /// O INVITAR A COMPROBAR CORREO PARA LUEGO REESTABLECER CONTRASEÑA
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
+                // buscar condominio
+                var propiedad = await _context.Propiedads.FirstOrDefaultAsync(c => c.IdUsuario == user.Id);
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new { area = "Identity", code },
-                    protocol: Request.Scheme);
+                if (propiedad != null) {
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+                    // For more information on how to enable account confirmation and password reset please
+                    // visit https://go.microsoft.com/fwlink/?LinkID=532713
+                    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ResetPassword",
+                        pageHandler: null,
+                        values: new { area = "Identity", code },
+                        protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    var msg = $"Por favor restablezca su contraseña <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+                    //var resultado = _servicesEmail.ResetPasswordUser("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+                    var resultado = _servicesEmail.ResetPasswordUser(condominio.Email, user.Email, condominio.ClaveCorreo, msg);
+
+                    if (!resultado.Contains("OK"))
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = resultado
+                        };
+
+                        TempData.Keep();
+                        return RedirectToPage("Error", modeloError);
+                    }
+                }                
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
+                
             }
 
             return Page();

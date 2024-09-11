@@ -15,11 +15,11 @@ using Prueba.Areas.Identity.Data;
 
 namespace Prueba.Areas.Identity.Pages.Account
 {
-    public class ResetPasswordModel : PageModel
+    public class ResetPasswordIdModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ResetPasswordModel(UserManager<ApplicationUser> userManager)
+        public ResetPasswordIdModel(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -72,10 +72,10 @@ namespace Prueba.Areas.Identity.Pages.Account
 
         }
         
-        public IActionResult OnGet(string area, string code)
+        public async Task<IActionResult> OnGet(string id)
         {
-            //var user = await _userManager.FindByIdAsync(id);
-            //string code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var user = await _userManager.FindByIdAsync(id);
+            string code = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             if (code == null)
             {
@@ -85,12 +85,13 @@ namespace Prueba.Areas.Identity.Pages.Account
             {
                 Input = new InputModel
                 {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
-                    //Code = code
+                    //Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    Code = code
                 };
                 return Page();
             }
             //return Page();
+
         }
 
         public async Task<IActionResult> OnPostAsync()

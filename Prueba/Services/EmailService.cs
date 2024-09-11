@@ -1,10 +1,15 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.DotNet.Scaffolding.Shared.Project;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MimeKit;
 using MimeKit.Text;
+using NPOI.SS.Formula.Functions;
 using Prueba.Models;
 using Prueba.ViewModels;
+using System;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -21,6 +26,7 @@ namespace Prueba.Services
         string SendEmailAttachement(EmailAttachmentPdf model);
         string SendEmailAList(EmailAttachmentPdf model, IList<string> receptores);
         string ConfirmacionPago(string EmailFrom, string EmailTo, Propiedad propiedad, IList<ReciboCobro> recibos, PagoRecibido pago, ReferenciasPr referencia, string password);
+        string ResetPasswordUser(string EmailFrom, string EmailTo, string password, string msg);
     }
     public class EmailService : IEmailService
     {
@@ -509,9 +515,55 @@ namespace Prueba.Services
             }
         }
 
-        public void ResetPasswordUser()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="EmailFrom"></param>
+        /// <param name="EmailTo"></param>
+        /// <param name="password"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public string ResetPasswordUser(string EmailFrom, string EmailTo, string password, string msg)
         {
+            try
+            {
+                var result = string.Empty;
 
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(EmailFrom));
+                email.To.Add(MailboxAddress.Parse(EmailTo));
+                email.Subject = "Recuperación de Clave";
+               
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text =
+                       $@"
+                    <html>
+                        <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 5rem; padding: 2rem;"">
+                            <h3 style=""color: #3950a2;"">{email.Subject}</h3>
+                            <h4 style=""color: #3950a2;"">NO RESPONDA ESTE CORREO</h4>
+                            <h4>Siga los pasos para reestablecer su contraseña</h4>
+                            <p>{msg}</p>                           
+                            <hr/>
+                            <div class=""footer"" style='color: #3950a2; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;'>
+                                Desarrollado por: Password Technology C.A.
+                            </div>
+                        </body>
+                    </html>"
+                };
+
+                using var smtp = new SmtpClient();
+                smtp.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(EmailFrom, password);
+                result = smtp.Send(email);
+                smtp.Disconnect(true);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return $"Error al enviar el correo: {ex.Message}";
+            }
         }
     }
 }
