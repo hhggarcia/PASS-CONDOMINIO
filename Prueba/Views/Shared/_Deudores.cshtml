@@ -103,21 +103,11 @@
 
                             <div class="modal-body">
                                 <p>
-                                    <strong>
-                                        Interés Mora
-                                    </strong> = @(propiedad.MontoIntereses.ToString("N"))
-                                <p>
-                                <p>
-                                    <strong>
-                                        Interés Indexación
-                                    </strong> = @((((decimal)propiedad.MontoMulta)).ToString("N"))
-                                <p>
-                                <p>
-                                    <strong>Deuda</strong> = @(propiedad.Deuda.ToString("N"))
+                                    <strong>Deuda Total</strong> = @(propiedad.Deuda.ToString("N"))
                                 </p>
                                 <p>
                                     <strong>
-                                        Saldo Actual
+                                        Monto del Mes
                                     </strong> = @(propiedad.Saldo.ToString("N"))
                                 </p>
 
@@ -128,48 +118,57 @@
                                 </p>
                                 <hr />
                                 <p>
-                                    <strong>Total</strong> = @((propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
+                                    <strong>Saldo Actual</strong> = @((propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
                                 </p>
                                 <div class="table-responsive text-center">
                                     <table class="table mb-0">
                                         <thead>
                                             <tr>
                                                 <th>Fecha</th>
+                                                <th>Mes</th>
                                                 <th>Monto</th>
-                                                <th>Tasa de Cambio $</th>
-                                                <th>Monto Ref</th>
+                                                <th>Abonado</th>
+                                                <th>1% Mora</th>
+                                                <th>30% Indexacion</th>
+                                                <th>Total a Pagar</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
 
                                         <tbody>
-                                                            @if (recibos != null && recibos.Any())
-                                                            {
-                                                                @foreach (var recibo in recibos)
-                                                                {
+                                            @if (recibos != null && recibos.Any())
+                                            {
+                                                @foreach (var recibo in recibos)
+                                                {
                                                     <tr>
                                                         <td>@(recibo.Fecha.ToString("dd/MM/yyyy"))</td>
-                                                        <td class="text-bold-500">@recibo.Monto.ToString("N") @recibo.SimboloMoneda</td>
-                                                        <td>@recibo.ValorDolar.ToString("N")</td>
-                                                        <td class="text-bold-500">@recibo.MontoRef.ToString("N") @recibo.SimboloRef</td>
+                                                        <td>@(recibo.Mes)</td>
+                                                        <td>@recibo.Monto.ToString("N") @recibo.SimboloMoneda</td>
+                                                        <td>@recibo.Abonado.ToString("N") @recibo.SimboloMoneda</td>
+                                                        <td>@recibo.MontoMora.ToString("N") @recibo.SimboloMoneda</td>
+                                                        <td>@recibo.MontoIndexacion.ToString("N") @recibo.SimboloMoneda</td>
+                                                        <td>@recibo.TotalPagar.ToString("N") @recibo.SimboloMoneda</td>
                                                         <td>
                                                             <a asp-action="DetalleRecibo"
                                                                asp-route-id="@recibo.IdReciboCobro">Detalles</a>
                                                         </td>
                                                     </tr>
-                                                                }
+                                                }
 
-                                                            }
-                                                            else
-                                                            {
+                                            }
+                                            else
+                                            {
                                                 <tr>
                                                     <td class="text-bold-500">Sin</td>
                                                     <td>Recibos</td>
                                                     <td>pendientes</td>
                                                     <td></td>
                                                     <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
                                                 </tr>
-                                                            }
+                                            }
 
                                         </tbody>
                                     </table>
@@ -193,13 +192,13 @@
         }
         else
         {
-        <h2>No hay Deudores :D</h2>
+            <h2>No hay Deudores :D</h2>
         }
 
 
-</div>
+    </div>
 
-<!-- Content Row -->
+    <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
 @section Scripts {

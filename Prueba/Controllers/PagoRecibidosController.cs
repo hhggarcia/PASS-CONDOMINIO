@@ -202,11 +202,16 @@ namespace Prueba.Controllers
         [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> PagosConfirmados()
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             var model = await _context.PagoPropiedads
                 .Include(c => c.IdPagoNavigation)
                 .Include(c => c.IdPropiedadNavigation)
                 .Where(c => c.Confirmado)
+                .Where(c => c.IdPropiedadNavigation.IdCondominio == idCondominio)
                 .ToListAsync();
+
+            TempData.Keep();
 
             return View(model);
         }
@@ -300,6 +305,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -433,6 +439,7 @@ namespace Prueba.Controllers
                     }
                 }
             }
+            TempData.Keep();
 
             return View(modelo);
         }
@@ -609,6 +616,7 @@ namespace Prueba.Controllers
                     //ReferenciasDolar = await _context.ReferenciaDolars.ToListAsync()
                 };
 
+                TempData.Keep();
                 return View(modelo);
             }
             catch (Exception ex)
@@ -617,6 +625,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -630,6 +639,7 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            TempData.Keep();
 
             // Forzar la descarga y codificar el nombre del archivo
             return File(pagoRecibido.Imagen, "image/jpeg", "referencia.jpg");
@@ -697,11 +707,15 @@ namespace Prueba.Controllers
                             // si se envia el correo 
                             if (envioCorreo.Contains("OK"))
                             {
+                                TempData.Keep();
+
                                 return RedirectToAction("PagosRecibidosAdmin");
 
                             }
                             else
                             {
+                                TempData.Keep();
+
                                 var modeloError = new ErrorViewModel()
                                 {
                                     RequestId = envioCorreo
@@ -724,6 +738,7 @@ namespace Prueba.Controllers
                     {
                         RequestId = result
                     };
+                    TempData.Keep();
 
                     return View("Error", modeloError);
                 }
@@ -743,6 +758,8 @@ namespace Prueba.Controllers
             try
             {
                 TempData["idPagoConfirmar"] = id.ToString();
+                TempData.Keep();
+
                 return View();
             }
             catch (Exception ex)
@@ -751,6 +768,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -793,11 +811,30 @@ namespace Prueba.Controllers
                         // si se envia el correo 
                         if (resultado.Contains("OK"))
                         {
+                            // actualizar recibo
+                            var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+
+                            if (pagosRecibos != null && pagosRecibos.Any())
+                            {
+                                foreach (var item in pagosRecibos)
+                                {
+                                    var recibo = await _context.ReciboCobros.FindAsync(item.IdRecibo);
+
+                                    if (recibo != null)
+                                    {
+                                        recibo.EnProceso = false;
+                                        _context.ReciboCobros.Update(recibo);
+                                    }
+                                }
+
+                                // -> eliminar pago recibos
+
+                                _context.PagosRecibos.RemoveRange(pagosRecibos);
+                            }
+
                             // -> eliminar pago propiedad
                             _context.PagoPropiedads.Remove(pagoPropiedad);
-                            // -> eliminar pago recibos
-                            var pagoRecibo = await _context.PagosRecibos.FirstAsync(c => c.IdPago == pago.IdPagoRecibido);
-                            _context.PagosRecibos.Remove(pagoRecibo);
+
                             // -> eliminar referencia
                             _context.ReferenciasPrs.Remove(referencia);
                             // -> eliminar pago
@@ -819,6 +856,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -841,8 +879,9 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            TempData.Keep();
 
-            return View(pagoPropiedad); 
+            return View(pagoPropiedad);
         }
 
         [HttpPost]
@@ -865,6 +904,8 @@ namespace Prueba.Controllers
             if (result == "exito")
             {
                 pagoPropiedad.Activo = false;
+                TempData.Keep();
+
                 return RedirectToAction("PagosConfirmados");
 
             }
@@ -874,6 +915,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = result
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }
@@ -905,6 +947,7 @@ namespace Prueba.Controllers
                         modelo.Add(item, pagos);
                     }
                 }
+                TempData.Keep();
 
                 return View(modelo);
             }
@@ -914,6 +957,7 @@ namespace Prueba.Controllers
                 {
                     RequestId = ex.Message
                 };
+                TempData.Keep();
 
                 return View("Error", modeloError);
             }

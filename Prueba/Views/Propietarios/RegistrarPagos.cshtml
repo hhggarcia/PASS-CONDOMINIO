@@ -448,7 +448,7 @@
                         }
 
                         if (response.saldo > response.abonado.toFixed(2)) {
-                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;
+                            var aux = response.deuda + response.saldo - response.credito;
                             total = String(aux.toFixed(2));
                         }
 
@@ -467,15 +467,15 @@
                         LoadTable("#contenido", response.recibos)
                         // LLENAR DEUDA
                         //$("#Deuda").innerText(response.deuda);
-                        $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");
-                        $("#Indexacion").html("<p> <strong>Indexación</strong> = " + indexacion + "</p>");
-                        $("#Deuda").html("<p> <strong>Deuda</strong> = " + deuda + "</p>");
-                        $("#Saldo").html("<p> <strong>Saldo</strong> = " + saldo + "</p>");
+                        // $("#Mora").html("<p> <strong>Interés Mora</strong> = " + mora + "</p>");
+                        // $("#Indexacion").html("<p> <strong>Indexación</strong> = " + indexacion + "</p>");
+                        $("#Deuda").html("<p> <strong>Deuda Total</strong> = " + deuda + "</p>");
+                        $("#Saldo").html("<p> <strong>Monto del Mes</strong> = " + saldo + "</p>");
                         $("#Credito").html("<p> <strong>Credito</strong> = " + credito + "</p>");
 
                         // LLENAR total
                         //$("#Total").innerText(response.saldo);
-                        $("#Total").html("<hr/><p> <strong> Total </strong> = " + total + "</p>");
+                        $("#Total").html("<hr/><p> <strong> Saldo Actual </strong> = " + total + "</p>");
 
                         // CONSTRUIR LIST DE RECIBOS A PAGAR
                         if (response.listRecibos.length > 0) {
