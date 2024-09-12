@@ -1090,7 +1090,7 @@ namespace Prueba.Repositories
 
                     //var ejemplo = await _context.Propiedads.FindAsync()
                     var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                   
+
                     if (propiedad != null)
                     {
                         var recibos = from rs in modelo.ListRecibosIDs
@@ -1183,10 +1183,10 @@ namespace Prueba.Repositories
                                     };
 
                                     recibo.EnProceso = true;
-                                    
+
                                     _context.ReciboCobros.Update(recibo);
                                     _context.PagosRecibos.Add(pagoRecibo);
-                                }                               
+                                }
 
                                 _context.PagoPropiedads.Add(pagoPropiedad);
 
@@ -1361,6 +1361,12 @@ namespace Prueba.Repositories
                             propiedad.Deuda = recibosActualizados
                                 .Where(c => !c.Pagado && !c.ReciboActual)
                                 .Sum(c => c.TotalPagar);
+
+                            propiedad.Saldo = recibosActualizados
+                                                    .Where(c => c.ReciboActual)
+                                                    .Sum(c => c.Monto - c.Abonado);
+
+                            propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
 
                             if (montoPago > 0)
                             {
@@ -1549,8 +1555,8 @@ namespace Prueba.Repositories
                                         recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                         recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
 
-                                        _context.PagosRecibos.Add(pagoRecibo);
                                         _context.ReciboCobros.Update(recibo);
+                                        _context.PagosRecibos.Add(pagoRecibo);
                                     }
 
                                     await _context.SaveChangesAsync();
@@ -1561,6 +1567,12 @@ namespace Prueba.Repositories
                                     propiedad.Deuda = recibosActualizados
                                         .Where(c => !c.Pagado && !c.ReciboActual)
                                         .Sum(c => c.TotalPagar);
+
+                                    propiedad.Saldo = recibosActualizados
+                                                    .Where(c => c.ReciboActual)
+                                                    .Sum(c => c.Monto - c.Abonado);
+
+                                    propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
 
                                     if (montoPago > 0)
                                     {
@@ -1780,6 +1792,12 @@ namespace Prueba.Repositories
                                         .Where(c => !c.Pagado && !c.ReciboActual)
                                         .Sum(c => c.TotalPagar);
 
+                                    propiedad.Saldo = recibosActualizados
+                                                    .Where(c => c.ReciboActual)
+                                                    .Sum(c => c.Monto - c.Abonado);
+
+                                    propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
+
                                     if (montoPago > 0)
                                     {
                                         propiedad.Creditos += montoPago;
@@ -1944,6 +1962,12 @@ namespace Prueba.Repositories
                                         .Where(c => !c.Pagado && !c.ReciboActual)
                                         .Sum(c => c.TotalPagar);
 
+                                    propiedad.Saldo = recibosActualizados
+                                        .Where(c => c.ReciboActual)
+                                        .Sum(c => c.Monto - c.Abonado);
+
+                                    propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
+
                                     if (montoPago > 0)
                                     {
                                         propiedad.Creditos += montoPago;
@@ -1970,7 +1994,8 @@ namespace Prueba.Repositories
                                     return "Esta propiedad no tiene recibos pendiente!";
                                 }
                                 #endregion
-                            } else
+                            }
+                            else
                             {
                                 return "Error al registrar Nota de Credito. Intentar nuevamente";
                             }
@@ -2001,90 +2026,94 @@ namespace Prueba.Repositories
                 {
                     // BUSCAR RECIBOS RELACIONADOS AL PAGO
                     var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
-                    var recibos = await (from r in _context.ReciboCobros
-                                       join c in _context.PagosRecibos
-                                       on r.IdReciboCobro equals c.IdRecibo
-                                       where c.IdPago == pago.IdPagoRecibido
-                                       select r).ToListAsync();
-                    var montoPago = pago.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
 
-                    // ACTUALIZAR RECIBOS
-                    // ---> ABONADO | TOTAL A PAGAR
-                    if (recibos != null)
+                    if (pagosRecibos != null)
                     {
-                        foreach (var recibo in recibos)
-                        {
-                            decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+                        var recibos = await (from r in _context.ReciboCobros
+                                             join c in _context.PagosRecibos
+                                             on r.IdReciboCobro equals c.IdRecibo
+                                             where c.IdPago == pago.IdPagoRecibido
+                                             select r).ToListAsync();
+                        var montoPago = pago.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
 
-                            if (pendientePago != 0 && pendientePago > montoPago)
+                        // ACTUALIZAR RECIBOS
+                        // ---> ABONADO | TOTAL A PAGAR
+                        if (recibos != null)
+                        {
+                            foreach (var recibo in recibos)
                             {
-                                recibo.Abonado -= montoPago;
-                                montoPago = 0;
+                                decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+
+                                if (pendientePago != 0 && pendientePago > montoPago)
+                                {
+                                    recibo.Abonado -= montoPago;
+                                    montoPago = 0;
+                                }
+                                else if (pendientePago != 0 && pendientePago < montoPago)
+                                {
+                                    recibo.Abonado -= montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago -= pendientePago;
+                                }
+                                else if (pendientePago != 0 && pendientePago == montoPago)
+                                {
+                                    recibo.Abonado -= montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago = 0;
+                                }
+
+                                recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+
+                                _context.ReciboCobros.Update(recibo);
                             }
-                            else if (pendientePago != 0 && pendientePago < montoPago)
+                            // ACTUALIZAR PROPIEDAD
+
+                            // ---> SALDO | DEUDA 
+
+                            // ----> VERIFICAR SOLVENCIA
+                            await _context.SaveChangesAsync();
+
+                            var recibosActualizados = await _context.ReciboCobros
+                                .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                            propiedad.Deuda = recibosActualizados
+                                .Where(c => !c.Pagado && !c.ReciboActual)
+                                .Sum(c => c.TotalPagar);
+
+                            if (montoPago > 0)
                             {
-                                recibo.Abonado -= montoPago;
-                                recibo.Pagado = true;
-                                montoPago -= pendientePago;
+                                propiedad.Creditos -= montoPago;
                             }
-                            else if (pendientePago != 0 && pendientePago == montoPago)
+
+                            //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                            if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
                             {
-                                recibo.Abonado -= montoPago;
-                                recibo.Pagado = true;
-                                montoPago = 0;
+                                propiedad.Solvencia = true;
+                            }
+                            else
+                            {
+                                propiedad.Solvencia = false;
                             }
 
-                            recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
-                            recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+                            pago.Confirmado = true;
+                            pagoPropiedad.Confirmado = true;
 
-                            _context.ReciboCobros.Update(recibo);
-                        }
-                        // ACTUALIZAR PROPIEDAD
+                            _context.Propiedads.Update(propiedad);
+                            _context.PagoRecibidos.Update(pago);
+                            _context.PagoPropiedads.Update(pagoPropiedad);
 
-                        // ---> SALDO | DEUDA 
+                            await _context.SaveChangesAsync();
 
-                        // ----> VERIFICAR SOLVENCIA
-                        await _context.SaveChangesAsync();
-
-                        var recibosActualizados = await _context.ReciboCobros
-                            .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
-
-                        propiedad.Deuda = recibosActualizados
-                            .Where(c => !c.Pagado && !c.ReciboActual)
-                            .Sum(c => c.TotalPagar);
-
-                        if (montoPago > 0)
-                        {
-                            propiedad.Creditos -= montoPago;
+                            // REGISTRAR ASIENTOS CONTABLES ????
+                            // ELIMINAR
+                            // ---> PagoPropiedad
+                            // ---> PagosRecibos
+                            // ---> Referencia si aplica
+                            // ---> PagoRecibido
                         }
 
-                        //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
-                        if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
-                        {
-                            propiedad.Solvencia = true;
-                        }
-                        else
-                        {
-                            propiedad.Solvencia = false;
-                        }
-
-                        pago.Confirmado = true;
-                        pagoPropiedad.Confirmado = true;
-
-                        _context.Propiedads.Update(propiedad);
-                        _context.PagoRecibidos.Update(pago);
-                        _context.PagoPropiedads.Update(pagoPropiedad);
-
-                        await _context.SaveChangesAsync();
-
-                        // REGISTRAR ASIENTOS CONTABLES ????
-                        // ELIMINAR
-                        // ---> PagoPropiedad
-                        // ---> PagosRecibos
-                        // ---> Referencia si aplica
-                        // ---> PagoRecibido
                     }
-
 
                 }
 
@@ -2094,7 +2123,7 @@ namespace Prueba.Repositories
             catch (Exception ex)
             {
                 return "Error al eliminar Pago: " + ex.Message;
-            }            
+            }
         }
     }
 }

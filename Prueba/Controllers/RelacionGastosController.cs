@@ -662,17 +662,17 @@ namespace Prueba.Controllers
                                     decimal mora = 0;
                                     decimal indexacion = 0;
 
+                                    if (reciboVencido != null)
+                                    {
+                                        reciboVencido.ReciboActual = false;
+                                        _context.ReciboCobros.Update(reciboVencido);
+                                    }
+
                                     if (propiedad.Solvencia)
                                     {
                                         propiedad.Saldo = monto - credito;
                                         propiedad.Creditos = 0;
-                                        propiedad.Solvencia = false;
-
-                                        if (reciboVencido != null && reciboVencido.Pagado)
-                                        {
-                                            reciboVencido.ReciboActual = false;
-                                            _context.ReciboCobros.Update(reciboVencido);
-                                        }
+                                        propiedad.Solvencia = false;                                       
                                     }
                                     else
                                     {
@@ -696,16 +696,11 @@ namespace Prueba.Controllers
 
                                             propiedad.Deuda += propiedad.Saldo;
 
-                                            reciboVencido.TotalPagar = reciboVencido.Monto + reciboVencido.MontoMora + reciboVencido.MontoIndexacion - reciboVencido.Abonado;
-                                            reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
-                                            reciboVencido.ReciboActual = false;
-
-                                            _context.ReciboCobros.Update(reciboVencido);
-
-                                            propiedad.MontoIntereses += mora;
-                                            propiedad.MontoMulta += indexacion;
+                                            reciboVencido.TotalPagar = reciboVencido.Monto + mora + indexacion - reciboVencido.Abonado;
+                                            reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;                                            
                                         }
                                     }
+                                    
 
                                     // generar recibo nuevo
                                     var recibo = new ReciboCobro
