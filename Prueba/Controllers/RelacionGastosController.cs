@@ -323,7 +323,7 @@ namespace Prueba.Controllers
             var relacionGasto = await _context.RelacionGastos.FindAsync(id);
             if (relacionGasto != null)
             {
-                var result = await _repoRelacionGastos.DeleteRecibosCobroRG(id);               
+                var result = await _repoRelacionGastos.DeleteRecibosCobroRG(id);
 
                 if (result)
                 {
@@ -609,7 +609,7 @@ namespace Prueba.Controllers
                                                  join c in _context.CodigoCuentasGlobals
                                                  on f.IdCodCuenta equals c.IdCodCuenta
                                                  where c.IdCondominio == condominio.IdCondominio
-                                                 where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                                 where DateTime.Compare(DateTime.Now, f.FechaFin) < 0 && DateTime.Compare(DateTime.Now, f.FechaInicio) >= 0
                                                  select f;
 
                                     foreach (var fondo in fondos)
@@ -652,35 +652,16 @@ namespace Prueba.Controllers
                                             .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && c.ReciboActual);
 
 
-                                    /// AGREGAR LAS MODIFICACIONES 
-                                    /// A LAS PROPIEDADES CON Solvencia = false
-                                    /// si la propiedad esta solvente solo necesita
-                                    /// modificar saldo = x | 
-
-                                    // mora para cada recibo y sumar a la propiedad
-                                    // indexacion por cada recibo y sumar a la propiedad
-                                    decimal mora = 0;
-                                    decimal indexacion = 0;
-
                                     if (reciboVencido != null)
                                     {
                                         reciboVencido.ReciboActual = false;
-                                        _context.ReciboCobros.Update(reciboVencido);
-                                    }
 
-                                    if (propiedad.Solvencia)
-                                    {
-                                        propiedad.Saldo = monto - credito;
-                                        propiedad.Creditos = 0;
-                                        propiedad.Solvencia = false;                                       
-                                    }
-                                    else
-                                    {
-                                        propiedad.Saldo = monto - credito;
-                                        propiedad.Creditos = 0;
-                                        propiedad.Solvencia = false;
+                                        // mora para cada recibo y sumar a la propiedad
+                                        // indexacion por cada recibo y sumar a la propiedad
+                                        decimal mora = 0;
+                                        decimal indexacion = 0;
 
-                                        if (reciboVencido != null && !reciboVencido.Pagado)
+                                        if (!reciboVencido.Pagado)
                                         {
                                             if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
                                             {
@@ -696,11 +677,34 @@ namespace Prueba.Controllers
 
                                             propiedad.Deuda += propiedad.Saldo;
 
+                                            reciboVencido.MontoIndexacion = indexacion;
+                                            reciboVencido.MontoMora = mora;
                                             reciboVencido.TotalPagar = reciboVencido.Monto + mora + indexacion - reciboVencido.Abonado;
-                                            reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;                                            
+                                            reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
+
                                         }
+
+                                        _context.ReciboCobros.Update(reciboVencido);
+                                        await _context.SaveChangesAsync();
                                     }
-                                    
+
+
+                                    var recibosViejos = await _context.ReciboCobros
+                                        .Where(c => !c.ReciboActual && !c.Pagado && c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+
+                                    /// AGREGAR LAS MODIFICACIONES 
+                                    /// A LAS PROPIEDADES CON Solvencia = false
+                                    /// si la propiedad esta solvente solo necesita
+                                    /// modificar saldo = x                          
+
+                                    propiedad.Saldo = monto - credito;
+                                    propiedad.Creditos = 0;
+                                    propiedad.Deuda = recibosViejos
+                                            .Where(c => !c.Pagado && !c.ReciboActual)
+                                            .Sum(c => c.TotalPagar);
+                                    propiedad.Solvencia = false;
+
 
                                     // generar recibo nuevo
                                     var recibo = new ReciboCobro
@@ -867,14 +871,18 @@ namespace Prueba.Controllers
                                         if (!transaccion.TipoTransaccion)
                                         {
                                             var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
-
-                                            monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            if (grupo != null)
+                                            {
+                                                monto += transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
                                         }
                                         else
                                         {
                                             var grupo = gruposPropiedad.First(c => c.IdGrupoGasto == transaccion.IdGrupo);
-
-                                            monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            if (grupo != null)
+                                            {
+                                                monto -= transaccion.MontoTotal * (grupo.Alicuota / 100);
+                                            }
                                         }
                                     }
                                 }
@@ -887,87 +895,104 @@ namespace Prueba.Controllers
                                              join c in _context.CodigoCuentasGlobals
                                              on f.IdCodCuenta equals c.IdCodCuenta
                                              where c.IdCondominio == condominio.IdCondominio
-                                             where DateTime.Compare(DateTime.Today, f.FechaFin) < 0 && DateTime.Compare(DateTime.Today, f.FechaInicio) >= 0
+                                             where DateTime.Compare(DateTime.Now, f.FechaFin) < 0 && DateTime.Compare(DateTime.Now, f.FechaInicio) >= 0
                                              select f;
 
-                                if (fondos != null && fondos.Any())
+                                foreach (var fondo in fondos)
                                 {
-                                    foreach (var fondo in fondos)
+                                    if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
                                     {
-                                        if (fondo.Porcentaje != null && fondo.Porcentaje > 0)
-                                        {
-                                            monto += (transaccionesDelMes.Total * (decimal)fondo.Porcentaje / 100) * (propiedad.Alicuota / 100);
-                                        }
+                                        monto += (transaccionesDelMes.Total * (decimal)fondo.Porcentaje / 100) * (propiedad.Alicuota / 100);
+                                    }
 
-                                        if (fondo.Monto != null && fondo.Monto > 0)
-                                        {
-                                            monto += (decimal)fondo.Monto * (propiedad.Alicuota / 100);
-                                        }
+                                    if (fondo.Monto != null && fondo.Monto > 0)
+                                    {
+                                        monto += (decimal)fondo.Monto * (propiedad.Alicuota / 100);
                                     }
                                 }
 
-
                                 // revisar transacciones individuales
-
-                                if (transaccionesDelMes.TransaccionesIndividuales != null && transaccionesDelMes.TransaccionesIndividuales.Any())
+                                var individuales = transaccionesDelMes.TransaccionesIndividuales.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+                                if (individuales.Any())
                                 {
-                                    var individuales = transaccionesDelMes.TransaccionesIndividuales.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
-
                                     monto += individuales.Sum(c => c.MontoTotal);
 
                                     foreach (var item in individuales)
                                     {
                                         item.Activo = false;
-                                        // _context.Transaccions.Update(item);
+                                        var relacionTransaccionInd = new RelacionGastoTransaccion
+                                        {
+                                            IdRelacionGasto = relacionGasto.IdRgastos,
+                                            IdTransaccion = item.IdTransaccion
+                                        };
+
+                                        _context.Transaccions.Update(item);
+                                        _context.RelacionGastoTransaccions.Add(relacionTransaccionInd);
+
                                     }
                                 }
                                 var credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0;
-                                // VALIDAR DEUDAS PARA ACTUALIZAR  PROPIEDAD
-                                if (propiedad.Solvencia)
-                                {
-                                    propiedad.Saldo = monto - credito;
-                                    propiedad.Creditos = 0;
-                                    propiedad.Solvencia = false;
-                                }
-                                else
-                                {
-                                    propiedad.Deuda += propiedad.Saldo;
-                                    propiedad.Saldo = monto - credito;
-                                    propiedad.Creditos = 0;
-                                    // buscar recibos anteriores no pagados
-                                    //var recibosAnt = await _context.ReciboCobros
-                                    //    .Where(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado)
-                                    //    .ToListAsync();
 
-                                    var reciboVencido = await _context.ReciboCobros
-                                        .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && !c.Pagado && c.ReciboActual);
+                                // VALIDAR DEUDAS PARA ACTUALIZAR  PROPIEDAD
+                                var reciboVencido = await _context.ReciboCobros
+                                        .FirstOrDefaultAsync(c => c.IdPropiedad == propiedad.IdPropiedad && c.ReciboActual);
+
+
+                                if (reciboVencido != null)
+                                {
+                                    reciboVencido.ReciboActual = false;
 
                                     // mora para cada recibo y sumar a la propiedad
                                     // indexacion por cada recibo y sumar a la propiedad
                                     decimal mora = 0;
                                     decimal indexacion = 0;
 
-                                    //if (recibosAnt.Any())
-                                    //{
-                                    //    mora = recibosAnt.Sum(c => c.MontoMora);
-                                    //    indexacion = recibosAnt.Sum(c => c.MontoIndexacion);
-                                    //}
-
-                                    if (reciboVencido != null)
+                                    if (!reciboVencido.Pagado)
                                     {
-                                        mora = reciboVencido.MontoMora;
-                                        indexacion = reciboVencido.MontoIndexacion;
+                                        if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
+                                        {
+                                            mora = (reciboVencido.Monto - reciboVencido.Abonado) * condominio.InteresMora / 100;
+                                            indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
 
-                                        reciboVencido.ReciboActual = false;
+                                        }
+                                        else if (reciboVencido.Abonado == 0)
+                                        {
+                                            mora = reciboVencido.MontoMora;
+                                            indexacion = reciboVencido.MontoIndexacion;
+                                        }
 
-                                        //_context.ReciboCobros.Update(reciboVencido);
+                                        propiedad.Deuda += propiedad.Saldo;
+
+                                        reciboVencido.MontoIndexacion = indexacion;
+                                        reciboVencido.MontoMora = mora;
+                                        reciboVencido.TotalPagar = reciboVencido.Monto + mora + indexacion - reciboVencido.Abonado;
+                                        reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
+
+                                        
                                     }
 
-                                    propiedad.MontoIntereses += mora;
-                                    propiedad.MontoMulta += indexacion;
+                                    //_context.ReciboCobros.Update(reciboVencido);
                                 }
 
-                                // generar recibos
+
+                                var recibosViejos = await _context.ReciboCobros
+                                    .Where(c => !c.ReciboActual && !c.Pagado && c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+
+                                /// AGREGAR LAS MODIFICACIONES 
+                                /// A LAS PROPIEDADES CON Solvencia = false
+                                /// si la propiedad esta solvente solo necesita
+                                /// modificar saldo = x |                               
+
+
+                                propiedad.Saldo = monto - credito;
+                                propiedad.Creditos = 0;
+                                propiedad.Deuda = recibosViejos
+                                        .Where(c => !c.Pagado && !c.ReciboActual)
+                                        .Sum(c => c.TotalPagar);
+                                propiedad.Solvencia = false;
+
+                                // generar recibo nuevo
                                 var recibo = new ReciboCobro
                                 {
                                     IdPropiedad = propiedad.IdPropiedad,
@@ -984,7 +1009,8 @@ namespace Prueba.Controllers
                                     MontoMora = monto * (condominio.InteresMora / 100),
                                     MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
                                     Mes = mes,
-                                    ReciboActual = true
+                                    ReciboActual = true,
+                                    TotalPagar = 0
                                 };
 
                                 recibosCobroCond.Add(recibo);

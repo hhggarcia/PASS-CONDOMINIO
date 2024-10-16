@@ -226,18 +226,23 @@ namespace Prueba.Controllers
 
                     //List<string> usuarios = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
 
-                    var result = _servicesEmail.SendEmailAList(modelo, usuarios);
 
-                    if (!result.Contains("OK"))
+                    foreach (var item in usuarios)
                     {
-                        var modeloError = new ErrorViewModel()
-                        {
-                            RequestId = result
-                        };
+                        modelo.To = item;
+                        var result = _servicesEmail.SendEmailAttachement(modelo);
 
-                        TempData.Keep();
-                        return View("Error", modeloError);
-                    }
+                        if (!result.Contains("OK"))
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = result
+                            };
+
+                            TempData.Keep();
+                            return View("Error", modeloError);
+                        }
+                    }                    
                 }
 
                 TempData.Keep();

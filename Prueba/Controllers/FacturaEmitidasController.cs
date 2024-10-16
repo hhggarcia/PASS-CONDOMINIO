@@ -99,7 +99,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre");
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion");
 
             TempData.Keep();
             return View();
@@ -175,7 +175,12 @@ namespace Prueba.Controllers
                     RetIva = montoRTIVA,
                     RetIslr = montoRTISLR,
                     Monto = facturaEmitida.MontoTotal,
-                    NumComprobanteRet = 0
+                    NumComprobanteRet = 0,
+                    Activo = true,
+                    TotalVentaIva = facturaEmitida.MontoTotal,
+                    VentaExenta = 0,
+                    VentaGravable = 0,
+                    IvaRetenido = 0
                 };
 
                 // registrar en cuentas por cobrar
@@ -185,7 +190,7 @@ namespace Prueba.Controllers
                     IdCondominio = IdCondominio,
                     IdFactura = facturaEmitida.IdFacturaEmitida,
                     Monto = facturaEmitida.MontoTotal,
-                    Status = facturaEmitida.EnProceso ? "En Proceso" : "Pagada"
+                    Status = facturaEmitida.EnProceso ? "En Proceso" : "Pagada"                   
                 };
 
                 _context.Add(itemLibroVenta);
@@ -202,7 +207,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", facturaEmitida.IdCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
             TempData.Keep();
 
@@ -230,7 +235,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", idCodCuenta);
 
             TempData.Keep();
 
@@ -287,7 +292,7 @@ namespace Prueba.Controllers
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", facturaEmitida.IdCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
             TempData.Keep();
 

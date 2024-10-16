@@ -460,7 +460,7 @@ namespace Prueba.Repositories
             {
                 var cc = await _context.CodigoCuentasGlobals.FirstOrDefaultAsync(c => c.IdSubCuenta == subCuenta.Id);
 
-                var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo);
+                var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo && c.IdCodCuenta == cc.IdCodCuenta);
 
                 var asientos = await _context.LdiarioGlobals
                     .Where(c => c.Fecha >= filtro.FechaInicio
@@ -468,17 +468,20 @@ namespace Prueba.Repositories
                     && c.IdCodCuenta == cc.IdCodCuenta)
                     .ToListAsync();
 
+                var auxFechaFin = filtro.FechaFin;
+                var auxFechaInicio = filtro.FechaInicio;
+
                 var pagosRecibidos = await (from pr in _context.PagoRecibidos
                                             join referencia in _context.ReferenciasPrs
                                             on pr.IdPagoRecibido equals referencia.IdPagoRecibido
-                                            where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
+                                            where pr.Fecha >= auxFechaInicio && pr.Fecha <= auxFechaFin
                                             where cc.IdSubCuenta.ToString() == referencia.Banco && pr.Activo
                                             select pr).OrderBy(c => c.Fecha).ToListAsync();
 
                 var pagosEmitidos = await (from pr in _context.PagoEmitidos
                                            join referencia in _context.ReferenciasPes
                                            on pr.IdPagoEmitido equals referencia.IdPagoEmitido
-                                           where pr.Fecha >= filtro.FechaInicio && pr.Fecha <= filtro.FechaFin
+                                           where pr.Fecha >= auxFechaInicio && pr.Fecha <= auxFechaFin
                                            where cc.IdSubCuenta.ToString() == referencia.Banco && pr.Activo
                                            select pr).OrderBy(c => c.Fecha).ToListAsync();
 

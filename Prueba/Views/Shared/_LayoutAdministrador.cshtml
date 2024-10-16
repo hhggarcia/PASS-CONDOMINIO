@@ -260,7 +260,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Gestión Contable:</h6>
                             <a class="collapse-item" asp-controller="CodigoCuentasGlobals" asp-action="Index">Plan de Cuentas</a>
-                            <a class="collapse-item" asp-controller="LdiarioGlobals" asp-action="Index">Libro Diario</a>
+                            @* <a class="collapse-item" asp-controller="LdiarioGlobals" asp-action="Index">Libro Diario</a> *@
                             <a class="collapse-item" asp-controller="Ivas" asp-action="Index">IVA</a>
                             <a class="collapse-item" asp-controller="Islrs" asp-action="Index">ISLR</a>
                         </div>
@@ -307,10 +307,10 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Reportes:</h6>
                             <a class="collapse-item" asp-controller="Reportes" asp-action="DeudoresPDF">Deudores del día</a>
-                            <a class="collapse-item" asp-controller="" asp-action="">Transacciones del Mes</a>
-                            <a class="collapse-item" asp-controller="" asp-action="">Listado de Montos</a>
+                            @* <a class="collapse-item" asp-controller="" asp-action="">Transacciones del Mes</a>
+                            <a class="collapse-item" asp-controller="" asp-action="">Listado de Montos</a> *@
                             <a class="collapse-item" asp-controller="Reportes" asp-action="EstadoCuentas">Estado de Cuentas</a>
-                            <a class="collapse-item" asp-controller="" asp-action="">Movimientos Caja y Bancos</a>
+                            <a class="collapse-item" asp-controller="Conciliacions" asp-action="MovCajaYBanco">Movimientos Caja y Bancos</a>
                             <a class="collapse-item" asp-controller="Conciliacions" asp-action="Index">Conciliación</a>
                         </div>
                     </div>

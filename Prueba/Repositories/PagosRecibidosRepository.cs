@@ -317,9 +317,9 @@ namespace Prueba.Repositories
                                 BaseImponible = itemLibroVenta.BaseImponible
                             };
 
-                            itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+                            //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
 
-                            _context.Update(itemLibroVenta);
+                            //_context.Update(itemLibroVenta);
                             _context.Add(retIslr);
 
                         }
@@ -558,9 +558,9 @@ namespace Prueba.Repositories
                                 BaseImponible = itemLibroVenta.BaseImponible
                             };
 
-                            itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+                            //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
 
-                            _context.Update(itemLibroVenta);
+                            //_context.Update(itemLibroVenta);
                             _context.Add(retIslr);
 
                         }

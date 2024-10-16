@@ -65,9 +65,10 @@
                 id="accordionSidebar">
                 <!-- Sidebar - Brand -->
                 <a class="sidebar-brand d-flex align-items-center justify-content-center"
-                   href="index.html">
+                   asp-controller="Propietarios"
+                   asp-action="DashboardUsuario">
                     <div class="sidebar-brand-icon rotate-n-15">
-                        <img src="~/images/isotipo-2.png" alt="" />
+                    <img src="~/images/isotipo-2.png" alt="" />
                     </div>
                     <div class="sidebar-brand-text mx-3">
                         <img src="~/images/yllenBlanco.png" alt="" />
@@ -100,14 +101,14 @@
                     </a>
                 </li>
 
-                
+
                 <!-- Registrar Pagos Cuotas Especiales-->
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Propietarios" asp-action="ReciboCuotasEspeciales">
-                        <i class="fas fa-fw bi-cash-stack"></i>
-                        <span>Cuotas Especiales</span>
-                    </a>
-                </li>       
+                @* <li class="nav-item">
+                <a class="nav-link" asp-controller="Propietarios" asp-action="ReciboCuotasEspeciales">
+                <i class="fas fa-fw bi-cash-stack"></i>
+                <span>Cuotas Especiales</span>
+                </a>
+                </li>        *@
                 <!-- Recibos Cargados -->
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Propietarios" asp-action="Recibos">
@@ -139,28 +140,28 @@
 
                 <!-- Reservaciones -->
                 @*<li class="nav-item">
-                    <a class="nav-link collapsed"
-                       href="#"
-                       data-toggle="collapse"
-                       data-target="#collapse8"
-                       aria-expanded="true"
-                       aria-controls="collapseUtilities">
-                        <i class="bi bi-journal-bookmark"></i>
-                        <span>Reservaciones</span>
-                    </a>
-                    <div id="collapse8"
-                         class="collapse"
-                         aria-labelledby="headingUtilities"
-                         data-parent="#accordionSidebar">
-                        <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Reservaciones:</h6>
-                            <a class="collapse-item" href="#">Crear Reservaciones</a>
-                            <a class="collapse-item" href="#">Reservaciones Creadas</a>
-                        </div>
-                    </div>
+                <a class="nav-link collapsed"
+                href="#"
+                data-toggle="collapse"
+                data-target="#collapse8"
+                aria-expanded="true"
+                aria-controls="collapseUtilities">
+                <i class="bi bi-journal-bookmark"></i>
+                <span>Reservaciones</span>
+                </a>
+                <div id="collapse8"
+                class="collapse"
+                aria-labelledby="headingUtilities"
+                data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Reservaciones:</h6>
+                <a class="collapse-item" href="#">Crear Reservaciones</a>
+                <a class="collapse-item" href="#">Reservaciones Creadas</a>
+                </div>
+                </div>
                 </li>*@
 
-               
+
 
                 <!-- Divider -->
                 <hr class="sidebar-divider d-none d-md-block" />
@@ -216,160 +217,160 @@
                                 </div>
                             </li>
 
-                           @* <!-- Nav Item - Alerts -->
+                            @* <!-- Nav Item - Alerts -->
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="alertsDropdown"
-                                   role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    <i class="fas fa-bell fa-fw"></i>
-                                    <!-- Counter - Alerts -->
-                                    <span class="badge badge-danger badge-counter">3+</span>
-                                </a>
-                                <!-- Dropdown - Alerts -->
-                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                     aria-labelledby="alertsDropdown">
-                                    <h6 class="dropdown-header">Centro de Alertas</h6>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-primary">
-                                                <i class="fas fa-file-alt text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 12, 2019</div>
-                                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-success">
-                                                <i class="fas fa-donate text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 7, 2019</div>
-                                            $290.29 has been deposited into your account!
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-warning">
-                                                <i class="fas fa-exclamation-triangle text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 2, 2019</div>
-                                            Spending Alert: We've noticed unusually high spending
-                                            for your account.
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item text-center small text-gray-500"
-                                       href="#">Show All Alerts</a>
-                                </div>
+                            <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="alertsDropdown"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-bell fa-fw"></i>
+                            <!-- Counter - Alerts -->
+                            <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="alertsDropdown">
+                            <h6 class="dropdown-header">Centro de Alertas</h6>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-primary">
+                            <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 12, 2019</div>
+                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-success">
+                            <i class="fas fa-donate text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 7, 2019</div>
+                            $290.29 has been deposited into your account!
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                            <div class="icon-circle bg-warning">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                            </div>
+                            <div>
+                            <div class="small text-gray-500">December 2, 2019</div>
+                            Spending Alert: We've noticed unusually high spending
+                            for your account.
+                            </div>
+                            </a>
+                            <a class="dropdown-item text-center small text-gray-500"
+                            href="#">Show All Alerts</a>
+                            </div>
                             </li>
 
                             <!-- Nav Item - Messages -->
                             <li class="nav-item dropdown no-arrow mx-1">
-                                <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="messagesDropdown"
-                                   role="button"
-                                   data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    <i class="fas fa-envelope fa-fw"></i>
-                                    <!-- Counter - Messages -->
-                                    <span class="badge badge-danger badge-counter">7</span>
-                                </a>
-                                <!-- Dropdown - Messages -->
-                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                     aria-labelledby="messagesDropdown">
-                                    <h6 class="dropdown-header">Centro de Mensajes</h6>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/2.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-success"></div>
-                                        </div>
-                                        <div class="font-weight-bold">
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                                elit. Asperiores facere expedita optio perferendis,
-                                                voluptatem quae voluptas distinctio dolor consequuntur
-                                                repellat nobis dolores maiores eaque molestiae quaerat
-                                                eum? Totam, voluptas? Quod!
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Emily Fowler · 58m
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/3.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor, sit amet consectetur adipisicing
-                                                elit. Perspiciatis iusto voluptatum culpa blanditiis
-                                                voluptas fugiat nam architecto non, labore laudantium
-                                                quia inventore? Quibusdam, iusto ipsam est
-                                                exercitationem quam tempora asperiores?
-                                            </div>
-                                            <div class="small text-gray-500">Jae Chun · 1d</div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/4.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-warning"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur adipisicing
-                                                elit. Ex at doloremque magni voluptate ab. Vel aliquid
-                                                non soluta corporis cupiditate, quaerat, dolores minus
-                                                dignissimos quisquam enim odio consequatur? Dolor,
-                                                nostrum.
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Morgan Alvarez · 2d
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="dropdown-list-image mr-3">
-                                            <img class="rounded-circle"
-                                                 src="~/images/users/5.jpg"
-                                                 alt="..." />
-                                            <div class="status-indicator bg-success"></div>
-                                        </div>
-                                        <div>
-                                            <div class="text-truncate">
-                                                Lorem ipsum dolor sit amet consectetur, adipisicing
-                                                elit. Quos distinctio consectetur, beatae nihil
-                                                voluptatem dolorem in corporis soluta iure ipsum
-                                                veniam incidunt! Nisi qui neque doloribus ad commodi
-                                                fuga. Cupiditate.
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                Chicken the Dog · 2w
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item text-center small text-gray-500"
-                                       href="#">Leer Más Mensajes</a>
-                                </div>
+                            <a class="nav-link dropdown-toggle"
+                            href="#"
+                            id="messagesDropdown"
+                            role="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-envelope fa-fw"></i>
+                            <!-- Counter - Messages -->
+                            <span class="badge badge-danger badge-counter">7</span>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="messagesDropdown">
+                            <h6 class="dropdown-header">Centro de Mensajes</h6>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/2.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-bold">
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Asperiores facere expedita optio perferendis,
+                            voluptatem quae voluptas distinctio dolor consequuntur
+                            repellat nobis dolores maiores eaque molestiae quaerat
+                            eum? Totam, voluptas? Quod!
+                            </div>
+                            <div class="small text-gray-500">
+                            Emily Fowler · 58m
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/3.jpg"
+                            alt="..." />
+                            <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor, sit amet consectetur adipisicing
+                            elit. Perspiciatis iusto voluptatum culpa blanditiis
+                            voluptas fugiat nam architecto non, labore laudantium
+                            quia inventore? Quibusdam, iusto ipsam est
+                            exercitationem quam tempora asperiores?
+                            </div>
+                            <div class="small text-gray-500">Jae Chun · 1d</div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/4.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-warning"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Ex at doloremque magni voluptate ab. Vel aliquid
+                            non soluta corporis cupiditate, quaerat, dolores minus
+                            dignissimos quisquam enim odio consequatur? Dolor,
+                            nostrum.
+                            </div>
+                            <div class="small text-gray-500">
+                            Morgan Alvarez · 2d
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="dropdown-list-image mr-3">
+                            <img class="rounded-circle"
+                            src="~/images/users/5.jpg"
+                            alt="..." />
+                            <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div>
+                            <div class="text-truncate">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing
+                            elit. Quos distinctio consectetur, beatae nihil
+                            voluptatem dolorem in corporis soluta iure ipsum
+                            veniam incidunt! Nisi qui neque doloribus ad commodi
+                            fuga. Cupiditate.
+                            </div>
+                            <div class="small text-gray-500">
+                            Chicken the Dog · 2w
+                            </div>
+                            </div>
+                            </a>
+                            <a class="dropdown-item text-center small text-gray-500"
+                            href="#">Leer Más Mensajes</a>
+                            </div>
                             </li>*@
 
                             <div class="topbar-divider d-none d-sm-block"></div>

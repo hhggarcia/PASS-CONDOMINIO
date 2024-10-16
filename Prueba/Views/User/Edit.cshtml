@@ -29,24 +29,23 @@
                         @using (Html.BeginForm("OnPost", "User"))
                         {
                             @Html.HiddenFor(h => @Model.User.Id)
-                            ;
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <label asp-for="@Model.User.FirstName" class="form-label"></label>
+                                    <label class="form-label">Nombre</label>
                                     <input asp-for="@Model.User.FirstName" class="form-control" autocomplete="username" aria-required="true" />
                                     <span asp-validation-for="@Model.User.FirstName" class="text-danger">
                                     </span>
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <label asp-for="@Model.User.LastName" class="form-label"></label>
+                                    <label class="form-label">Apellido</label>
                                     <input asp-for="@Model.User.LastName" class="form-control" autocomplete="username" aria-required="true" />
                                     <span asp-validation-for="@Model.User.LastName" class="text-danger">
                                     </span>
                                 </div>
 
                                 <div class="col-12">
-                                    <label asp-for="@Model.User.Email" class="form-label"></label>
+                                    <label class="form-label">Correo</label>
                                     <div class="input-group has-validation">
                                         <span class="input-group-text"></span>
                                         <input asp-for="@Model.User.Email" class="form-control" autocomplete="username" aria-required="true" />

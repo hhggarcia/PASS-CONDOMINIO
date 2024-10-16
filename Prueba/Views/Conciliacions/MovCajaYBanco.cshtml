@@ -1,0 +1,158 @@
+﻿@model Prueba.ViewModels.ItemConciliacionVM
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+    var saldo = Model.ConciliacionAnterior != null ? Model.ConciliacionAnterior.SaldoFinal : 0;
+    
+}
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Conciliación Bancaria
+                    </h6>
+                    @if (@ViewBag.FormaPago == "fallido")
+                    {
+                        <div class="form-group text-danger">
+                            <span>@ViewBag.Mensaje</span>
+                        </div>
+                    }
+
+                    <partial name="_FiltroMovBanco" model="@(new Prueba.ViewModels.FiltroBancoVM(){ FechaFin = Model.FechaFin, FechaInicio = Model.FechaInicio})" />
+
+                    @* <div class="tr_s">
+                        <strong>SELECCIONAR TODOS</strong> <input type="checkbox" id="selectAll" onchange="toggleAll()" />
+                    </div> *@
+                </div>
+
+                <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                    <thead>
+                        <tr>
+                            <th>Saldo Anterior</th>
+                            <th>Total Ingreso</th>                           
+                            <th>Total Egreso</th>
+                            <th>Saldo Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="tr_s">
+                            <td>@Model.SaldoInicial.ToString("N")</td>
+                            <td>@Model.TotalIngreso.ToString("N")</td>
+                            <td>@Model.TotalEgreso.ToString("N")</td>
+                            <td>@((Model.SaldoInicial + Model.TotalIngreso - Model.TotalEgreso).ToString("N"))</td>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+                <form asp-action="ConfirmarConciliacion">
+                    <input type="hidden" asp-for="IdCodigoCuenta" />
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-center"
+                                    id="dataTable"
+                                   width="100%"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Fecha
+                                        </th>
+                                        <th>
+                                            Concepto
+                                        </th>
+                                        <th>
+                                            Ingreso
+                                        </th>
+                                        <th>
+                                            Egreso
+                                        </th>
+                                        <th>
+                                            Saldo
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @for (int i = 0; i < @Model.PagosIds.Count(); i++)
+                                    {
+                                        var pago = Model.Pagos.FirstOrDefault(c => c.Id == Convert.ToInt32(Model.PagosIds[i].Value));
+
+                                        @if (pago != null)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @pago.Fecha.ToString("dd/MM/yyyy")
+                                                </td>
+                                                <td>
+                                                    @pago.Concepto
+                                                </td>
+                                                @if (pago.TipoOperacion)
+                                                {
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td></td>
+
+                                                    <td>
+                                                        @((saldo += pago.Monto).ToString("N"))
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+
+                                                    <td>
+                                                        @pago.Monto.ToString("N")
+                                                    </td>
+                                                    <td>
+                                                        @((saldo -= pago.Monto).ToString("N"))
+                                                    </td>
+                                                }
+
+                                                <td>
+@*                                                     @Html.CheckBoxFor(c => Model.PagosIds[i].Selected, new { @class = "itemCheckbox" })
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Value)
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Text) *@
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @* <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="col-12 d-flex justify-content-end">
+                            <button type="submit"
+                                    class="btn btn-light mb-3">
+                                Conciliar @(Model.SubCuenta != null ? Model.SubCuenta.Descricion : "")
+                            </button>
+                        </div>
+                    </div> *@
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script>
+    function toggleAll() {
+        const checkboxes = document.querySelectorAll('.itemCheckbox');
+        const selectAll = document.getElementById('selectAll');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+    }
+</script>

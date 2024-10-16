@@ -274,9 +274,9 @@ namespace Prueba.Controllers
 
                     // buscar pagos emitidos
                     var pagosEmitidos = from c in _context.PagoEmitidos.ToList()
-                                               join cp in conciliacionPagosEmitidos
-                                               on c.IdPagoEmitido equals cp.IdPagoEmitido
-                                               select c;
+                                        join cp in conciliacionPagosEmitidos
+                                        on c.IdPagoEmitido equals cp.IdPagoEmitido
+                                        select c;
 
                     // cambiar activo = true en:
                     // Aniticipo Nomina
@@ -370,9 +370,9 @@ namespace Prueba.Controllers
 
                     // buscar pagos recibidos
                     var pagosRecibidos = from c in _context.PagoRecibidos.ToList()
-                                                join cp in conciliacionPagosRecibidos
-                                                on c.IdPagoRecibido equals cp.IdPagoRecibido
-                                                select c;
+                                         join cp in conciliacionPagosRecibidos
+                                         on c.IdPagoRecibido equals cp.IdPagoRecibido
+                                         select c;
 
                     // cambiar activo = true en:
                     // Cobro transito
@@ -584,6 +584,16 @@ namespace Prueba.Controllers
                     var pago = await _context.PagoRecibidos.FindAsync(Convert.ToInt32(item.Value));
                     modelo.TotalIngreso += pago != null ? pago.Monto : 0;
                 }
+            }
+
+            var cc = await _context.CodigoCuentasGlobals.FirstOrDefaultAsync(c => c.IdCodCuenta == modelo.IdCodigoCuenta);
+
+            var conciliacionAnterior = await _context.Conciliacions.FirstOrDefaultAsync(c => c.Actual && c.Activo && c.IdCodCuenta == cc.IdCodCuenta);
+
+            if (conciliacionAnterior != null)
+            {
+                modelo.ConciliacionAnterior = conciliacionAnterior;
+                //modelo.SaldoInicial = conciliacionAnterior.SaldoFinal;
             }
             // calcular saldo final
             modelo.SaldoFinal = modelo.TotalIngreso - modelo.TotalEgreso;
@@ -960,6 +970,49 @@ namespace Prueba.Controllers
 
                 return View("Error", modeloError);
             }
+        }
+
+        public async Task<IActionResult> MovCajaYBanco()
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var cajas = await _repoCuentas.ObtenerCaja(idCondominio);
+            var bancos = await _repoCuentas.ObtenerBancos(idCondominio);
+            var subcuentas = bancos.Concat(cajas).ToList();
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            TempData.Keep();
+            return View(new ItemConciliacionVM());
+        }
+
+        public async Task<IActionResult> BuscarMovBanco(FiltroBancoVM filtro)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var cajas = await _repoCuentas.ObtenerCaja(idCondominio);
+            var bancos = await _repoCuentas.ObtenerBancos(idCondominio);
+            var subcuentas = bancos.Concat(cajas).ToList();
+
+            if (filtro.FechaInicio > filtro.FechaFin || filtro.FechaInicio.Month != filtro.FechaFin.Month)
+            {
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "La fecha final debe ser posterior a la fecha de inicio y en el mismo mes.";
+
+                ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+                TempData.Keep();
+                return View("Conciliacion", new ItemConciliacionVM());
+
+            }
+            TempData["FechaInicio"] = filtro.FechaInicio.ToString("dd-MM-yyyy");
+            TempData["FechaFin"] = filtro.FechaFin.ToString("dd-MM-yyyy");
+
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+
+            var modelo = await _repoReportes.LoadConciliacionPagos(filtro);
+            ;
+            TempData.Keep();
+            return View("MovCajaYBanco", modelo);
         }
     }
 }
