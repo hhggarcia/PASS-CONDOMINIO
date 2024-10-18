@@ -5694,50 +5694,94 @@ namespace Prueba.Services
                                 {
                                     if (item.libroVenta != null && item.FacturaEmitida != null && item.cliente != null)
                                     {
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                        if (item.FacturaEmitida.Anulada)
+                                        {
+                                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                         .Padding(2).Text(item.libroVenta.Id.ToString()).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.FacturaEmitida.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text("").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.cliente.Rif).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text("").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.cliente.Nombre).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text("ANULADA").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.FacturaEmitida.NumFactura.ToString()).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text(item.FacturaEmitida.NumFactura.ToString()).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.NumControl).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.FacturaEmitida.NumControl).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text("Registro").FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("ANULADA").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text("").FontColor("#607080").FontSize(8);
+                                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.libroVenta.ComprobanteRetencion).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.MontoTotal.ToString("N")).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("0,00").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.SubTotal.ToString("N")).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("0.00").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text("16,00").FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("16,00").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.Iva.ToString("N")).FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("0.00").FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.libroVenta.IvaRetenido != null ? ((decimal)item.libroVenta.IvaRetenido).ToString("N") : "0,00").FontColor("#607080").FontSize(8);
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("0,00").FontColor("#607080").FontSize(8);
+                                        }
+                                        else
+                                        {
+                                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                        .Padding(2).Text(item.libroVenta.Id.ToString()).FontColor("#607080").FontSize(8);
 
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text(item.FacturaEmitida.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(8);
 
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text(item.cliente.Rif).FontColor("#607080").FontSize(8);
 
+                                            tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text(item.cliente.Nombre).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                            .Padding(2).Text(item.FacturaEmitida.NumFactura.ToString()).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.FacturaEmitida.NumControl).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("Registro").FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("").FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.libroVenta.ComprobanteRetencion).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.FacturaEmitida.MontoTotal.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.FacturaEmitida.SubTotal.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text("16,00").FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.FacturaEmitida.Iva.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                            tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                          .Padding(2).Text(item.libroVenta.IvaRetenido != null ? ((decimal)item.libroVenta.IvaRetenido).ToString("N") : "0,00").FontColor("#607080").FontSize(8);
+                                        }  
                                         TotalVentasIva += item.libroVenta.Total;
                                         totalBase += item.FacturaEmitida.SubTotal;
                                         VentasExentas += item.libroVenta.VentaExenta != null ? (decimal)item.libroVenta.VentaExenta : 0;

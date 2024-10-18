@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -176,6 +177,11 @@ namespace Prueba.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult CreateNewCondominio()
+        {
+            return View(new CreateCondominioVM());
         }
 
         private bool CondominioExists(int id)
