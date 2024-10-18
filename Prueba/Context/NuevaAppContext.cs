@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Prueba.Models;
 
 namespace Prueba.Context;
@@ -190,14 +188,13 @@ public partial class NuevaAppContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
+        if (!optionsBuilder.IsConfigured) {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var connectionString = configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
+            var connectionString = configuration.GetConnectionString("SQLEXPRESS") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
 
             optionsBuilder.UseSqlServer(connectionString);
         }
@@ -206,8 +203,7 @@ public partial class NuevaAppContext : DbContext
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
 
-        modelBuilder.Entity<Activo>(entity =>
-        {
+        modelBuilder.Entity<Activo>(entity => {
             entity.HasKey(e => e.IdActivo);
 
             entity.Property(e => e.IdActivo).HasColumnName("id_activo");
@@ -219,8 +215,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Activos_LDiario_Global");
         });
 
-        modelBuilder.Entity<Administrador>(entity =>
-        {
+        modelBuilder.Entity<Administrador>(entity => {
             entity.HasKey(e => e.IdAdministrador);
 
             entity.ToTable("Administrador");
@@ -239,8 +234,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Administrador_AspNetUsers");
         });
 
-        modelBuilder.Entity<Anticipo>(entity =>
-        {
+        modelBuilder.Entity<Anticipo>(entity => {
             entity.HasKey(e => e.IdAnticipo);
 
             entity.ToTable("Anticipo");
@@ -260,8 +254,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Anticipo_Proveedor");
         });
 
-        modelBuilder.Entity<AnticipoNomina>(entity =>
-        {
+        modelBuilder.Entity<AnticipoNomina>(entity => {
             entity.HasKey(e => e.IdAnticipoNomina);
 
             entity.ToTable("AnticipoNomina");
@@ -279,8 +272,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_AnticipoNomina_Pago_Emitido");
         });
 
-        modelBuilder.Entity<AspNetRole>(entity =>
-        {
+        modelBuilder.Entity<AspNetRole>(entity => {
             entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
                 .IsUnique()
                 .HasFilter("([NormalizedName] IS NOT NULL)");
@@ -289,15 +281,13 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.NormalizedName).HasMaxLength(256);
         });
 
-        modelBuilder.Entity<AspNetRoleClaim>(entity =>
-        {
+        modelBuilder.Entity<AspNetRoleClaim>(entity => {
             entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
 
             entity.HasOne(d => d.Role).WithMany(p => p.AspNetRoleClaims).HasForeignKey(d => d.RoleId);
         });
 
-        modelBuilder.Entity<AspNetUser>(entity =>
-        {
+        modelBuilder.Entity<AspNetUser>(entity => {
             entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
 
             entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
@@ -316,23 +306,20 @@ public partial class NuevaAppContext : DbContext
                     "AspNetUserRole",
                     r => r.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
                     l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
-                    j =>
-                    {
+                    j => {
                         j.HasKey("UserId", "RoleId");
                         j.ToTable("AspNetUserRoles");
                         j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                     });
         });
 
-        modelBuilder.Entity<AspNetUserClaim>(entity =>
-        {
+        modelBuilder.Entity<AspNetUserClaim>(entity => {
             entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
 
             entity.HasOne(d => d.User).WithMany(p => p.AspNetUserClaims).HasForeignKey(d => d.UserId);
         });
 
-        modelBuilder.Entity<AspNetUserLogin>(entity =>
-        {
+        modelBuilder.Entity<AspNetUserLogin>(entity => {
             entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
 
             entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
@@ -343,8 +330,7 @@ public partial class NuevaAppContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.AspNetUserLogins).HasForeignKey(d => d.UserId);
         });
 
-        modelBuilder.Entity<AspNetUserToken>(entity =>
-        {
+        modelBuilder.Entity<AspNetUserToken>(entity => {
             entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
 
             entity.Property(e => e.LoginProvider).HasMaxLength(128);
@@ -353,8 +339,7 @@ public partial class NuevaAppContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.AspNetUserTokens).HasForeignKey(d => d.UserId);
         });
 
-        modelBuilder.Entity<BalanceComprobacion>(entity =>
-        {
+        modelBuilder.Entity<BalanceComprobacion>(entity => {
             entity.HasKey(e => e.IdBalanceC);
 
             entity.ToTable("Balance_Comprobacion");
@@ -379,8 +364,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Balance_Comprobacion_Condominio");
         });
 
-        modelBuilder.Entity<Bonificacion>(entity =>
-        {
+        modelBuilder.Entity<Bonificacion>(entity => {
             entity.HasKey(e => e.IdBonificacion);
 
             entity.Property(e => e.Concepto).HasMaxLength(50);
@@ -398,16 +382,14 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Bonificaciones_Empleado");
         });
 
-        modelBuilder.Entity<Clase>(entity =>
-        {
+        modelBuilder.Entity<Clase>(entity => {
             entity.ToTable("Clase");
 
             entity.Property(e => e.Codigo).HasMaxLength(1);
             entity.Property(e => e.Descripcion).HasMaxLength(10);
         });
 
-        modelBuilder.Entity<Cliente>(entity =>
-        {
+        modelBuilder.Entity<Cliente>(entity => {
             entity.HasKey(e => e.IdCliente);
 
             entity.ToTable("Cliente");
@@ -435,8 +417,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Cliente_iva");
         });
 
-        modelBuilder.Entity<CobroTransito>(entity =>
-        {
+        modelBuilder.Entity<CobroTransito>(entity => {
             entity.HasKey(e => e.IdCobroTransito);
 
             entity.ToTable("CobroTransito");
@@ -455,8 +436,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CobroTransito_Condominio");
         });
 
-        modelBuilder.Entity<CodigoCuentasGlobal>(entity =>
-        {
+        modelBuilder.Entity<CodigoCuentasGlobal>(entity => {
             entity.HasKey(e => e.IdCodCuenta);
 
             entity.ToTable("CodigoCuentas_Global");
@@ -495,8 +475,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CodigoCuentas_Global_SubCuenta");
         });
 
-        modelBuilder.Entity<CompRetIva>(entity =>
-        {
+        modelBuilder.Entity<CompRetIva>(entity => {
             entity.HasKey(e => e.IdComprobanteIva);
 
             entity.ToTable("CompRetIva");
@@ -531,8 +510,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CompRetIva_Proveedor");
         });
 
-        modelBuilder.Entity<CompRetIvaCliente>(entity =>
-        {
+        modelBuilder.Entity<CompRetIvaCliente>(entity => {
             entity.HasKey(e => e.IdComprobanteIva);
 
             entity.ToTable("CompRetIvaCliente");
@@ -569,8 +547,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CompRetIvaCliente_NotaDebito");
         });
 
-        modelBuilder.Entity<ComprobanteRetencion>(entity =>
-        {
+        modelBuilder.Entity<ComprobanteRetencion>(entity => {
             entity.HasKey(e => e.IdComprobante);
 
             entity.ToTable("ComprobanteRetencion");
@@ -596,8 +573,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ComprobanteRetencion_Proveedor");
         });
 
-        modelBuilder.Entity<ComprobanteRetencionCliente>(entity =>
-        {
+        modelBuilder.Entity<ComprobanteRetencionCliente>(entity => {
             entity.HasKey(e => e.IdComprobanteCliente);
 
             entity.ToTable("ComprobanteRetencionCliente");
@@ -623,8 +599,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ComprobanteRetencionCliente_FacturaEmitida");
         });
 
-        modelBuilder.Entity<Conciliacion>(entity =>
-        {
+        modelBuilder.Entity<Conciliacion>(entity => {
             entity.HasKey(e => e.IdConciliacion);
 
             entity.ToTable("Conciliacion");
@@ -648,8 +623,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Conciliacion_Condominio");
         });
 
-        modelBuilder.Entity<ConciliacionDiario>(entity =>
-        {
+        modelBuilder.Entity<ConciliacionDiario>(entity => {
             entity
                 .HasNoKey()
                 .ToTable("ConciliacionDiario");
@@ -665,8 +639,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ConciliacionDiario_LDiario_Global");
         });
 
-        modelBuilder.Entity<ConciliacionPagoEmitido>(entity =>
-        {
+        modelBuilder.Entity<ConciliacionPagoEmitido>(entity => {
             entity.ToTable("ConciliacionPagoEmitido");
 
             entity.HasOne(d => d.IdConciliacionNavigation).WithMany(p => p.ConciliacionPagoEmitidos)
@@ -680,8 +653,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ConciliacionPagoEmitido_Pago_Emitido");
         });
 
-        modelBuilder.Entity<ConciliacionPagoRecibido>(entity =>
-        {
+        modelBuilder.Entity<ConciliacionPagoRecibido>(entity => {
             entity.ToTable("ConciliacionPagoRecibido");
 
             entity.HasOne(d => d.IdConciliacionNavigation).WithMany(p => p.ConciliacionPagoRecibidos)
@@ -695,8 +667,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ConciliacionPagoRecibido_Pago_Recibido");
         });
 
-        modelBuilder.Entity<Condominio>(entity =>
-        {
+        modelBuilder.Entity<Condominio>(entity => {
             entity.HasKey(e => e.IdCondominio);
 
             entity.ToTable("Condominio");
@@ -727,8 +698,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Condominio_AspNetUsers");
         });
 
-        modelBuilder.Entity<CondominioNomina>(entity =>
-        {
+        modelBuilder.Entity<CondominioNomina>(entity => {
             entity.HasKey(e => e.IdCondominioNomina);
 
             entity.ToTable("CondominioNomina");
@@ -744,8 +714,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CondominioNomina_Recibo_Nomina");
         });
 
-        modelBuilder.Entity<CuentasCobrar>(entity =>
-        {
+        modelBuilder.Entity<CuentasCobrar>(entity => {
             entity.ToTable("CuentasCobrar");
 
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
@@ -764,8 +733,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuentasCobrar_Factura");
         });
 
-        modelBuilder.Entity<CuentasGrupo>(entity =>
-        {
+        modelBuilder.Entity<CuentasGrupo>(entity => {
             entity.HasKey(e => e.IdCuentaGrupos);
 
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.CuentasGrupos)
@@ -779,8 +747,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuentasGrupos_GrupoGastos");
         });
 
-        modelBuilder.Entity<CuentasPagar>(entity =>
-        {
+        modelBuilder.Entity<CuentasPagar>(entity => {
             entity.ToTable("CuentasPagar");
 
             entity.Property(e => e.Monto)
@@ -801,8 +768,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuentasPagar_Factura");
         });
 
-        modelBuilder.Entity<Cuenta>(entity =>
-        {
+        modelBuilder.Entity<Cuenta>(entity => {
             entity.Property(e => e.Codigo).HasMaxLength(2);
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
@@ -814,8 +780,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Cuenta_Grupo");
         });
 
-        modelBuilder.Entity<CuotasEspeciale>(entity =>
-        {
+        modelBuilder.Entity<CuotasEspeciale>(entity => {
             entity.HasKey(e => e.IdCuotaEspecial);
 
             entity.Property(e => e.Descripcion)
@@ -840,8 +805,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_CuotasEspeciales_Condominio");
         });
 
-        modelBuilder.Entity<Deduccion>(entity =>
-        {
+        modelBuilder.Entity<Deduccion>(entity => {
             entity.HasKey(e => e.IdDeduccion);
 
             entity.Property(e => e.Concepto).HasMaxLength(50);
@@ -858,8 +822,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Deducciones_Empleado");
         });
 
-        modelBuilder.Entity<Empleado>(entity =>
-        {
+        modelBuilder.Entity<Empleado>(entity => {
             entity.HasKey(e => e.IdEmpleado);
 
             entity.ToTable("Empleado");
@@ -871,8 +834,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.RefMonto).HasColumnType("money");
         });
 
-        modelBuilder.Entity<EstadoResultado>(entity =>
-        {
+        modelBuilder.Entity<EstadoResultado>(entity => {
             entity.HasKey(e => e.IdEstResultado);
 
             entity.ToTable("Estado_Resultado");
@@ -896,8 +858,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Estado_Resultado_Condominio");
         });
 
-        modelBuilder.Entity<EstadoSituacion>(entity =>
-        {
+        modelBuilder.Entity<EstadoSituacion>(entity => {
             entity.HasKey(e => e.IdEstSituacion);
 
             entity.ToTable("Estado_Situacion");
@@ -920,8 +881,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Estado_Situacion_Condominio");
         });
 
-        modelBuilder.Entity<Factura>(entity =>
-        {
+        modelBuilder.Entity<Factura>(entity => {
             entity.HasKey(e => e.IdFactura);
 
             entity.ToTable("Factura");
@@ -948,8 +908,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Factura_Proveedor");
         });
 
-        modelBuilder.Entity<FacturaEmitida>(entity =>
-        {
+        modelBuilder.Entity<FacturaEmitida>(entity => {
             entity.HasKey(e => e.IdFacturaEmitida);
 
             entity.Property(e => e.Abonado).HasColumnType("decimal(18, 2)");
@@ -979,8 +938,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_FacturaEmitida_Producto");
         });
 
-        modelBuilder.Entity<Fondo>(entity =>
-        {
+        modelBuilder.Entity<Fondo>(entity => {
             entity.HasKey(e => e.IdFondo);
 
             entity.Property(e => e.IdFondo).HasColumnName("id_Fondo");
@@ -997,8 +955,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Fondos_CodigoCuentas_Global");
         });
 
-        modelBuilder.Entity<Gasto>(entity =>
-        {
+        modelBuilder.Entity<Gasto>(entity => {
             entity.HasKey(e => e.IdGasto);
 
             entity.Property(e => e.IdGasto).HasColumnName("id_gasto");
@@ -1010,8 +967,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Gastos_LDiario_Global");
         });
 
-        modelBuilder.Entity<Grupo>(entity =>
-        {
+        modelBuilder.Entity<Grupo>(entity => {
             entity.ToTable("Grupo");
 
             entity.Property(e => e.Codigo).HasMaxLength(1);
@@ -1023,15 +979,13 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Grupo_Clase");
         });
 
-        modelBuilder.Entity<GrupoGasto>(entity =>
-        {
+        modelBuilder.Entity<GrupoGasto>(entity => {
             entity.HasKey(e => e.IdGrupoGasto);
 
             entity.Property(e => e.NombreGrupo).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<Impresora>(entity =>
-        {
+        modelBuilder.Entity<Impresora>(entity => {
             entity.HasKey(e => e.IdImpresora);
 
             entity.ToTable("Impresora");
@@ -1044,8 +998,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Impresora_Condominio");
         });
 
-        modelBuilder.Entity<Ingreso>(entity =>
-        {
+        modelBuilder.Entity<Ingreso>(entity => {
             entity.HasKey(e => e.IdIngreso);
 
             entity.Property(e => e.IdIngreso).HasColumnName("id_ingreso");
@@ -1057,8 +1010,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Ingresos_LDiario_Global");
         });
 
-        modelBuilder.Entity<Inquilino>(entity =>
-        {
+        modelBuilder.Entity<Inquilino>(entity => {
             entity.HasKey(e => e.IdInquilino);
 
             entity.Property(e => e.Cedula).HasMaxLength(50);
@@ -1077,8 +1029,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Inquilinos_AspNetUsers");
         });
 
-        modelBuilder.Entity<Islr>(entity =>
-        {
+        modelBuilder.Entity<Islr>(entity => {
             entity.ToTable("islr");
 
             entity.Property(e => e.BaseImponible).HasColumnType("decimal(18, 2)");
@@ -1094,8 +1045,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.UnidadTributaria).HasColumnType("decimal(18, 2)");
         });
 
-        modelBuilder.Entity<Iva>(entity =>
-        {
+        modelBuilder.Entity<Iva>(entity => {
             entity.HasKey(e => e.Id).HasName("PK_Retenciones");
 
             entity.ToTable("iva");
@@ -1104,8 +1054,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.Porcentaje).HasColumnType("decimal(18, 2)");
         });
 
-        modelBuilder.Entity<LdiarioGlobal>(entity =>
-        {
+        modelBuilder.Entity<LdiarioGlobal>(entity => {
             entity.HasKey(e => e.IdAsiento);
 
             entity.ToTable("LDiario_Global");
@@ -1134,8 +1083,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_LDiario_Global_CodigoCuentas_Global");
         });
 
-        modelBuilder.Entity<LibroCompra>(entity =>
-        {
+        modelBuilder.Entity<LibroCompra>(entity => {
             entity.Property(e => e.BaseImponible).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.ExentoIva)
                 .HasColumnType("decimal(18, 2)")
@@ -1166,8 +1114,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_LibroCompras_Factura");
         });
 
-        modelBuilder.Entity<LibroVenta>(entity =>
-        {
+        modelBuilder.Entity<LibroVenta>(entity => {
             entity.Property(e => e.BaseImponible)
                 .HasComment("Monto SubTotal de la factura")
                 .HasColumnType("decimal(18, 2)");
@@ -1209,8 +1156,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_LibroVentas_Factura");
         });
 
-        modelBuilder.Entity<MonedaCond>(entity =>
-        {
+        modelBuilder.Entity<MonedaCond>(entity => {
             entity.HasKey(e => e.IdMonedaCond);
 
             entity.ToTable("MonedaCond");
@@ -1231,8 +1177,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_MonedaCond_Moneda");
         });
 
-        modelBuilder.Entity<MonedaCuenta>(entity =>
-        {
+        modelBuilder.Entity<MonedaCuenta>(entity => {
             entity.Property(e => e.IdCodCuenta).HasComment("Codigo Sub cuenta del condominio");
             entity.Property(e => e.IdMoneda).HasComment("Moneda asignada");
             entity.Property(e => e.RecibePagos).HasComment("Mostrar cuenta en pago del propietario");
@@ -1250,16 +1195,14 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_MonedaCuenta_Moneda");
         });
 
-        modelBuilder.Entity<Moneda>(entity =>
-        {
+        modelBuilder.Entity<Moneda>(entity => {
             entity.HasKey(e => e.IdMoneda);
 
             entity.Property(e => e.Nombre).HasMaxLength(50);
             entity.Property(e => e.Pais).HasMaxLength(150);
         });
 
-        modelBuilder.Entity<NotaCredito>(entity =>
-        {
+        modelBuilder.Entity<NotaCredito>(entity => {
             entity.HasKey(e => e.IdNotaCredito);
 
             entity.ToTable("NotaCredito");
@@ -1290,8 +1233,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_NotaCredito_iva");
         });
 
-        modelBuilder.Entity<NotaDebito>(entity =>
-        {
+        modelBuilder.Entity<NotaDebito>(entity => {
             entity.HasKey(e => e.IdNotaDebito);
 
             entity.ToTable("NotaDebito");
@@ -1306,8 +1248,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_NotaDebito_Proveedor");
         });
 
-        modelBuilder.Entity<OrdenPago>(entity =>
-        {
+        modelBuilder.Entity<OrdenPago>(entity => {
             entity.HasKey(e => e.IdOrdenPago);
 
             entity.ToTable("OrdenPago");
@@ -1325,8 +1266,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_OrdenPago_Proveedor");
         });
 
-        modelBuilder.Entity<PagoAnticipo>(entity =>
-        {
+        modelBuilder.Entity<PagoAnticipo>(entity => {
             entity.ToTable("PagoAnticipo");
 
             entity.HasOne(d => d.IdAnticipoNavigation).WithMany(p => p.PagoAnticipos)
@@ -1340,8 +1280,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoAnticipo_Pago_Emitido");
         });
 
-        modelBuilder.Entity<PagoCobroTransito>(entity =>
-        {
+        modelBuilder.Entity<PagoCobroTransito>(entity => {
             entity.HasKey(e => e.IdPagoCobroTransito);
 
             entity.ToTable("PagoCobroTransito");
@@ -1357,8 +1296,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoCobroTransito_Pago_Recibido");
         });
 
-        modelBuilder.Entity<PagoEmitido>(entity =>
-        {
+        modelBuilder.Entity<PagoEmitido>(entity => {
             entity.HasKey(e => e.IdPagoEmitido);
 
             entity.ToTable("Pago_Emitido");
@@ -1382,8 +1320,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Pago_Emitido_Condominio");
         });
 
-        modelBuilder.Entity<PagoFactura>(entity =>
-        {
+        modelBuilder.Entity<PagoFactura>(entity => {
             entity.ToTable("PagoFactura");
 
             entity.HasOne(d => d.IdAnticipoNavigation).WithMany(p => p.PagoFacturas)
@@ -1401,8 +1338,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoFactura_Pago_Emitido");
         });
 
-        modelBuilder.Entity<PagoFacturaEmitida>(entity =>
-        {
+        modelBuilder.Entity<PagoFacturaEmitida>(entity => {
             entity.HasKey(e => e.IdPagoFacturaEmitida);
 
             entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.PagoFacturaEmitida)
@@ -1416,8 +1352,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoFacturaEmitida_Pago_Recibido");
         });
 
-        modelBuilder.Entity<PagoPropiedad>(entity =>
-        {
+        modelBuilder.Entity<PagoPropiedad>(entity => {
             entity.HasKey(e => e.IdPagoPropiedad);
 
             entity.ToTable("PagoPropiedad");
@@ -1433,8 +1368,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoPropiedad_Propiedad");
         });
 
-        modelBuilder.Entity<PagoRecibido>(entity =>
-        {
+        modelBuilder.Entity<PagoRecibido>(entity => {
             entity.HasKey(e => e.IdPagoRecibido);
 
             entity.ToTable("Pago_Recibido");
@@ -1463,8 +1397,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Pago_Recibido_Propiedad");
         });
 
-        modelBuilder.Entity<PagoReserva>(entity =>
-        {
+        modelBuilder.Entity<PagoReserva>(entity => {
             entity.HasKey(e => e.IdPagoReserva);
 
             entity.ToTable("PagoReserva");
@@ -1482,8 +1415,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagoReserva_Recibo_Reserva");
         });
 
-        modelBuilder.Entity<PagosCuota>(entity =>
-        {
+        modelBuilder.Entity<PagosCuota>(entity => {
             entity.HasKey(e => e.IdPagoCuota);
 
             entity.HasOne(d => d.IdPagoRecibidoNavigation).WithMany(p => p.PagosCuota)
@@ -1497,8 +1429,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagosCuotas_ReciboCuotas");
         });
 
-        modelBuilder.Entity<PagosNomina>(entity =>
-        {
+        modelBuilder.Entity<PagosNomina>(entity => {
             entity.ToTable("PagosNomina");
 
             entity.HasOne(d => d.IdPagoEmitidoNavigation).WithMany(p => p.PagosNominas)
@@ -1512,8 +1443,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagosNomina_PagosNomina");
         });
 
-        modelBuilder.Entity<PagosNotaDebito>(entity =>
-        {
+        modelBuilder.Entity<PagosNotaDebito>(entity => {
             entity.HasKey(e => e.IdPagosNotaDebito);
 
             entity.ToTable("PagosNotaDebito");
@@ -1529,8 +1459,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagosNotaDebito_Pago_Emitido");
         });
 
-        modelBuilder.Entity<PagosRecibo>(entity =>
-        {
+        modelBuilder.Entity<PagosRecibo>(entity => {
             entity.HasKey(e => e.IdPagoRecibo);
 
             entity.ToTable("PagosRecibo");
@@ -1544,8 +1473,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PagosRecibo_Recibo_Cobro");
         });
 
-        modelBuilder.Entity<Pasivo>(entity =>
-        {
+        modelBuilder.Entity<Pasivo>(entity => {
             entity.HasKey(e => e.IdPasivo);
 
             entity.Property(e => e.IdPasivo).HasColumnName("id_pasivo");
@@ -1557,8 +1485,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Pasivos_LDiario_Global");
         });
 
-        modelBuilder.Entity<Patrimonio>(entity =>
-        {
+        modelBuilder.Entity<Patrimonio>(entity => {
             entity.HasKey(e => e.IdPatrimonio);
 
             entity.ToTable("Patrimonio");
@@ -1572,8 +1499,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Patrimonio_LDiario_Global");
         });
 
-        modelBuilder.Entity<Percepcion>(entity =>
-        {
+        modelBuilder.Entity<Percepcion>(entity => {
             entity.HasKey(e => e.IdPercepcion);
 
             entity.Property(e => e.Concepto).HasMaxLength(50);
@@ -1590,8 +1516,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Percepciones_Empleado");
         });
 
-        modelBuilder.Entity<Producto>(entity =>
-        {
+        modelBuilder.Entity<Producto>(entity => {
             entity.HasKey(e => e.IdProducto);
 
             entity.ToTable("Producto");
@@ -1614,8 +1539,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Producto_iva");
         });
 
-        modelBuilder.Entity<Propiedad>(entity =>
-        {
+        modelBuilder.Entity<Propiedad>(entity => {
             entity.HasKey(e => e.IdPropiedad);
 
             entity.ToTable("Propiedad");
@@ -1659,8 +1583,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Propiedad_AspNetUsers");
         });
 
-        modelBuilder.Entity<PropiedadesGrupo>(entity =>
-        {
+        modelBuilder.Entity<PropiedadesGrupo>(entity => {
             entity.HasKey(e => e.IdPropiedadGrupo);
 
             entity.Property(e => e.Alicuota).HasColumnType("decimal(18, 6)");
@@ -1676,8 +1599,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_PropiedadesGrupos_Propiedad");
         });
 
-        modelBuilder.Entity<Proveedor>(entity =>
-        {
+        modelBuilder.Entity<Proveedor>(entity => {
             entity.HasKey(e => e.IdProveedor);
 
             entity.ToTable("Proveedor");
@@ -1703,8 +1625,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Proveedor_iva");
         });
 
-        modelBuilder.Entity<Provision>(entity =>
-        {
+        modelBuilder.Entity<Provision>(entity => {
             entity.HasKey(e => e.IdProvision);
 
             entity.Property(e => e.IdProvision).HasColumnName("id_provision");
@@ -1731,8 +1652,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Provisiones_CodigoCuentas_Global1");
         });
 
-        modelBuilder.Entity<ReciboCobro>(entity =>
-        {
+        modelBuilder.Entity<ReciboCobro>(entity => {
             entity.HasKey(e => e.IdReciboCobro);
 
             entity.ToTable("Recibo_Cobro");
@@ -1770,8 +1690,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Recibo_Cobro_Relacion_Gastos");
         });
 
-        modelBuilder.Entity<ReciboCuota>(entity =>
-        {
+        modelBuilder.Entity<ReciboCuota>(entity => {
             entity.HasKey(e => e.IdReciboCuotas);
 
             entity.Property(e => e.Abonado).HasColumnType("decimal(18, 2)");
@@ -1796,8 +1715,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_ReciboCuotas_Propiedad");
         });
 
-        modelBuilder.Entity<ReciboNomina>(entity =>
-        {
+        modelBuilder.Entity<ReciboNomina>(entity => {
             entity.HasKey(e => e.IdReciboNomina);
 
             entity.ToTable("Recibo_Nomina");
@@ -1814,8 +1732,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Recibo_Nomina_Empleado");
         });
 
-        modelBuilder.Entity<ReciboReserva>(entity =>
-        {
+        modelBuilder.Entity<ReciboReserva>(entity => {
             entity.HasKey(e => e.IdReciboReserva);
 
             entity.ToTable("Recibo_Reserva");
@@ -1833,8 +1750,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Recibo_Reserva_Reserva");
         });
 
-        modelBuilder.Entity<ReferenciasPe>(entity =>
-        {
+        modelBuilder.Entity<ReferenciasPe>(entity => {
             entity.HasKey(e => e.IdReferencia);
 
             entity.ToTable("Referencias_PE");
@@ -1852,8 +1768,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Referencias_PE_Pago_Emitido");
         });
 
-        modelBuilder.Entity<ReferenciasPr>(entity =>
-        {
+        modelBuilder.Entity<ReferenciasPr>(entity => {
             entity.HasKey(e => e.IdReferencia).HasName("PK_Referencias_PR_1");
 
             entity.ToTable("Referencias_PR");
@@ -1871,8 +1786,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Referencias_PR_Pago_Recibido");
         });
 
-        modelBuilder.Entity<RelacionGasto>(entity =>
-        {
+        modelBuilder.Entity<RelacionGasto>(entity => {
             entity.HasKey(e => e.IdRgastos);
 
             entity.ToTable("Relacion_Gastos");
@@ -1900,8 +1814,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Relacion_Gastos_Condominio");
         });
 
-        modelBuilder.Entity<RelacionGastoTransaccion>(entity =>
-        {
+        modelBuilder.Entity<RelacionGastoTransaccion>(entity => {
             entity.ToTable("RelacionGasto_Transaccion");
 
             entity.HasOne(d => d.IdRelacionGastoNavigation).WithMany(p => p.RelacionGastoTransaccions)
@@ -1915,8 +1828,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_RelacionGasto_Transaccion_Transaccion");
         });
 
-        modelBuilder.Entity<Reserva>(entity =>
-        {
+        modelBuilder.Entity<Reserva>(entity => {
             entity.HasKey(e => e.IdReserva);
 
             entity.ToTable("Reserva");
@@ -1930,8 +1842,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_Reserva_Propiedad");
         });
 
-        modelBuilder.Entity<SubCuenta>(entity =>
-        {
+        modelBuilder.Entity<SubCuenta>(entity => {
             entity.Property(e => e.Codigo).HasMaxLength(2);
             entity.Property(e => e.Descricion).HasMaxLength(70);
 
@@ -1941,8 +1852,7 @@ public partial class NuevaAppContext : DbContext
                 .HasConstraintName("FK_SubCuenta_Cuenta");
         });
 
-        modelBuilder.Entity<Transaccion>(entity =>
-        {
+        modelBuilder.Entity<Transaccion>(entity => {
             entity.HasKey(e => e.IdTransaccion);
 
             entity.ToTable("Transaccion");
