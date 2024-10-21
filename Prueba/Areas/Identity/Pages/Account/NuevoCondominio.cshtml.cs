@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Prueba.Areas.Identity.Pages.Account
 {
-    public class CreateNewCondominioModel : PageModel
+    public class NuevoCondominioModel : PageModel
     {
         public void OnGet()
         {
