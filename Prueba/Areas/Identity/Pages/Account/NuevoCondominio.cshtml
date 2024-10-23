@@ -6,4 +6,152 @@
 
 }
 
-<h3>Hola Mundo</h3>
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-end justify-content-end mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- User Card -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Ingresa Datos del Usuario
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row">
+                            <!-- First form section: Name -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Name" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Name" class="form-control" autocomplete="username" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Second form section: Surname -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Surname" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Surname" class="form-control" autocomplete="current-password" aria-required="true" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Third section: Cedula -->
+                        <div class="form-floating">
+                            <div class="form-group">
+                                <label asp-for="Input.Cedula" class="form-label"></label>
+                            </div>
+                            <div class="form-group">
+                                <input asp-for="Input.Cedula" class="form-control" autocomplete="username" aria-required="true" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <!-- Fourth  section: Email -->
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Email" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                                    </div>
+                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <!-- Fifth section: Password -->
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Password" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Password" class="form-control" autocomplete="username" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Space -->
+            <div class="spacer" style="height:20px;"> </div>
+            <!-- Administrator Card -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Ingresa Datos del Administrador
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row">
+                            <!-- First form section: Name -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Name" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Name" class="form-control" autocomplete="username" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Second form section: Surname -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Surname" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.Surname" class="form-control" autocomplete="current-password" aria-required="true" type="password" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Third section: Cedula -->
+                        <div class="form-floating">
+                            <div class="form-group">
+                                <label asp-for="Input.Cedula" class="form-label"></label>
+                            </div>
+                            <div class="form-group">
+                                <input asp-for="Input.Cedula" class="form-control" autocomplete="username" aria-required="true" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- Fourth section: Email -->
+                            <div class="form-floating">
+                                <div class="form-group">
+                                    <label asp-for="Input.Email" class="form-label"></label>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                                </div>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- Confirm Button -->
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Confirmar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
