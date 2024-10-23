@@ -25,6 +25,9 @@
                 <div class="card-body">
                     <form method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <section>
+
+                        </section>
                         <div class="row">
                             <!-- First form section: Name -->
                             <div class="col-6">
@@ -79,6 +82,18 @@
                                     </div>
                                     <div class="form-group">
                                         <input asp-for="Input.Password" class="form-control" autocomplete="username" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <!-- Fifth section: Password -->
+                                <div class="form-floating">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Password" class="form-label"></label>
+                                    </div>
+                                    <div class="form-group">
+                                        <input asp-for="Input.ModeloNuevoCondominio.Administrator.FirstName" class="form-control" autocomplete="username" aria-required="true" />
                                     </div>
                                 </div>
                             </div>
@@ -154,4 +169,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+</script>
 }

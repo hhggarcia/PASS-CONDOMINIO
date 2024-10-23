@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
 using Prueba.Services;
+using Prueba.ViewModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace Prueba.Areas.Identity.Pages.Account
@@ -64,6 +65,8 @@ namespace Prueba.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             [Display(Name = "Cédula")]
             public string Cedula { get; set; }
+
+            public CreateCondominioVM ModeloNuevoCondominio { get; set; }
         }
     }
 }
