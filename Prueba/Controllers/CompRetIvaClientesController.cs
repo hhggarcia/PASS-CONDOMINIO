@@ -75,7 +75,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva,NumComprobante,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
+        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmisionImpIva,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
         {
             ModelState.Remove("IdClienteNavigation");
             ModelState.Remove("IdFacturaNavigation");
@@ -84,6 +84,27 @@ namespace Prueba.Controllers
 
             if (ModelState.IsValid)
             {
+                var factura = await _context.FacturaEmitida.FindAsync(compRetIvaCliente.IdFactura);
+                var itemLibro = await _context.LibroVentas.FirstOrDefaultAsync(c => c.IdFactura == compRetIvaCliente.IdFactura);
+                if (factura != null && itemLibro != null)
+                {
+                    compRetIvaCliente.NumFacturaAfectada = factura.NumFactura.ToString();
+                    compRetIvaCliente.TipoTransaccion = true;
+                    compRetIvaCliente.TotalCompraIva = factura.MontoTotal;
+                    compRetIvaCliente.CompraSinCreditoIva = 0;
+                    compRetIvaCliente.BaseImponible = factura.SubTotal;
+                    compRetIvaCliente.Alicuota = 16;
+                    compRetIvaCliente.ImpIva = itemLibro.Iva;
+                    compRetIvaCliente.IvaRetenido = itemLibro.RetIva;
+                    compRetIvaCliente.TotalCompraRetIva = factura.MontoTotal - itemLibro.RetIva;
+                    compRetIvaCliente.NumComprobante = factura.NumFactura;
+
+                    itemLibro.IvaRetenido = itemLibro.RetIva;
+                    itemLibro.ComprobanteRetencion = compRetIvaCliente.NumCompRet;
+
+                    _context.LibroVentas.Update(itemLibro);
+
+                }
                 _context.Add(compRetIvaCliente);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -136,7 +157,24 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    var factura = await _context.FacturaEmitida.FindAsync(compRetIvaCliente.IdFactura);
+                    var itemLibro = await _context.LibroVentas.FirstOrDefaultAsync(c => c.IdFactura == compRetIvaCliente.IdFactura);
+                    if (factura != null && itemLibro != null)
+                    {
+                        compRetIvaCliente.NumFacturaAfectada = factura.NumFactura.ToString();
+                        compRetIvaCliente.TipoTransaccion = true;
+                        compRetIvaCliente.TotalCompraIva = factura.MontoTotal;
+                        compRetIvaCliente.CompraSinCreditoIva = 0;
+                        compRetIvaCliente.BaseImponible = factura.SubTotal;
+                        compRetIvaCliente.Alicuota = 16;
+                        compRetIvaCliente.ImpIva = itemLibro.Iva;
+                        compRetIvaCliente.IvaRetenido = itemLibro.RetIva;
+                        compRetIvaCliente.TotalCompraRetIva = factura.MontoTotal - itemLibro.RetIva;
+                        compRetIvaCliente.NumComprobante = factura.NumFactura;                        
+                    }
+
                     _context.Update(compRetIvaCliente);
+                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

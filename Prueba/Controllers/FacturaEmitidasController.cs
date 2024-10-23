@@ -180,7 +180,8 @@ namespace Prueba.Controllers
                     TotalVentaIva = facturaEmitida.MontoTotal,
                     VentaExenta = 0,
                     VentaGravable = 0,
-                    IvaRetenido = 0
+                    IvaRetenido = 0,
+                    ComprobanteRetencion = ""
                 };
 
                 // registrar en cuentas por cobrar
