@@ -6,7 +6,15 @@
 
 }
 
-<div class="container-fluid">
+<style>
+    /*Remover de aqui*/
+    .form-control::placeholder {
+        color: rgba(0, 0, 0, 0.5); /* Light color for placeholders */
+        opacity: 1; /* Ensure the placeholder is fully visible */
+    }
+</style>
+
+<div class="container-fluid mb-2">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-end justify-content-end mb-4">
         <a asp-action="Index" class="btn btn-light">Volver</a>
@@ -14,152 +22,75 @@
     <!-- Content Row -->
     <div class="row justify-content-center">
 
-        <div class="col-lg-6">
+        <div class="col-lg-4">
             <!-- User Card -->
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        Ingresa Datos del Usuario
-                    </h6>
+                    <h4 class="m-0 font-weight-bold text-primary">
+                        Crea tu Usuario
+                    </h4>
                 </div>
                 <div class="card-body">
                     <form method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <section>
-
-                        </section>
-                        <div class="row">
-                            <!-- First form section: Name -->
+                        <div class="row mb-3">
+                            <!-- First form section: First Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Name" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Name" class="form-control" autocomplete="username" aria-required="true" />
-                                    </div>
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.FirstName" class="form-control" placeholder="Your First Name" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.FirstName" class="form-label">First Name</label>
                                 </div>
                             </div>
-                            <!-- Second form section: Surname -->
+                            <!-- Second form section: Last Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Surname" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Surname" class="form-control" autocomplete="current-password" aria-required="true" type="password" />
-                                    </div>
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.LastName" class="form-control" placeholder="Your Last Name" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.LastName" class="form-label">Last Name</label>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- Third section: Cedula -->
-                        <div class="form-floating">
-                            <div class="form-group">
-                                <label asp-for="Input.Cedula" class="form-label"></label>
-                            </div>
-                            <div class="form-group">
-                                <input asp-for="Input.Cedula" class="form-control" autocomplete="username" aria-required="true" />
                             </div>
                         </div>
                         <div class="row">
+                            <!-- First form section: User Name -->
                             <div class="col-6">
-                                <!-- Fourth  section: Email -->
-                                <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Email" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                                    </div>
-                                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.UserName" class="form-control" placeholder="Your User Name" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.UserName" class="form-label">User Name</label>
+                                    <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.UserName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <!-- Fifth section: Password -->
-                                <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Password" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Password" class="form-control" autocomplete="username" aria-required="true" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <!-- Fifth section: Password -->
-                                <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Password" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.ModeloNuevoCondominio.Administrator.FirstName" class="form-control" autocomplete="username" aria-required="true" />
-                                    </div>
+                                <!-- First form section: Email -->
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.Email" class="form-control" placeholder="Your Email Address" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.Email" class="form-label">Email</label>
+                                <!-- El Error message no sale -->
+                                    <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.Email" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Space -->
-            <div class="spacer" style="height:20px;"> </div>
-            <!-- Administrator Card -->
-            <div class="card shadow mb-4 bg-content-bg">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        Ingresa Datos del Administrador
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="row">
-                            <!-- First form section: Name -->
-                            <div class="col-6">
-                                <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Name" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Name" class="form-control" autocomplete="username" aria-required="true" />
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Second form section: Surname -->
-                            <div class="col-6">
-                                <div class="form-floating">
-                                    <div class="form-group">
-                                        <label asp-for="Input.Surname" class="form-label"></label>
-                                    </div>
-                                    <div class="form-group">
-                                        <input asp-for="Input.Surname" class="form-control" autocomplete="current-password" aria-required="true" type="password" />
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-control" placeholder="Your Password" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-label">Password</label>
+                            <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="text-danger"></span>
                         </div>
-                        <!-- Third section: Cedula -->
-                        <div class="form-floating">
-                            <div class="form-group">
-                                <label asp-for="Input.Cedula" class="form-label"></label>
-                            </div>
-                            <div class="form-group">
-                                <input asp-for="Input.Cedula" class="form-control" autocomplete="username" aria-required="true" />
-                            </div>
+                        <!-- Confirm Password -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-control" placeholder="Your Password" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-label">Confirm Password</label>
+                                <!-- Chequear que sea la misma clave -->
+                            <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="text-danger"></span>
                         </div>
-                        <div class="row">
-                            <!-- Fourth section: Email -->
-                            <div class="form-floating">
-                                <div class="form-group">
-                                    <label asp-for="Input.Email" class="form-label"></label>
-                                </div>
-                                <div class="form-group">
-                                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                                </div>
-                                <span asp-validation-for="Input.Email" class="text-danger"></span>
-                            </div>
+                        <!-- Terms and Conditions -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="termsCheck" required />
+                            <label class="form-check-label" for="termsCheck">
+                                Acepto los Terminos & Condiciones
+                            </label>
                         </div>
-                        <!-- Confirm Button -->
-                        <button type="submit" class="w-100 btn btn-lg btn-primary">Confirmar</button>
+                        <!-- Sign Up Button -->
+                        <!-- Troubleshoot, el porque no se alinea el boton -->
+                        <button type="submit" class="w-50 btn btn-lg btn-primary justify-content-center">Sign Up</button>
                     </form>
                 </div>
             </div>
@@ -170,5 +101,6 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-</script>
+
+    </script>
 }
