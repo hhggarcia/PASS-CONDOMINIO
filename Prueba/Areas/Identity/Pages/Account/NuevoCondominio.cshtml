@@ -12,6 +12,30 @@
         color: rgba(0, 0, 0, 0.5); /* Light color for placeholders */
         opacity: 1; /* Ensure the placeholder is fully visible */
     }
+
+    .hidden {
+        display: none;
+    }
+
+    .currency-symbol {
+        position: absolute;
+        right: 15px; /* Adjust for padding alignment */
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(0, 0, 0, 0.5); /* Optional: lighter color for styling */
+        transition: margin-top 0.3s ease; /* Smooth transition */
+        pointer-events: none;
+    }
+
+        /* Class to move the currency symbol down */
+        .currency-symbol.adjusted {
+            margin-top: 7px; /* Adjust as needed to lower the symbol */
+        }
+
+    .form-control.pe-5 {
+        padding-right: 2.5rem; /* Add padding for space between input and symbol */
+    }
+
 </style>
 
 <div class="container-fluid mb-2">
@@ -20,11 +44,10 @@
         <a asp-action="Index" class="btn btn-light">Volver</a>
     </div>
     <!-- Content Row -->
-    <div class="row justify-content-center">
-
+    <div class="row justify-content-center mb-2">
         <div class="col-lg-4">
             <!-- User Card -->
-            <div class="card shadow mb-4 bg-content-bg">
+            <div class="card shadow mb-4 bg-content-bg" id="UserSignupForm">
                 <div class="card-header py-3">
                     <h4 class="m-0 font-weight-bold text-primary">
                         Crea tu Usuario
@@ -34,51 +57,89 @@
                     <form method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="row mb-3">
-                            <!-- First form section: First Name -->
+                            <!-- First Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.FirstName" class="form-control" placeholder="Your First Name" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.FirstName" class="form-label">First Name</label>
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.FirstName"
+                                           class="form-control"
+                                           placeholder="Nombre(s)"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.FirstName"
+                                           class="form-label"
+                                           data-original="Nombre(s)"
+                                           data-translated="Ingresa tu Nombre">Nombre(s)</label>
                                 </div>
                             </div>
-                            <!-- Second form section: Last Name -->
+                            <!-- Last Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.LastName" class="form-control" placeholder="Your Last Name" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.LastName" class="form-label">Last Name</label>
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.LastName"
+                                           class="form-control"
+                                           placeholder="Apellido(s)"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.LastName"
+                                           class="form-label"
+                                           data-original="Apellido(s)"
+                                           data-translated="Ingresa tu Apellido">Apellido(s)</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <!-- First form section: User Name -->
+                            <!-- User Name -->
                             <div class="col-6">
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.UserName" class="form-control" placeholder="Your User Name" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.UserName" class="form-label">User Name</label>
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.UserName"
+                                           class="form-control"
+                                           placeholder="Nombre de Usuario"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.UserName"
+                                           class="form-label"
+                                           data-original="Nombre de Usuario"
+                                           data-translated="Crea tu Usuario">Nombre de Usuario</label>
+                                    <!-- Chequear si es valido -->
                                     <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.UserName" class="text-danger"></span>
                                 </div>
                             </div>
+                            <!-- Email -->
                             <div class="col-6">
-                                <!-- First form section: Email -->
                                 <div class="form-floating mb-3">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.Email" class="form-control" placeholder="Your Email Address" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.Email" class="form-label">Email</label>
-                                <!-- El Error message no sale -->
+                                    <input asp-for="Input.ModeloNuevoCondominio.Owner.Email"
+                                           class="form-control"
+                                           placeholder="Email"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Owner.Email"
+                                           class="form-label"
+                                           Email class="form-label"
+                                           data-original="Email"
+                                           data-translated="Ingresa tu Email">Email</label>
                                     <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.Email" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         <!-- Password -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-control" placeholder="Your Password" />
-                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-label">Password</label>
+                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash"
+                                   class="form-control"
+                                   placeholder="Contraseña"
+                                   onfocus="toggleLabelText(this, true)"
+                                   onblur="toggleLabelText(this, false)" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash"
+                                   class="form-label"
+                                   Email class="form-label"
+                                   data-original="Contraseña"
+                                   data-translated="Ingresa tu Contraseña">Contraseña</label>
                             <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="text-danger"></span>
                         </div>
                         <!-- Confirm Password -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-control" placeholder="Your Password" />
-                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-label">Confirm Password</label>
-                                <!-- Chequear que sea la misma clave -->
+                            <input asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash"
+                                   class="form-control"
+                                   placeholder="Confirma tu Contraseña" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="form-label">Confirma tu Contraseña</label>
                             <span asp-validation-for="Input.ModeloNuevoCondominio.Owner.PasswordHash" class="text-danger"></span>
                         </div>
                         <!-- Terms and Conditions -->
@@ -89,9 +150,266 @@
                             </label>
                         </div>
                         <!-- Sign Up Button -->
-                        <!-- Troubleshoot, el porque no se alinea el boton -->
-                        <button type="submit" class="w-50 btn btn-lg btn-primary justify-content-center">Sign Up</button>
+                        <div class="container d-flex justify-content-center align-items-center">
+                            <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideUserForm()">Continuar</span>
+                        </div>
                     </form>
+                </div>
+            </div>
+            <!-- Admin Card -->
+            <div class="card shadow mb-4 bg-content-bg hidden" id="AdminSignupForm">
+                <div class="card-header py-3">
+                    <h4 class="m-0 font-weight-bold text-primary">
+                        Registra tu Administrador
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row mb-3">
+                            <!-- First Name -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input asp-for="Input.ModeloNuevoCondominio.Administrator.FirstName"
+                                           class="form-control"
+                                           placeholder="Nombre(s)"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Administrator.FirstName"
+                                           class="form-label"
+                                           data-original="Nombre(s)"
+                                           data-translated="Ingresa tu Nombre">Nombre(s)</label>
+                                </div>
+                            </div>
+                            <!-- Last Name -->
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input asp-for="Input.ModeloNuevoCondominio.Administrator.LastName"
+                                           class="form-control"
+                                           placeholder="Apellido(s)"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Input.ModeloNuevoCondominio.Administrator.LastName"
+                                           class="form-label"
+                                           data-original="Apellido(s)"
+                                           data-translated="Ingresa tu Apellido">Apellido(s)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Email -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ModeloNuevoCondominio.Administrator.Email"
+                                   class="form-control"
+                                   placeholder="Email"
+                                   onfocus="toggleLabelText(this, true)"
+                                   onblur="toggleLabelText(this, false)" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Administrator.Email"
+                                   class="form-label"
+                                   Email class="form-label"
+                                   data-original="Email"
+                                   data-translated="Ingresa tu Email">Email</label>
+                            <span asp-validation-for="Input.ModeloNuevoCondominio.Administrator.Email" class="text-danger"></span>
+                        </div>
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash"
+                                   class="form-control"
+                                   placeholder="Contraseña"
+                                   onfocus="toggleLabelText(this, true)"
+                                   onblur="toggleLabelText(this, false)" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash"
+                                   class="form-label"
+                                   Email class="form-label"
+                                   data-original="Contraseña"
+                                   data-translated="Ingresa tu Contraseña">Contraseña</label>
+                            <span asp-validation-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash" class="text-danger"></span>
+                        </div>
+                        <!-- Confirm Password -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash"
+                                   class="form-control"
+                                   placeholder="Confirma tu Contraseña" />
+                            <label asp-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash" class="form-label">Confirma tu Contraseña</label>
+                            <span asp-validation-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash" class="text-danger"></span>
+                        </div>
+                        <!-- Sign Up Button -->
+                        <div class="container d-flex justify-content-center align-items-center">
+                            <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideAdminForm()">Continuar</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Condominio Card -->
+            <div class="container">
+                <div class="row">
+            <!-- Hacer esto mas grande -->
+                    <div class="col-md-20">
+                        <div class="card shadow mb-4 bg-content-bg hidden" id="CondominioForm">
+                            <div class="card-header py-3">
+                                <h4 class="m-0 font-weight-bold text-primary">
+                                    Registra tu Condominio
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <!-- Contribuyente Especial -->
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="SpecialCheck" />
+                                        <label class="form-check-label" for="SpecialCheck">
+                                            Contribuyente Especial
+                                        </label>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <!-- Rif -->
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Rif"
+                                                       class="form-control"
+                                                       placeholder="Rif"
+                                                       onfocus="toggleLabelText(this, true)"
+                                                       onblur="toggleLabelText(this, false)" />
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Rif"
+                                                       class="form-label"
+                                                       Email class="form-label"
+                                                       data-original="Rif"
+                                                       data-translated="Ingresa tu Rif">Rif</label>
+                                            </div>
+                                        </div>
+                                        <!-- Tipo -->
+                                        <div class="col-6">
+                                            <div class="form-floating">
+                                                <select asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Tipo" class="form-select">
+                                                    <option value="">Tipo de Condominio</option>
+                                                    <option value="Option 1">Residencial</option>
+                                                    <option value="Option 2">Empresarial</option>
+                                                    <option value="Option 3">Locales</option>
+                                                </select>
+
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Tipo" class="form-label">Seleccione un Tipo</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <!-- Nombre del Condominio -->
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Nombre"
+                                                       class="form-control"
+                                                       placeholder="Condominio"
+                                                       onfocus="toggleLabelText(this, true)"
+                                                       onblur="toggleLabelText(this, false)" />
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Nombre"
+                                                       class="form-label"
+                                                       Email class="form-label"
+                                                       data-original="Condominio"
+                                                       data-translated="Nombre del Condominio">Condominio</label>
+                                            </div>
+                                        </div>
+                                        <!-- Dirección -->
+                                        <div class="col-6">
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Direccion"
+                                                       class="form-control"
+                                                       placeholder="Dirección"
+                                                       onfocus="toggleLabelText(this, true)"
+                                                       onblur="toggleLabelText(this, false)" />
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.InteresMora"
+                                                       class="form-label"
+                                                       Email class="form-label"
+                                                       data-original="Dirección"
+                                                       data-translated="Ingresa la Dirección">Dirección</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <!-- InteresMora -->
+                                            <!-- Cambiar si es en $ o Bs. -->
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.InteresMora"
+                                                       class="form-control pe-5"
+                                                       type="number"
+                                                       placeholder="Interés/Mora"
+                                                       oninput="adjustCurrencyPosition(this)"
+                                                       onfocus="toggleLabelText(this, true)"
+                                                       onblur="toggleLabelText(this, false)" />
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.InteresMora"
+                                                       class="form-label"
+                                                       Email class="form-label"
+                                                       data-original="Interés/Mora"
+                                                       data-translated="¿Cuanto se Cobrará de Mora?">Interés/Mora</label>
+                                                <!-- Currency symbol displayed to the right of the input -->
+                                                <span class="currency-symbol">Bs.</span>
+                                            </div>
+                                        </div>
+                                        <!-- Multa -->
+                                        <!-- Cambiar si es en $ o Bs. -->
+                                        <!-- Cambiar si es % -->
+                                        <div class="col-6">
+                                            <div class="form-floating mb-3 position-relative">
+                                                <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Multa"
+                                                       class="form-control pe-5"
+                                                       type="number"
+                                                       placeholder="Multa"
+                                                       oninput="adjustCurrencyPosition(this)"
+                                                       onfocus="toggleLabelText(this, true)"
+                                                       onblur="toggleLabelText(this, false)" />
+                                                <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Multa"
+                                                       class="form-label"
+                                                       Email class="form-label"
+                                                       data-original="Multa"
+                                                       data-translated="¿Cuanto se Cobrará de Multa?">Multa</label>
+                                                <!-- Currency symbol displayed to the right of the input -->
+                                                <span class="currency-symbol">Bs.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Email"
+                                               class="form-control"
+                                               placeholder="Email"
+                                               onfocus="toggleLabelText(this, true)"
+                                               onblur="toggleLabelText(this, false)" />
+                                        <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.Email"
+                                               class="form-label"
+                                               Email class="form-label"
+                                               data-original="Email"
+                                               data-translated="Ingresa tu Email">Email</label>
+                                        <span asp-validation-for="Input.ModeloNuevoCondominio.CondminioNuevo.Email" class="text-danger"></span>
+                                    </div>
+                                    <!-- Password -->
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo"
+                                               class="form-control"
+                                               placeholder="Contraseña"
+                                               onfocus="toggleLabelText(this, true)"
+                                               onblur="toggleLabelText(this, false)" />
+                                        <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo"
+                                               class="form-label"
+                                               Email class="form-label"
+                                               data-original="Contraseña"
+                                               data-translated="Ingresa tu Contraseña">Contraseña</label>
+                                        <span asp-validation-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo" class="text-danger"></span>
+                                    </div>
+                                    <!-- Confirm Password -->
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo"
+                                               class="form-control"
+                                               placeholder="Confirma tu Contraseña" />
+                                        <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo" class="form-label">Confirma tu Contraseña</label>
+                                        <span asp-validation-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo" class="text-danger"></span>
+                                    </div>
+                                    <!-- Sign Up Button -->
+                                    <div class="container d-flex justify-content-center align-items-center">
+                                        <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideCondominioForm()">Continuar</span>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,5 +420,38 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
 
+        function adjustCurrencyPosition(input) {
+            const symbol = input.closest('.form-floating').querySelector('.currency-symbol');
+            if (input.value.trim() !== "") {
+                symbol.classList.add('adjusted');
+            } else {
+                symbol.classList.remove('adjusted');
+            }
+        }
+
+        function toggleLabelText(input, isFocus) {
+            const label = input.closest('.form-floating').querySelector('.form-label');
+            if (label) {
+                label.textContent = isFocus ? label.getAttribute('data-translated') : label.getAttribute('data-original');
+            }
+        }
+
+        function hideUserForm() {
+            document.getElementById("UserSignupForm").style.display = "none";
+
+            document.getElementById("AdminSignupForm").classList.remove("hidden");
+        }
+
+        function hideAdminForm() {
+            document.getElementById("AdminSignupForm").style.display = "none";
+
+            document.getElementById("CondominioForm").classList.remove("hidden");
+        }
+
+        function hideCondominioForm() {
+            document.getElementById("CondominioForm").style.display = "none";
+
+            document.getElementById("PagoForm").classList.remove("hidden");
+        }
     </script>
 }
