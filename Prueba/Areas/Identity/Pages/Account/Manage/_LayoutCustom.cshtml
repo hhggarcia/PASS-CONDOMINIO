@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Prueba.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="en">
+<head>
+    <title>@ViewData["Title"]</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="~/images/isotipo.png" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="~/css/fontawesome-free/css/all.min.css"
+          rel="stylesheet"
+          type="text/css" />
+    <link rel="stylesheet" href="~/css/bootstrap-icons/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style-dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/data-tables.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/js/choices.js/choices.min.css" asp-append-version="true" />
+</head>
+<body>
+    <main role="main">
+        @RenderBody()
+    </main>
+    <div class="snackbars" id="form-output-global"></div>
+    <script src="~/js/jquery/jquery.min.js"></script>
+
+    <!-- Scripts Dashboard-->
+    <script src="~/js/dashboard.min.js"></script>
+
+    <!-- Scripts Graficas -->
+    <script src="~/js/chart.js/Chart.min.js"></script>
+    <script src="~/js/demo/chart-area-demo.js"></script>
+    <script src="~/js/demo/chart-pie-demo.js"></script>
+
+    <!-- Scripts Globales-->
+    <script src="~/js/script.js"></script>
+    <script src="~/js/core.min.js"></script>
+
+    <!-- Scripts Tablas -->
+    <script src="~/js/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/js/datatables/datatables-scripts.js"></script>
+    <script src="~/js/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Scripts Modal -->
+    <script src="~/js/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts Choises -->
+    <script src="~/js/choices.js/choices.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/ApiPDF.js"></script>
+
+</body>
+</html>

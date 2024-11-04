@@ -191,7 +191,7 @@ public partial class NuevaAppContext : DbContext
         if (!optionsBuilder.IsConfigured) {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Development.json")
                 .Build();
 
             var connectionString = configuration.GetConnectionString("SQLEXPRESS") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
