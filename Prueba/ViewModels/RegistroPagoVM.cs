@@ -13,6 +13,7 @@ namespace Prueba.ViewModels
         public IList<SelectListItem>? Proveedor { get; set; }
         public IList<SelectListItem>? Facturas { get; set; }
         public IList<SelectListItem>? Anticipos { get; set; }
+        public IList<int> AnticiposIds { get; set; } = new List<int>();
         public IList<SelectListItem>? SubCuentasBancos { get; set; }
         public IList<SelectListItem>? SubCuentasCaja { get; set; }
         public IList<SelectListItem>? ReferenciasDolar { get; set; }
@@ -28,9 +29,5 @@ namespace Prueba.ViewModels
         public Factura Factura { get; set; }
         public bool retencionesIva { get; set; }
         public bool retencionesIslr { get; set; }
-
-        //public int IdReferenciaDolar { get; set; }
-        //public int IdMonedaCond { get; set; }
-
     }
 }

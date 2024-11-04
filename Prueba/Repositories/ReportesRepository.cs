@@ -468,7 +468,7 @@ namespace Prueba.Repositories
                     && c.IdCodCuenta == cc.IdCodCuenta)
                     .ToListAsync();
 
-                var auxFechaFin = filtro.FechaFin;
+                var auxFechaFin = filtro.FechaFin.AddDays(1);
                 var auxFechaInicio = filtro.FechaInicio;
 
                 var pagosRecibidos = await (from pr in _context.PagoRecibidos

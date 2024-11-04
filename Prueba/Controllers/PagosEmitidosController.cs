@@ -286,8 +286,22 @@ namespace Prueba.Controllers
 
         }
 
-        public IActionResult ConfirmarPago(RegistroPagoVM modelo)
+        public async Task<IActionResult> ConfirmarPago(RegistroPagoVM modelo)
         {
+            // cargar lista de anticipos IDs
+
+            foreach (var item in modelo.Anticipos)
+            {
+                if (item.Selected)
+                {
+                    var anticipo = await _context.Anticipos.FindAsync(item.Value);
+
+                    if (anticipo != null)
+                    {
+                        modelo.AnticiposIds.Add(anticipo.IdAnticipo);
+                    }
+                }
+            }
             return View(modelo);
         }
 
@@ -333,7 +347,7 @@ namespace Prueba.Controllers
                             return View("Error", modeloError);
                         }
                     }
-
+                   
                     var resultado = await _repoPagosEmitidos.RegistrarPago(modelo);
 
                     if (resultado == "exito")
@@ -639,7 +653,12 @@ namespace Prueba.Controllers
            .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
            .ToListAsync();
 
-            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, Text = "Ref. " + f.Numero + " Saldo " + f.Saldo + " Bs", Precio = f.Saldo }).ToList();
+            var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, 
+                Text = "Ref. " + f.Numero + " Saldo " + f.Saldo + " Bs", 
+                Precio = f.Saldo,
+                Fecha = f.Fecha.ToString("dd/MM/yyyy")
+            })
+                .ToList();
             return Json(anticiposItems);
         }
 

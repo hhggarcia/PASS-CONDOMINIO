@@ -110,21 +110,76 @@
                                         </div>
                                     </div>
 
-                                    <!-- Anticipos -->
                                     <div class="col-md-6 col-12 anticipo-group">
-                                        <div class="form-group has-icon-left mandaory">
-                                            <label for="last-name-column">Anticipos</label>
-                                            <div class="position-relative">
-                                                <fieldset class="form-group">
+                                        <div class="text-center form-group has-icon-left mandaory">
+                                            @*<label for="last-name-column">Ver Propiedad</label>*@
+                                            <br />
+                                            <button type="button"
+                                                    class="btn btn-outline-success"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalAnticipos"
+                                                    onclick="showContent();">
+                                                Seleccionar Anticipos
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Anticipos -->
+                                    @* <div class="col-md-6 col-12 anticipo-group">
+                                <div class="form-group has-icon-left mandaory">
+                                <label for="last-name-column">Anticipos</label>
+                                <div class="position-relative">
+                                <fieldset class="form-group">
 
-                                                    <select class="form-select" id="basicSelect" asp-for="IdAnticipo">
-                                                        <option value="">Seleccione un anticipo</option>
+                                <select class="form-select" id="basicSelect" asp-for="IdAnticipo">
+                                <option value="">Seleccione un anticipo</option>
+                                </select>
+                                </fieldset>
+                                </div>
+                                </div>
+                                </div> *@
 
-                                                    </select>
-                                                </fieldset>
+                                    <!-- Agregar informacion de los Anticipos -->
+                                    <!-- Cargar modal con los anticipos del proveedor (boton seleccionar Anticipos ) -->
+                                    <div class="modal fade"
+                                         id="modalAnticipos"
+                                         tabindex="-1"
+                                         role="dialog"
+                                         aria-labelledby="exampleModalScrollableTitle"
+                                         aria-hidden="true">
+
+
+                                        <div class="modal-dialog modal-dialog-scrollable"
+                                             role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title"
+                                                        id="exampleModalScrollableTitle">
+                                                        Anticipos
+                                                    </h5>
+                                                    <button type="button"
+                                                            class="close"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <i data-feather="x"></i>
+                                                    </button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <div id="containerAnticipos">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button"
+                                                            class="btn btn-light-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        <i class="bx bx-x d-block d-sm-none"></i>
+                                                        <span class="d-none d-sm-block">Aceptar</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Fin modal-->
                                     <!-- Monto -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group has-icon-left mandaory">
@@ -145,34 +200,6 @@
                                     </div>
                                     <input type="hidden" id="RetIvaInput" asp-for="RetIva" />
                                     <input type="hidden" id="RetIslrInput" asp-for="RetIslr" />
-                                    @*     <div class="col-md-6 col-12">
-                                <div class="form-group has-icon-left mandaory">
-                                <label for="last-name-column">Monto</label>
-                                <span asp-validation-for="Monto" class="text-danger"></span>
-                                <div class="position-relative">
-                                <input type="text"
-                                class="form-control"
-                                placeholder="Monto"
-                                id="first-name-icon"
-                                asp-for="Monto" />
-                                <div class="form-control-icon">
-                                <i class="bi bi-person"></i>
-                                </div>
-                                </div>
-                                </div>
-                                </div> *@
-
-                                    <!-- Moneda -->
-                                    @* <div class="col-md-6 col-12">
-                                <div class="form-group has-icon-left mandaory">
-                                <label for="last-name-column">Tipo de Moneda</label>
-                                <div class="position-relative">
-                                <fieldset class="form-group">
-                                <select asp-for="IdMonedaCond" class="form-control" asp-items="ViewBag.IdMoneda"></select>
-                                </fieldset>
-                                </div>
-                                </div>
-                                </div>*@
 
                                     <!-- Fecha -->
                                     <div class="col-md-6 col-12">
@@ -193,20 +220,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @*           <!-- Subcuentas -->
-                                <div class="col-md-6 col-12">
-                                <div class="form-group has-icon-left mandaory">
-                                <label for="last-name-column">Sub Cuentas</label>
-                                <div class="position-relative">
-                                <fieldset class="form-gro up">
-                                <select class="form-select" id="basicSelect"
-                                asp-for="IdSubcuenta" asp-items="Model.SubCuentasGastos">
-                                <option value="">Seleccione la Sub Cuenta a pagar</option>
-                                </select>
-                                </fieldset>
-                                </div>
-                                </div>
-                                </div> *@
 
                                     <!-- Concepto -->
                                     <div class="col-md-6 col-12">
@@ -228,6 +241,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Metodos de Pagos -->
                                     <div class="col-md-12 col-12">
                                         <div class="form-group has-icon-left mandaory">
                                             <label for="last-name-column">Método de Pago</label>
@@ -332,6 +346,8 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Retenciones -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group form-check">
                                             <label class="form-check-label">
@@ -369,7 +385,7 @@
 </div>
 <!-- /.container-fluid -->
 @section Scripts {
-    
+
     <script>
         $(document).ready(function () {
             var montoFacturaOriginal;
@@ -490,47 +506,90 @@
                     data: { proveedorId: proveedorId },
                     success: function (data) {
                         datAnticipo = data;
-                        $('#basicSelect').empty();
-                        $('#basicSelect').append('<option value="">Seleccione un anticipo</option>');
+                        console.log(data);
+                        // $('#basicSelect').empty();
+                        // $('#basicSelect').append('<option value="">Seleccione un anticipo</option>');
 
-                        $.each(data, function (index, item) {
-                            $('#basicSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
-                        });
+                        // $.each(data, function (index, item) {
+                        //     $('#basicSelect').append('<option value="' + item.value + '">' + item.text + '</option>');
+                        // });
+                        $('.anticipo-group').show();  // Mostrar el grupo de anticipos
+
+                        LoadTable(data)
                         // $('#montoInput').val(data.saldo);
                         // $('#montoInput').prop('disabled', true); // Deshabilitar el campo
-                        $('.anticipo-group').show();  // Mostrar el grupo de anticipos
                     },
                     error: function (error) {
                         console.error('Error al obtener los anticipos: ', error);
                     }
                 });
             }
-            $('#basicSelect').change(function () {
-                var opcionSeleccionada = $(this).val();
-                var selectedAnticipo = datAnticipo.find(item => item.value == opcionSeleccionada);
-                if (selectedAnticipo) {
-                    var precioSeleccionado = selectedAnticipo.precio;
-                    montoAnticipo = precioSeleccionado;
-                    if (montoAnticipo > montoFacturaOriginal) {
-                        $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
-                        // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
-                        $('#montoInput').val(montoFacturaOriginal);
-                        $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
-                    } else {
-                        var precioTotal = montoFacturaOriginal - montoAnticipo;
-                        $('#montoInput').val(precioTotal);
-                        $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
 
-                    }
-                    // $('#montoInput').prop('disabled', true);
-                }
-            });
+            // $('#basicSelect').change(function () {
+            //     var opcionSeleccionada = $(this).val();
+            //     var selectedAnticipo = datAnticipo.find(item => item.value == opcionSeleccionada);
+            //     if (selectedAnticipo) {
+            //         var precioSeleccionado = selectedAnticipo.precio;
+            //         montoAnticipo = precioSeleccionado;
+            //         if (montoAnticipo > montoFacturaOriginal) {
+            //             $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+            //             // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+            //             $('#montoInput').val(montoFacturaOriginal);
+            //             $('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+            //         } else {
+            //             var precioTotal = montoFacturaOriginal - montoAnticipo;
+            //             $('#montoInput').val(precioTotal);
+            //             $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+
+            //         }
+            //         // $('#montoInput').prop('disabled', true);
+            //     }
+            // });
         });
-    </script>
+    
+        function showContent() {
+            $("#modalAnticipos").show();
+        };
 
-    <script>
         $('.nav-tabs-selector').on('change', function (e) {
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
         });
+
+        function LoadTable(list) {
+            var container = document.getElementById("containerAnticipos");
+            container.innerHTML = "";
+
+            if (list.length > 0) {
+                for (let i = 0; i < list.length; i++) {
+                    const item = list[i];
+                    console.log("Item: ");
+                    console.log(item);
+
+
+                    var text = "<div class=\"form-group\" >" +
+                        "<div class=\"form-check\" >";
+
+                    text += "<input type=\"hidden\" name=Anticipos[" + i + "].Value" +
+                        " value= " + item.value + " />" +
+                        "<input type=\"checkbox\" name=Anticipos[" + i + "].Selected" +
+                        " id=\"z" + i + "__Selected\" " +
+                        " class=\"form-check-input\" value=true  /> " +
+                        "<label for=\"z" + i + "__Selected\" >" +
+                        item.text +
+                        "</label></br>" + "</div></div>";
+                }
+
+
+                container.insertAdjacentHTML('beforeend', text);
+
+                // $('#modalAnticipos').on('shown.bs.modal', function () {
+                //     $('#modalAnticipos').find('input[type="number"]').first().focus();
+                // });
+
+            } else {
+                text += "<h3>No existen Anticipos para este proveedor</h3>";
+                container.insertAdjacentHTML('beforeend', text);
+            }
+        }
     </script>
 }

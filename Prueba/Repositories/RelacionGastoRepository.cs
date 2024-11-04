@@ -502,10 +502,8 @@ namespace Prueba.Repositories
                                               on t.IdTransaccion equals tt.IdTransaccion
                                               where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
                                               where cc.IdCondominio == condominio.IdCondominio
-                                              where t.IdPropiedad != null
-                                              where tt.IdRelacionGasto == rg.IdRgastos
-                                              where t.Activo != null
-                                              select t).ToListAsync();
+                                              where t.IdPropiedad != null && tt.IdRelacionGasto == rg.IdRgastos && t.Activo != null
+                                              select t).Distinct().ToListAsync();
 
                 var subcuentas = await _repoCuentas.ObtenerSubcuentas(condominio.IdCondominio);
                 // BUSCAR PROVISIONES en los asientos del diario

@@ -296,7 +296,7 @@ namespace Prueba.Repositories
                     pago.MontoRef = montoReferencia;
 
                     // validar si existe anticipo
-                    if (modelo.IdAnticipo == 0)
+                    if (!modelo.AnticiposIds.Any())
                     {
                         // valido si hay abonado en la factura
                         if (factura.Abonado == 0)
@@ -339,23 +339,29 @@ namespace Prueba.Repositories
                             }
                         }
                     }
-                    else if (modelo.IdAnticipo != 0)
+                    else
                     {
-                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                        anticipo1 = anticipos;
-                        //Math.Round(pago.MontoRef, 2) = anticipos.Saldo;
-                        anticipo1.Activo = false;
+                        var listAnticipos = new List<Anticipo>();
+                        foreach(var id in modelo.AnticiposIds)
+                        {
+                            var ex = await _context.Anticipos.FindAsync(id);
+                            if (ex != null)
+                            {
+                                listAnticipos.Add(ex);
+                            }
+                        }
+                        decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
 
                         if (factura.Abonado == 0)
                         {
-                            if ((pago.Monto + anticipo1.Saldo) < factura.MontoTotal)
+                            if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + montoAnticipos;
 
                             }
-                            else if ((pago.Monto + anticipo1.Saldo) == factura.MontoTotal)
+                            else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + montoAnticipos;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -368,14 +374,14 @@ namespace Prueba.Repositories
                         }
                         else
                         {
-                            if ((pago.Monto + factura.Abonado + anticipo1.Saldo) < factura.MontoTotal)
+                            if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
 
                             }
-                            else if ((pago.Monto + factura.Abonado + anticipo1.Saldo) == factura.MontoTotal)
+                            else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -426,9 +432,18 @@ namespace Prueba.Repositories
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
-                        if (modelo.IdAnticipo != 0)
+
+                        if (modelo.AnticiposIds.Any())
                         {
-                            _dbContext.Update(anticipo1);
+                            foreach (var id in modelo.AnticiposIds)
+                            {
+                                var anticipo = await _context.Anticipos.FindAsync(id);
+                                if (anticipo != null)
+                                {
+                                    anticipo.Activo = false;
+                                    _dbContext.Update(anticipo);
+                                }
+                            }
                         }
                         _dbContext.SaveChanges();
                     }
@@ -836,7 +851,7 @@ namespace Prueba.Repositories
                     pago.SimboloRef = "$";
 
                     // validar si existe anticipo
-                    if (modelo.IdAnticipo == 0)
+                    if (!modelo.AnticiposIds.Any())
                     {
                         // valido si hay abonado en la factura
                         if (factura.Abonado == 0)
@@ -880,23 +895,28 @@ namespace Prueba.Repositories
                             }
                         }
                     }
-                    else if (modelo.IdAnticipo != 0)
+                    else
                     {
-                        var anticipos = await _context.Anticipos.Where(a => a.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                        anticipo1 = anticipos;
-                        //Math.Round(pago.MontoRef, 2) = anticipos.Saldo;
-                        anticipo1.Activo = false;
-
+                        var listAnticipos = new List<Anticipo>();
+                        foreach (var id in modelo.AnticiposIds)
+                        {
+                            var ex = await _context.Anticipos.FindAsync(id);
+                            if (ex != null)
+                            {
+                                listAnticipos.Add(ex);
+                            }
+                        }
+                        decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
                         if (factura.Abonado == 0)
                         {
-                            if ((pago.Monto + anticipo1.Saldo) < factura.MontoTotal)
+                            if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + montoAnticipos;
 
                             }
-                            else if ((pago.Monto + anticipo1.Saldo) == factura.MontoTotal)
+                            else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + montoAnticipos;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -904,19 +924,19 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return "El monto más el aniticipo es mayor al total de la Factura!";
+                                return "El monto más el anticipo es mayor al total de la Factura!";
                             }
                         }
                         else
                         {
-                            if ((pago.Monto + factura.Abonado + anticipo1.Saldo) < factura.MontoTotal)
+                            if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
 
                             }
-                            else if ((pago.Monto + factura.Abonado + anticipo1.Saldo) == factura.MontoTotal)
+                            else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto + factura.Abonado + anticipo1.Saldo;
+                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -924,7 +944,7 @@ namespace Prueba.Repositories
                             }
                             else
                             {
-                                return "El monto más el aniticipo más lo abonado es mayor al total de la Factura!";
+                                return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
                             }
                         }
                     }
@@ -965,9 +985,17 @@ namespace Prueba.Repositories
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
-                        if (modelo.IdAnticipo != 0)
+                        if (modelo.AnticiposIds.Any())
                         {
-                            _dbContext.Update(anticipo1);
+                            foreach (var id in modelo.AnticiposIds)
+                            {
+                                var anticipo = await _context.Anticipos.FindAsync(id);
+                                if (anticipo != null)
+                                {
+                                    anticipo.Activo = false;
+                                    _dbContext.Update(anticipo);
+                                }
+                            }
                         }
                         _dbContext.SaveChanges();
                     }
