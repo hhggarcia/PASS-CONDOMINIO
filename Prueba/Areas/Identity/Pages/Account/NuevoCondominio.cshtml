@@ -502,25 +502,19 @@
             const volverButton = document.getElementById("VolverButton");
             const cancelarButton = document.getElementById("CancelarButton");
 
-            if (!adminForm.classList.contains("hidden") && adminForm.classList.contains("show")) {
+            if (!adminForm.classList.contains("hidden")) {
                 // If we are on the Admin form, go back to User form
-                adminForm.classList.remove("show");
-                adminForm.classList.add("hidden");
-
                 userForm.classList.remove("hidden");
-                userForm.classList.add("show");
+                adminForm.classList.add("hidden");
 
                 // Switch buttons back to show Cancelar and hide Volver
                 cancelarButton.classList.remove("hidden");
                 volverButton.classList.add("hidden");
 
-            } else if (!condominioForm.classList.contains("hidden") && condominioForm.classList.contains("show")) {
+            } else if (!condominioForm.classList.contains("hidden")) {
                 // If we are on the Condominio form, go back to Admin form
-                condominioForm.classList.remove("show");
                 condominioForm.classList.add("hidden");
-
                 adminForm.classList.remove("hidden");
-                adminForm.classList.add("show");
 
                 // Ensure Volver button stays visible and Cancelar is hidden
                 cancelarButton.classList.add("hidden");
