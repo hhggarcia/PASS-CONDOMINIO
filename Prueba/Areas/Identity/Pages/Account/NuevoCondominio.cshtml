@@ -14,7 +14,17 @@
     }
 
     .hidden {
-        display: none;
+        display: none !important;
+    }
+
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .fade-in {
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
     }
 
     .currency-symbol {
@@ -40,8 +50,11 @@
 
 <div class="container-fluid mb-2">
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-end justify-content-end mb-4">
-        <a asp-action="Index" class="btn btn-light">Volver</a>
+    <div class="d-sm-flex align-items-end justify-content-end mb-4" id="CancelarButton">
+        <a asp-action="Index" class="btn btn-light">Cancelar</a>
+    </div>
+    <div class="d-sm-flex align-items-end justify-content-end mb-4 hidden" id="VolverButton">
+        <span type="submit" class="btn btn-light" onclick="volverCommand()">Volver</span>
     </div>
     <!-- Content Row -->
     <div class="row justify-content-center mb-2">
@@ -430,24 +443,89 @@
         }
 
         function hideUserForm() {
-            document.getElementById("UserSignupForm").style.display = "none";
+            const userForm = document.getElementById("UserSignupForm");
+            const adminForm = document.getElementById("AdminSignupForm");
 
-            document.getElementById("AdminSignupForm").classList.remove("hidden");
+            const cancelButton = document.getElementById("CancelarButton")
+            const volverButton = document.getElementById("VolverButton")
+
+            userForm.classList.add("fade-out");
+            cancelButton.classList.add("fade-out");
+
+            setTimeout(() => {
+                userForm.classList.add("hidden"); 
+                cancelButton.classList.add("hidden"); 
+
+                adminForm.classList.remove("hidden");
+                volverButton.classList.remove("hidden");
+
+                adminForm.classList.add("fade-in");
+                volverButton.classList.add("fade-in");
+            }, 500);
         }
 
         function hideAdminForm() {
-            document.getElementById("AdminSignupForm").style.display = "none";
-            //Agregar un reset cuando se aprete Volver
-            document.getElementById("container-madre").classList.remove("col-lg-4");
-            document.getElementById("container-madre").classList.add("col-lg-6");
+            const adminForm = document.getElementById("AdminSignupForm");
+            const condominioForm = document.getElementById("CondominioForm");
 
-            document.getElementById("CondominioForm").classList.remove("hidden");
+            adminForm.classList.add("fade-out");
+
+            setTimeout(() => {
+                adminForm.classList.add("hidden");
+
+                document.getElementById("container-madre").classList.remove("col-lg-4");
+                document.getElementById("container-madre").classList.add("col-lg-6");
+
+                condominioForm.classList.remove("hidden");
+                condominioForm.classList.add("fade-in");
+            }, 500);
         }
 
         function hideCondominioForm() {
-            document.getElementById("CondominioForm").style.display = "none";
+            const condominioForm = document.getElementById("CondominioForm");
+            const pagoForm = document.getElementById("PagoForm");
 
-            document.getElementById("PagoForm").classList.remove("hidden");
+            condominioForm.classList.add("fade-out");
+
+            setTimeout(() => {
+                condominioForm.classList.add("hidden");
+
+                pagoForm.classList.remove("hidden");
+
+                pagoForm.classList.add("fade-in"); 
+            }, 500); 
+        }
+        function volverCommand() {
+            const userForm = document.getElementById("UserSignupForm");
+            const adminForm = document.getElementById("AdminSignupForm");
+            const condominioForm = document.getElementById("CondominioForm");
+            const volverButton = document.getElementById("VolverButton");
+            const cancelarButton = document.getElementById("CancelarButton");
+
+            if (!adminForm.classList.contains("hidden") && adminForm.classList.contains("show")) {
+                // If we are on the Admin form, go back to User form
+                adminForm.classList.remove("show");
+                adminForm.classList.add("hidden");
+
+                userForm.classList.remove("hidden");
+                userForm.classList.add("show");
+
+                // Switch buttons back to show Cancelar and hide Volver
+                cancelarButton.classList.remove("hidden");
+                volverButton.classList.add("hidden");
+
+            } else if (!condominioForm.classList.contains("hidden") && condominioForm.classList.contains("show")) {
+                // If we are on the Condominio form, go back to Admin form
+                condominioForm.classList.remove("show");
+                condominioForm.classList.add("hidden");
+
+                adminForm.classList.remove("hidden");
+                adminForm.classList.add("show");
+
+                // Ensure Volver button stays visible and Cancelar is hidden
+                cancelarButton.classList.add("hidden");
+                volverButton.classList.remove("hidden");
+            }
         }
     </script>
 }
