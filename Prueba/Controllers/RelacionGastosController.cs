@@ -34,6 +34,8 @@ namespace Prueba.Controllers
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPDFServices _servicePDF;
         private readonly IEmailService _emailService;
+        private readonly IReportesRepository _repoReportes;
+        private readonly IPdfReportesServices _servicesPdfReportes;
         private readonly NuevaAppContext _context;
 
         public RelacionGastosController(IEmailService emailService,
@@ -44,6 +46,8 @@ namespace Prueba.Controllers
             IRelacionGastoRepository repoRelacionGastos,
             IMonedaRepository repoMoneda,
             IPDFServices PDFService,
+            IReportesRepository repoReportes,
+            IPdfReportesServices servicesPdfReportes,
             NuevaAppContext context)
         {
             _context = context;
@@ -55,6 +59,8 @@ namespace Prueba.Controllers
             _repoMoneda = repoMoneda;
             _servicePDF = PDFService;
             _emailService = emailService;
+            _repoReportes = repoReportes;
+            _servicesPdfReportes = servicesPdfReportes;
         }
 
         // GET: RelacionGastos
@@ -1312,6 +1318,29 @@ namespace Prueba.Controllers
                     }
                 }
             }
+
+            return RedirectToAction("Index");
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeudoresPDF(int id)
+        {
+            int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
+
+            if (modelo.Propiedades != null && modelo.Propiedades.Any()
+                && modelo.Propietarios != null && modelo.Propietarios.Any()
+                && modelo.Recibos != null && modelo.Recibos.Any())
+            {
+                var data = await _servicesPdfReportes.ReporteLicenciada(modelo, id);
+                Stream stream = new MemoryStream(data);
+                TempData.Keep();
+                return File(stream, "application/pdf", "Reporte_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+            }
+
+            TempData.Keep();
 
             return RedirectToAction("Index");
 
