@@ -7,11 +7,6 @@
 }
 
 <div class="container-fluid mb-2">
-    @*<!-- Page Heading -->
-
-    <div class="d-sm-flex align-items-end justify-content-end mb-4 hidden" id="VolverButton">
-    <span type="submit" class="btn btn-light" onclick="volverCommand()">Volver</span>
-    </div>*@
     <!-- Content Row -->
     <div class="row justify-content-center mb-2">
         <div class="col-lg-4" id="container-madre">
@@ -504,11 +499,9 @@
             const adminForm = document.getElementById("AdminSignupForm");
             const condominioForm = document.getElementById("CondominioForm");
 
-            // Hide Admin form and show Condominio form
             adminForm.classList.add("hidden");
             condominioForm.classList.remove("hidden");
 
-            // Expand container only when advancing to Condominio
             const containerMadre = document.getElementById("container-madre");
             containerMadre.classList.remove("col-lg-4");
             containerMadre.classList.add("col-lg-6");
@@ -533,19 +526,15 @@
             const containerMadre = document.getElementById("container-madre");
 
             if (!adminForm.classList.contains("hidden")) {
-                // If currently on the Admin form, go back to User form
                 adminForm.classList.add("hidden");
                 userForm.classList.remove("hidden");
             } else if (!condominioForm.classList.contains("hidden")) {
-                // If currently on the Condominio form, go back to Admin form
                 condominioForm.classList.add("hidden");
                 adminForm.classList.remove("hidden");
 
-                // Reset container size when moving back to Admin
                 containerMadre.classList.remove("col-lg-6");
                 containerMadre.classList.add("col-lg-4");
             } else if (!subsForm.classList.contains("hidden")) {
-                // If currently on the Subscription form, go back to Condominio form
                 subsForm.classList.add("hidden");
                 volverBtn.classList.add("hidden");
                 condominioForm.classList.remove("hidden");
