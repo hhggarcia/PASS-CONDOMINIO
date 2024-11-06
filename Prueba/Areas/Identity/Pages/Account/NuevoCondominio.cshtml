@@ -6,56 +6,12 @@
 
 }
 
-<style>
-    /*Remover de aqui*/
-    .form-control::placeholder {
-        color: rgba(0, 0, 0, 0.5); /* Light color for placeholders */
-        opacity: 1; /* Ensure the placeholder is fully visible */
-    }
-
-    .hidden {
-        display: none !important;
-    }
-
-    .fade-out {
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-    }
-
-    .fade-in {
-        opacity: 1;
-        transition: opacity 0.5s ease-in-out;
-    }
-
-    .currency-symbol {
-        position: absolute;
-        right: 15px; /* Adjust for padding alignment */
-        top: 50%;
-        transform: translateY(-50%);
-        color: rgba(0, 0, 0, 0.5); /* Optional: lighter color for styling */
-        transition: margin-top 0.3s ease; /* Smooth transition */
-        pointer-events: none;
-    }
-
-        /* Class to move the currency symbol down */
-        .currency-symbol.adjusted {
-            margin-top: 7px; /* Adjust as needed to lower the symbol */
-        }
-
-    .form-control.pe-5 {
-        padding-right: 2.5rem; /* Add padding for space between input and symbol */
-    }
-
-</style>
-
 <div class="container-fluid mb-2">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-end justify-content-end mb-4" id="CancelarButton">
-        <a asp-action="Index" class="btn btn-light">Cancelar</a>
-    </div>
+    @*<!-- Page Heading -->
+
     <div class="d-sm-flex align-items-end justify-content-end mb-4 hidden" id="VolverButton">
-        <span type="submit" class="btn btn-light" onclick="volverCommand()">Volver</span>
-    </div>
+    <span type="submit" class="btn btn-light" onclick="volverCommand()">Volver</span>
+    </div>*@
     <!-- Content Row -->
     <div class="row justify-content-center mb-2">
         <div class="col-lg-4" id="container-madre">
@@ -162,9 +118,15 @@
                                 Acepto los Terminos & Condiciones
                             </label>
                         </div>
-                        <!-- Sign Up Button -->
-                        <div class="container d-flex justify-content-center align-items-center">
-                            <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideUserForm()">Continuar</span>
+                        <div class="row">
+                            <!-- Cancel Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <a asp-action="Index" style="width: 80%;" class="btn btn-lg btn-secondary justify-content-center">Cancelar</a>
+                            </div>
+                            <!-- Continue Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <span type="submit" style="width: 80%;" class="btn btn-lg btn-primary justify-content-center" onclick="hideUserForm()">Continuar</span>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -245,9 +207,15 @@
                             <label asp-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash" class="form-label">Confirma tu Contraseña</label>
                             <span asp-validation-for="Input.ModeloNuevoCondominio.Administrator.PasswordHash" class="text-danger"></span>
                         </div>
-                        <!-- Sign Up Button -->
-                        <div class="container d-flex justify-content-center align-items-center">
-                            <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideAdminForm()">Continuar</span>
+                        <div class="row">
+                            <!-- Back Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <span type="submit" style="width: 80%;" class="btn btn-lg btn-secondary justify-content-center" onclick="volverCommand()">Volver</span>
+                            </div>
+                            <!-- Continue Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <span type="submit" style="width: 80%;" class="btn btn-lg btn-primary justify-content-center" onclick="hideAdminForm()">Continuar</span>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -411,19 +379,101 @@
                             <label asp-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo" class="form-label">Confirma tu Contraseña</label>
                             <span asp-validation-for="Input.ModeloNuevoCondominio.CondminioNuevo.ClaveCorreo" class="text-danger"></span>
                         </div>
-                        <!-- Sign Up Button -->
-                        <div class="container d-flex justify-content-center align-items-center">
-                            <span type="submit" class="w-50 btn btn-lg btn-primary justify-content-center" onclick="hideCondominioForm()">Continuar</span>
+                        <div class="row">
+                            <!-- Back Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <span type="submit" class="w-100 btn btn-lg btn-secondary justify-content-center" onclick="volverCommand()">Volver</span>
+                            </div>
+                            <!-- Continue Button -->
+                            <div class="col-6 d-flex justify-content-center align-items-center">
+                                <span type="submit" class="w-100 btn btn-lg btn-primary justify-content-center" onclick="hideCondominioForm()">Continuar</span>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
+            <!-- Subscription Page -->
+            <div class="card shadow mb-4 bg-content-bg hidden" id="SubscriptionForm">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h4 class="m-0 font-weight-bold text-primary">
+                        Planes de Suscripción
+                    </h4>
+                    <div id="VolverButton" class="d-none d-sm-block w-50" style="max-width: 100px;">
+                        <span type="submit" class="btn btn-lg btn-secondary w-100 justify-content-center" onclick="volverCommand()">Volver</span>
+                    </div>
+                </div>
+
+                <div class="card-body row">
+                    <div class="col-md-4 d-flex">
+                        <div class="card flex-grow-1 d-flex flex-column">
+                            <div class="subs-header">
+                                <h5 class="mb-0">
+                                    Gratis
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column flex-grow-1">
+                                <h6 class="card-title">$0/mes</h6>
+                                <p class="card-text">Cosas Basicas</p>
+                                <ul>
+                                    <li>Item 1</li>
+                                    <li>Item 2</li>
+                                    <li>Item 3</li>
+                                </ul>
+                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Continuar Gratis</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex">
+                        <div class="card flex-grow-1 d-flex flex-column">
+                            <div class="subs-header">
+                                <h5 class="mb-0">
+                                    Standard
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column flex-grow-1">
+                                <h6 class="card-title">$10/mes</h6>
+                                <p class="card-text">Cosas Avanzadas.</p>
+                                <ul>
+                                    <li>Item 1</li>
+                                    <li>Item 2</li>
+                                    <li>Item 3</li>
+                                    <li>Item 4</li>
+                                </ul>
+                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Quiero Standard</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex">
+                        <div class="card flex-grow-1 d-flex flex-column">
+                            <div class="subs-header">
+                                <h5 class="mb-0">
+                                    Premium
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column flex-grow-1">
+                                <h6 class="card-title">$20/mes</h6>
+                                <p class="card-text">Cosas Premium</p>
+                                <ul>
+                                    <li>Item 1</li>
+                                    <li>Item 2</li>
+                                    <li>Item 3</li>
+                                    <li>Item 4</li>
+                                    <li>Item 5</li>
+                                </ul>
+                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Dame Premium</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
     <script>
 
         function adjustCurrencyPosition(input) {
@@ -446,79 +496,52 @@
             const userForm = document.getElementById("UserSignupForm");
             const adminForm = document.getElementById("AdminSignupForm");
 
-            const cancelButton = document.getElementById("CancelarButton")
-            const volverButton = document.getElementById("VolverButton")
-
-            userForm.classList.add("fade-out");
-            cancelButton.classList.add("fade-out");
-
-            setTimeout(() => {
-                userForm.classList.add("hidden"); 
-                cancelButton.classList.add("hidden"); 
-
-                adminForm.classList.remove("hidden");
-                volverButton.classList.remove("hidden");
-
-                adminForm.classList.add("fade-in");
-                volverButton.classList.add("fade-in");
-            }, 500);
+            userForm.classList.add("hidden");
+            adminForm.classList.remove("hidden");
         }
 
         function hideAdminForm() {
             const adminForm = document.getElementById("AdminSignupForm");
             const condominioForm = document.getElementById("CondominioForm");
 
-            adminForm.classList.add("fade-out");
+            adminForm.classList.add("hidden");
 
-            setTimeout(() => {
-                adminForm.classList.add("hidden");
+            document.getElementById("container-madre").classList.remove("col-lg-4");
+            document.getElementById("container-madre").classList.add("col-lg-6");
 
-                document.getElementById("container-madre").classList.remove("col-lg-4");
-                document.getElementById("container-madre").classList.add("col-lg-6");
-
-                condominioForm.classList.remove("hidden");
-                condominioForm.classList.add("fade-in");
-            }, 500);
+            condominioForm.classList.remove("hidden");
         }
 
         function hideCondominioForm() {
             const condominioForm = document.getElementById("CondominioForm");
-            const pagoForm = document.getElementById("PagoForm");
+            const subsForm = document.getElementById("SubscriptionForm");
+            const volverBtn = document.getElementById("VolverButton");
 
-            condominioForm.classList.add("fade-out");
-
-            setTimeout(() => {
-                condominioForm.classList.add("hidden");
-
-                pagoForm.classList.remove("hidden");
-
-                pagoForm.classList.add("fade-in"); 
-            }, 500); 
+            condominioForm.classList.add("hidden");
+            subsForm.classList.remove("hidden");
+            volverBtn.classList.remove("hidden");
         }
+
         function volverCommand() {
             const userForm = document.getElementById("UserSignupForm");
             const adminForm = document.getElementById("AdminSignupForm");
             const condominioForm = document.getElementById("CondominioForm");
-            const volverButton = document.getElementById("VolverButton");
-            const cancelarButton = document.getElementById("CancelarButton");
+            const subsForm = document.getElementById("SubscriptionForm");
+            const volverBtn = document.getElementById("VolverButton");
 
             if (!adminForm.classList.contains("hidden")) {
                 // If we are on the Admin form, go back to User form
-                userForm.classList.remove("hidden");
                 adminForm.classList.add("hidden");
-
-                // Switch buttons back to show Cancelar and hide Volver
-                cancelarButton.classList.remove("hidden");
-                volverButton.classList.add("hidden");
-
+                userForm.classList.remove("hidden");
             } else if (!condominioForm.classList.contains("hidden")) {
                 // If we are on the Condominio form, go back to Admin form
                 condominioForm.classList.add("hidden");
                 adminForm.classList.remove("hidden");
-
-                // Ensure Volver button stays visible and Cancelar is hidden
-                cancelarButton.classList.add("hidden");
-                volverButton.classList.remove("hidden");
+            } else if (!subsForm.classList.contains("hidden")) {
+                // If we are on the Condominio form, go back to Admin form
+                subsForm.classList.add("hidden");
+                volverBtn.classList.add("hidden");
+                condominioForm.classList.remove("hidden");
             }
         }
     </script>
