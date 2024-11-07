@@ -29,11 +29,11 @@ namespace Prueba.Controllers
             IPDFServices servicesPDF,
             ICuentasContablesRepository repoCuentas,
             IPagosRecibidosRepository repoPagoRecibido,
-            IFiltroFechaRepository filtroFechaRepository, 
+            IFiltroFechaRepository filtroFechaRepository,
             NuevaAppContext context)
         {
             _printServices = printServices;
-            _servicesPDF = servicesPDF; 
+            _servicesPDF = servicesPDF;
             _repoCuentas = repoCuentas;
             _repoPagoRecibido = repoPagoRecibido;
             _reposFiltroFecha = filtroFechaRepository;
@@ -46,7 +46,7 @@ namespace Prueba.Controllers
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var listFacturas = await (from f in _context.FacturaEmitida.Include(f => f.IdClienteNavigation).Include(f => f.IdProductoNavigation)
-                                      join c in _context.Clientes 
+                                      join c in _context.Clientes
                                       on f.IdCliente equals c.IdCliente
                                       where c.IdCondominio == IdCondominio
                                       select f).ToListAsync();
@@ -83,10 +83,10 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var listFacturas = await(from f in _context.FacturaEmitida
-                                     join c in _context.Clientes on f.IdCliente equals c.IdCliente
-                                     where c.IdCondominio == IdCondominio
-                                     select f).ToListAsync();
+            var listFacturas = await (from f in _context.FacturaEmitida
+                                      join c in _context.Clientes on f.IdCliente equals c.IdCliente
+                                      where c.IdCondominio == IdCondominio
+                                      select f).ToListAsync();
 
             if (listFacturas.Count != 0)
             {
@@ -112,7 +112,7 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdCliente,IdProducto,IdCodCuenta,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
         {
-            
+
 
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
@@ -191,7 +191,7 @@ namespace Prueba.Controllers
                     IdCondominio = IdCondominio,
                     IdFactura = facturaEmitida.IdFacturaEmitida,
                     Monto = facturaEmitida.MontoTotal,
-                    Status = facturaEmitida.EnProceso ? "En Proceso" : "Pagada"                   
+                    Status = facturaEmitida.EnProceso ? "En Proceso" : "Pagada"
                 };
 
                 _context.Add(itemLibroVenta);
@@ -255,7 +255,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            
+
 
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
@@ -403,7 +403,7 @@ namespace Prueba.Controllers
         {
             try
             {
-                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0)
+                if (modelo.IdCodigoCuentaCaja != 0 || modelo.IdCodigoCuentaBanco != 0 || modelo.Pagoforma == FormaPago.NotaCredito)
                 {
                     modelo.IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
@@ -466,14 +466,14 @@ namespace Prueba.Controllers
                             comprobante.NumReferencia = modelo.NumReferencia;
 
                         }
-                        else
+                        else if (modelo.Pagoforma == FormaPago.Efectivo)
                         {
                             var caja = from c in _context.SubCuenta
                                        where c.Id == modelo.IdCodigoCuentaCaja
                                        select c;
 
                             comprobante.Caja = caja.First();
-                        }
+                        }                       
 
                         var cliente = await _context.Clientes.Where(c => c.IdCliente == factura.IdCliente).FirstAsync();
                         var retIslr = _context.Islrs.Where(c => c.Id == cliente.IdRetencionIslr).FirstOrDefault();
@@ -628,6 +628,34 @@ namespace Prueba.Controllers
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "CompCliente.pdf");
             }
+            return RedirectToAction("Index");
+        }
+
+        // GET: NotaCreditos
+        public async Task<IActionResult> NotasCredito()
+        {
+            var nuevaAppContext = _context.NotaCreditos
+                .Include(n => n.IdClienteNavigation)
+                .Include(n => n.IdFacturaNavigation)
+                .Include(n => n.IdPropiedadNavigation)
+                .Include(n => n.IdRetIslrNavigation)
+                .Include(n => n.IdRetIvaNavigation)
+                .Where(c => c.IdFactura != null && c.IdCliente != null);
+
+            return View(await nuevaAppContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> NotaCreditoPDF(int id)
+        {
+            var notaCredito = await _context.NotaCreditos.FindAsync(id);
+            if (notaCredito != null)
+            {
+                var data = await _servicesPDF.ComprobanteNotaCredito(notaCredito);
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "NotaCredito.pdf");
+            }
+
             return RedirectToAction("Index");
         }
     }

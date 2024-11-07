@@ -66,10 +66,16 @@
                                         <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
                                         <p><strong>Fecha de comprobante</strong>: @DateTime.Today.ToString("dd/MM/yyyy")</p>
                                     }
-                                    else
+                                    else if (Model.Pagoforma == FormaPago.Efectivo)
                                     {
                                         <h6>Efectivo</h6>
                                         <p><strong>Cuenta</strong>: @Model.Caja.Descricion</p>
+
+                                        <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
+                                        <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
+                                    } else
+                                    {
+                                        <h6>Nota de Credito</h6>
 
                                         <p><strong>Monto</strong>: @Model.Pago.Monto.ToString("N")</p>
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>

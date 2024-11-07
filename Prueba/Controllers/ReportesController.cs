@@ -146,12 +146,12 @@ namespace Prueba.Controllers
                             Codigo = propiedad.Codigo,
                             Propietario = propietario.FirstName,
                             CantRecibos = recibos.Count,
-                            AcumDeuda = propiedad.Deuda,
-                            AcumMora = propiedad.MontoIntereses,
-                            AcumIndexacion = propiedad.MontoMulta != null ? (decimal)propiedad.MontoMulta : 0,
+                            AcumDeuda = recibos.Sum(c => c.Monto),
+                            AcumMora = recibos.Sum(c => c.MontoMora),
+                            AcumIndexacion = recibos.Sum(c => c.MontoIndexacion),
                             Credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0,
                             Saldo = propiedad.Saldo,
-                            Total = propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + propiedad.Saldo - (decimal)propiedad.Creditos,
+                            Total = propiedad.Deuda + propiedad.Saldo - (decimal)propiedad.Creditos,
                         });
                     }
 
@@ -245,6 +245,47 @@ namespace Prueba.Controllers
 
             // Devolver el archivo Excel como una descarga al cliente
             return File(memory.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "demo.xls");
+        }
+
+        public async Task<IActionResult> HistoricoRecibos()
+        {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var condominio = await _context.Condominios.FindAsync(IdCondominio);
+
+            if (condominio != null)
+            {
+                var propiedades = await _context.Propiedads.Where(c => c.IdCondominio == IdCondominio).ToListAsync();
+                var modelo = new List<EstadoCuentasVM>();
+
+                if (propiedades != null && propiedades.Any())
+                {
+                    foreach (var propiedad in propiedades)
+                    {
+                        var usuario = await _context.AspNetUsers.FirstAsync(c => c.Id == propiedad.IdUsuario);
+                        var recibos = await _context.ReciboCobros.
+                            Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                            .OrderBy(c => c.Fecha)
+                            .ToListAsync();
+
+                        modelo.Add(new EstadoCuentasVM()
+                        {
+                            Condominio = condominio,
+                            Propiedad = propiedad,
+                            User = usuario,
+                            ReciboCobro = recibos
+                        });
+                    }
+
+                    TempData.Keep();
+                    var data = _servicesPDF.ReporteHistorico(modelo);
+                    Stream stream = new MemoryStream(data);
+                    return File(stream, "application/pdf", "HistoricoOficinas_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+                }
+
+            }
+
+            return RedirectToAction("Dashboard", "Administrator");
         }
     }
 }

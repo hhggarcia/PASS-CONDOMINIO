@@ -162,7 +162,7 @@ namespace Prueba.Repositories
             //modelo.Facturas = new List<SelectListItem> { new SelectListItem("Seleccione una factura", "") };
             //modelo.Anticipos = new List<SelectListItem> { new SelectListItem("Seleccione un anticipo", "") };
 
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasGastos = subcuentasModel.OrderBy(c => c.Descricion).Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
 
@@ -1377,7 +1377,7 @@ namespace Prueba.Repositories
                             where c.IdCondominio == id
                             select y;
 
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasGastos = subcuentasModel.OrderBy(c => c.Descricion).Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.Empleados = empleados.Select(c => new SelectListItem(c.Nombre, c.IdEmpleado.ToString())).ToList();
@@ -2286,7 +2286,7 @@ namespace Prueba.Repositories
             //modelo.Facturas = new List<SelectListItem> { new SelectListItem("Seleccione una factura", "") };
             //modelo.Anticipos = new List<SelectListItem> { new SelectListItem("Seleccione un anticipo", "") };
 
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasGastos = subcuentasModel.OrderBy(c => c.Descricion).Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
 
@@ -2817,7 +2817,7 @@ namespace Prueba.Repositories
 
             var proveedores = await _repoCuentas.ObtenerProveedores(id);
 
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasGastos = subcuentasModel.OrderBy(c => c.Descricion).Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.Proveedor = proveedores.Select(c => new SelectListItem(c.Nombre, c.IdProveedor.ToString())).ToList();
@@ -3342,7 +3342,7 @@ namespace Prueba.Repositories
             var subcuentasCaja = await _repoCuentas.ObtenerCaja(id);
             var empleados = await _repoCuentas.ObtenerEmpleados(id);
 
-            modelo.SubCuentasGastos = subcuentasModel.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
+            modelo.SubCuentasGastos = subcuentasModel.OrderBy(c => c.Descricion).Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList();
             modelo.Empleados = empleados.Select(c => new SelectListItem(c.Nombre, c.IdEmpleado.ToString())).ToList();

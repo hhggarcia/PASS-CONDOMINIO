@@ -89,7 +89,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre");
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion");
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion");
 
             TempData.Keep();
             return View();
@@ -207,7 +207,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", factura.IdCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);
 
             TempData.Keep();
             return View(factura);
@@ -238,7 +238,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", idCodCuenta);
 
             TempData.Keep();
 
@@ -288,7 +288,7 @@ namespace Prueba.Controllers
             var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", factura.IdCodCuenta);
+            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);
 
             TempData.Keep();
             return View(factura);

@@ -3253,13 +3253,10 @@ namespace Prueba.Services
         public async Task<byte[]> ComprobanteNotaCredito(NotaCredito modelo)
         {
             var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-            //var pago = await _context.PagoRecibidos.FindAsync(modelo.IdPago);
-
-            //var pagoRecibo = await _context.PagosRecibos.FirstAsync(c => c.IdPago == modelo.IdPago);
-            //var recibo = await _context.ReciboCobros.FindAsync(pagoRecibo.IdRecibo);
-            var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
-            var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-            //var reciboActual = await _context.ReciboCobros.FirstAsync(c => c.Fecha.Month == DateTime.Today.Month && c.IdPropiedad == propiedad.IdPropiedad);
+            var cliente = await _context.Clientes.FindAsync(modelo.IdCliente);
+            var factura = await _context.FacturaEmitida.FindAsync(modelo.IdFactura);
+            var condominio = await _context.Condominios.FindAsync(propiedad != null ? propiedad.IdCondominio : cliente.IdCondominio);
+            var usuario = new AspNetUser();
 
 
             var data = Document.Create(container =>
@@ -3298,14 +3295,30 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
                                 });
 
-                                tabla.Cell().Text("Inmueble: ").FontColor("#607080").Bold().FontSize(8);
-                                tabla.Cell().ColumnSpan(2).Text(propiedad.Codigo).FontColor("#607080").FontSize(8);
+                                if (propiedad != null && condominio != null)
+                                {
+                                    usuario = _context.AspNetUsers.Find(propiedad.IdUsuario);
 
-                                tabla.Cell().Text("Propietario: ").FontColor("#607080").Bold().FontSize(8);
-                                tabla.Cell().ColumnSpan(2).Text(usuario.FirstName).FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Text("Inmueble: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(propiedad.Codigo).FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Text("Dirección Fiscal: ").FontColor("#607080").Bold().FontSize(8);
-                                tabla.Cell().ColumnSpan(2).Text(condominio.Direccion).FontColor("#607080").FontSize(8);
+                                    tabla.Cell().Text("Propietario: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(usuario.FirstName).FontColor("#607080").FontSize(8);
+
+                                    tabla.Cell().Text("Dirección Fiscal: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(condominio.Direccion).FontColor("#607080").FontSize(8);
+
+                                } else if (factura != null && cliente != null && condominio != null)
+                                {
+                                    tabla.Cell().Text("Cliente: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(cliente.Nombre).FontColor("#607080").FontSize(8);
+
+                                    tabla.Cell().Text("Nr. Factura: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(factura.NumFactura).FontColor("#607080").FontSize(8);
+
+                                    tabla.Cell().Text("Dirección Fiscal: ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Text(cliente.Direccion).FontColor("#607080").FontSize(8);
+                                }                                
 
                                 tabla.Cell().ColumnSpan(3).Text("");
 
@@ -3352,31 +3365,27 @@ namespace Prueba.Services
 
                             });
 
-                            x.Item().Border(0).BorderColor("#D9D9D9").Table(tabla =>
+                            if (propiedad != null && usuario != null && condominio != null)
                             {
-                                tabla.ColumnsDefinition(columns =>
+                                x.Item().Border(0).BorderColor("#D9D9D9").Table(tabla =>
                                 {
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    tabla.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                        columns.RelativeColumn();
+                                    });
+
+                                    tabla.Cell().ColumnSpan(2).Padding(5).Text("Estado de Cuenta ").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().ColumnSpan(2).Padding(5).Text("Saldo Actual: ").FontColor("#607080").FontSize(8);
+                                    tabla.Cell().ColumnSpan(3).Padding(5).Text((propiedad.Deuda + propiedad.Saldo - (decimal)propiedad.Creditos).ToString("N")).FontColor("#607080").FontSize(8);
+
                                 });
-
-                                tabla.Cell().ColumnSpan(2).Padding(5).Text("Estado de Cuenta ").FontColor("#607080").Bold().FontSize(8);
-                                //tabla.Cell().Padding(5).Text("Saldo Anterior: ").FontColor("#607080").FontSize(8);
-                                //tabla.Cell().Padding(5)
-                                //.Text((propiedad.Deuda + propiedad.MontoIntereses + (decimal)propiedad.MontoMulta + reciboActual.Monto).ToString("N"))
-                                //.FontColor("#607080").FontSize(8);
-
-                                //tabla.Cell().Padding(5).Text("Menos este pago: ").FontColor("#607080").FontSize(8);
-                                //tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
-                                tabla.Cell().ColumnSpan(2).Padding(5).Text("Saldo Actual: ").FontColor("#607080").FontSize(8);
-                                tabla.Cell().ColumnSpan(3).Padding(5).Text((propiedad.Deuda + propiedad.Saldo - (decimal)propiedad.Creditos).ToString("N")).FontColor("#607080").FontSize(8);
-
-                            });
+                            }                          
 
                             x.Item().PaddingTop(10).Table(table =>
                             {

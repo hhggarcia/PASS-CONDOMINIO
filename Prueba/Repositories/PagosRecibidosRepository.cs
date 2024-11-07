@@ -112,558 +112,607 @@ namespace Prueba.Repositories
                 Confirmado = true,
                 Activo = true
             };
-            // Anticipo anticipo1 = new Anticipo();
 
-            var factura = await _context.FacturaEmitida.Where(c => c.IdFacturaEmitida == modelo.IdFactura).FirstAsync();
+            var factura = await _context.FacturaEmitida
+                .Where(c => c.IdFacturaEmitida == modelo.IdFactura)
+                .FirstAsync();
 
-            var cliente = await _context.Clientes.FirstAsync(c => c.IdCliente == modelo.IdCliente);
+            var cliente = await _context.Clientes
+                .FirstAsync(c => c.IdCliente == modelo.IdCliente);
 
-            var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
+            var itemLibroVenta = await _context.LibroVentas
+                .Where(c => c.IdFactura == factura.IdFacturaEmitida)
+                .FirstOrDefaultAsync();
 
-            var itemCuentaCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == factura.IdFacturaEmitida).FirstOrDefaultAsync();
+            var itemCuentaCobrar = await _context.CuentasCobrars
+                .Where(c => c.IdFactura == factura.IdFacturaEmitida)
+                .FirstOrDefaultAsync();
 
-            if (itemLibroVenta != null && cliente != null)
+            if (itemLibroVenta != null && 
+                cliente != null && 
+                factura != null && 
+                itemCuentaCobrar != null)
             {
-                if (modelo.RetencionesIva && !modelo.RetencionesIslr)
+                if (modelo.Pagoforma == FormaPago.NotaCredito)
                 {
-                    factura.MontoTotal -= itemLibroVenta.RetIva;
-                    pago.Monto -= itemLibroVenta.RetIva;
-                }
-                else if (!modelo.RetencionesIva && modelo.RetencionesIslr)
-                {
-                    factura.MontoTotal -= itemLibroVenta.RetIslr;
-                    pago.Monto -= itemLibroVenta.RetIslr;
-
-                }
-                else if (modelo.RetencionesIva && modelo.RetencionesIslr)
-                {
-                    factura.MontoTotal -= itemLibroVenta.RetIva + itemLibroVenta.RetIslr;
-                    pago.Monto -= itemLibroVenta.RetIva + itemLibroVenta.RetIslr;
-                }
-            }
-
-            int numAsiento = 0;
-
-            var diarioCondominio = from a in _context.LdiarioGlobals
-                                   join c in _context.CodigoCuentasGlobals
-                                   on a.IdCodCuenta equals c.IdCodCuenta
-                                   where c.IdCondominio == modelo.IdCondominio
-                                   select a;
-
-            if (diarioCondominio.Count() > 0)
-            {
-                numAsiento = diarioCondominio.ToList().Last().NumAsiento;
-            }
-
-            if (modelo.Pagoforma == FormaPago.Efectivo)
-            {
-                try
-                {
-                    var idCaja = (from c in _context.CodigoCuentasGlobals
-                                  where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
-                                  select c).First();
-
-                    // buscar moneda asigna a la subcuenta
-                    var moneda = from m in _context.MonedaConds
-                                 join mc in _context.MonedaCuenta
-                                 on m.IdMonedaCond equals mc.IdMoneda
-                                 where mc.IdCodCuenta == idCaja.IdCodCuenta
-                                 select m;
-
-                    // si no es principal hacer el cambio
-                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
-
-                    // calcular monto referencia
-                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                    // REGISTRAR NOTA DE CREDITO
+                    // NO  VA A BANCOS NI EFECTIVO
+                    var nota = new NotaCredito
                     {
-                        return "No hay monedas registradas en el sistema!";
-                    }
-                    else if (moneda.First().Equals(monedaPrincipal.First()))
+                        Concepto = modelo.Concepto + " - " + cliente.Nombre + " - Fac. " + factura.NumFactura,
+                        Comprobante = "",
+                        Fecha = modelo.Fecha,
+                        Monto = modelo.Monto,
+                        IdCliente = cliente.IdCliente,
+                        IdFactura = factura.IdFacturaEmitida
+                    };
+
+                    factura.EnProceso = false;
+                    factura.Pagada = true;
+
+                    itemCuentaCobrar.Status = "NC";
+
+                    _context.NotaCreditos.Add(nota);
+
+                    var registro = await _context.SaveChangesAsync();
+                    if (registro > 0)
                     {
-                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
-                    }
-                    else if (!moneda.First().Equals(monedaPrincipal.First()))
-                    {
-                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-                    }
+                        _context.Update(itemCuentaCobrar);
+                        _context.Update(factura);
 
-                    // disminuir saldo de la cuenta de CAJA
-                    var monedaCuenta = (from m in _context.MonedaCuenta
-                                        where m.IdCodCuenta == idCaja.IdCodCuenta
-                                        select m).First();
+                        await _context.SaveChangesAsync();
 
-                    monedaCuenta.SaldoFinal -= modelo.Monto;
-                    // añadir al pago
-
-                    pago.FormaPago = false;
-                    pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                    pago.SimboloRef = "$";
-                    pago.MontoRef = montoReferencia;
-
-                    // valido si hay abonado en la factura
-                    if (factura.Abonado == 0)
-                    {
-                        if (pago.Monto < factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            cliente.Deuda -= pago.Monto;
-                        }
-                        else if (pago.Monto == factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            factura.EnProceso = false;
-                            factura.Pagada = true;
-                            itemCuentaCobrar.Status = "Cancelada";
-                            cliente.Deuda -= pago.Monto;
-
-                        }
-                        else
-                        {
-                            return "El monto es mayor al total de la Factura!";
-                        }
+                        return "exito";
                     }
                     else
                     {
-                        if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            cliente.Deuda -= pago.Monto;
-                        }
-                        else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            factura.EnProceso = false;
-                            factura.Pagada = true;
-                            itemCuentaCobrar.Status = "Cancelada";
-                            cliente.Deuda -= pago.Monto;
-                        }
-                        else
-                        {
-                            return "El monto más lo abonado en la factura excede el total de la Factura!";
-                        }
+                        return "Error al registrar Nota de Credito. Intentar nuevamente";
+                    }
+                }
+                else
+                {
+
+                    if (modelo.RetencionesIva && !modelo.RetencionesIslr)
+                    {
+                        factura.MontoTotal -= itemLibroVenta.RetIva;
+                        pago.Monto -= itemLibroVenta.RetIva;
+                    }
+                    else if (!modelo.RetencionesIva && modelo.RetencionesIslr)
+                    {
+                        factura.MontoTotal -= itemLibroVenta.RetIslr;
+                        pago.Monto -= itemLibroVenta.RetIslr;
+
+                    }
+                    else if (modelo.RetencionesIva && modelo.RetencionesIslr)
+                    {
+                        factura.MontoTotal -= itemLibroVenta.RetIva + itemLibroVenta.RetIslr;
+                        pago.Monto -= itemLibroVenta.RetIva + itemLibroVenta.RetIslr;
                     }
 
 
+                    int numAsiento = 0;
 
-                    factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
+                    var diarioCondominio = from a in _context.LdiarioGlobals
+                                           join c in _context.CodigoCuentasGlobals
+                                           on a.IdCodCuenta equals c.IdCodCuenta
+                                           where c.IdCondominio == modelo.IdCondominio
+                                           select a;
 
-                    // resgistrar transaccion
-                    // armar transaccion
-                    //var transaccion = new Transaccion
-                    //{
-                    //    TipoTransaccion = true,
-                    //    IdCodCuenta = factura.IdCodCuenta,
-                    //    Descripcion = modelo.Concepto,
-                    //    MontoTotal = factura.MontoTotal,
-                    //    Documento = factura.NumFactura.ToString(),
-                    //    Cancelado = factura.MontoTotal,
-                    //    SimboloMoneda = pago.SimboloMoneda,
-                    //    SimboloRef = pago.SimboloRef,
-                    //    ValorDolar = pago.ValorDolar,
-                    //    MontoRef = montoReferencia,
-                    //    Fecha = DateTime.Today
-                    //};
-
-                    // validar retenciones
-
-                    if (modelo.RetencionesIva)
+                    if (diarioCondominio.Count() > 0)
                     {
-                        var retIva = new CompRetIvaCliente
-                        {
-                            IdFactura = modelo.IdFactura,
-                            IdCliente = modelo.IdCliente,
-                            FechaEmision = modelo.FechaEmisionRetIva,
-                            TipoTransaccion = true,
-                            NumFacturaAfectada = factura.NumFactura.ToString(),
-                            TotalCompraIva = factura.MontoTotal,
-                            CompraSinCreditoIva = 0,
-                            BaseImponible = itemLibroVenta.BaseImponible,
-                            Alicuota = 16,
-                            ImpIva = itemLibroVenta.Iva,
-                            IvaRetenido = itemLibroVenta.RetIva,
-                            TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
-                            NumCompRet = modelo.NumComprobanteRetIva,
-                            NumComprobante = 1
-                        };
-
-                        itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
-
-                        _context.Update(itemLibroVenta);
-                        _context.Add(retIva);
+                        numAsiento = diarioCondominio.ToList().Last().NumAsiento;
                     }
 
-                    if (modelo.RetencionesIslr)
+                    if (modelo.Pagoforma == FormaPago.Efectivo)
                     {
-                        var ret = (from c in _context.Clientes
-                                   join v in _context.Islrs
-                                   on c.IdRetencionIslr equals v.Id
-                                   select v).FirstOrDefault();
-                        if (ret != null)
+                        try
                         {
-                            var retIslr = new ComprobanteRetencionCliente
+                            var idCaja = (from c in _context.CodigoCuentasGlobals
+                                          where c.IdSubCuenta == modelo.IdCodigoCuentaCaja
+                                          select c).First();
+
+                            // buscar moneda asigna a la subcuenta
+                            var moneda = from m in _context.MonedaConds
+                                         join mc in _context.MonedaCuenta
+                                         on m.IdMonedaCond equals mc.IdMoneda
+                                         where mc.IdCodCuenta == idCaja.IdCodCuenta
+                                         select m;
+
+                            // si no es principal hacer el cambio
+                            var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
+                            // calcular monto referencia
+                            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
                             {
-                                IdCliente = modelo.IdCliente,
-                                IdFactura = modelo.IdFactura,
-                                FechaEmision = modelo.FechaEmisionIslr,
-                                Description = ret.Concepto,
-                                Retencion = ret.Tarifa,
-                                Sustraendo = ret.Sustraendo,
-                                ValorRetencion = itemLibroVenta.RetIslr,
-                                TotalImpuesto = itemLibroVenta.RetIslr,
-                                NumCompRet = modelo.NumComprobanteRetIslr,
-                                NumComprobante = 1,
-                                TotalFactura = factura.MontoTotal,
-                                BaseImponible = itemLibroVenta.BaseImponible
+                                return "No hay monedas registradas en el sistema!";
+                            }
+                            else if (moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                            }
+                            else if (!moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                            }
+
+                            // disminuir saldo de la cuenta de CAJA
+                            var monedaCuenta = (from m in _context.MonedaCuenta
+                                                where m.IdCodCuenta == idCaja.IdCodCuenta
+                                                select m).First();
+
+                            monedaCuenta.SaldoFinal -= modelo.Monto;
+                            // añadir al pago
+
+                            pago.FormaPago = false;
+                            pago.SimboloMoneda = moneda.First().Simbolo;
+                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            pago.SimboloRef = "$";
+                            pago.MontoRef = montoReferencia;
+
+                            // valido si hay abonado en la factura
+                            if (factura.Abonado == 0)
+                            {
+                                if (pago.Monto < factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    cliente.Deuda -= pago.Monto;
+                                }
+                                else if (pago.Monto == factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    factura.EnProceso = false;
+                                    factura.Pagada = true;
+                                    itemCuentaCobrar.Status = "Cancelada";
+                                    cliente.Deuda -= pago.Monto;
+
+                                }
+                                else
+                                {
+                                    return "El monto es mayor al total de la Factura!";
+                                }
+                            }
+                            else
+                            {
+                                if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    cliente.Deuda -= pago.Monto;
+                                }
+                                else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    factura.EnProceso = false;
+                                    factura.Pagada = true;
+                                    itemCuentaCobrar.Status = "Cancelada";
+                                    cliente.Deuda -= pago.Monto;
+                                }
+                                else
+                                {
+                                    return "El monto más lo abonado en la factura excede el total de la Factura!";
+                                }
+                            }
+
+
+
+                            factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
+
+                            // resgistrar transaccion
+                            // armar transaccion
+                            //var transaccion = new Transaccion
+                            //{
+                            //    TipoTransaccion = true,
+                            //    IdCodCuenta = factura.IdCodCuenta,
+                            //    Descripcion = modelo.Concepto,
+                            //    MontoTotal = factura.MontoTotal,
+                            //    Documento = factura.NumFactura.ToString(),
+                            //    Cancelado = factura.MontoTotal,
+                            //    SimboloMoneda = pago.SimboloMoneda,
+                            //    SimboloRef = pago.SimboloRef,
+                            //    ValorDolar = pago.ValorDolar,
+                            //    MontoRef = montoReferencia,
+                            //    Fecha = DateTime.Today
+                            //};
+
+                            // validar retenciones
+
+                            if (modelo.RetencionesIva)
+                            {
+                                var retIva = new CompRetIvaCliente
+                                {
+                                    IdFactura = modelo.IdFactura,
+                                    IdCliente = modelo.IdCliente,
+                                    FechaEmision = modelo.FechaEmisionRetIva,
+                                    TipoTransaccion = true,
+                                    NumFacturaAfectada = factura.NumFactura.ToString(),
+                                    TotalCompraIva = factura.MontoTotal,
+                                    CompraSinCreditoIva = 0,
+                                    BaseImponible = itemLibroVenta.BaseImponible,
+                                    Alicuota = 16,
+                                    ImpIva = itemLibroVenta.Iva,
+                                    IvaRetenido = itemLibroVenta.RetIva,
+                                    TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                                    NumCompRet = modelo.NumComprobanteRetIva,
+                                    NumComprobante = 1
+                                };
+
+                                itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+
+                                _context.Update(itemLibroVenta);
+                                _context.Add(retIva);
+                            }
+
+                            if (modelo.RetencionesIslr)
+                            {
+                                var ret = (from c in _context.Clientes
+                                           join v in _context.Islrs
+                                           on c.IdRetencionIslr equals v.Id
+                                           select v).FirstOrDefault();
+                                if (ret != null)
+                                {
+                                    var retIslr = new ComprobanteRetencionCliente
+                                    {
+                                        IdCliente = modelo.IdCliente,
+                                        IdFactura = modelo.IdFactura,
+                                        FechaEmision = modelo.FechaEmisionIslr,
+                                        Description = ret.Concepto,
+                                        Retencion = ret.Tarifa,
+                                        Sustraendo = ret.Sustraendo,
+                                        ValorRetencion = itemLibroVenta.RetIslr,
+                                        TotalImpuesto = itemLibroVenta.RetIslr,
+                                        NumCompRet = modelo.NumComprobanteRetIslr,
+                                        NumComprobante = 1,
+                                        TotalFactura = factura.MontoTotal,
+                                        BaseImponible = itemLibroVenta.BaseImponible
+                                    };
+
+                                    //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+
+                                    //_context.Update(itemLibroVenta);
+                                    _context.Add(retIslr);
+
+                                }
+                            }
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+
+                                _dbContext.Add(pago);
+                                //_dbContext.Add(transaccion);
+                                _dbContext.Update(monedaCuenta);
+                                _dbContext.Update(factura);
+                                _context.Update(itemCuentaCobrar);
+                                _context.Update(cliente);
+
+                                _dbContext.SaveChanges();
+                            }
+
+                            PagoFacturaEmitida pagoFactura = new PagoFacturaEmitida
+                            {
+                                IdPagoRecibido = pago.IdPagoRecibido,
+                                IdFactura = modelo.IdFactura
                             };
 
-                            //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
 
-                            //_context.Update(itemLibroVenta);
-                            _context.Add(retIslr);
-
-                        }
-                    }
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-
-                        _dbContext.Add(pago);
-                        //_dbContext.Add(transaccion);
-                        _dbContext.Update(monedaCuenta);
-                        _dbContext.Update(factura);
-                        _context.Update(itemCuentaCobrar);
-                        _context.Update(cliente);
-
-                        _dbContext.SaveChanges();
-                    }
-
-                    PagoFacturaEmitida pagoFactura = new PagoFacturaEmitida
-                    {
-                        IdPagoRecibido = pago.IdPagoRecibido,
-                        IdFactura = modelo.IdFactura
-                    };
-
-
-                    LdiarioGlobal asientoIngreso = new LdiarioGlobal
-                    {
-                        IdCodCuenta = factura.IdCodCuenta,
-                        Fecha = modelo.Fecha,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        MontoRef = montoReferencia,
-                        TipoOperacion = false,
-                        NumAsiento = numAsiento + 1,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
-                        SimboloMoneda = moneda.First().Simbolo,
-                        SimboloRef = monedaPrincipal.First().Simbolo
-
-                    };
-                    LdiarioGlobal asientoCaja = new LdiarioGlobal
-                    {
-                        IdCodCuenta = idCaja.IdCodCuenta,
-                        Fecha = modelo.Fecha,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        MontoRef = montoReferencia,
-                        TipoOperacion = true,
-                        NumAsiento = numAsiento + 1,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
-                        SimboloMoneda = moneda.First().Simbolo,
-                        SimboloRef = monedaPrincipal.First().Simbolo
-
-                    };
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-                        _dbContext.Add(asientoCaja);
-                        _dbContext.Add(asientoIngreso);
-
-                        //_dbContext.Add(pagoFactura);
-                        _dbContext.SaveChanges();
-                    }
-
-                    //REGISTRAR ASIENTO EN LA TABLA Ingresos
-                    Ingreso ingreso = new Ingreso
-                    {
-                        IdAsiento = asientoIngreso.IdAsiento
-                    };
-                    //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                    Activo activo = new Activo
-                    {
-                        IdAsiento = asientoCaja.IdAsiento
-                    };
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-                        _dbContext.Add(ingreso);
-                        _dbContext.Add(activo);
-                        _dbContext.Add(pagoFactura);
-                        _dbContext.SaveChanges();
-
-                    }
-                    resultado = "exito";
-
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
-                }
-
-            }
-            else if (modelo.Pagoforma == FormaPago.Transferencia)
-            {
-                try
-                {
-
-                    var idBanco = (from c in _context.CodigoCuentasGlobals
-                                   where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
-                                   select c).First();
-
-                    // buscar moneda asigna a la subcuenta
-                    var moneda = from m in _context.MonedaConds
-                                 join mc in _context.MonedaCuenta
-                                 on m.IdMonedaCond equals mc.IdMoneda
-                                 where mc.IdCodCuenta == idBanco.IdCodCuenta
-                                 select m;
-
-                    // si no es principal hacer el cambio
-                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
-
-                    // calcular monto referencia
-                    if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
-                    {
-                        return "No hay monedas registradas en el sistema!";
-                    }
-                    else if (moneda.First().Equals(monedaPrincipal.First()))
-                    {
-                        montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
-                    }
-                    else if (!moneda.First().Equals(monedaPrincipal.First()))
-                    {
-                        montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-                    }
-
-                    // disminuir saldo de la cuenta de CAJA
-                    var monedaCuenta = (from m in _context.MonedaCuenta
-                                        where m.IdCodCuenta == idBanco.IdCodCuenta
-                                        select m).First();
-
-                    monedaCuenta.SaldoFinal -= modelo.Monto;
-
-                    pago.MontoRef = montoReferencia;
-                    pago.FormaPago = true;
-                    pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                    pago.MontoRef = montoReferencia;
-                    pago.SimboloRef = "$";
-
-                    // valido si hay abonado en la factura
-                    if (factura.Abonado == 0)
-                    {
-                        if (pago.Monto < factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            cliente.Deuda -= pago.Monto;
-
-                        }
-                        else if (pago.Monto == factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            factura.EnProceso = false;
-                            factura.Pagada = true;
-                            itemCuentaCobrar.Status = "Cancelada";
-                            cliente.Deuda -= pago.Monto;
-
-                        }
-                        else
-                        {
-                            return "El monto es mayor al total de la Factura!";
-                        }
-                    }
-                    else
-                    {
-                        if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            cliente.Deuda -= pago.Monto;
-
-                        }
-                        else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
-                        {
-                            factura.Abonado += pago.Monto;
-                            factura.EnProceso = false;
-                            factura.Pagada = true;
-                            itemCuentaCobrar.Status = "Cancelada";
-                            cliente.Deuda -= pago.Monto;
-
-                        }
-                        else
-                        {
-                            return "El monto más lo abonado es mayor al total de la Factura!";
-                        }
-                    }
-
-                    factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
-
-                    // validar retenciones
-
-                    if (modelo.RetencionesIva)
-                    {
-                        var retIva = new CompRetIvaCliente
-                        {
-                            IdFactura = modelo.IdFactura,
-                            IdCliente = modelo.IdCliente,
-                            FechaEmision = modelo.FechaEmisionRetIva,
-                            TipoTransaccion = true,
-                            NumFacturaAfectada = factura.NumFactura.ToString(),
-                            TotalCompraIva = factura.MontoTotal,
-                            CompraSinCreditoIva = 0,
-                            BaseImponible = itemLibroVenta.BaseImponible,
-                            Alicuota = 16,
-                            ImpIva = itemLibroVenta.Iva,
-                            IvaRetenido = itemLibroVenta.RetIva,
-                            TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
-                            NumCompRet = modelo.NumComprobanteRetIva,
-                            NumComprobante = 1
-                        };
-
-                        itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
-
-                        _context.Update(itemLibroVenta);
-                        _context.Add(retIva);
-                    }
-
-                    if (modelo.RetencionesIslr)
-                    {
-                        var ret = (from c in _context.Clientes
-                                   join v in _context.Islrs
-                                   on c.IdRetencionIslr equals v.Id
-                                   select v).FirstOrDefault();
-                        if (ret != null)
-                        {
-                            var retIslr = new ComprobanteRetencionCliente
+                            LdiarioGlobal asientoIngreso = new LdiarioGlobal
                             {
-                                IdCliente = modelo.IdCliente,
-                                IdFactura = modelo.IdFactura,
-                                FechaEmision = modelo.FechaEmisionIslr,
-                                Description = ret.Concepto,
-                                Retencion = ret.Tarifa,
-                                Sustraendo = ret.Sustraendo,
-                                ValorRetencion = itemLibroVenta.RetIslr,
-                                TotalImpuesto = itemLibroVenta.RetIslr,
-                                NumCompRet = modelo.NumComprobanteRetIslr,
-                                NumComprobante = 1,
-                                TotalFactura = factura.MontoTotal,
-                                BaseImponible = itemLibroVenta.BaseImponible
+                                IdCodCuenta = factura.IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                MontoRef = montoReferencia,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1,
+                                ValorDolar = monedaPrincipal.First().ValorDolar,
+                                SimboloMoneda = moneda.First().Simbolo,
+                                SimboloRef = monedaPrincipal.First().Simbolo
+
+                            };
+                            LdiarioGlobal asientoCaja = new LdiarioGlobal
+                            {
+                                IdCodCuenta = idCaja.IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                MontoRef = montoReferencia,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1,
+                                ValorDolar = monedaPrincipal.First().ValorDolar,
+                                SimboloMoneda = moneda.First().Simbolo,
+                                SimboloRef = monedaPrincipal.First().Simbolo
+
                             };
 
-                            //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+                                _dbContext.Add(asientoCaja);
+                                _dbContext.Add(asientoIngreso);
 
-                            //_context.Update(itemLibroVenta);
-                            _context.Add(retIslr);
+                                //_dbContext.Add(pagoFactura);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA Ingresos
+                            Ingreso ingreso = new Ingreso
+                            {
+                                IdAsiento = asientoIngreso.IdAsiento
+                            };
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activo = new Activo
+                            {
+                                IdAsiento = asientoCaja.IdAsiento
+                            };
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+                                _dbContext.Add(ingreso);
+                                _dbContext.Add(activo);
+                                _dbContext.Add(pagoFactura);
+                                _dbContext.SaveChanges();
+
+                            }
+                            resultado = "exito";
 
                         }
+                        catch (Exception ex)
+                        {
+                            return ex.Message;
+                        }
+
                     }
-
-                    using (var _dbContext = new NuevaAppContext())
+                    else if (modelo.Pagoforma == FormaPago.Transferencia)
                     {
+                        try
+                        {
 
-                        _dbContext.Add(pago);
-                        _dbContext.Update(monedaCuenta);
-                        _dbContext.Update(factura);
-                        _context.Update(itemCuentaCobrar);
-                        _context.Update(cliente);
+                            var idBanco = (from c in _context.CodigoCuentasGlobals
+                                           where c.IdSubCuenta == modelo.IdCodigoCuentaBanco
+                                           select c).First();
 
-                        _dbContext.SaveChanges();
+                            // buscar moneda asigna a la subcuenta
+                            var moneda = from m in _context.MonedaConds
+                                         join mc in _context.MonedaCuenta
+                                         on m.IdMonedaCond equals mc.IdMoneda
+                                         where mc.IdCodCuenta == idBanco.IdCodCuenta
+                                         select m;
+
+                            // si no es principal hacer el cambio
+                            var monedaPrincipal = await _repoMoneda.MonedaPrincipal(modelo.IdCondominio);
+
+                            // calcular monto referencia
+                            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
+                            {
+                                return "No hay monedas registradas en el sistema!";
+                            }
+                            else if (moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
+                            }
+                            else if (!moneda.First().Equals(monedaPrincipal.First()))
+                            {
+                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
+                            }
+
+                            // disminuir saldo de la cuenta de CAJA
+                            var monedaCuenta = (from m in _context.MonedaCuenta
+                                                where m.IdCodCuenta == idBanco.IdCodCuenta
+                                                select m).First();
+
+                            monedaCuenta.SaldoFinal -= modelo.Monto;
+
+                            pago.MontoRef = montoReferencia;
+                            pago.FormaPago = true;
+                            pago.SimboloMoneda = moneda.First().Simbolo;
+                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            pago.MontoRef = montoReferencia;
+                            pago.SimboloRef = "$";
+
+                            // valido si hay abonado en la factura
+                            if (factura.Abonado == 0)
+                            {
+                                if (pago.Monto < factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    cliente.Deuda -= pago.Monto;
+
+                                }
+                                else if (pago.Monto == factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    factura.EnProceso = false;
+                                    factura.Pagada = true;
+                                    itemCuentaCobrar.Status = "Cancelada";
+                                    cliente.Deuda -= pago.Monto;
+
+                                }
+                                else
+                                {
+                                    return "El monto es mayor al total de la Factura!";
+                                }
+                            }
+                            else
+                            {
+                                if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    cliente.Deuda -= pago.Monto;
+
+                                }
+                                else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
+                                {
+                                    factura.Abonado += pago.Monto;
+                                    factura.EnProceso = false;
+                                    factura.Pagada = true;
+                                    itemCuentaCobrar.Status = "Cancelada";
+                                    cliente.Deuda -= pago.Monto;
+
+                                }
+                                else
+                                {
+                                    return "El monto más lo abonado es mayor al total de la Factura!";
+                                }
+                            }
+
+                            factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
+
+                            // validar retenciones
+
+                            if (modelo.RetencionesIva)
+                            {
+                                var retIva = new CompRetIvaCliente
+                                {
+                                    IdFactura = modelo.IdFactura,
+                                    IdCliente = modelo.IdCliente,
+                                    FechaEmision = modelo.FechaEmisionRetIva,
+                                    TipoTransaccion = true,
+                                    NumFacturaAfectada = factura.NumFactura.ToString(),
+                                    TotalCompraIva = factura.MontoTotal,
+                                    CompraSinCreditoIva = 0,
+                                    BaseImponible = itemLibroVenta.BaseImponible,
+                                    Alicuota = 16,
+                                    ImpIva = itemLibroVenta.Iva,
+                                    IvaRetenido = itemLibroVenta.RetIva,
+                                    TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                                    NumCompRet = modelo.NumComprobanteRetIva,
+                                    NumComprobante = 1
+                                };
+
+                                itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+
+                                _context.Update(itemLibroVenta);
+                                _context.Add(retIva);
+                            }
+
+                            if (modelo.RetencionesIslr)
+                            {
+                                var ret = (from c in _context.Clientes
+                                           join v in _context.Islrs
+                                           on c.IdRetencionIslr equals v.Id
+                                           select v).FirstOrDefault();
+                                if (ret != null)
+                                {
+                                    var retIslr = new ComprobanteRetencionCliente
+                                    {
+                                        IdCliente = modelo.IdCliente,
+                                        IdFactura = modelo.IdFactura,
+                                        FechaEmision = modelo.FechaEmisionIslr,
+                                        Description = ret.Concepto,
+                                        Retencion = ret.Tarifa,
+                                        Sustraendo = ret.Sustraendo,
+                                        ValorRetencion = itemLibroVenta.RetIslr,
+                                        TotalImpuesto = itemLibroVenta.RetIslr,
+                                        NumCompRet = modelo.NumComprobanteRetIslr,
+                                        NumComprobante = 1,
+                                        TotalFactura = factura.MontoTotal,
+                                        BaseImponible = itemLibroVenta.BaseImponible
+                                    };
+
+                                    //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
+
+                                    //_context.Update(itemLibroVenta);
+                                    _context.Add(retIslr);
+
+                                }
+                            }
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+
+                                _dbContext.Add(pago);
+                                _dbContext.Update(monedaCuenta);
+                                _dbContext.Update(factura);
+                                _context.Update(itemCuentaCobrar);
+                                _context.Update(cliente);
+
+                                _dbContext.SaveChanges();
+                            }
+
+                            PagoFacturaEmitida pagoFactura = new PagoFacturaEmitida
+                            {
+                                IdPagoRecibido = pago.IdPagoRecibido,
+                                IdFactura = modelo.IdFactura
+                            };
+
+                            ReferenciasPr referencia = new ReferenciasPr
+                            {
+                                IdPagoRecibido = pago.IdPagoRecibido,
+                                NumReferencia = modelo.NumReferencia,
+                                Banco = modelo.IdCodigoCuentaBanco.ToString()
+                            };
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+                                _dbContext.Add(referencia);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
+                            //buscar el id en codigo de cuentas global de la subcuenta seleccionada
+
+                            LdiarioGlobal asientoGasto = new LdiarioGlobal
+                            {
+                                IdCodCuenta = factura.IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                MontoRef = montoReferencia,
+                                TipoOperacion = false,
+                                NumAsiento = numAsiento + 1,
+                                ValorDolar = monedaPrincipal.First().ValorDolar,
+                                SimboloMoneda = moneda.First().Simbolo,
+                                SimboloRef = monedaPrincipal.First().Simbolo
+
+                            };
+                            LdiarioGlobal asientoBanco = new LdiarioGlobal
+                            {
+                                IdCodCuenta = idBanco.IdCodCuenta,
+                                Fecha = modelo.Fecha,
+                                Concepto = modelo.Concepto,
+                                Monto = modelo.Monto,
+                                MontoRef = montoReferencia,
+                                TipoOperacion = true,
+                                NumAsiento = numAsiento + 1,
+                                ValorDolar = monedaPrincipal.First().ValorDolar,
+                                SimboloMoneda = moneda.First().Simbolo,
+                                SimboloRef = monedaPrincipal.First().Simbolo
+
+                            };
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+                                _dbContext.Add(asientoBanco);
+                                _dbContext.Add(asientoGasto);
+                                _dbContext.SaveChanges();
+                            }
+
+                            //REGISTRAR ASIENTO EN LA TABLA GASTOS
+                            Ingreso ingreso = new Ingreso
+                            {
+                                IdAsiento = asientoGasto.IdAsiento
+                            };
+                            //REGISTRAR ASIENTO EN LA TABLA ACTIVO
+                            Activo activo = new Activo
+                            {
+                                IdAsiento = asientoBanco.IdAsiento
+                            };
+
+                            using (var _dbContext = new NuevaAppContext())
+                            {
+                                _dbContext.Add(ingreso);
+                                _dbContext.Add(activo);
+                                _dbContext.Add(pagoFactura);
+                                _dbContext.SaveChanges();
+                            }
+
+                            return "exito";
+
+                        }
+                        catch (Exception ex)
+                        {
+                            return ex.Message;
+                        }
                     }
-
-                    PagoFacturaEmitida pagoFactura = new PagoFacturaEmitida
-                    {
-                        IdPagoRecibido = pago.IdPagoRecibido,
-                        IdFactura = modelo.IdFactura
-                    };
-
-                    ReferenciasPr referencia = new ReferenciasPr
-                    {
-                        IdPagoRecibido = pago.IdPagoRecibido,
-                        NumReferencia = modelo.NumReferencia,
-                        Banco = modelo.IdCodigoCuentaBanco.ToString()
-                    };
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-                        _dbContext.Add(referencia);
-                        _dbContext.SaveChanges();
-                    }
-
-                    //REGISTRAR ASIENTO EN EL DIARIO (idCC, fecha, descripcion, concepto, monto, tipoOperacion)
-                    //buscar el id en codigo de cuentas global de la subcuenta seleccionada
-
-                    LdiarioGlobal asientoGasto = new LdiarioGlobal
-                    {
-                        IdCodCuenta = factura.IdCodCuenta,
-                        Fecha = modelo.Fecha,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        MontoRef = montoReferencia,
-                        TipoOperacion = false,
-                        NumAsiento = numAsiento + 1,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
-                        SimboloMoneda = moneda.First().Simbolo,
-                        SimboloRef = monedaPrincipal.First().Simbolo
-
-                    };
-                    LdiarioGlobal asientoBanco = new LdiarioGlobal
-                    {
-                        IdCodCuenta = idBanco.IdCodCuenta,
-                        Fecha = modelo.Fecha,
-                        Concepto = modelo.Concepto,
-                        Monto = modelo.Monto,
-                        MontoRef = montoReferencia,
-                        TipoOperacion = true,
-                        NumAsiento = numAsiento + 1,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
-                        SimboloMoneda = moneda.First().Simbolo,
-                        SimboloRef = monedaPrincipal.First().Simbolo
-
-                    };
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-                        _dbContext.Add(asientoBanco);
-                        _dbContext.Add(asientoGasto);
-                        _dbContext.SaveChanges();
-                    }
-
-                    //REGISTRAR ASIENTO EN LA TABLA GASTOS
-                    Ingreso ingreso = new Ingreso
-                    {
-                        IdAsiento = asientoGasto.IdAsiento
-                    };
-                    //REGISTRAR ASIENTO EN LA TABLA ACTIVO
-                    Activo activo = new Activo
-                    {
-                        IdAsiento = asientoBanco.IdAsiento
-                    };
-
-                    using (var _dbContext = new NuevaAppContext())
-                    {
-                        _dbContext.Add(ingreso);
-                        _dbContext.Add(activo);
-                        _dbContext.Add(pagoFactura);
-                        _dbContext.SaveChanges();
-                    }
-
-                    return "exito";
-
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message;
                 }
             }
-
             return resultado;
         }
 

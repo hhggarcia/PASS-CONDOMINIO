@@ -34,7 +34,8 @@ namespace Prueba.Controllers
                 .Include(n => n.IdFacturaNavigation)
                 .Include(n => n.IdPropiedadNavigation)
                 .Include(n => n.IdRetIslrNavigation)
-                .Include(n => n.IdRetIvaNavigation);
+                .Include(n => n.IdRetIvaNavigation)
+                .Where(c => c.IdPropiedad != null);
 
             return View(await nuevaAppContext.ToListAsync());
         }

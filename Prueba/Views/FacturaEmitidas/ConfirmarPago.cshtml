@@ -40,13 +40,17 @@
                                                 {
                                                     <input type="text" asp-for="Pagoforma" value="Efectivo" class="form-control" readonly />
                                                 }
-                                                else
+                                                else if (Model.Pagoforma == FormaPago.Transferencia)
                                                 {
                                                     <input type="text" asp-for="Pagoforma" value="Transferencia" class="form-control" readonly />
                                                     <label class="control-label">Numero de Referencia</label>
                                                     <input type="text" asp-for="NumReferencia" class="form-control" readonly />
 
+                                                } else
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="NotaCredito" class="form-control" readonly />
                                                 }
+
                                                 <label class="control-label">Concepto</label>
                                                 <input type="text" asp-for="Concepto" class="form-control" readonly />
                                                 <label class="control-label">Fecha</label>

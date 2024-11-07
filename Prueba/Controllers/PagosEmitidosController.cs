@@ -290,18 +290,22 @@ namespace Prueba.Controllers
         {
             // cargar lista de anticipos IDs
 
-            foreach (var item in modelo.Anticipos)
+            if (modelo.Anticipos != null && modelo.Anticipos.Any())
             {
-                if (item.Selected)
+                foreach (var item in modelo.Anticipos)
                 {
-                    var anticipo = await _context.Anticipos.FindAsync(item.Value);
-
-                    if (anticipo != null)
+                    if (item.Selected)
                     {
-                        modelo.AnticiposIds.Add(anticipo.IdAnticipo);
+                        var anticipo = await _context.Anticipos.FindAsync(item.Value);
+
+                        if (anticipo != null)
+                        {
+                            modelo.AnticiposIds.Add(anticipo.IdAnticipo);
+                        }
                     }
                 }
             }
+            
             return View(modelo);
         }
 

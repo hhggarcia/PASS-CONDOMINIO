@@ -44,6 +44,9 @@
                             <thead>
                                 <tr>
                                     <th>
+                                        @Html.DisplayNameFor(model => model.FechaEmision)
+                                    </th>
+                                    <th>
                                         @Html.DisplayNameFor(model => model.IdProveedorNavigation)
                                     </th>
                                     <th>
@@ -53,9 +56,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.NumCompRet)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.FechaEmision)
-                                    </th>
+                                   
 
                                     @* <th>
                                     @Html.DisplayNameFor(model => model.NumFacturaAfectada)
@@ -97,6 +98,9 @@
                                 {
                                     <tr>
                                         <td>
+                                            @Html.DisplayFor(modelItem => item.FechaEmision)
+                                        </td>
+                                        <td>
                                             @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
                                         </td>
                                         <td>
@@ -105,9 +109,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.NumCompRet)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.FechaEmision)
-                                        </td>
+                                       
                                         @*  <td>
                                     @Html.DisplayFor(modelItem => item.NumFacturaAfectada)
                                     </td> *@

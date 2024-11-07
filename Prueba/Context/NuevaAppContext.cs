@@ -1264,8 +1264,8 @@ public partial class NuevaAppContext : DbContext
 
             entity.ToTable("NotaCredito");
 
-            entity.Property(e => e.Comprobante).HasMaxLength(50);
-            entity.Property(e => e.Concepto).HasMaxLength(50);
+            entity.Property(e => e.Comprobante).HasMaxLength(250);
+            entity.Property(e => e.Concepto).HasMaxLength(250);
             entity.Property(e => e.Fecha).HasColumnType("datetime");
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
 
