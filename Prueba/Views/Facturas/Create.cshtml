@@ -25,6 +25,13 @@
                 <div class="card-body">
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @if (@ViewBag.FormaPago == "fallido")
+                        {
+                            <div class="text-danger">
+                                <h6>@ViewBag.Mensaje</h6>
+                                <hr />
+                            </div>
+                        }
                         <div class="form-group">
                             <label asp-for="NumFactura" class="control-label"></label>
                             <input asp-for="NumFactura" class="form-control" value="@ViewBag.NumFactura" />

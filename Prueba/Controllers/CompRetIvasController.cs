@@ -97,6 +97,36 @@ namespace Prueba.Controllers
         {
             if (ModelState.IsValid)
             {
+                // validar num de control o num de facturas no repetidos
+                var existNumComp = await _context.CompRetIvas.Where(c => c.NumCompRet == compRetIva.NumCompRet).ToListAsync();
+
+                if (existNumComp.Any())
+                {
+                    var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIva.NumCompRet : "";
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = mensaje;
+
+                    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+                    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+                    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+                    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+
+                    return View(compRetIva);
+
+                }
+                else if (compRetIva.NumCompRet.Length != 14)
+                {
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+                    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+                    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+                    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+
+                    return View(compRetIva);
+                }
+
                 _context.Add(compRetIva);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -144,6 +174,36 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    // validar num de control o num de facturas no repetidos
+                    var existNumComp = await _context.CompRetIvas.Where(c => c.NumCompRet == compRetIva.NumCompRet).ToListAsync();
+
+                    if (existNumComp.Any())
+                    {
+                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIva.NumCompRet : "";
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = mensaje;
+
+                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+
+                        return View(compRetIva);
+
+                    }
+                    else if (compRetIva.NumCompRet.Length != 14)
+                    {
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+
+                        return View(compRetIva);
+                    }
+
                     _context.Update(compRetIva);
                     await _context.SaveChangesAsync();
                 }

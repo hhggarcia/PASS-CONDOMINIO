@@ -75,6 +75,32 @@ namespace Prueba.Controllers
             ModelState.Remove("IdFacturaNavigation");
             if (ModelState.IsValid)
             {
+                // validar num de control o num de facturas no repetidos
+                var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
+
+                if (existNumComp.Any())
+                {
+                    var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = mensaje;
+
+                    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+
+                    return View(comprobanteRetencionCliente);
+
+                }
+                else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
+                {
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+
+                    return View(comprobanteRetencionCliente);
+                }
+
                 _context.Add(comprobanteRetencionCliente);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -120,6 +146,32 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    // validar num de control o num de facturas no repetidos
+                    var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
+
+                    if (existNumComp.Any())
+                    {
+                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = mensaje;
+
+                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+
+                        return View(comprobanteRetencionCliente);
+
+                    }
+                    else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
+                    {
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+
+                        return View(comprobanteRetencionCliente);
+                    }
+
                     _context.Update(comprobanteRetencionCliente);
                     await _context.SaveChangesAsync();
                 }

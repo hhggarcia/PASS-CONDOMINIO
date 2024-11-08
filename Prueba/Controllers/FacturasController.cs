@@ -106,6 +106,7 @@ namespace Prueba.Controllers
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             if (ModelState.IsValid)
             {
@@ -121,6 +122,29 @@ namespace Prueba.Controllers
                 {
                     return NotFound();
                 }
+
+                // validar num de control o num de facturas no repetidos
+                var existNumControl = await _context.Facturas.Where(c => c.NumControl == factura.NumControl).ToListAsync();
+                var existNumFactura = await _context.Facturas.Where(c => c.NumFactura == factura.NumFactura).ToListAsync();
+                var mensaje = "Ya existe una factura";
+
+                if (existNumControl.Any() || existNumFactura.Any())
+                {
+                    mensaje += existNumControl.Any() ? " Control: " + factura.NumControl : "";
+                    mensaje += existNumFactura.Any() ? " Nro: " + factura.NumControl : "";
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = mensaje;
+
+                    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+                    ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);
+
+                    TempData.Keep();
+
+                    return View(factura);
+
+                }
+
+
                 var grupo = await (from g in _context.GrupoGastos
                                    join cg in _context.CuentasGrupos
                                    on g.IdGrupoGasto equals cg.IdGrupoGasto
@@ -203,9 +227,6 @@ namespace Prueba.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
-
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
             ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);
 
@@ -259,14 +280,39 @@ namespace Prueba.Controllers
 
             ModelState.Remove(nameof(factura.IdProveedorNavigation));
             ModelState.Remove(nameof(factura.IdCodCuentaNavigation));
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     var idCuenta = _context.SubCuenta.Where(c => c.Id == factura.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();                    
+
                     factura.IdCodCuenta = idCodCuenta;
+
+                    // validar num de control o num de facturas no repetidos
+                    var existNumControl = await _context.Facturas.Where(c => c.NumControl == factura.NumControl).ToListAsync();
+                    var existNumFactura = await _context.Facturas.Where(c => c.NumFactura == factura.NumFactura).ToListAsync();
+                    var mensaje = "Ya existe una factura";
+
+                    if (existNumControl.Any() || existNumFactura.Any())
+                    {
+                        mensaje += existNumControl.Any() ? " Control: " + factura.NumControl : "";
+                        mensaje += existNumFactura.Any() ? " Nro: " + factura.NumControl : "";
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = mensaje;
+
+                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
+                        ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);
+
+                        TempData.Keep();
+
+                        return View(factura);
+
+                    }
+
                     _context.Update(factura);
                     await _context.SaveChangesAsync();
                 }
@@ -282,10 +328,7 @@ namespace Prueba.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
-            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+            }            
 
             ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", factura.IdProveedor);
             ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", factura.IdCodCuenta);

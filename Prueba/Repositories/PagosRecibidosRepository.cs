@@ -317,28 +317,33 @@ namespace Prueba.Repositories
 
                             if (modelo.RetencionesIva)
                             {
-                                var retIva = new CompRetIvaCliente
+                                var existRet = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIva).ToListAsync();
+
+                                if (existRet.Count > 0)
                                 {
-                                    IdFactura = modelo.IdFactura,
-                                    IdCliente = modelo.IdCliente,
-                                    FechaEmision = modelo.FechaEmisionRetIva,
-                                    TipoTransaccion = true,
-                                    NumFacturaAfectada = factura.NumFactura.ToString(),
-                                    TotalCompraIva = factura.MontoTotal,
-                                    CompraSinCreditoIva = 0,
-                                    BaseImponible = itemLibroVenta.BaseImponible,
-                                    Alicuota = 16,
-                                    ImpIva = itemLibroVenta.Iva,
-                                    IvaRetenido = itemLibroVenta.RetIva,
-                                    TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
-                                    NumCompRet = modelo.NumComprobanteRetIva,
-                                    NumComprobante = 1
-                                };
+                                    var retIva = new CompRetIvaCliente
+                                    {
+                                        IdFactura = modelo.IdFactura,
+                                        IdCliente = modelo.IdCliente,
+                                        FechaEmision = modelo.FechaEmisionRetIva,
+                                        TipoTransaccion = true,
+                                        NumFacturaAfectada = factura.NumFactura.ToString(),
+                                        TotalCompraIva = factura.MontoTotal,
+                                        CompraSinCreditoIva = 0,
+                                        BaseImponible = itemLibroVenta.BaseImponible,
+                                        Alicuota = 16,
+                                        ImpIva = itemLibroVenta.Iva,
+                                        IvaRetenido = itemLibroVenta.RetIva,
+                                        TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                                        NumCompRet = modelo.NumComprobanteRetIva,
+                                        NumComprobante = 1
+                                    };
 
-                                itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+                                    itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
 
-                                _context.Update(itemLibroVenta);
-                                _context.Add(retIva);
+                                    _context.Update(itemLibroVenta);
+                                    _context.Add(retIva);
+                                }                                
                             }
 
                             if (modelo.RetencionesIslr)
@@ -347,7 +352,9 @@ namespace Prueba.Repositories
                                            join v in _context.Islrs
                                            on c.IdRetencionIslr equals v.Id
                                            select v).FirstOrDefault();
-                                if (ret != null)
+                                var existRet = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIslr).ToListAsync();
+
+                                if (ret != null && existRet.Count > 0)
                                 {
                                     var retIslr = new ComprobanteRetencionCliente
                                     {
@@ -558,28 +565,33 @@ namespace Prueba.Repositories
 
                             if (modelo.RetencionesIva)
                             {
-                                var retIva = new CompRetIvaCliente
+                                var existRet = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIva).ToListAsync();
+
+                                if (existRet.Count > 0)
                                 {
-                                    IdFactura = modelo.IdFactura,
-                                    IdCliente = modelo.IdCliente,
-                                    FechaEmision = modelo.FechaEmisionRetIva,
-                                    TipoTransaccion = true,
-                                    NumFacturaAfectada = factura.NumFactura.ToString(),
-                                    TotalCompraIva = factura.MontoTotal,
-                                    CompraSinCreditoIva = 0,
-                                    BaseImponible = itemLibroVenta.BaseImponible,
-                                    Alicuota = 16,
-                                    ImpIva = itemLibroVenta.Iva,
-                                    IvaRetenido = itemLibroVenta.RetIva,
-                                    TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
-                                    NumCompRet = modelo.NumComprobanteRetIva,
-                                    NumComprobante = 1
-                                };
+                                    var retIva = new CompRetIvaCliente
+                                    {
+                                        IdFactura = modelo.IdFactura,
+                                        IdCliente = modelo.IdCliente,
+                                        FechaEmision = modelo.FechaEmisionRetIva,
+                                        TipoTransaccion = true,
+                                        NumFacturaAfectada = factura.NumFactura.ToString(),
+                                        TotalCompraIva = factura.MontoTotal,
+                                        CompraSinCreditoIva = 0,
+                                        BaseImponible = itemLibroVenta.BaseImponible,
+                                        Alicuota = 16,
+                                        ImpIva = itemLibroVenta.Iva,
+                                        IvaRetenido = itemLibroVenta.RetIva,
+                                        TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                                        NumCompRet = modelo.NumComprobanteRetIva,
+                                        NumComprobante = 1
+                                    };
 
-                                itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+                                    itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
 
-                                _context.Update(itemLibroVenta);
-                                _context.Add(retIva);
+                                    _context.Update(itemLibroVenta);
+                                    _context.Add(retIva);
+                                }
                             }
 
                             if (modelo.RetencionesIslr)
@@ -588,7 +600,9 @@ namespace Prueba.Repositories
                                            join v in _context.Islrs
                                            on c.IdRetencionIslr equals v.Id
                                            select v).FirstOrDefault();
-                                if (ret != null)
+                                var existRet = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIslr).ToListAsync();
+
+                                if (ret != null && existRet.Count > 0)
                                 {
                                     var retIslr = new ComprobanteRetencionCliente
                                     {

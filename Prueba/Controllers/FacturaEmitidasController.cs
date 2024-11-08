@@ -112,15 +112,35 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdFacturaEmitida,IdCliente,IdProducto,IdCodCuenta,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
         {
-
-
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             if (ModelState.IsValid)
             {
+                // validar num de control o num de facturas no repetidos
+                var existNumControl = await _context.FacturaEmitida.Where(c => c.NumControl == facturaEmitida.NumControl).ToListAsync();
+                var existNumFactura = await _context.FacturaEmitida.Where(c => c.NumFactura == facturaEmitida.NumFactura).ToListAsync();
+                var mensaje = "Ya existe una factura";
+
+                if (existNumControl.Any() || existNumFactura.Any())
+                {
+                    mensaje += existNumControl.Any() ? " Control: " + facturaEmitida.NumControl : "";
+                    mensaje += existNumFactura.Any() ? " Nro: " + facturaEmitida.NumControl : "";
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = mensaje;
+
+                    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
+                    ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
+                    ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
+
+                    TempData.Keep();
+
+                    return View(facturaEmitida);
+
+                }
                 var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
                 var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
 
@@ -204,7 +224,6 @@ namespace Prueba.Controllers
             }
 
 
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
@@ -255,11 +274,11 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-
-
             ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
             ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             if (ModelState.IsValid)
             {
@@ -267,6 +286,29 @@ namespace Prueba.Controllers
                 {
                     var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
                     var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+                    
+
+                    // validar num de control o num de facturas no repetidos
+                    var existNumControl = await _context.FacturaEmitida.Where(c => c.NumControl == facturaEmitida.NumControl).ToListAsync();
+                    var existNumFactura = await _context.FacturaEmitida.Where(c => c.NumFactura == facturaEmitida.NumFactura).ToListAsync();
+                    var mensaje = "Ya existe una factura";
+
+                    if (existNumControl.Any() || existNumFactura.Any())
+                    {
+                        mensaje += existNumControl.Any() ? " Control: " + facturaEmitida.NumControl : "";
+                        mensaje += existNumFactura.Any() ? " Nro: " + facturaEmitida.NumControl : "";
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = mensaje;
+
+                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
+                        ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
+                        ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
+
+                        TempData.Keep();
+
+                        return View(facturaEmitida);
+
+                    }
 
                     facturaEmitida.IdCodCuenta = idCodCuenta;
                     facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
@@ -286,10 +328,6 @@ namespace Prueba.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
             ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);

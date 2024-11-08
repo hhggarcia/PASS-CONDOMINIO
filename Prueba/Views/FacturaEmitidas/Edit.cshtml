@@ -20,6 +20,13 @@
                         <div class="form-body">
                             <form asp-action="Edit">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                @if (@ViewBag.FormaPago == "fallido")
+                                {
+                                    <div class="text-danger">
+                                        <h6>@ViewBag.Mensaje</h6>
+                                        <hr />
+                                    </div>
+                                }
                                 <input type="hidden" asp-for="IdFacturaEmitida" />
                                 <div class="form-group">
                                     <label asp-for="IdCliente" class="control-label"></label>

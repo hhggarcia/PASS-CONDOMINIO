@@ -88,8 +88,36 @@ namespace Prueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdComprobante,IdFactura,IdProveedor,FechaEmision,Descripcion,Retencion,Sustraendo,ValorRetencion,TotalImpuesto")] ComprobanteRetencion comprobanteRetencion)
         {
+            ModelState.Remove("IdFacturaNavigation");
+            ModelState.Remove("IdProveedorNavigation");
+
             if (ModelState.IsValid)
             {
+                // validar num de control o num de facturas no repetidos
+                var existNumComp = await _context.ComprobanteRetencions.Where(c => c.NumCompRet == comprobanteRetencion.NumCompRet).ToListAsync();
+
+                if (existNumComp.Any())
+                {
+                    var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencion.NumCompRet : "";
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = mensaje;
+
+                    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+                    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
+
+                    return View(comprobanteRetencion);
+
+                } else if (comprobanteRetencion.NumCompRet.Length != 14)
+                {
+                    ViewBag.FormaPago = "fallido";
+                    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+                    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
+
+                    return View(comprobanteRetencion);
+                }
+
                 _context.Add(comprobanteRetencion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -133,6 +161,32 @@ namespace Prueba.Controllers
             {
                 try
                 {
+                    // validar num de control o num de facturas no repetidos
+                    var existNumComp = await _context.ComprobanteRetencions.Where(c => c.NumCompRet == comprobanteRetencion.NumCompRet).ToListAsync();
+
+                    if (existNumComp.Any())
+                    {
+                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencion.NumCompRet : "";
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = mensaje;
+
+                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
+
+                        return View(comprobanteRetencion);
+
+                    }
+                    else if (comprobanteRetencion.NumCompRet.Length != 14)
+                    {
+                        ViewBag.FormaPago = "fallido";
+                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+
+                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", comprobanteRetencion.IdFactura);
+                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", comprobanteRetencion.IdProveedor);
+
+                        return View(comprobanteRetencion);
+                    }
+
                     _context.Update(comprobanteRetencion);
                     await _context.SaveChangesAsync();
                 }
