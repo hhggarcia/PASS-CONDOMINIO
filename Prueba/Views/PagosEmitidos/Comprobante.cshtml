@@ -15,7 +15,7 @@
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             PDF
         </a> *@
-        <button id="ComprobantePEVMPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button>
+        @* <button id="ComprobantePEVMPDF" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Generar pdf</button> *@
 
     </div>
 
@@ -78,7 +78,13 @@
                                         <p><strong>Fecha de comprobante</strong>: @(DateTime.Today.ToString("dd/MM/yyyy"))</p>
                                     }
                                 }
-
+                                @if (Model.AnticiposIds != null && Model.AnticiposIds.Any())
+                                {
+                                    for (int i = 0; i < Model.AnticiposIds.Count; i++)
+                                    {
+                                        @Html.HiddenFor(model => Model.AnticiposIds[i])
+                                    }
+                                }
 
                             </div>
                         </div>

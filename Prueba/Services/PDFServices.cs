@@ -1975,11 +1975,15 @@ namespace Prueba.Services
                                 tabla.Cell().Padding(5).Text((comprobanteVM.Factura.MontoTotal).ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
 
-                                if (comprobanteVM.Anticipo != null)
+                                if (comprobanteVM.AnticiposIds != null && comprobanteVM.AnticiposIds.Any())
                                 {
-                                    tabla.Cell().Padding(5).Text("ANTICIPO").FontColor("#FF0000").Bold().FontSize(8);
-                                    tabla.Cell().Padding(5).Text("");
-                                    tabla.Cell().Padding(5).Text(comprobanteVM.Anticipo.Saldo).FontColor("#FF0000").Bold().FontSize(8);
+                                    foreach (var item in comprobanteVM.AnticiposIds)
+                                    {
+                                        var anticipo = _context.Anticipos.Find(item);
+                                        tabla.Cell().Padding(5).Text("ANTICIPO").FontColor("#FF0000").Bold().FontSize(8);
+                                        tabla.Cell().Padding(5).Text("");
+                                        tabla.Cell().Padding(5).Text(anticipo != null ? anticipo.Saldo.ToString("N") : "").FontColor("#FF0000").Bold().FontSize(8);
+                                    }
                                 }
                             });
 
@@ -2891,7 +2895,7 @@ namespace Prueba.Services
                                     tabla.Cell().Padding(5).Text("Efectivo").FontColor("#607080").FontSize(8);
                                     tabla.Cell().Padding(5).Text(pago.Monto.ToString("N")).FontColor("#607080").FontSize(8);
                                 }
-                                
+
 
                             });
 
@@ -3305,7 +3309,8 @@ namespace Prueba.Services
                                     tabla.Cell().Text("Dirección Fiscal: ").FontColor("#607080").Bold().FontSize(8);
                                     tabla.Cell().ColumnSpan(2).Text(condominio.Direccion).FontColor("#607080").FontSize(8);
 
-                                } else if (factura != null && cliente != null && condominio != null)
+                                }
+                                else if (factura != null && cliente != null && condominio != null)
                                 {
                                     tabla.Cell().Text("Cliente: ").FontColor("#607080").Bold().FontSize(8);
                                     tabla.Cell().ColumnSpan(2).Text(cliente.Nombre).FontColor("#607080").FontSize(8);
@@ -3315,7 +3320,7 @@ namespace Prueba.Services
 
                                     tabla.Cell().Text("Dirección Fiscal: ").FontColor("#607080").Bold().FontSize(8);
                                     tabla.Cell().ColumnSpan(2).Text(cliente.Direccion).FontColor("#607080").FontSize(8);
-                                }                                
+                                }
 
                                 tabla.Cell().ColumnSpan(3).Text("");
 
@@ -3382,7 +3387,7 @@ namespace Prueba.Services
                                     tabla.Cell().ColumnSpan(3).Padding(5).Text((propiedad.Deuda + propiedad.Saldo - (decimal)propiedad.Creditos).ToString("N")).FontColor("#607080").FontSize(8);
 
                                 });
-                            }                          
+                            }
 
                             x.Item().PaddingTop(10).Table(table =>
                             {
@@ -4579,8 +4584,8 @@ namespace Prueba.Services
                                     tabla.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignMiddle()
                                     .Padding(5).Text(total2.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
-                                    
-                                    
+
+
                                 }
 
                                 // fondos
@@ -4685,7 +4690,7 @@ namespace Prueba.Services
                                     .Padding(5).Text((totalFondos * modelo.Propiedad.Alicuota / 100).ToString("N"))
                                     .FontColor("#607080").Bold().FontSize(8);
                                 }
-                                
+
                             });
 
                             x.Item().BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").Table(tabla =>
@@ -5200,7 +5205,7 @@ namespace Prueba.Services
                                     });
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignMiddle()
-                                    .Padding(5).Text(reciboDetalle.Recibo.Monto.ToString("N")).FontColor("#607080").Bold().FontSize(8);                                    
+                                    .Padding(5).Text(reciboDetalle.Recibo.Monto.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignMiddle()
                                     .Padding(5).Text(reciboDetalle.Propiedad.Deuda.ToString("N")).FontColor("#607080").Bold().FontSize(8);

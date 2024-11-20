@@ -515,9 +515,8 @@
                         // });
                         $('.anticipo-group').show();  // Mostrar el grupo de anticipos
 
-                        LoadTable(data)
-                        // $('#montoInput').val(data.saldo);
-                        // $('#montoInput').prop('disabled', true); // Deshabilitar el campo
+                        LoadTable(data);
+
                     },
                     error: function (error) {
                         console.error('Error al obtener los anticipos: ', error);
@@ -545,40 +544,69 @@
             //         // $('#montoInput').prop('disabled', true);
             //     }
             // });
-        });
-    
-        function showContent() {
-            $("#modalAnticipos").show();
-        };
 
-        $('.nav-tabs-selector').on('change', function (e) {
-            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+            function showContent() {
+                $("#modalAnticipos").show();
+            };
+
+            $('.nav-tabs-selector').on('change', function (e) {
+                $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+            });
+
+            $('#modalAnticipos').on('hidden.bs.modal', function () {
+                // Aquí puedes agregar la acción que deseas ejecutar
+                console.log('El modal se ha cerrado');
+                // Por ejemplo, puedes llamar a una función
+                miFuncionAlCerrarModal();
+            });
+
+            function miFuncionAlCerrarModal() {
+                let suma = 0;
+                // Recorrer todos los checkboxes seleccionados y sumar sus valores
+                $('.anticipos-checkbox:checked').each(function () {
+                    console.log($(this).attr('value'));
+                    suma += parseFloat($(this).data('precio'));
+                });
+                // Mostrar la suma
+                //alert('La suma de los anticipos seleccionados es: ' + suma);
+                montoAnticipo = suma;
+
+                if (montoAnticipo > montoFacturaOriginal) {
+                    $('#validatonMonto').text('El monto de los anticipos es mayor a la factura, por favor seleccione otra opción.');
+                    // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                    $('#montoInput').val(montoFacturaOriginal);
+                    //$('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+                } else {
+                    var precioTotal = montoFacturaOriginal - montoAnticipo;
+                    $('#montoInput').val(precioTotal);
+                    $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+                }
+            }
+
         });
 
         function LoadTable(list) {
             var container = document.getElementById("containerAnticipos");
             container.innerHTML = "";
+            var text = "";
 
             if (list.length > 0) {
                 for (let i = 0; i < list.length; i++) {
                     const item = list[i];
-                    console.log("Item: ");
-                    console.log(item);
 
-
-                    var text = "<div class=\"form-group\" >" +
+                    text += "<div class=\"form-group\" >" +
                         "<div class=\"form-check\" >";
 
                     text += "<input type=\"hidden\" name=Anticipos[" + i + "].Value" +
                         " value= " + item.value + " />" +
                         "<input type=\"checkbox\" name=Anticipos[" + i + "].Selected" +
                         " id=\"z" + i + "__Selected\" " +
-                        " class=\"form-check-input\" value=true  /> " +
+                        " class=\"form-check-input anticipos-checkbox\"" + "data-precio=\"" + item.precio + "\"" +
+                        " value=true />" +
                         "<label for=\"z" + i + "__Selected\" >" +
                         item.text +
                         "</label></br>" + "</div></div>";
                 }
-
 
                 container.insertAdjacentHTML('beforeend', text);
 

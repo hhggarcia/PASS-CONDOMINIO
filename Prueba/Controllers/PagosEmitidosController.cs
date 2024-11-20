@@ -296,7 +296,7 @@ namespace Prueba.Controllers
                 {
                     if (item.Selected)
                     {
-                        var anticipo = await _context.Anticipos.FindAsync(item.Value);
+                        var anticipo = await _context.Anticipos.FindAsync(Convert.ToInt32(item.Value));
 
                         if (anticipo != null)
                         {
@@ -396,10 +396,9 @@ namespace Prueba.Controllers
 
                             comprobante.Caja = caja.First();
                         }
-                        if (modelo.IdAnticipo != 0)
+                        if (modelo.AnticiposIds.Any())
                         {
-                            var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == modelo.IdAnticipo).FirstAsync();
-                            comprobante.Anticipo = anticipo;
+                            comprobante.AnticiposIds = modelo.AnticiposIds;
                         }
                         //var proovedores = from p in _context.Proveedors
                         //                  where p.IdCondominio == modelo.IdCondominio
@@ -518,17 +517,17 @@ namespace Prueba.Controllers
             var pago = await _context.PagoEmitidos.FindAsync(id);
             if (pago != null)
             {
-                var pagoFactura = await _context.PagoFacturas.FirstAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+                var pagoFactura = await _context.PagoFacturas.Where(c => c.IdPagoEmitido == pago.IdPagoEmitido).ToListAsync();
                 // factura
                 // item del libro de compras
-                var factura = await _context.Facturas.Where(c => c.IdFactura == pagoFactura.IdFactura).FirstAsync();
+                Factura factura = await _context.Facturas.Where(c => c.IdFactura == pagoFactura.First().IdFactura).FirstAsync();
                 var condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
                 var itemLibroCompra = await _context.LibroCompras.FirstAsync(c => c.IdFactura == factura.IdFactura);
 
                 var idSubCuenta = (from c in _context.CodigoCuentasGlobals
                                    join f in _context.Facturas
                                    on c.IdCodCuenta equals f.IdCodCuenta
-                                   where f.IdFactura == pagoFactura.IdFactura
+                                   where f.IdFactura == factura.IdFactura
                                    select c.IdSubCuenta).First();
 
                 var gasto = from c in _context.SubCuenta
@@ -548,29 +547,22 @@ namespace Prueba.Controllers
                 if (pago.FormaPago)
                 {
                     var referencia = await _context.ReferenciasPes.FirstAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
-
-                    //var banco = from c in _context.SubCuenta
-                    //            join cc in _context.CodigoCuentasGlobals
-                    //            on c.Id equals cc.IdSubCuenta
-                    //            where cc.IdCodCuenta == pago.IdCod
-                    //            select c;
-
-                    comprobante.Banco.Descricion = referencia.Banco;
+                    var banco = await _context.SubCuenta.FindAsync(Convert.ToInt32(referencia.Banco));
+                    comprobante.Banco.Descricion = banco != null ? banco.Descricion : "N/A";
                     comprobante.NumReferencia = referencia.NumReferencia;
 
                 }
                 else
                 {
-                    //var caja = from c in _context.SubCuenta
-                    //           where c.Id == modelo.IdCodigoCuentaCaja
-                    //           select c;
-
                     comprobante.Caja.Descricion = "CAJA CHICA";
                 }
-                if (pagoFactura.IdAnticipo != null && pagoFactura.IdAnticipo != 0)
+                if (pagoFactura != null && pagoFactura.Any())
                 {
-                    var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == pagoFactura.IdAnticipo).FirstAsync();
-                    comprobante.Anticipo = anticipo;
+                    foreach (var item in pagoFactura)
+                    {
+                        var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == item.IdAnticipo).FirstAsync();
+                        comprobante.AnticiposIds.Add(anticipo.IdAnticipo);
+                    }                    
                 }
                 //var proovedores = from p in _context.Proveedors
                 //                  where p.IdCondominio == modelo.IdCondominio

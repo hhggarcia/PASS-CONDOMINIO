@@ -201,7 +201,7 @@ namespace Prueba.Repositories
                 Activo = true
             };
 
-            Anticipo anticipo1 = new Anticipo();
+            //Anticipo anticipo1 = new Anticipo();
 
             if (itemLibroCompra != null)
             {
@@ -433,6 +433,8 @@ namespace Prueba.Repositories
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
 
+                        await _dbContext.SaveChangesAsync();
+
                         if (modelo.AnticiposIds.Any())
                         {
                             foreach (var id in modelo.AnticiposIds)
@@ -441,19 +443,19 @@ namespace Prueba.Repositories
                                 if (anticipo != null)
                                 {
                                     anticipo.Activo = false;
+                                    PagoFactura pagoFactura = new PagoFactura
+                                    {
+                                        IdPagoEmitido = pago.IdPagoEmitido,
+                                        IdFactura = modelo.IdFactura,
+                                        IdAnticipo = anticipo.IdAnticipo
+                                    };
                                     _dbContext.Update(anticipo);
+                                    _dbContext.PagoFacturas.Add(pagoFactura);
                                 }
                             }
                         }
                         _dbContext.SaveChanges();
-                    }
-
-                    PagoFactura pagoFactura = new PagoFactura
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura,
-                        IdAnticipo = anticipo1.IdAnticipo > 0 ? anticipo1.IdAnticipo : null
-                    };
+                    }                    
 
                     // registrar comprobantes
                     if (modelo.retencionesIva && !modelo.retencionesIslr)
@@ -722,7 +724,7 @@ namespace Prueba.Repositories
                             _dbContext.Add(activoProvision);
                             _dbContext.Add(pasivoProvision);
                             //_dbContext.Add(gastoProvision);
-                            _dbContext.Add(pagoFactura);
+                            //_dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
                         resultado = "exito";
@@ -780,7 +782,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            _dbContext.Add(pagoFactura);
+                            //_dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
 
                         }
@@ -985,6 +987,9 @@ namespace Prueba.Repositories
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);
                         _dbContext.Update(itemCuentasPagar);
+
+                        await _dbContext.SaveChangesAsync();
+
                         if (modelo.AnticiposIds.Any())
                         {
                             foreach (var id in modelo.AnticiposIds)
@@ -993,19 +998,20 @@ namespace Prueba.Repositories
                                 if (anticipo != null)
                                 {
                                     anticipo.Activo = false;
+                                    PagoFactura pagoFactura = new PagoFactura
+                                    {
+                                        IdPagoEmitido = pago.IdPagoEmitido,
+                                        IdFactura = modelo.IdFactura,
+                                        IdAnticipo = anticipo.IdAnticipo
+                                    };
                                     _dbContext.Update(anticipo);
+                                    _dbContext.PagoFacturas.Add(pagoFactura);
                                 }
                             }
                         }
                         _dbContext.SaveChanges();
                     }
-
-                    PagoFactura pagoFactura = new PagoFactura
-                    {
-                        IdPagoEmitido = pago.IdPagoEmitido,
-                        IdFactura = modelo.IdFactura,
-                        IdAnticipo = anticipo1.IdAnticipo > 0 ? anticipo1.IdAnticipo : null
-                    };
+                   
 
                     ReferenciasPe referencia = new ReferenciasPe
                     {
@@ -1348,7 +1354,7 @@ namespace Prueba.Repositories
                         {
                             _dbContext.Add(gasto);
                             _dbContext.Add(activo);
-                            _dbContext.Add(pagoFactura);
+                            //_dbContext.Add(pagoFactura);
                             _dbContext.SaveChanges();
                         }
 

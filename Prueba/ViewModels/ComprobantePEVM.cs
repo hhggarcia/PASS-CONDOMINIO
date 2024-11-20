@@ -17,7 +17,7 @@ namespace Prueba.ViewModels
         public decimal Islr { get; set; }
         public decimal Iva { get; set; }
         public Factura Factura { get; set; }
-        public Anticipo? Anticipo { get; set; }
+        public IList<int> AnticiposIds { get; set; } = new List<int>();
         public string Beneficiario { get; set; }
         public bool retencionesIva { get; set; }
         public bool retencionesIslr { get; set; }
