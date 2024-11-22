@@ -33,7 +33,15 @@ public partial class CobroTransito
 
     public bool Activo { get; set; }
 
+    public int? IdFactura { get; set; }
+
+    public int? IdRecibo { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
+
+    public virtual FacturaEmitida? IdFacturaNavigation { get; set; }
+
+    public virtual ReciboCobro? IdReciboNavigation { get; set; }
 
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();
 }

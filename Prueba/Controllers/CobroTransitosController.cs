@@ -321,7 +321,230 @@ namespace Prueba.Controllers
 
         public IActionResult AsignarFactura()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCobros"] = new SelectList(_context.CobroTransitos
+                .Where(c => c.IdCondominio == IdCondominio && !c.Factura && c.Activo), "IdCobroTransito", "Concepto");
+
+            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida
+                .Include(c => c.IdClienteNavigation)
+                .Where(c => c.IdClienteNavigation.IdCondominio == IdCondominio && 
+                !c.Pagada && 
+                !c.Anulada && 
+                c.Activo), "IdFacturaEmitida", "NumFactura");
+
+            TempData.Keep();
+
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AsginarFactura(AsignarCobroTransitoFacturaVM modelo)
+        {
+            // buscar cobro
+            var cobro = await _context.CobroTransitos.FindAsync(modelo.IdCobroTransito);
+            // buscar factura
+            var factura = await _context.FacturaEmitida.FindAsync(modelo.IdFactura);
+            // buscar pago recibido
+            var relacion = await _context.PagoCobroTransitos
+                .FirstOrDefaultAsync(c => c.IdCobroTransito == modelo.IdCobroTransito);
+
+            if (modelo.RetIslr && (modelo.NumComprobanteRetIslr == "" || modelo.NumComprobanteRetIslr == null))
+            {
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "El numero de Comprobante ISLR no puede estar vacio!";
+
+                return View(modelo);
+            }
+
+            if (modelo.RetIva && (modelo.NumComprobanteRetIva == "" || modelo.NumComprobanteRetIva == null))
+            {
+                ViewBag.FormaPago = "fallido";
+                ViewBag.Mensaje = "El numero de Comprobante IVA no puede estar vacio!";
+
+                return View(modelo);
+            }
+
+            if (cobro != null && factura != null && relacion != null)
+            {               
+
+                var pago = await _context.PagoRecibidos.FindAsync(relacion.IdPagoRecibido);
+
+                var cliente = await _context.Clientes
+                    .FirstOrDefaultAsync(c => c.IdCliente == factura.IdCliente);
+
+                var itemLibroVenta = await _context.LibroVentas
+                    .Where(c => c.IdFactura == factura.IdFacturaEmitida)
+                    .FirstOrDefaultAsync();
+
+                var itemCuentaCobrar = await _context.CuentasCobrars
+                    .Where(c => c.IdFactura == factura.IdFacturaEmitida)
+                    .FirstOrDefaultAsync();
+
+                if (pago != null && cliente != null && itemCuentaCobrar != null && itemLibroVenta != null)
+                {
+                    
+                    // registrar pago-factura
+                    PagoFacturaEmitida pagoFactura = new PagoFacturaEmitida
+                    {
+                        IdPagoRecibido = pago.IdPagoRecibido,
+                        IdFactura = modelo.IdFactura
+                    };
+
+                    var montoPagar = factura.MontoTotal - (modelo.RetIva ? itemLibroVenta.RetIva : 0) - (modelo.RetIslr ? itemLibroVenta.RetIslr : 0);
+                    // evaluar si queda abonada o pagada
+                    if (factura.Abonado == 0)
+                    {
+                        if (pago.Monto < montoPagar)
+                        {
+                            factura.Abonado += pago.Monto;
+                            cliente.Deuda -= pago.Monto;
+                        }
+                        else if (pago.Monto == montoPagar)
+                        {
+                            factura.Abonado += pago.Monto;
+                            factura.EnProceso = false;
+                            factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
+
+                        } else
+                        {
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El monto es mayor al total de la Factura!";
+
+                            return View(modelo);
+                        }
+
+                    }
+                    else
+                    {
+                        if ((pago.Monto + factura.Abonado) < montoPagar)
+                        {
+                            factura.Abonado += pago.Monto;
+                            cliente.Deuda -= pago.Monto;
+                        }
+                        else if ((pago.Monto + factura.Abonado) == montoPagar)
+                        {
+                            factura.Abonado += pago.Monto;
+                            factura.EnProceso = false;
+                            factura.Pagada = true;
+                            itemCuentaCobrar.Status = "Cancelada";
+                            cliente.Deuda -= pago.Monto;
+                        }
+                        else
+                        {
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "El monto más lo abonado en la factura excede el total de la Factura!";
+
+                            return View(modelo);
+                        }
+                    }
+                    
+                    // registrar comprobantes de IVA e ISLR
+                    if (modelo.RetIva)
+                    {
+                        var existRet = await _context.CompRetIvaClientes
+                            .Where(c => c.NumCompRet == modelo.NumComprobanteRetIva)
+                            .ToListAsync();
+
+                        if (!existRet.Any())
+                        {
+                            var retIva = new CompRetIvaCliente
+                            {
+                                IdFactura = modelo.IdFactura,
+                                IdCliente = cliente.IdCliente,
+                                FechaEmision = modelo.FechaEmisionRetIva,
+                                TipoTransaccion = true,
+                                NumFacturaAfectada = factura.NumFactura.ToString(),
+                                TotalCompraIva = factura.MontoTotal,
+                                CompraSinCreditoIva = 0,
+                                BaseImponible = itemLibroVenta.BaseImponible,
+                                Alicuota = 16,
+                                ImpIva = itemLibroVenta.Iva,
+                                IvaRetenido = itemLibroVenta.RetIva,
+                                TotalCompraRetIva = factura.MontoTotal - itemLibroVenta.RetIva,
+                                NumCompRet = modelo.NumComprobanteRetIva,
+                                NumComprobante = 1
+                            };
+
+                            itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+                            itemLibroVenta.IvaRetenido = itemLibroVenta.RetIva;
+
+                            _context.LibroVentas.Update(itemLibroVenta);
+                            _context.CompRetIvaClientes.Add(retIva);
+                        }
+                        else
+                        {
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe un comprobante de IVA con el numero "+ modelo.NumComprobanteRetIva +"!";
+
+                            return View(modelo);
+                        }
+                    }
+
+                    if (modelo.RetIslr)
+                    {
+                        var ret = (from c in _context.Clientes
+                                   join v in _context.Islrs
+                                   on c.IdRetencionIslr equals v.Id
+                                   where c.IdCliente == cliente.IdCliente
+                                   select v).FirstOrDefault();
+
+                        var existRet = await _context.ComprobanteRetencionClientes
+                            .Where(c => c.NumCompRet == modelo.NumComprobanteRetIslr)
+                            .ToListAsync();
+
+                        if (ret != null && existRet.Count == 0)
+                        {
+                            var retIslr = new ComprobanteRetencionCliente
+                            {
+                                IdCliente = cliente.IdCliente,
+                                IdFactura = modelo.IdFactura,
+                                FechaEmision = modelo.FechaEmisionIslr,
+                                Description = ret.Concepto,
+                                Retencion = ret.Tarifa,
+                                Sustraendo = ret.Sustraendo,
+                                ValorRetencion = itemLibroVenta.RetIslr,
+                                TotalImpuesto = itemLibroVenta.RetIslr,
+                                NumCompRet = modelo.NumComprobanteRetIslr,
+                                NumComprobante = 1,
+                                TotalFactura = factura.MontoTotal,
+                                BaseImponible = itemLibroVenta.BaseImponible
+                            };
+
+                            _context.ComprobanteRetencionClientes.Add(retIslr);
+
+                        }
+                        else
+                        {
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Ya existe un comprobante de IVA con el numero " + modelo.NumComprobanteRetIslr + "!";
+
+                            return View(modelo);
+                        }
+                    }
+
+                    // actualizar cobro
+                    cobro.Activo = false;
+                    cobro.Asignado = true;
+                    cobro.Factura = true;
+                    cobro.IdFactura = modelo.IdFactura;
+
+                    _context.PagoFacturaEmitida.Add(pagoFactura);
+                    _context.CobroTransitos.Update(cobro);
+                    _context.FacturaEmitida.Update(factura);
+
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
+
+                }
+
+            }
+
+            return View(modelo);
         }
 
         public IActionResult AsignarRecibo()

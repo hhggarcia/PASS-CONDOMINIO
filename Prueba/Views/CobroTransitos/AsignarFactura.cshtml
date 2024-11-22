@@ -1,4 +1,4 @@
-﻿@model Prueba.Models.CobroTransito
+﻿@model Prueba.ViewModels.AsignarCobroTransitoFacturaVM
 
 @{
     ViewData["Title"] = "Create";
@@ -22,44 +22,54 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <form asp-action="AsignarFactura">
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger">
+                            @if (@ViewBag.FormaPago == "fallido")
+                            {
+                                <h6>@ViewBag.Mensaje</h6>
+                                <hr />
+                            }
+                        </div>
                         <div class="form-group">
-                            <label asp-for="IdCondominio" class="control-label"></label>
-                            <select asp-for="IdCondominio" class="form-control" asp-items="ViewBag.IdCondominio"></select>
+                            <label asp-for="IdCobroTransito" class="control-label"></label>
+                            <select asp-for="IdCobroTransito" class="form-control" asp-items="ViewBag.IdCobros"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdFactura" class="control-label"></label>
+                            <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
                         </div>
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" asp-for="FormaPago" /> @Html.DisplayNameFor(model => model.FormaPago)
+                                <input id="retIva" class="form-check-input" asp-for="RetIva" /> Generar Retención de IVA
                             </label>
                         </div>
-                        <div class="form-group">
-                            <label asp-for="Monto" class="control-label"></label>
-                            <input type="number" asp-for="Monto" class="form-control" />
-                            <span asp-validation-for="Monto" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Fecha" class="control-label"></label>
-                            <input asp-for="Fecha" class="form-control" />
-                            <span asp-validation-for="Fecha" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Concepto" class="control-label"></label>
-                            <input asp-for="Concepto" class="form-control" />
-                            <span asp-validation-for="Concepto" class="text-danger"></span>
+                        <br>
+                        <div id="inputsContainerIva" style="display: none;">
+                            <label for="fechaInput">Fecha de Emisión:</label>
+                            <input asp-for="FechaEmisionRetIva" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionRetIva">
+                            <br>
+                            <label for="numeroInput">Número de Comprobante:</label>
+                            <input asp-for="NumComprobanteRetIva" class="form-control" type="text" id="numComprobanteRetIva">
+                            <br>
+
                         </div>
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" asp-for="Factura" /> @Html.DisplayNameFor(model => model.Factura)
+                                <input id="retIslr" class="form-check-input" asp-for="RetIslr" /> Generar Retención de ISLR
                             </label>
                         </div>
-                        <div class="form-group form-check">
-                            <label class="form-check-label">
-                                <input class="form-check-input" asp-for="Recibo" /> @Html.DisplayNameFor(model => model.Recibo)
-                            </label>
+                        <br>
+                        <div id="inputsContainerIslr" style="display: none;">
+                            <label for="fechaInput">Fecha de Emisión:</label>
+                            <input asp-for="FechaEmisionIslr" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionIslr">
+                            <br>
+                            <label for="numeroInput">Número de Comprobante:</label>
+                            <input asp-for="NumComprobanteRetIslr" class="form-control" type="text" id="numComprobanteRetIslr">
+                            <br>
                         </div>
                         <div class="form-group">
-                            <input type="submit" value="Crear" class="btn btn-primary" />
+                            <input type="submit" value="Asignar" class="btn btn-primary" />
                         </div>
                     </form>
                 </div>
@@ -72,5 +82,22 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            const checkboxIva = document.getElementById("retIva");
+            const checkboxIslr = document.getElementById("retIslr");
+            const inputsContainerIva = document.getElementById("inputsContainerIva");
+            const inputsContainerIslr = document.getElementById("inputsContainerIslr");
+
+            checkboxIva.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIva.style.display = checkboxIva.checked ? "block" : "none";
+            });
+            checkboxIslr.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIslr.style.display = checkboxIslr.checked ? "block" : "none";
+            });
+        });
+    </script>
 }
 

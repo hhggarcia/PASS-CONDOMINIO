@@ -39,6 +39,8 @@ public partial class FacturaEmitida
 
     public bool Activo { get; set; }
 
+    public virtual ICollection<CobroTransito> CobroTransitos { get; set; } = new List<CobroTransito>();
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();

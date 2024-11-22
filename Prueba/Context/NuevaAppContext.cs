@@ -453,6 +453,14 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CobroTransito_Condominio");
+
+            entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.CobroTransitos)
+                .HasForeignKey(d => d.IdFactura)
+                .HasConstraintName("FK_CobroTransito_FacturaEmitida");
+
+            entity.HasOne(d => d.IdReciboNavigation).WithMany(p => p.CobroTransitos)
+                .HasForeignKey(d => d.IdRecibo)
+                .HasConstraintName("FK_CobroTransito_Recibo_Cobro");
         });
 
         modelBuilder.Entity<CodigoCuentasGlobal>(entity =>

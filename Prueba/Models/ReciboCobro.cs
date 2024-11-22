@@ -41,6 +41,8 @@ public partial class ReciboCobro
 
     public decimal TotalPagar { get; set; }
 
+    public virtual ICollection<CobroTransito> CobroTransitos { get; set; } = new List<CobroTransito>();
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

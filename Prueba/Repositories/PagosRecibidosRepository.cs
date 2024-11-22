@@ -292,8 +292,6 @@ namespace Prueba.Repositories
                                 }
                             }
 
-
-
                             factura.MontoTotal = itemLibroVenta.BaseImponible + itemLibroVenta.Iva;
 
                             // resgistrar transaccion
@@ -319,7 +317,7 @@ namespace Prueba.Repositories
                             {
                                 var existRet = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIva).ToListAsync();
 
-                                if (existRet.Count > 0)
+                                if (!existRet.Any())
                                 {
                                     var retIva = new CompRetIvaCliente
                                     {
@@ -340,10 +338,15 @@ namespace Prueba.Repositories
                                     };
 
                                     itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+                                    itemLibroVenta.IvaRetenido = itemLibroVenta.RetIva;
 
                                     _context.Update(itemLibroVenta);
                                     _context.Add(retIva);
-                                }                                
+                                }
+                                else
+                                {
+                                    return "Ya existe un comprobante de IVA con este numero!";
+                                }
                             }
 
                             if (modelo.RetencionesIslr)
@@ -351,10 +354,12 @@ namespace Prueba.Repositories
                                 var ret = (from c in _context.Clientes
                                            join v in _context.Islrs
                                            on c.IdRetencionIslr equals v.Id
+                                           where c.IdCliente == cliente.IdCliente
                                            select v).FirstOrDefault();
+
                                 var existRet = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIslr).ToListAsync();
 
-                                if (ret != null && existRet.Count > 0)
+                                if (ret != null && !existRet.Any())
                                 {
                                     var retIslr = new ComprobanteRetencionCliente
                                     {
@@ -377,6 +382,10 @@ namespace Prueba.Repositories
                                     //_context.Update(itemLibroVenta);
                                     _context.Add(retIslr);
 
+                                }
+                                else
+                                {
+                                    return "Ya existe un comprobante de ISLR con este numero!";
                                 }
                             }
 
@@ -567,7 +576,7 @@ namespace Prueba.Repositories
                             {
                                 var existRet = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIva).ToListAsync();
 
-                                if (existRet.Count > 0)
+                                if (!existRet.Any())
                                 {
                                     var retIva = new CompRetIvaCliente
                                     {
@@ -588,9 +597,14 @@ namespace Prueba.Repositories
                                     };
 
                                     itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIva;
+                                    itemLibroVenta.IvaRetenido = itemLibroVenta.RetIva;
 
                                     _context.Update(itemLibroVenta);
                                     _context.Add(retIva);
+                                }
+                                else
+                                {
+                                    return "Ya existe un comprobante de IVA con este numero!";
                                 }
                             }
 
@@ -599,10 +613,12 @@ namespace Prueba.Repositories
                                 var ret = (from c in _context.Clientes
                                            join v in _context.Islrs
                                            on c.IdRetencionIslr equals v.Id
+                                           where c.IdCliente == cliente.IdCliente
                                            select v).FirstOrDefault();
+
                                 var existRet = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == modelo.NumComprobanteRetIslr).ToListAsync();
 
-                                if (ret != null && existRet.Count > 0)
+                                if (ret != null && !existRet.Any())
                                 {
                                     var retIslr = new ComprobanteRetencionCliente
                                     {
@@ -619,12 +635,11 @@ namespace Prueba.Repositories
                                         TotalFactura = factura.MontoTotal,
                                         BaseImponible = itemLibroVenta.BaseImponible
                                     };
-
-                                    //itemLibroVenta.ComprobanteRetencion = modelo.NumComprobanteRetIslr;
-
-                                    //_context.Update(itemLibroVenta);
                                     _context.Add(retIslr);
-
+                                }
+                                else
+                                {
+                                    return "Ya existe un comprobante de ISLR con este numero!";
                                 }
                             }
 
@@ -1412,6 +1427,7 @@ namespace Prueba.Repositories
 
                                 recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
                                 recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+                                recibo.EnProceso = false;
 
                                 _context.ReciboCobros.Update(recibo);
                             }
