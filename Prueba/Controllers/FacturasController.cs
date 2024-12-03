@@ -131,7 +131,7 @@ namespace Prueba.Controllers
                 if (existNumControl.Any() || existNumFactura.Any())
                 {
                     mensaje += existNumControl.Any() ? " Control: " + factura.NumControl : "";
-                    mensaje += existNumFactura.Any() ? " Nro: " + factura.NumControl : "";
+                    mensaje += existNumFactura.Any() ? " Nro: " + factura.NumFactura : "";
                     ViewBag.FormaPago = "fallido";
                     ViewBag.Mensaje = mensaje;
 

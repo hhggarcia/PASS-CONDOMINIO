@@ -136,21 +136,21 @@
                                         <!-- Fin modal-->
                                         <!-- Select Recibo a pagar -->
                                         @* <div class="col-md-12 col-12">
-                                            <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative">
-                                                    <select asp-for="IdRecibo"
-                                                            asp-items="Model.RecibosModel" required
-                                                            class="form-select" id="recibos">
-                                                        <option value="0">Seleccionar</option>
-                                                    </select>
+                                <div class="form-group has-icon-left">
+                                <label for="last-name-column">Seleccione un Recibo</label>
+                                <div class="position-relative">
+                                <select asp-for="IdRecibo"
+                                asp-items="Model.RecibosModel" required
+                                class="form-select" id="recibos">
+                                <option value="0">Seleccionar</option>
+                                </select>
 
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-building"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> *@
+                                <div class="form-control-icon">
+                                <i class="bi bi-building"></i>
+                                </div>
+                                </div>
+                                </div>
+                                </div> *@
 
                                         <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
@@ -256,7 +256,7 @@
                                                                 </option>
                                                                 <option value="1">
                                                                     Transferencia
-                                                                </option> 
+                                                                </option>
                                                                 <option value="2">
                                                                     Nota de Crédito
                                                                 </option>
@@ -482,8 +482,8 @@
 
 
                         // CONSTRUIR LIST DE RECIBOS A PAGAR
-                        if(response.listRecibos.length > 0){
-                           
+                        if (response.listRecibos.length > 0) {
+
                             var container = document.getElementById("containerRecibos");
                             container.innerHTML = "";
                             var text = "<div class=\"form-group\" >" +
@@ -494,10 +494,10 @@
                                 console.log("Item: ");
                                 console.log(item);
 
-                                text += "<input type=\"hidden\" name=ListRecibos[" + i + "].Value" + " value= " +  item.value  +" />" +
-                                    "<input type=\"checkbox\" name=ListRecibos[" + i + "].Selected" + " id=\"z" + i 
+                                text += "<input type=\"hidden\" name=ListRecibos[" + i + "].Value" + " value= " + item.value + " />" +
+                                    "<input type=\"checkbox\" name=ListRecibos[" + i + "].Selected" + " id=\"z" + i
                                     + "__Selected\" " + " class=\"form-check-input\" value=true  /> " +
-                                    "<label for=\"z" + i + "__Selected\" >" + item.text + "</label></br>" 
+                                    "<label for=\"z" + i + "__Selected\" >" + item.text + "</label></br>"
                             }
 
                             text += "</div></div>";
@@ -536,13 +536,13 @@
             $.each(list, function (idex, value) {
                 //var fechita = new Date(value.fecha);
 
-                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10) 
-                + "</td><td>" + value.monto.toFixed(2) 
-                + "</td><td>" + value.abonado.toFixed(2) 
-                + "</td><td>" + value.montoMora.toFixed(2) 
-                + "</td><td>" + value.montoIndexacion 
-                + "</td><td>" + value.totalPagar
-                + "</td><tr>" );
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10)
+                    + "</td><td>" + value.monto.toFixed(2)
+                    + "</td><td>" + value.abonado.toFixed(2)
+                    + "</td><td>" + value.montoMora.toFixed(2)
+                    + "</td><td>" + value.montoIndexacion
+                    + "</td><td>" + value.totalPagar
+                    + "</td><tr>");
             });
         }
 

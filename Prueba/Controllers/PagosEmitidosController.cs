@@ -560,8 +560,12 @@ namespace Prueba.Controllers
                 {
                     foreach (var item in pagoFactura)
                     {
-                        var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == item.IdAnticipo).FirstAsync();
-                        comprobante.AnticiposIds.Add(anticipo.IdAnticipo);
+                        if (item.IdAnticipo != null)
+                        {
+                            var anticipo = await _context.Anticipos.Where(c => c.IdAnticipo == item.IdAnticipo).FirstAsync();
+                            comprobante.AnticiposIds.Add(anticipo.IdAnticipo);
+                        }
+                        
                     }                    
                 }
                 //var proovedores = from p in _context.Proveedors

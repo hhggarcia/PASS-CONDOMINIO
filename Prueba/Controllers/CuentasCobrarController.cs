@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.Repositories;
+using Prueba.Services;
 using Prueba.ViewModels;
 
 namespace Prueba.Controllers
@@ -17,11 +19,15 @@ namespace Prueba.Controllers
 
     public class CuentasCobrarController : Controller
     {
+        private readonly IPdfReportesServices _servicesPdf;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
 
-        public CuentasCobrarController(IFiltroFechaRepository filtroFechaRepository,NuevaAppContext context)
+        public CuentasCobrarController(IPdfReportesServices pdfReportesServices,
+            IFiltroFechaRepository filtroFechaRepository,
+            NuevaAppContext context)
         {
+            _servicesPdf = pdfReportesServices;
             _reposFiltroFecha=filtroFechaRepository;
             _context = context;
         }
@@ -197,6 +203,45 @@ namespace Prueba.Controllers
         {
             var cuotas = await _reposFiltroFecha.ObtenerCuentaCobrar(filtrarFechaVM);
             return View("Index", cuotas);
+        }
+
+        [HttpPost]
+        public ContentResult CuentasCobrarPDF([FromBody] IEnumerable<CuentasCobrar> modelo)
+        {
+            try
+            {
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var condominio = _context.Condominios.Find(IdCondominio);
+
+                var ede = (from item in modelo
+                           where item.Status.Equals("En Proceso")
+                           let itemLibro = _context.LibroVentas.FirstOrDefault(x => x.IdFactura == item.IdFactura)
+                           select new CuentasCobrarVM()
+                           {
+                               Condominio = condominio != null ? condominio.Nombre : "",
+                               Cliente = item.IdFacturaNavigation.IdClienteNavigation.Nombre,
+                               NumFactura = item.IdFacturaNavigation.NumFactura.ToString(),
+                               BaseImponible = item.IdFacturaNavigation.SubTotal,
+                               MontoTotal = item.IdFacturaNavigation.MontoTotal,
+                               Iva = item.IdFacturaNavigation.Iva,
+                               RetIva = itemLibro != null ? itemLibro.RetIva : 0,
+                               RetIslr = itemLibro != null ? itemLibro.RetIslr : 0,
+                               TotalPagar = item.IdFacturaNavigation.MontoTotal - (itemLibro != null ? itemLibro.RetIva : 0) - (itemLibro != null ? itemLibro.RetIslr : 0)
+                           }).ToList();
+
+                var data = _servicesPdf.CuentasCobrarPDF(ede);
+                var base64 = Convert.ToBase64String(data);
+
+                TempData.Keep();
+                return Content(base64, "application/pdf");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando PDF: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
         }
     }
 }

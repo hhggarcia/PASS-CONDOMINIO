@@ -196,11 +196,12 @@ namespace Prueba.Controllers
                             {
                                 _context.ReferenciasPrs.Remove(referencia);
                             }
-                                
+                             
+                            _context.PagoCobroTransitos.Remove(item);
                             _context.PagoRecibidos.Remove(pago);
                         }
                     }
-                    _context.PagoCobroTransitos.RemoveRange(pagosCobros);
+                    //_context.PagoCobroTransitos.RemoveRange(pagosCobros);
 
                 }
                 _context.CobroTransitos.Remove(cobroTransito);

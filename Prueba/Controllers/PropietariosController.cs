@@ -98,17 +98,28 @@ namespace Prueba.Controllers
             {
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                var usuario = await _context.AspNetUsers.FindAsync(idPropietario);
 
-                if (propiedades != null && propiedades.Any())
+                var propiedades = await _context.Propiedads
+                    .Include(c => c.IdCondominioNavigation)
+                    .Include(c => c.ReciboCobros)
+                    .Where(c => c.IdUsuario == idPropietario)
+                    .ToListAsync();
+
+                if (propiedades != null && propiedades.Any() && usuario != null)
                 {
-                    //var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
-                    var condominios = await _context.Condominios.Where(i => i.IdCondominio == propiedades.First().IdCondominio).ToListAsync();
-                    var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
+                    TempData["idCondominio"] = propiedades.First().IdCondominioNavigation.IdCondominio;
+                    var subcuentasBancos = await _repoCuentas.ObtenerBancos(propiedades.First().IdCondominioNavigation.IdCondominio);
+                    var subcuentasCaja = await _repoCuentas.ObtenerCaja(propiedades.First().IdCondominioNavigation.IdCondominio);
 
-                    TempData["idCondominio"] = condominios.First().IdCondominio.ToString();
                     TempData.Keep();
-                    return View(modelo);
+                    return View(new DashboardUsuarioVM()
+                    {
+                        Propiedades = propiedades,
+                        Usuario = usuario,
+                        SubCuentasBancos = subcuentasBancos.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList(),
+                        SubCuentasCaja = subcuentasCaja.Select(c => new SelectListItem(c.Descricion, c.Id.ToString())).ToList()
+                    });
                 }
 
                 var modeloError = new ErrorViewModel()
@@ -129,7 +140,11 @@ namespace Prueba.Controllers
             }
         }
 
-        
+        public IActionResult PagoRapidoUsuario()
+        {
+            return RedirectToAction("DashboardUsuario");
+        }
+
 
         /// <summary>
         /// 

@@ -287,5 +287,13 @@ namespace Prueba.Controllers
 
             return RedirectToAction("Dashboard", "Administrator");
         }
+
+        // reporte de cuentas por pagar PDF
+        // reporte de cuentas por pagar Excel
+
+        // reporte de cuentas por cobrar PDF
+        // reporte de cuentas por cobrar Excel
+
+
     }
 }

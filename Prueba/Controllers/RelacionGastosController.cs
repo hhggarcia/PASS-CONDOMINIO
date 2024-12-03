@@ -1060,7 +1060,7 @@ namespace Prueba.Controllers
                             modelo.Add(item);
                         }
 
-                        var data = _servicePDF.TodosRecibosTransaccionesPDF(modelo);
+                        var data = await _servicePDF.TodosRecibosTransaccionesPDF(modelo);
                         Stream stream = new MemoryStream(data);
                         return File(stream, "application/pdf", "RecibosCondominio.pdf");
 
@@ -1199,7 +1199,7 @@ namespace Prueba.Controllers
                     modelo.Add(item);
                 }
 
-                var data = _servicePDF.TodosRecibosTransaccionesPDF(modelo);
+                var data = await _servicePDF.TodosRecibosTransaccionesPDF(modelo);
                 Stream stream = new MemoryStream(data);
                 return File(stream, "application/pdf", "RecibosCondominio.pdf");
             }

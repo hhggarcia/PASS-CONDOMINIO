@@ -441,7 +441,7 @@ public partial class NuevaAppContext : DbContext
 
             entity.ToTable("CobroTransito");
 
-            entity.Property(e => e.Concepto).HasMaxLength(50);
+            entity.Property(e => e.Concepto).HasMaxLength(150);
             entity.Property(e => e.Fecha).HasColumnType("datetime");
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.MontoRef).HasColumnType("decimal(18, 2)");
