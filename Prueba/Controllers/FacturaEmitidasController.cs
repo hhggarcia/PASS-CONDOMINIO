@@ -286,7 +286,7 @@ namespace Prueba.Controllers
                 {
                     var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
                     var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-                    
+
 
                     // validar num de control o num de facturas no repetidos
                     var existNumControl = await _context.FacturaEmitida.Where(c => c.NumControl == facturaEmitida.NumControl).ToListAsync();
@@ -401,6 +401,16 @@ namespace Prueba.Controllers
             return View(modelo);
         }
 
+        public async Task<IActionResult> FiltrarFechaCobros(FiltrarFechaVM filtrarFechaVM)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var pagos = await _reposFiltroFecha.ObtenerPagosFacturasVentas(filtrarFechaVM, idCondominio);
+
+            TempData.Keep();
+            return View("Cobros", pagos);
+        }
+
         public async Task<IActionResult> PagoFactura()
         {
             try
@@ -511,7 +521,7 @@ namespace Prueba.Controllers
                                        select c;
 
                             comprobante.Caja = caja.First();
-                        }                       
+                        }
 
                         var cliente = await _context.Clientes.Where(c => c.IdCliente == factura.IdCliente).FirstAsync();
                         var retIslr = _context.Islrs.Where(c => c.Id == cliente.IdRetencionIslr).FirstOrDefault();
@@ -588,9 +598,9 @@ namespace Prueba.Controllers
             return _context.FacturaEmitida.Any(e => e.IdFacturaEmitida == id);
         }
 
-        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtro)
         {
-            var facturasEmitdas = await _reposFiltroFecha.ObteneFactirasEmitidas(filtrarFechaVM);
+            var facturasEmitdas = await _reposFiltroFecha.ObteneFactirasEmitidas(filtro);
             return View("Index", facturasEmitdas);
         }
 

@@ -52,15 +52,11 @@ namespace Prueba.Repositories
 
             var modelo = new IndexPagosVM();
 
-            var listaPagos = (from c in _context.PagoEmitidos
-                              where c.IdCondominio == idCondominio
-                              select c).Include(c => c.IdCondominioNavigation);
-
             var lista = (from c in _context.PagoFacturas
                          join p in _context.PagoEmitidos
                          on c.IdPagoEmitido equals p.IdPagoEmitido
                          where p.IdCondominio == idCondominio
-                         select p).Include(c => c.IdCondominioNavigation);
+                         select p).Include(c => c.IdCondominioNavigation).Distinct(); 
 
             var referencias = from p in _context.PagoEmitidos
                               where p.IdCondominio == idCondominio

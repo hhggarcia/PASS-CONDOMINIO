@@ -20,13 +20,17 @@ namespace Prueba.Repositories
         Task<ICollection<CuentasPagar>> ObtenerCuentasPagar(FiltrarFechaVM filtrarFechaVM);
         Task<ICollection<CompRetIva>> ObtenerCompIva(FiltrarFechaVM fecha, int id);
         Task<ICollection<ComprobanteRetencion>> ObtenerCompIslr(FiltrarFechaVM fecha, int id);
+        Task<IndexPagosVM> ObenterPagosEmitidos(FiltrarFechaVM fecha, int id);
+        Task<IndexPagoFacturaEmitidaVM> ObtenerPagosFacturasVentas(FiltrarFechaVM fecha, int id);
     }
     public class FiltroFechaRepository : IFiltroFechaRepository
     {
+        private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
 
-        public FiltroFechaRepository(NuevaAppContext context)
+        public FiltroFechaRepository(ICuentasContablesRepository repoCuentas, NuevaAppContext context)
         {
+            _repoCuentas = repoCuentas;
             _context = context;
         }
         public async Task<ICollection<CuotasEspeciale>> ObtenerCuoetasEspeciales(string idAdministrador, FiltrarFechaVM filtrarFechaVM)
@@ -212,6 +216,63 @@ namespace Prueba.Repositories
             return await nuevaAppContext.ToListAsync();
         }
 
+        public async Task<IndexPagosVM> ObenterPagosEmitidos(FiltrarFechaVM fecha, int id)
+        {
+            var modelo = new IndexPagosVM();
 
+            var lista = (from c in _context.PagoFacturas
+                         join p in _context.PagoEmitidos
+                         on c.IdPagoEmitido equals p.IdPagoEmitido
+                         where p.IdCondominio == id
+                         && p.Fecha >= fecha.Desde && p.Fecha <= fecha.Hasta
+                         select p).Include(c => c.IdCondominioNavigation).Distinct();
+
+            var referencias = from p in _context.PagoEmitidos
+                              where p.IdCondominio == id
+                              && p.Fecha >= fecha.Desde && p.Fecha <= fecha.Hasta
+                              join r in _context.ReferenciasPes
+                              on p.IdPagoEmitido equals r.IdPagoEmitido
+                              select r;
+
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
+
+            modelo.PagosEmitidos = await lista.ToListAsync();
+            modelo.Referencias = await referencias.ToListAsync();
+            modelo.BancosCondominio = subcuentasBancos.ToList();
+
+            return modelo;
+        }
+
+        public async Task<IndexPagoFacturaEmitidaVM> ObtenerPagosFacturasVentas(FiltrarFechaVM fecha, int id)
+        {
+            var modelo = new IndexPagoFacturaEmitidaVM();
+
+            var listaFacturas = from c in _context.Clientes
+                                where c.IdCondominio == id
+                                join f in _context.FacturaEmitida
+                                on c.IdCliente equals f.IdCliente
+                                where f.FechaEmision >= fecha.Desde && f.FechaEmision <= fecha.Hasta
+                                select f;
+
+            var listaPagos = (from f in listaFacturas
+                              join p in _context.PagoFacturaEmitida
+                              on f.IdFacturaEmitida equals p.IdFactura
+                              join pago in _context.PagoRecibidos
+                              on p.IdPagoRecibido equals pago.IdPagoRecibido
+                              select pago).Distinct();
+
+            var referencias = from p in listaPagos
+                              join r in _context.ReferenciasPrs
+                              on p.IdPagoRecibido equals r.IdPagoRecibido
+                              select r;
+
+            var subcuentasBancos = await _repoCuentas.ObtenerBancos(id);
+
+            modelo.PagosRecibidos = await listaPagos.ToListAsync();
+            modelo.Referencias = await referencias.ToListAsync();
+            modelo.BancosCondominio = subcuentasBancos.ToList();
+
+            return modelo;
+        }
     }
 }

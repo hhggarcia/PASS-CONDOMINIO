@@ -23,16 +23,19 @@ namespace Prueba.Controllers
 
     public class PagosEmitidosController : Controller
     {
+        private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly IMonedaRepository _repoMoneda;
         private readonly IPagosEmitidosRepository _repoPagosEmitidos;
         private readonly IPDFServices _servicePDF;
         private readonly NuevaAppContext _context;
 
-        public PagosEmitidosController(IMonedaRepository repoMoneda,
+        public PagosEmitidosController(IFiltroFechaRepository filtroFechaRepository, 
+            IMonedaRepository repoMoneda,
             IPagosEmitidosRepository repoPagosEmitidos,
             IPDFServices servicePDF,
             NuevaAppContext context)
         {
+            _reposFiltroFecha = filtroFechaRepository;
             _repoMoneda = repoMoneda;
             _repoPagosEmitidos = repoPagosEmitidos;
             _servicePDF = servicePDF;
@@ -55,6 +58,15 @@ namespace Prueba.Controllers
             TempData.Keep();
 
             return View(modelo);
+        }
+        public async Task<IActionResult> FiltrarFecha(FiltrarFechaVM filtrarFechaVM)
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var pagos = await _reposFiltroFecha.ObenterPagosEmitidos(filtrarFechaVM, idCondominio);
+
+            TempData.Keep();
+            return View("Index", pagos);
         }
 
         // GET: PagosEmitidos/Details/5
