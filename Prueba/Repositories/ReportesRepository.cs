@@ -369,7 +369,7 @@ namespace Prueba.Repositories
                 IList<ReciboCobro> recibosCobroCond = new List<ReciboCobro>();
                 // BUSCAR PROPIEADES DE LOS INMUEBLES
 
-                var propiedadsCond = await propiedades.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+                var propiedadsCond = await propiedades.Where(c => c.IdCondominio == idCondominio).OrderBy(c => c.Codigo).ToListAsync();
                 var aux2 = listaPropiedadesCondominio.Concat(propiedadsCond).ToList();
                 listaPropiedadesCondominio = aux2;
 
@@ -379,7 +379,7 @@ namespace Prueba.Repositories
                 {
                     var recibo = await recibosCobro.Where(c => c.IdPropiedad == propiedad.IdPropiedad
                                                             && !c.EnProceso
-                                                            && !c.Pagado)
+                                                            && !c.Pagado)                        
                                                     .ToListAsync();
 
                     var aux = recibosCobroCond.Concat(recibo).ToList();

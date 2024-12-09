@@ -972,9 +972,9 @@ namespace Prueba.Services
             decimal totalDeuda = 0;
             decimal totalIntereses = 0;
             decimal totalMulta = 0;
-            decimal totalCredito = 0;
+            decimal totalMontoReciboVencido = 0;
             decimal totalSaldo = 0;
-            decimal totalPagar = 0;
+            decimal totalPagarSuma = 0;
 
             var data = Document.Create(container =>
             {
@@ -1076,78 +1076,84 @@ namespace Prueba.Services
 
                                         ReciboCobro? ultimoRecibo = recibos.Find(c => c.Mes == mesAnterior);
 
-                                        var deudaRecibos = recibos.Sum(c => c.Monto);
-                                        var totalPagar = recibos.Sum(c => c.TotalPagar);
+                                        var deudaRecibos = recibos.Sum(c => c.TotalPagar);
+                                        //var totalPagar = recibos.Sum(c => c.TotalPagar);
 
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignLeft()
                                             .Padding(5).Text(propiedad.Codigo).FontColor("#607080").Bold().FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignLeft()
                                             .Padding(5).Text(propietario.LastName).FontColor("#607080").Bold().FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignLeft()
                                         .Padding(5).Text(propietario.FirstName).FontColor("#607080").Bold().FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text(recibos.Any() ? (recibos.Count + 1).ToString() : "1").FontColor("#607080").Bold().FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                        .Padding(5).Text((deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.Monto : 0)).ToString("N")).FontColor("#607080").FontSize(8);
+                                        var aux = (deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.Monto : 0) -
+                                            (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) -
+                                            (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0));
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                        .Padding(5).Text((aux > 0 ? aux : 0).ToString("N")).FontColor("#607080").FontSize(8);
+
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.Monto : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.MontoMora : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9")
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((reciboActual != null ? reciboActual.Monto : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                        .Padding(5).Text((deudaRecibos + (reciboActual != null ? reciboActual.Monto : 0) - (decimal)propiedad.Creditos).ToString("N")).Bold().FontColor("#607080").FontSize(8);
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                        .Padding(5).Text((deudaRecibos + (reciboActual != null ? reciboActual.Monto : 0)).ToString("N")).Bold().FontColor("#607080").FontSize(8);
+                                        //tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                        //.Padding(5).Text(totalPagar.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
+                                        totalDeuda += aux;
+                                        totalMontoReciboVencido += ultimoRecibo != null ? ultimoRecibo.Monto : 0;
+                                        totalIntereses += (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0);
+                                        totalMulta += (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0);
                                         totalSaldo += (reciboActual != null ? reciboActual.Monto : 0);
-                                        totalDeuda += deudaRecibos;
-                                        totalMulta += (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0);
-                                        totalIntereses += (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0);
-                                        totalCredito += (decimal)propiedad.Creditos;
-                                        totalPagar += totalPagar + (reciboActual != null ? reciboActual.Monto : 0) - (decimal)propiedad.Creditos;
+                                        totalPagarSuma += deudaRecibos + (reciboActual != null ? reciboActual.Monto : 0);
                                     }
                                 }
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
 
-                                tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                tabla.Cell().ColumnSpan(3).Border(1).BorderColor("#D9D9D9").AlignLeft()
                                 .Padding(5).Text("Totales").FontColor("#607080").Bold().FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text("").FontColor("#607080").Bold().FontSize(8);                               
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(totalDeuda.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text(totalDeuda.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(totalIntereses.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                               .Padding(5).Text(totalMontoReciboVencido.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9")
-                                .Padding(5).Text(totalMulta.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text(totalIntereses.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(totalCredito.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text(totalMulta.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(totalSaldo.ToString("N")).FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text(totalSaldo.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                .Padding(5).Text(totalPagar.ToString("N")).Bold().FontColor("#607080").FontSize(8);
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(5).Text(totalPagarSuma.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
                             });
                         });

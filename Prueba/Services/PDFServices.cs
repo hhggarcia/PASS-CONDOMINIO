@@ -4670,12 +4670,18 @@ namespace Prueba.Services
                                 .Padding(2).Text((recibosPendientes.Sum(c => c.MontoIndexacion)).ToString("N") + (monedaPrincipal != null ? monedaPrincipal.Simbolo : "")).FontColor("#607080").Bold().FontSize(8);
 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                 .Padding(2).Text("Abonado: ").FontColor("#607080").Bold().FontSize(8);
+                                tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                .Padding(2).Text((recibosPendientes.Sum(c => c.Abonado)).ToString("N") + (monedaPrincipal != null ? monedaPrincipal.Simbolo : "")).FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
                                  .Padding(2).Text("Total a Pagar: ").FontColor("#607080").Bold().FontSize(8);
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(2).Text((modelo.Recibo.Monto +
                                 recibosPendientes.Sum(c => c.Monto) +
                                 recibosPendientes.Sum(c => c.MontoMora) +
-                                recibosPendientes.Sum(c => c.MontoIndexacion)).ToString("N") + (monedaPrincipal != null ? monedaPrincipal.Simbolo : "")).FontColor("#607080").Bold().FontSize(8);
+                                recibosPendientes.Sum(c => c.MontoIndexacion) -
+                                recibosPendientes.Sum(c => c.Abonado)).ToString("N") + (monedaPrincipal != null ? monedaPrincipal.Simbolo : "")).FontColor("#607080").Bold().FontSize(8);
 
                             });
 

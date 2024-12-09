@@ -124,14 +124,22 @@ namespace Prueba.Controllers
                 }
 
                 // validar num de control o num de facturas no repetidos
-                var existNumControl = await _context.Facturas.Where(c => c.NumControl == factura.NumControl).ToListAsync();
-                var existNumFactura = await _context.Facturas.Where(c => c.NumFactura == factura.NumFactura).ToListAsync();
+                var existNumControl = await _context.Facturas
+                    .Where(c => c.NumControl == factura.NumControl
+                            && c.IdProveedor == factura.IdProveedor)
+                    .ToListAsync();
+
+                var existNumFactura = await _context.Facturas
+                    .Where(c => c.NumFactura == factura.NumFactura
+                    && c.IdProveedor == factura.IdProveedor)
+                    .ToListAsync();
                 var mensaje = "Ya existe una factura";
 
                 if (existNumControl.Any() || existNumFactura.Any())
                 {
                     mensaje += existNumControl.Any() ? " Control: " + factura.NumControl : "";
                     mensaje += existNumFactura.Any() ? " Nro: " + factura.NumFactura : "";
+                    mensaje += " para este proveedor";
                     ViewBag.FormaPago = "fallido";
                     ViewBag.Mensaje = mensaje;
 
@@ -293,14 +301,22 @@ namespace Prueba.Controllers
                     factura.IdCodCuenta = idCodCuenta;
 
                     // validar num de control o num de facturas no repetidos
-                    var existNumControl = await _context.Facturas.Where(c => c.NumControl == factura.NumControl).ToListAsync();
-                    var existNumFactura = await _context.Facturas.Where(c => c.NumFactura == factura.NumFactura).ToListAsync();
+                    var existNumControl = await _context.Facturas
+                    .Where(c => c.NumControl == factura.NumControl
+                            && c.IdProveedor == factura.IdProveedor)
+                    .ToListAsync();
+
+                    var existNumFactura = await _context.Facturas
+                        .Where(c => c.NumFactura == factura.NumFactura
+                        && c.IdProveedor == factura.IdProveedor)
+                        .ToListAsync();
                     var mensaje = "Ya existe una factura";
 
                     if (existNumControl.Any() || existNumFactura.Any())
                     {
                         mensaje += existNumControl.Any() ? " Control: " + factura.NumControl : "";
-                        mensaje += existNumFactura.Any() ? " Nro: " + factura.NumControl : "";
+                        mensaje += existNumFactura.Any() ? " Nro: " + factura.NumFactura : "";
+                        mensaje += " para este proveedor";
                         ViewBag.FormaPago = "fallido";
                         ViewBag.Mensaje = mensaje;
 
