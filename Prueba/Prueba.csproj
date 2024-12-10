@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="ceTe.DynamicPDF.Printing.NET" Version="4.22.0" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="EFCore.BulkExtensions" Version="8.1.0" />
     <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />

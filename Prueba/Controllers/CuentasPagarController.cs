@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -38,9 +39,10 @@ namespace Prueba.Controllers
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var nuevaAppContext = _context.CuentasPagars.OrderByDescending(c => c.Status)
-                .Include(c => c.IdCondominioNavigation)
+                //.Include(c => c.IdCondominioNavigation)
                 .Include(c => c.IdFacturaNavigation)
-                .Include(c => c.IdFacturaNavigation.IdProveedorNavigation)
+                    .ThenInclude(p => p.IdProveedorNavigation)
+                //.Include(c => c.IdFacturaNavigation.IdProveedorNavigation)
                 .Where(c => c.IdCondominio == IdCondominio);
 
             return View(await nuevaAppContext.ToListAsync());
@@ -212,25 +214,33 @@ namespace Prueba.Controllers
                 var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
                 var condominio = _context.Condominios.Find(IdCondominio);
 
-                var ede = (from CuentasPagar item in modelo
-                           where item.Status.Equals("En Proceso")
-                           let itemLibro = _context.LibroCompras.FirstOrDefault(x => x.IdFactura == item.IdFactura)
-                           select new CuentasPagarVM()
-                           {
-                               Condominio = condominio != null ? condominio.Nombre : "",
-                               Proveedor = item.IdFacturaNavigation.IdProveedorNavigation.Nombre,
-                               NumFactura = item.IdFacturaNavigation.NumFactura.ToString(),
-                               BaseImponible = item.IdFacturaNavigation.Subtotal,
-                               MontoTotal = item.IdFacturaNavigation.MontoTotal,
-                               Iva = item.IdFacturaNavigation.Iva,
-                               RetIva = itemLibro != null ? itemLibro.RetIva : 0,
-                               RetIslr = itemLibro != null ? itemLibro.RetIslr : 0,
-                               TotalPagar = item.IdFacturaNavigation.MontoTotal - (itemLibro != null ? itemLibro.RetIva : 0) - (itemLibro != null ? itemLibro.RetIslr : 0)
-                           }).ToList();
-                var data = _servicesPdf.CuentasPagarPDF(ede);
-                var base64 = Convert.ToBase64String(data);
+                var dataPdf = new List<CuentasPagarVM>();
 
+                foreach (var item in modelo)
+                {
+                    if (item.Status.Equals("En Proceso"))
+                    {
+                        var itemLibro = _context.LibroCompras.FirstOrDefault(x => x.IdFactura == item.IdFactura);
+                        var proveedor = _context.Proveedors.FirstOrDefault(x => x.IdProveedor == item.IdFacturaNavigation.IdProveedor);
+                        dataPdf.Add(new CuentasPagarVM()
+                        {
+                            Condominio = condominio != null ? condominio.Nombre : "",
+                            Proveedor = proveedor != null ? proveedor.Nombre : "",
+                            NumFactura = item.IdFacturaNavigation.NumFactura.ToString(),
+                            BaseImponible = item.IdFacturaNavigation.Subtotal,
+                            MontoTotal = item.IdFacturaNavigation.MontoTotal,
+                            Iva = item.IdFacturaNavigation.Iva,
+                            RetIva = itemLibro != null ? itemLibro.RetIva : 0,
+                            RetIslr = itemLibro != null ? itemLibro.RetIslr : 0,
+                            TotalPagar = item.IdFacturaNavigation.MontoTotal - (itemLibro != null ? itemLibro.RetIva : 0) - (itemLibro != null ? itemLibro.RetIslr : 0)
+                        });
+                    }
+                }
+                
                 TempData.Keep();
+
+                var data = _servicesPdf.CuentasPagarPDF(dataPdf);
+                var base64 = Convert.ToBase64String(data);
                 return Content(base64, "application/pdf");
 
             }
@@ -239,6 +249,88 @@ namespace Prueba.Controllers
                 Console.WriteLine($"Error generando PDF: {e.Message}");
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
+            }
+        }
+
+        [HttpPost]
+        public ContentResult CuentasPagarExcel([FromBody] IEnumerable<CuentasPagar> modelo)
+        {
+            try
+            {
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+                var condominio = _context.Condominios.Find(IdCondominio);
+
+                var dataExcel = new List<CuentasPagarVM>();
+
+                foreach (var item in modelo)
+                {
+                    if (item.Status.Equals("En Proceso"))
+                    {
+                        var itemLibro = _context.LibroCompras.FirstOrDefault(x => x.IdFactura == item.IdFactura);
+                        var proveedor = _context.Proveedors.FirstOrDefault(x => x.IdProveedor == item.IdFacturaNavigation.IdProveedor);
+
+                        dataExcel.Add(new CuentasPagarVM()
+                        {
+                            Condominio = condominio != null ? condominio.Nombre : "",
+                            Proveedor = proveedor != null ? proveedor.Nombre : "",
+                            NumFactura = item.IdFacturaNavigation.NumFactura.ToString(),
+                            BaseImponible = item.IdFacturaNavigation.Subtotal,
+                            Iva = item.IdFacturaNavigation.Iva,
+                            MontoTotal = item.IdFacturaNavigation.MontoTotal,
+                            RetIva = itemLibro != null ? itemLibro.RetIva : 0,
+                            RetIslr = itemLibro != null ? itemLibro.RetIslr : 0,
+                            TotalPagar = item.IdFacturaNavigation.MontoTotal - (itemLibro != null ? itemLibro.RetIva : 0) - (itemLibro != null ? itemLibro.RetIslr : 0)
+                        });
+                    }
+                }
+
+                TempData.Keep();
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("CuentasPagar");
+                    var currentRow = 1;
+
+                    // Encabezados
+                    //worksheet.Cell(currentRow, 1).Value = "Condominio";
+                    worksheet.Cell(currentRow, 1).Value = "Proveedor";
+                    worksheet.Cell(currentRow, 2).Value = "NumFactura";
+                    worksheet.Cell(currentRow, 3).Value = "BaseImponible";
+                    worksheet.Cell(currentRow, 4).Value = "Iva";
+                    worksheet.Cell(currentRow, 5).Value = "MontoTotal";
+                    worksheet.Cell(currentRow, 6).Value = "RetIva";
+                    worksheet.Cell(currentRow, 7).Value = "RetIslr";
+                    worksheet.Cell(currentRow, 8).Value = "TotalPagar";
+
+                    // Datos
+                    foreach (var item in dataExcel)
+                    {
+                        currentRow++;
+                        worksheet.Cell(currentRow, 1).Value = item.Proveedor;
+                        worksheet.Cell(currentRow, 2).Value = item.NumFactura;
+                        worksheet.Cell(currentRow, 3).Value = item.BaseImponible;
+                        worksheet.Cell(currentRow, 4).Value = item.Iva;
+                        worksheet.Cell(currentRow, 5).Value = item.MontoTotal;
+                        worksheet.Cell(currentRow, 6).Value = item.RetIva;
+                        worksheet.Cell(currentRow, 7).Value = item.RetIslr;
+                        worksheet.Cell(currentRow, 8).Value = item.TotalPagar;
+                    }
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var content = stream.ToArray();
+                        var base64 = Convert.ToBase64String(content);
+                        return Content(base64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error generando Excel: {e.Message}");
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Content($"{{ \"error\": \"Error generando el Excel\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
     }
