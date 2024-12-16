@@ -450,6 +450,18 @@ namespace Prueba.Repositories
                                 }
                             }
                         }
+                        else
+                        {
+                            PagoFactura pagoFactura = new PagoFactura
+                            {
+                                IdPagoEmitido = pago.IdPagoEmitido,
+                                IdFactura = modelo.IdFactura,
+                               // IdAnticipo = anticipo.IdAnticipo
+                            };
+                            //_dbContext.Update(anticipo);
+                            _dbContext.PagoFacturas.Add(pagoFactura);
+                        }
+
                         _dbContext.SaveChanges();
                     }                    
 
@@ -1005,6 +1017,18 @@ namespace Prueba.Repositories
                                 }
                             }
                         }
+                        else
+                        {
+                            PagoFactura pagoFactura = new PagoFactura
+                            {
+                                IdPagoEmitido = pago.IdPagoEmitido,
+                                IdFactura = modelo.IdFactura,
+                                // IdAnticipo = anticipo.IdAnticipo
+                            };
+                            //_dbContext.Update(anticipo);
+                            _dbContext.PagoFacturas.Add(pagoFactura);
+                        }
+
                         _dbContext.SaveChanges();
                     }
                    

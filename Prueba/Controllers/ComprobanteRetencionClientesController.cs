@@ -69,7 +69,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto,NumCompRet,NumComprobante,TotalFactura,BaseImponible")] ComprobanteRetencionCliente comprobanteRetencionCliente)
+        public async Task<IActionResult> Create([Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,ValorRetencion,NumCompRet")] ComprobanteRetencionCliente comprobanteRetencionCliente)
         {
             ModelState.Remove("IdClienteNavigation");
             ModelState.Remove("IdFacturaNavigation");
@@ -101,9 +101,21 @@ namespace Prueba.Controllers
                     return View(comprobanteRetencionCliente);
                 }
 
-                _context.Add(comprobanteRetencionCliente);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var factura = await _context.FacturaEmitida.FindAsync(comprobanteRetencionCliente.IdFactura);
+
+                if (factura != null)
+                {
+                    comprobanteRetencionCliente.BaseImponible = factura.SubTotal;
+                    comprobanteRetencionCliente.TotalFactura = factura.MontoTotal;
+                    comprobanteRetencionCliente.NumComprobante = 1;
+                    comprobanteRetencionCliente.TotalImpuesto = comprobanteRetencionCliente.ValorRetencion;
+                    comprobanteRetencionCliente.Sustraendo = 0;
+
+                    _context.Add(comprobanteRetencionCliente);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                
             }
             ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
             ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
