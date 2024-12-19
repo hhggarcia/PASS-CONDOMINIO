@@ -120,6 +120,7 @@
                                             @Html.DisplayFor(modelItem => item.IdUsuarioNavigation.Email)
                                         </td>
                                         <td>
+                                            <a asp-action="Inquilino" asp-route-id="@item.IdPropiedad">Inquilinos</a> |
                                             <a asp-action="VerGrupos" asp-route-id="@item.IdPropiedad">Ver Grupos</a> |
                                             <a asp-action="EstadoCuentaPropiedad" asp-route-id="@item.IdPropiedad">Estado de Cuenta</a> |
                                             <a asp-action="Edit" asp-route-id="@item.IdPropiedad">Editar</a> |

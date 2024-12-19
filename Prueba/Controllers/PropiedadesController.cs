@@ -53,7 +53,10 @@ namespace Prueba.Controllers
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var nuevaAppContext = _context.Propiedads.Include(p => p.IdCondominioNavigation).Include(p => p.IdUsuarioNavigation).Where(p => p.IdCondominio == IdCondominio);
+            var nuevaAppContext = _context.Propiedads
+                .Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdUsuarioNavigation)
+                .Where(p => p.IdCondominio == IdCondominio);
 
             TempData.Keep();
 
@@ -80,84 +83,118 @@ namespace Prueba.Controllers
             return View(propiedad);
         }
 
-        public IActionResult Inquilino()
+        public async Task<IActionResult> Inquilino(int id)
         {
+            var propiedad = await _context.Propiedads.FindAsync(id);
+            if (propiedad == null) { 
+                return NotFound();
+            }
+
+            var nuevaAppContext = _context.Inquilinos
+                .Include(i => i.IdPropiedadNavigation)
+                .Include(i => i.IdUsuarioNavigation)
+                .Where(c => c.IdPropiedad == propiedad.IdPropiedad);
+            TempData["idUserInquilinos"] = propiedad.IdUsuario;
+            TempData.Keep();
+
+            return View(await nuevaAppContext.ToListAsync());
+        }
+
+        public IActionResult CreateInquilino()
+        {
+            string idPropietario = TempData.Peek("idUserInquilinos").ToString();
+
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads.Where(c => c.IdUsuario == idPropietario), "IdPropiedad", "Codigo");
+
+            TempData.Keep();
             return View();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="usuario"></param>
-        /// <returns></returns>
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CrearInquilino([Bind("FirstName", "LastName", "Email", "Password")] Usuario usuario)
+        public async Task<IActionResult> CreateInquilino([Bind("Nombre,Rif,Email,Password,ConfirmPassword,Telefono,IdPropiedad")] RegistrarInquilinoVM modelo)
         {
-            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-
-            string returnUrl = Url.Content("~/");
-            // crear usuario 
-            var user = CreateUser();
-            user.FirstName = usuario.FirstName;
-            user.LastName = usuario.LastName;
-            await _userStore.SetUserNameAsync(user, usuario.Email, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, usuario.Email, CancellationToken.None);
-
-            var password = usuario.Password ?? "Pass1234_";
-            //CREAR
-            var resultAdminCreate = await _userManager.CreateAsync(user, password);
-
-            //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
-            if (resultAdminCreate.Succeeded)
+            var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+            if (propiedad != null)
             {
-                //AGREGAR ROL DE ADMINISTRADOR 
-                //AddToRoleAsync para añadir un rol (usuario, "Rol")
-                await _signInManager.UserManager.AddToRoleAsync(user, "Propietario");
+                string returnUrl = Url.Content("~/");
+                // crear usuario 
+                var user = CreateUser();
+                user.FirstName = modelo.Nombre;
+                user.LastName = modelo.Rif;
+                await _userStore.SetUserNameAsync(user, modelo.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, modelo.Email, CancellationToken.None);
 
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                    protocol: Request.Scheme);
+                var password = modelo.Password ?? "Pass1234_";
+                //CREAR
+                var resultAdminCreate = await _userManager.CreateAsync(user, password);
 
-                var msg = $"Por favor, confirmar su cuenta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
-
-
-                var condominio = await _context.Condominios.FindAsync(IdCondominio);
-
-                //var resultCorreo = _emailServices.ConfirmEmail("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
-                var resultCorreo = _emailServices.ConfirmEmail(condominio.Email, user.Email, condominio.ClaveCorreo, msg);
-
-                if (!resultCorreo.Contains("OK"))
+                //VERIFICAR SI LA CONTRASE;A CUMPLE LOS REQUISITOS
+                if (resultAdminCreate.Succeeded)
                 {
-                    var modeloError = new ErrorViewModel()
+                    //AGREGAR ROL DE ADMINISTRADOR 
+                    //AddToRoleAsync para añadir un rol (usuario, "Rol")
+                    await _signInManager.UserManager.AddToRoleAsync(user, "Inquilino");
+
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        protocol: Request.Scheme);
+
+                    var msg = $"Por favor, confirmar su cuenta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+                    var inquilino = new Inquilino()
                     {
-                        RequestId = resultCorreo
+                        IdUsuario = userId,
+                        IdPropiedad = propiedad.IdPropiedad,
+                        Rif = modelo.Rif,
+                        Telefono = modelo.Telefono,
+                        Cedula = modelo.Rif,
+                        Activo = true
                     };
 
-                    TempData.Keep();
-                    return RedirectToPage("Error", modeloError);
+                    // CREAR INQUILINO
+                    _context.Inquilinos.Add(inquilino);
+                    await _context.SaveChangesAsync();
+
+                    var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+
+                    // ENVIAR CORREO DE CONFIRMACION DE CUENTA
+                    var resultCorreo = _emailServices.ConfirmEmail("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+                    //var resultCorreo = _emailServices.ConfirmEmail(condominio.Email, user.Email, condominio.ClaveCorreo, msg);
+
+                    if (!resultCorreo.Contains("OK"))
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = resultCorreo
+                        };
+
+                        TempData.Keep();
+                        return RedirectToPage("Error", modeloError);
+                    }
+
+                    return RedirectToAction("Index");
+
                 }
-
-                return RedirectToAction("Create", user);
-
-            }
-            else
-            {
-                foreach (var error in resultAdminCreate.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in resultAdminCreate.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return View(modelo);
                 }
-
-                return View(usuario);
             }
-        }
 
+            return View(modelo);
+
+        }
         // GET: Propiedades/Create
         public IActionResult Create(AspNetUser usuario)
         {
