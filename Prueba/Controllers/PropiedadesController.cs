@@ -101,7 +101,7 @@ namespace Prueba.Controllers
             // crear usuario 
             var user = CreateUser();
             user.FirstName = usuario.FirstName;
-            user.LastName = usuario.FirstName;
+            user.LastName = usuario.LastName;
             await _userStore.SetUserNameAsync(user, usuario.Email, CancellationToken.None);
             await _emailStore.SetEmailAsync(user, usuario.Email, CancellationToken.None);
 

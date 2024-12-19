@@ -75,7 +75,7 @@ namespace Prueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmisionImpIva,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
+        public async Task<IActionResult> Create([Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
         {
             ModelState.Remove("IdClienteNavigation");
             ModelState.Remove("IdFacturaNavigation");

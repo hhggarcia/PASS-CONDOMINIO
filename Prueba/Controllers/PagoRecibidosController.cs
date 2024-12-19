@@ -921,7 +921,7 @@ namespace Prueba.Controllers
             }
         }
 
-        [Authorize(Policy = "RequirePropietario")]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> PagosRecibidosPropietario()
         {
             try
@@ -931,7 +931,18 @@ namespace Prueba.Controllers
                 //llamar a pagos realizados
                 // pasar diccionario de propiedades y por cada propiedad una lista de pagos realizados
                 var modelo = new Dictionary<Propiedad, List<PagoRecibido>>();
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                var propiedades = new List<Propiedad>();
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+                if (inquilino != null)
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+
+                } else
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                }
+
                 if (propiedades != null && propiedades.Any())
                 {
                     foreach (var item in propiedades)

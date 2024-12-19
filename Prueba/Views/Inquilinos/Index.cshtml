@@ -1,30 +1,16 @@
-﻿@model IEnumerable<Prueba.Models.Iva>
+﻿@model IEnumerable<Prueba.Models.Inquilino>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
-
 }
 
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <a class="btn btn-light mb-3" asp-controller="Ivas"
+        <a class="btn btn-light mb-3" asp-controller="Inquilinos"
            asp-action="Create">
             Registrar
         </a>
-    </div>
-    <div class="d-sm-flex align-items-center justify-content-around mb-4">
-        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-        <i class="fas fa-download fa-sm text-white-50"></i> Generar
-        PDF
-        </a> *@
-        @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
-
-        @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
-        <i class="fas fa-download fa-sm text-white-50"></i> Generar
-        Excel
-        </a> *@
     </div>
 
     <!-- Content Row -->
@@ -34,7 +20,7 @@
             <div class="card shadow mb-4 bg-content-bg">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Impuesto IVA
+                        Inquilinos
                     </h6>
 
                 </div>
@@ -47,16 +33,22 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Descripcion)
+                                        @Html.DisplayNameFor(model => model.Rif)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Porcentaje)
+                                        @Html.DisplayNameFor(model => model.Telefono)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Cedula)
                                     </th>
                                     <th>
                                         @Html.DisplayNameFor(model => model.Activo)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Principal)
+                                        @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdUsuarioNavigation)
                                     </th>
                                     <th></th>
                                 </tr>
@@ -66,21 +58,27 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Descripcion)
+                                            @Html.DisplayFor(modelItem => item.Rif)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Porcentaje)
+                                            @Html.DisplayFor(modelItem => item.Telefono)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Cedula)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Activo)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Principal)
+                                            @Html.DisplayFor(modelItem => item.IdPropiedadNavigation.IdPropiedad)
                                         </td>
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                                            @Html.DisplayFor(modelItem => item.IdUsuarioNavigation.Id)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.IdInquilino">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdInquilino">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdInquilino">Eliminar</a>
                                         </td>
                                     </tr>
                                 }
@@ -92,4 +90,5 @@
         </div>
     </div>
 </div>
+
 

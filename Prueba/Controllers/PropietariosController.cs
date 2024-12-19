@@ -25,7 +25,6 @@ using System.Text;
 
 namespace Prueba.Controllers
 {
-    [Authorize(Policy = "RequirePropietario")]
 
     public class PropietariosController : Controller
     {
@@ -82,6 +81,7 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietario")]
         public IActionResult Index()
         {
 
@@ -92,6 +92,8 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietario")]
+
         public async Task<IActionResult> DashboardUsuario()
         {
             try
@@ -140,6 +142,8 @@ namespace Prueba.Controllers
             }
         }
 
+        [Authorize(Policy = "RequirePropietario")]
+
         public IActionResult PagoRapidoUsuario()
         {
             return RedirectToAction("DashboardUsuario");
@@ -151,6 +155,7 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="valor"></param>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         [HttpPost]
         public async Task<JsonResult> AjaxCargarRecibos(int valor)
         {
@@ -212,6 +217,8 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+
         public IActionResult Comprobante()
         {
             return View();
@@ -221,6 +228,8 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+
         public async Task<IActionResult> RegistrarPagos()
         {
             try
@@ -229,11 +238,18 @@ namespace Prueba.Controllers
 
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
-                var propiedades = from c in _context.Propiedads
-                                  where c.IdUsuario == idPropietario
-                                  select c;
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
 
-                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
+                if (inquilino != null)
+                {
+                    var propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+                    modelo.Propiedades = propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToList();
+                }
+                else
+                {
+                    var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                    modelo.Propiedades = propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToList();
+                }
 
                 TempData.Keep();
 
@@ -257,6 +273,7 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="modelo"></param>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> RegistrarPagos(PagoRecibidoVM modelo, IFormFile file)
@@ -302,7 +319,7 @@ namespace Prueba.Controllers
                         }
                     }
                 }
-                
+
 
                 string uniqueFileName = null;  //to contain the filename
                 if (file != null)  //handle iformfile
@@ -376,16 +393,23 @@ namespace Prueba.Controllers
                     uniqueFileName = file.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                     System.IO.File.Delete(filePath);
-                }               
+                }
 
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
-                var propiedades = from c in _context.Propiedads
-                                  where c.IdUsuario == idPropietario
-                                  select c;
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
 
-                modelo.Propiedades = await propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToListAsync();
-                
+                if (inquilino != null)
+                {
+                    var propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+                    modelo.Propiedades = propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToList();
+                }
+                else
+                {
+                    var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                    modelo.Propiedades = propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToList();
+                }
+
                 ViewBag.FormaPago = "fallido";
                 ViewBag.Mensaje = resultado;
 
@@ -410,6 +434,7 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> Recibos()
         {
             try
@@ -417,7 +442,19 @@ namespace Prueba.Controllers
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
                 var modelo = new Dictionary<Propiedad, List<ReciboCobro>>();
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                var propiedades = new List<Propiedad>();
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+                if (inquilino != null)
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+
+                }
+                else
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                }
+
                 if (propiedades != null && propiedades.Count() > 0)
                 {
                     foreach (var item in propiedades)
@@ -449,6 +486,7 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="id">id del recibo a buscar el detalle</param>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]        
         public async Task<IActionResult> DetalleRecibo(int id)
         {
             var recibo = await _context.ReciboCobros.FindAsync(id);
@@ -474,19 +512,28 @@ namespace Prueba.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> Deudores()
         {
             try
             {
                 string idPropietario = TempData.Peek("idUserLog").ToString();
 
-                var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                var propiedades = new List<Propiedad>();
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+                if (inquilino != null)
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+                }
+                else
+                {
+                    propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+                }
 
                 if (propiedades != null && propiedades.Any())
                 {
-                    //var inmuebles = await _context.Inmuebles.Where(i => i.IdInmueble == propiedades.First().IdInmueble).ToListAsync();
                     var condominios = await _context.Condominios.Where(i => i.IdCondominio == propiedades.First().IdCondominio).ToListAsync();
-                    //var modelo = await _repoReportes.InformacionGeneral(condominios.First().IdCondominio);
                     int idCondominio = condominios.First().IdCondominio;
 
                     var modelo = await _repoReportes.LoadDataDeudores(idCondominio);
@@ -519,8 +566,22 @@ namespace Prueba.Controllers
         {
             string idPropietario = TempData.Peek("idUserLog").ToString();
 
+            //llamar a pagos realizados
+            // pasar diccionario de propiedades y por cada propiedad una lista de pagos realizados
             var modelo = new Dictionary<Propiedad, List<ReciboCobro>>();
-            var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            var propiedades = new List<Propiedad>();
+            var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+            if (inquilino != null)
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+
+            }
+            else
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            }
+
             if (propiedades != null && propiedades.Count() > 0)
             {
                 foreach (var item in propiedades)
@@ -535,12 +596,24 @@ namespace Prueba.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> HistorialPdf()
         {
             string idPropietario = TempData.Peek("idUserLog").ToString();
 
             var modelo = new Dictionary<Propiedad, List<PagoRecibido>>();
-            var propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            var propiedades = new List<Propiedad>();
+            var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+            if (inquilino != null)
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+            }
+            else
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            }
+
             if (propiedades != null && propiedades.Any())
             {
                 foreach (var item in propiedades)
@@ -564,6 +637,8 @@ namespace Prueba.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+
         async public Task<IActionResult> DetallePdf(int id)
         {
 
@@ -597,6 +672,8 @@ namespace Prueba.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+
         public ContentResult DetalleReciboPdf([FromBody] DetalleReciboVM detalleReciboVM)
         {
             try
@@ -614,6 +691,8 @@ namespace Prueba.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+
         public ContentResult ComprobantePDF([FromBody] ComprobanteVM comprobanteVM)
         {
             try
@@ -630,6 +709,8 @@ namespace Prueba.Controllers
                 return Content($"{{ \"error\": \"Error generando el PDF\", \"message\": \"{e.Message}\", \"innerException\": \"{e.InnerException?.Message}\" }}");
             }
         }
+
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> PagarCuotaEspeciales(int? id)
         {
             try
@@ -669,6 +750,7 @@ namespace Prueba.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> PagarCuotaEspeciales(PagoRecibidoCuotaVM modelo)
         {
             try
@@ -978,6 +1060,8 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> ReciboCuotasEspeciales()
         {
             try
@@ -1023,6 +1107,8 @@ namespace Prueba.Controllers
                 return View("Error", modeloError);
             }
         }
+        
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> DetalleReciboCuotasEspeciales(int? id)
         {
             if (id != null)
@@ -1052,6 +1138,7 @@ namespace Prueba.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public ContentResult ComprobanteCEVMPDF([FromBody] ComprobanteCEVM comprobanteCEVM)
         {
             try
@@ -1074,6 +1161,8 @@ namespace Prueba.Controllers
         /// </summary>
         /// <param name="id">id del recibo a consultar</param>
         /// <returns></returns>
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
+        
         public async Task<IActionResult> DetalleReciboTransaccionesPDF(int id)
         {
             var recibo = await _context.ReciboCobros.FindAsync(id);
@@ -1099,13 +1188,22 @@ namespace Prueba.Controllers
             return RedirectToAction("DashboardUsuario");
         }
 
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public async Task<IActionResult> EstadoCuenta()
         {
             string idPropietario = TempData.Peek("idUserLog").ToString();
+            var propiedades = new List<Propiedad>();
 
-            var propiedades = await (from c in _context.Propiedads
-                              where c.IdUsuario == idPropietario
-                              select c).ToListAsync();
+            var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdUsuario == idPropietario);
+
+            if (inquilino != null)
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdPropiedad == inquilino.IdPropiedad).ToListAsync();
+            }
+            else
+            {
+                propiedades = await _context.Propiedads.Where(c => c.IdUsuario == idPropietario).ToListAsync();
+            }
 
             var modelo = new List<EstadoCuentasVM>();
 
@@ -1136,7 +1234,38 @@ namespace Prueba.Controllers
             }
             TempData.Keep();
 
+            if (inquilino != null)
+            {
+                return RedirectToAction("Dashboard", "Inquilinos");
+            }
+
             return RedirectToAction("DashboardUsuario");
+        }
+
+        [Authorize(Policy = "RequirePropietario")]
+        public async Task<IActionResult> Inquilinos()
+        {
+            string idPropietario = TempData.Peek("idUserLog").ToString();
+            var modelo = new List<Inquilino>();
+            //var usuario = await _context.AspNetUsers.FindAsync(idPropietario);
+
+            var propiedades = await _context.Propiedads
+                    //.Include(c => c.IdCondominioNavigation)
+                    .Include(c => c.ReciboCobros)
+                    .Where(c => c.IdUsuario == idPropietario)
+                    .ToListAsync();
+
+            foreach (var item in propiedades)
+            {
+                var inquilino = await _context.Inquilinos.FirstOrDefaultAsync(c => c.IdPropiedad == item.IdPropiedad);
+
+                if (inquilino != null)
+                {
+                    modelo.Add(inquilino);
+                }
+            }
+            TempData.Keep();
+            return View(modelo);
         }
     }
 }

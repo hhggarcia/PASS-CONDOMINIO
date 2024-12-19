@@ -635,7 +635,7 @@ namespace Prueba.Controllers
         {
             // Lógica para obtener las facturas asociadas al proveedor seleccionado
             var facturas = await _context.Facturas
-           .Where(c => c.IdProveedor == proveedorId && c.EnProceso == true)
+           .Where(c => c.IdProveedor == proveedorId && c.EnProceso && c.Activo)
            .ToListAsync();
 
             // Devolver las facturas en formato JSON

@@ -619,7 +619,7 @@ namespace Prueba.Controllers
 
         public async Task<IActionResult> ObtenerFactura(int id)
         {
-            var factura = await _context.FacturaEmitida.Where(c => c.IdFacturaEmitida == id).FirstAsync();
+            var factura = await _context.FacturaEmitida.Where(c => c.IdFacturaEmitida == id && !c.Anulada && c.Activo && c.EnProceso).FirstAsync();
 
             var facturaMonto = new
             {

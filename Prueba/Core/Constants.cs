@@ -7,6 +7,7 @@
             public const string SuperAdmin= "SuperAdmin";
             public const string Administrador = "Administrador";
             public const string Propietario = "Propietario";
+            public const string Inquilino = "Inquilino";
         }
 
         public static class Policies
@@ -14,6 +15,7 @@
             public const string RequireSuperAdmin = "RequireSuperAdmin";
             public const string RequireAdmin = "RequireAdmin";
             public const string RequirePropietario = "RequirePropietario";
+            public const string RequireInquilino = "RequireInquilino";
         }
     }
 }

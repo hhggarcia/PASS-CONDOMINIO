@@ -104,9 +104,12 @@ void AddAuthorizationPolicies()
         options.AddPolicy(Constants.Policies.RequirePropietario, policy => policy.RequireRole(Constants.Roles.Propietario));
         options.AddPolicy(Constants.Policies.RequireSuperAdmin, policy => policy.RequireRole(Constants.Roles.SuperAdmin));
         options.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Administrador));
+        options.AddPolicy(Constants.Policies.RequireInquilino, policy => policy.RequireRole(Constants.Roles.Inquilino));
+        options.AddPolicy("RequirePropietarioOrInquilino", policy =>
+            policy.RequireAssertion(context =>
+                context.User.IsInRole(Constants.Roles.Propietario) || context.User.IsInRole(Constants.Roles.Inquilino)));
     });
 }
-
 
 void AddScoped()
 {

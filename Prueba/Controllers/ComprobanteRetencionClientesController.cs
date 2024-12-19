@@ -90,16 +90,16 @@ namespace Prueba.Controllers
                     return View(comprobanteRetencionCliente);
 
                 }
-                else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
-                {
-                    ViewBag.FormaPago = "fallido";
-                    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+                //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
+                //{
+                //    ViewBag.FormaPago = "fallido";
+                //    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+                //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
 
-                    return View(comprobanteRetencionCliente);
-                }
+                //    return View(comprobanteRetencionCliente);
+                //}
 
                 var factura = await _context.FacturaEmitida.FindAsync(comprobanteRetencionCliente.IdFactura);
 
@@ -173,16 +173,16 @@ namespace Prueba.Controllers
                         return View(comprobanteRetencionCliente);
 
                     }
-                    else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
-                    {
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+                    //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
+                    //{
+                    //    ViewBag.FormaPago = "fallido";
+                    //    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+                    //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                    //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
 
-                        return View(comprobanteRetencionCliente);
-                    }
+                    //    return View(comprobanteRetencionCliente);
+                    //}
 
                     _context.Update(comprobanteRetencionCliente);
                     await _context.SaveChangesAsync();

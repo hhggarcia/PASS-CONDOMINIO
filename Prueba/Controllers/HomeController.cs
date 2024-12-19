@@ -60,6 +60,8 @@ namespace Prueba.Controllers
                             case "SuperAdmin":
                                 //GUARDAR EN TEMPDATA EL ID DEL SUPERADMIN LOGEADO
                                 return RedirectToAction("Dashboard", "Admin");
+                            case "Inquilino":
+                                return RedirectToAction("Dashboard", "Inquilinos");
                             default:
                                 return RedirectToAction("Index", "Home");
                         }
