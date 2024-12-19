@@ -1,0 +1,170 @@
+﻿﻿@using Microsoft.AspNetCore.Identity
+@using Prueba.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="en">
+<head>
+    <title>@ViewData["Title"]</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="~/images/isotipo.png" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="~/css/fontawesome-free/css/all.min.css"
+          rel="stylesheet"
+          type="text/css" />
+    <link rel="stylesheet" href="~/css/bootstrap-icons/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style-dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/data-tables.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/js/choices.js/choices.min.css" asp-append-version="true" />
+
+    <style>
+        .page, #wrapper, #content-wrapper {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #content-wrapper {
+            flex: 1;
+        }
+
+        #content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centers content vertically */
+        }
+
+        .form-control::placeholder {
+            color: rgba(0, 0, 0, 0.5); /* Light color for placeholders */
+            opacity: 1; /* Ensure the placeholder is fully visible */
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            right: 15px; /* Adjust for padding alignment */
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(0, 0, 0, 0.5); /* Optional: lighter color for styling */
+            transition: margin-top 0.3s ease; /* Smooth transition */
+            pointer-events: none;
+        }
+
+            /* Class to move the currency symbol down */
+            .currency-symbol.adjusted {
+                margin-top: 7px; /* Adjust as needed to lower the symbol */
+            }
+
+        .form-control.pe-5 {
+            padding-right: 2.5rem; /* Add padding for space between input and symbol */
+        }
+
+        .w-80 {
+            width: 80%;
+        }
+
+        .w-50 {
+            width: 50%;
+        }
+
+        .subs-header {
+            padding: 1rem;
+            margin-bottom: 0;
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0,0,0,.125)
+        }
+
+            .subs-header:first-child {
+                border-radius: calc(.7rem - 1px) calc(.7rem - 1px) 0 0
+            }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="page">
+        <div id="wrapper">
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+                <!-- Main Content -->
+                <div id="content">
+                    <!-- Begin Page Content -->
+                    <main role="main">
+                        @RenderBody()
+                    </main>
+                </div>
+
+                <!-- Footer -->
+                <footer class="sticky-footer bg-white">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <p class="rights">
+                                <span>&copy;&nbsp; </span><span class="copyright-year"></span><span>&nbsp;</span><span></span><span>.&nbsp;</span><span>Todos los derechos reservados.</span><span>&nbsp;</span><a href="#">Política de privacidad</a>.
+                                Design&nbsp;By&nbsp;<a href="#0">Password Technology</a>
+                            </p>
+                        </div>
+                    </div>
+                </footer>
+                <!-- End of Footer -->
+            </div>
+            <!-- End of Content Wrapper -->
+        </div>
+    </div>
+
+    <div class="snackbars" id="form-output-global"></div>
+    <script src="~/js/jquery/jquery.min.js"></script>
+
+    <!-- Scripts Dashboard-->
+    <script src="~/js/dashboard.min.js"></script>
+
+    <!-- Scripts Graficas -->
+    <script src="~/js/chart.js/Chart.min.js"></script>
+    <script src="~/js/demo/chart-area-demo.js"></script>
+    <script src="~/js/demo/chart-pie-demo.js"></script>
+
+    <!-- Scripts Globales-->
+    <script src="~/js/script.js"></script>
+    <script src="~/js/core.min.js"></script>
+
+    <!-- Scripts Tablas -->
+    <script src="~/js/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/js/datatables/datatables-scripts.js"></script>
+    <script src="~/js/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Scripts Modal -->
+    <script src="~/js/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts Choises -->
+    <script src="~/js/choices.js/choices.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/ApiPDF.js"></script>
+
+</body>
+</html>
+
