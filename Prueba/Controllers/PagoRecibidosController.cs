@@ -797,51 +797,72 @@ namespace Prueba.Controllers
                     if (pagoPropiedad != null && condominio != null)
                     {
                         var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
-                        var usuario = await _signInManager.UserManager.FindByIdAsync(propiedad.IdUsuario);
-                        var referencia = new ReferenciasPr();
 
-                        if (pago.FormaPago)
+                        if (propiedad != null)
                         {
-                            referencia = await _context.ReferenciasPrs.FirstAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
-                        }
+                            var usuario = await _signInManager.UserManager.FindByIdAsync(propiedad.IdUsuario);
+                            var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
-                        // enviar correo
-                        var resultado = _serviceEmail.RectificarPago(condominio.Email, usuario.Email, condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);
+                            List<string> correos = new List<string>();
 
-                        // si se envia el correo 
-                        if (resultado.Contains("OK"))
-                        {
-                            // actualizar recibo
-                            var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
-
-                            if (pagosRecibos != null && pagosRecibos.Any())
+                            if (usuario != null)
                             {
-                                foreach (var item in pagosRecibos)
+                                correos.Add(usuario.Email);
+                            }
+                            if (inquilinos != null)
+                            {
+                                foreach (var item in inquilinos)
                                 {
-                                    var recibo = await _context.ReciboCobros.FindAsync(item.IdRecibo);
-
-                                    if (recibo != null)
-                                    {
-                                        recibo.EnProceso = false;
-                                        _context.ReciboCobros.Update(recibo);
-                                    }
+                                    correos.Add(item.IdUsuarioNavigation.Email);
                                 }
-
-                                // -> eliminar pago recibos
-
-                                _context.PagosRecibos.RemoveRange(pagosRecibos);
                             }
 
-                            // -> eliminar pago propiedad
-                            _context.PagoPropiedads.Remove(pagoPropiedad);
+                            var referencia = new ReferenciasPr();
 
-                            // -> eliminar referencia
-                            _context.ReferenciasPrs.Remove(referencia);
-                            // -> eliminar pago
-                            _context.PagoRecibidos.Remove(pago);
+                            if (pago.FormaPago)
+                            {
+                                referencia = await _context.ReferenciasPrs.FirstAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
+                            }
 
-                            await _context.SaveChangesAsync();
+                            // enviar correo
+                            var resultado = _serviceEmail.RectificarPago(condominio.Email, correos, condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "", pago, referencia);
+
+                            // si se envia el correo 
+                            if (resultado.Contains("OK"))
+                            {
+                                // actualizar recibo
+                                var pagosRecibos = await _context.PagosRecibos.Where(c => c.IdPago == pago.IdPagoRecibido).ToListAsync();
+
+                                if (pagosRecibos != null && pagosRecibos.Any())
+                                {
+                                    foreach (var item in pagosRecibos)
+                                    {
+                                        var recibo = await _context.ReciboCobros.FindAsync(item.IdRecibo);
+
+                                        if (recibo != null)
+                                        {
+                                            recibo.EnProceso = false;
+                                            _context.ReciboCobros.Update(recibo);
+                                        }
+                                    }
+
+                                    // -> eliminar pago recibos
+
+                                    _context.PagosRecibos.RemoveRange(pagosRecibos);
+                                }
+
+                                // -> eliminar pago propiedad
+                                _context.PagoPropiedads.Remove(pagoPropiedad);
+
+                                // -> eliminar referencia
+                                _context.ReferenciasPrs.Remove(referencia);
+                                // -> eliminar pago
+                                _context.PagoRecibidos.Remove(pago);
+
+                                await _context.SaveChangesAsync();
+                            }
                         }
+                        
                     }
                 }
 
@@ -1013,12 +1034,29 @@ namespace Prueba.Controllers
                 var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
                 var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
                 var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+
+                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                List<string> correos = new List<string>();
+
+                if (usuario != null)
+                {
+                    correos.Add(usuario.Email);
+                }
+                if (inquilinos != null)
+                {
+                    foreach (var item in inquilinos)
+                    {
+                        correos.Add(item.IdUsuarioNavigation.Email);
+                    }
+                }
+
                 var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
 
                 EmailAttachmentPdf email = new EmailAttachmentPdf()
                 {
                     From = condominio.Email,
-                    To = usuario.Email,
+                    To = correos,
                     Pdf = data,
                     FileName = "ComprobantePago_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy"),
                     Subject = "Comprobante de Pago - " + condominio.Nombre,

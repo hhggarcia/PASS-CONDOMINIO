@@ -1244,6 +1244,21 @@ namespace Prueba.Controllers
                 var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                 var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
                 var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                List<string> correos = new List<string>();
+
+                if (usuario != null)
+                {
+                    correos.Add(usuario.Email);
+                }
+                if (inquilinos != null)
+                {
+                    foreach (var item in inquilinos)
+                    {
+                        correos.Add(item.IdUsuarioNavigation.Email);
+                    }
+                }
 
                 modelo.Recibo = recibo;
                 modelo.Propiedad = propiedad;
@@ -1254,7 +1269,7 @@ namespace Prueba.Controllers
                 var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
 
                 email.From = modelo.Transacciones.Condominio.Email;
-                email.To = usuario.Email;
+                email.To = correos;
                 email.Pdf = data;
                 email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
 
@@ -1299,6 +1314,21 @@ namespace Prueba.Controllers
                         var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                         var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
                         var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                        var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                        List<string> correos = new List<string>();
+
+                        if (usuario != null)
+                        {
+                            correos.Add(usuario.Email);
+                        }
+                        if (inquilinos != null)
+                        {
+                            foreach (var item in inquilinos)
+                            {
+                                correos.Add(item.IdUsuarioNavigation.Email);
+                            }
+                        }
 
                         modelo.Recibo = recibo;
                         modelo.Propiedad = propiedad;
@@ -1309,7 +1339,7 @@ namespace Prueba.Controllers
                         var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
 
                         email.From = modelo.Transacciones.Condominio.Email;
-                        email.To = usuario.Email;
+                        email.To = correos;
                         email.Pdf = data;
                         email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
 

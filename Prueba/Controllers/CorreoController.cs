@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
+using Prueba.Models;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
@@ -60,36 +61,54 @@ namespace Prueba.Controllers
             {
                 var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
                 var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
-                var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
-                var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
-                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
 
-                modelo.Recibo = recibo;
-                modelo.Propiedad = propiedad;
-                modelo.GruposPropiedad = gruposPropiedad;
-                modelo.RelacionGasto = rg;
-                modelo.Transacciones = transacciones;
-
-                var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
-
-                email.From = modelo.Transacciones.Condominio.Email;
-                email.To = usuario.Email != null ? usuario.Email : "";
-                email.Pdf = data;
-                email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
-                email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
-                email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
-
-
-                var result = _servicesEmail.SendEmailRG(email);
-
-                if (!result.Contains("OK"))
+                if (propiedad != null && rg != null)
                 {
-                    var modeloError = new ErrorViewModel()
-                    {
-                        RequestId = result
-                    };
+                    var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                    var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                    var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                    var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
-                    return View("Error", modeloError);
+                    List<string> correos = new List<string>();
+
+                    if (usuario != null)
+                    {
+                        correos.Add(usuario.Email);
+                    }
+                    if (inquilinos != null)
+                    {
+                        foreach (var item in inquilinos)
+                        {
+                            correos.Add(item.IdUsuarioNavigation.Email);
+                        }
+                    }
+
+                    modelo.Recibo = recibo;
+                    modelo.Propiedad = propiedad;
+                    modelo.GruposPropiedad = gruposPropiedad;
+                    modelo.RelacionGasto = rg;
+                    modelo.Transacciones = transacciones;
+
+                    var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
+
+                    email.From = modelo.Transacciones.Condominio.Email;
+                    email.To = correos;
+                    email.Pdf = data;
+                    email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+                    email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
+                    email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
+
+                    var result = _servicesEmail.SendEmailRG(email);
+
+                    if (!result.Contains("OK"))
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = result
+                        };
+
+                        return View("Error", modeloError);
+                    }
                 }
             }
 
@@ -117,35 +136,53 @@ namespace Prueba.Controllers
                         var modelo = new DetalleReciboTransaccionesVM();
                         var email = new EmailAttachmentPdf();
                         var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
-                        var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
-                        var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
-                        var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-
-                        modelo.Recibo = recibo;
-                        modelo.Propiedad = propiedad;
-                        modelo.GruposPropiedad = gruposPropiedad;
-                        modelo.RelacionGasto = rg;
-                        modelo.Transacciones = transacciones;
-
-                        var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
-
-                        email.From = modelo.Transacciones.Condominio.Email;
-                        email.To = usuario.Email;
-                        email.Pdf = data;
-                        email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
-                        email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
-                        email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
-
-                        var result = _servicesEmail.SendEmailRG(email);
-
-                        if (!result.Contains("OK"))
+                        if (propiedad != null)
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = result
-                            };
+                            var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                            var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                            var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                            var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
-                            return View("Error", modeloError);
+                            List<string> correos = new List<string>();
+
+                            if (usuario != null)
+                            {
+                                correos.Add(usuario.Email);
+                            }
+                            if (inquilinos != null)
+                            {
+                                foreach (var item in inquilinos)
+                                {
+                                    correos.Add(item.IdUsuarioNavigation.Email);
+                                }
+                            }
+
+                            modelo.Recibo = recibo;
+                            modelo.Propiedad = propiedad;
+                            modelo.GruposPropiedad = gruposPropiedad;
+                            modelo.RelacionGasto = rg;
+                            modelo.Transacciones = transacciones;
+
+                            var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
+
+                            email.From = modelo.Transacciones.Condominio.Email;
+                            email.To = correos;
+                            email.Pdf = data;
+                            email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+                            email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
+                            email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
+
+                            var result = _servicesEmail.SendEmailRG(email);
+
+                            if (!result.Contains("OK"))
+                            {
+                                var modeloError = new ErrorViewModel()
+                                {
+                                    RequestId = result
+                                };
+
+                                return View("Error", modeloError);
+                            }
                         }
                     }
                 }
@@ -164,12 +201,27 @@ namespace Prueba.Controllers
                 //var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
                 var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
                 var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                List<string> correos = new List<string>();
+
+                if (usuario != null)
+                {
+                    correos.Add(usuario.Email);
+                }
+                if (inquilinos != null)
+                {
+                    foreach (var item in inquilinos)
+                    {
+                        correos.Add(item.IdUsuarioNavigation.Email);
+                    }
+                }
                 var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
 
                 EmailAttachmentPdf email = new EmailAttachmentPdf()
                 {
                     From = condominio.Email,
-                    To = usuario.Email,
+                    To = correos,
                     Pdf = data,
                     FileName = "ComprobantePago_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy"),
                     Subject = "Comprobante de Pago - " + condominio.Nombre,
@@ -218,31 +270,31 @@ namespace Prueba.Controllers
 
                     // buscar usuarios del condominio si poseen propiedades
                     // recorrer a los usuarios y enviar un correo a cada uno
-                    var usuarios = await (from p in _context.Propiedads.Where(c => c.IdCondominio == idCondominio)
-                                          join c in _context.AspNetUsers
-                                          on p.IdUsuario equals c.Id
-                                          select c.Email
-                                          ).ToListAsync();
+                    var inquilinos = await (from inq in _context.Inquilinos.Include(c => c.IdUsuarioNavigation)
+                                            join prop in _context.Propiedads.Where(c => c.IdCondominio == condominio.IdCondominio)
+                                            on inq.IdPropiedad equals prop.IdPropiedad
+                                            select inq.IdUsuarioNavigation.Email).ToListAsync();
+                    var usuarios = await (from prop in _context.Propiedads.Where(c => c.IdCondominio == condominio.IdCondominio)
+                                          join user in _context.AspNetUsers
+                                          on prop.IdUsuario equals user.Id
+                                          select user.Email).ToListAsync();
 
-                    //List<string> usuarios = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
+                    var correos = usuarios.Concat(inquilinos).Distinct().ToList();
 
+                    modelo.To = correos;
 
-                    foreach (var item in usuarios)
+                    var result = _servicesEmail.SendEmailAttachement(modelo);
+
+                    if (!result.Contains("OK"))
                     {
-                        modelo.To = item;
-                        var result = _servicesEmail.SendEmailAttachement(modelo);
-
-                        if (!result.Contains("OK"))
+                        var modeloError = new ErrorViewModel()
                         {
-                            var modeloError = new ErrorViewModel()
-                            {
-                                RequestId = result
-                            };
+                            RequestId = result
+                        };
 
-                            TempData.Keep();
-                            return View("Error", modeloError);
-                        }
-                    }                    
+                        TempData.Keep();
+                        return View("Error", modeloError);
+                    }
                 }
 
                 TempData.Keep();
@@ -259,7 +311,7 @@ namespace Prueba.Controllers
                 TempData.Keep();
                 return View("Error", modeloError);
             }
-            
+
         }
 
         // enviar correo a todos los clientes

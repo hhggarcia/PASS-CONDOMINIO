@@ -3,12 +3,15 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.DotNet.Scaffolding.Shared.Project;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MimeKit;
 using MimeKit.Text;
 using NPOI.SS.Formula.Functions;
+using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
+using SQLitePCL;
 using System;
 using System.Linq.Expressions;
 using System.Text;
@@ -18,7 +21,7 @@ namespace Prueba.Services
     public interface IEmailService
     {
         void SendEmail(RegisterConfirm request);
-        string RectificarPago(string EmailFrom, string EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia);
+        string RectificarPago(string EmailFrom, List<string> EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia);
         void ConfirmacionPagoCuota(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, ReciboCuota reciboCobro, PagoRecibido pagoRecibido, String password);
         void RectificarPagoCuotaEspecial(String EmailFrom, String EmailTo, CuotasEspeciale cuotasEspeciale, PagoRecibido pago, String password);
         void EmailGastosCuotas(String EmailFrom, IList<GastosCuotasEmailVM> relacionGastosEmailVM, String password);
@@ -32,9 +35,13 @@ namespace Prueba.Services
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
-        public EmailService(IConfiguration config)
+        private readonly NuevaAppContext _context;
+
+        public EmailService(NuevaAppContext context,
+            IConfiguration config)
         {
             _config = config;
+            _context = context;
         }
         public void SendEmail(RegisterConfirm request)
         {
@@ -72,6 +79,14 @@ namespace Prueba.Services
                 email.Subject = "Confirmación de pago " + propiedad.Codigo;
                 var result = string.Empty;
 
+                var inquilinos = _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
+                if (inquilinos.Any())
+                {
+                    foreach (var item in inquilinos)
+                    {
+                        email.To.Add(MailboxAddress.Parse(item.IdUsuarioNavigation.Email));
+                    }
+                }
                 email.Body = new TextPart(TextFormat.Html)
                 {
                     Text = $@"
@@ -138,7 +153,7 @@ namespace Prueba.Services
         /// <param name="password"></param>
         /// <param name="pago"></param>
         /// <param name="referencia"></param>
-        public string RectificarPago(string EmailFrom, string EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia)
+        public string RectificarPago(string EmailFrom, List<string> EmailTo, string password, PagoRecibido pago, ReferenciasPr referencia)
         {
             try
             {
@@ -146,7 +161,11 @@ namespace Prueba.Services
 
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(EmailFrom));
-                email.To.Add(MailboxAddress.Parse(EmailTo));
+                //email.To.Add(MailboxAddress.Parse(EmailTo));
+                foreach (var item in EmailTo)
+                {
+                    email.To.Add(MailboxAddress.Parse(item));
+                }
                 email.Subject = "Rectificación de pago";
 
                 email.Body = new TextPart(TextFormat.Html)
@@ -403,7 +422,11 @@ namespace Prueba.Services
                 var result = string.Empty;
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(model.From));
-                email.To.Add(MailboxAddress.Parse(model.To));
+                //email.To.Add(MailboxAddress.Parse(model.To));
+                foreach (var item in model.To)
+                {
+                    email.To.Add(MailboxAddress.Parse(item));
+                }
                 email.Subject = model.Subject;
 
                 var pdfAttachment = new MimePart("application", "pdf")
@@ -442,7 +465,11 @@ namespace Prueba.Services
                 var result = string.Empty;
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(model.From));
-                email.To.Add(MailboxAddress.Parse(model.To));
+                //email.To.Add(MailboxAddress.Parse(model.To));
+                foreach (var item in model.To)
+                {
+                    email.To.Add(MailboxAddress.Parse(item));
+                }
                 email.Subject = model.Subject;
 
                 var pdfAttachment = new MimePart("application", "pdf")
