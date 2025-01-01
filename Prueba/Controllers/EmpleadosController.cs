@@ -38,7 +38,17 @@ namespace Prueba.Controllers
         // GET: Empleados
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Empleados.ToListAsync());
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nominasCondominio = await _context.CondominioNominas.Where(c => c.IdCondominio == idCondominio).ToListAsync();
+
+            var empleados = from c in nominasCondominio
+                            join e in _context.Empleados.ToList()
+                            on c.IdEmpleado equals e.IdEmpleado
+                            where c.IdCondominio == idCondominio
+                            select e;
+
+            return View(empleados);
         }
 
         // GET: Empleados/Details/5

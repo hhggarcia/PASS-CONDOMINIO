@@ -29,13 +29,18 @@ namespace Prueba.Controllers
         // GET: NotaCreditos
         public async Task<IActionResult> Index()
         {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
             var nuevaAppContext = _context.NotaCreditos
                 .Include(n => n.IdClienteNavigation)
                 .Include(n => n.IdFacturaNavigation)
                 .Include(n => n.IdPropiedadNavigation)
                 .Include(n => n.IdRetIslrNavigation)
                 .Include(n => n.IdRetIvaNavigation)
-                .Where(c => c.IdPropiedad != null);
+                .Where(c => c.IdPropiedad != null)
+                .Where(c => c.IdPropiedadNavigation.IdCondominio == idCondominio);
+
+            TempData.Keep();
 
             return View(await nuevaAppContext.ToListAsync());
         }

@@ -67,7 +67,7 @@ namespace Prueba.Controllers
                     var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                     var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
                     var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-                    var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                    var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
                     List<string> correos = new List<string>();
 
@@ -141,7 +141,7 @@ namespace Prueba.Controllers
                             var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
                             var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
                             var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-                            var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                            var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
                             List<string> correos = new List<string>();
 
@@ -201,7 +201,7 @@ namespace Prueba.Controllers
                 //var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
                 var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
                 var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
-                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuario).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
 
                 List<string> correos = new List<string>();
 
@@ -216,6 +216,7 @@ namespace Prueba.Controllers
                         correos.Add(item.IdUsuarioNavigation.Email);
                     }
                 }
+
                 var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
 
                 EmailAttachmentPdf email = new EmailAttachmentPdf()
