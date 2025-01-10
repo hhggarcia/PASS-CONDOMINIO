@@ -454,6 +454,4 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 /Prueba/Context/NuevaAppContext.cs
 /Prueba/appsettings.Development.json
-/Prueba/Repositories/FiltroFechaRepository.cs
-/Prueba/Controllers/CuentasGruposController.cs
-/Prueba/Views/TipoCasos/Index.cshtml
+/Prueba/appsettings.json

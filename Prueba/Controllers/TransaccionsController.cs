@@ -111,7 +111,6 @@ namespace Prueba.Controllers
                 transaccion.IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0;
                 transaccion.Activo = checkActivo;
 
-
                 var monedaPrincipal = (await _repoMoneda.MonedaPrincipal(idCondominio)).FirstOrDefault();
 
                 if (monedaPrincipal != null)

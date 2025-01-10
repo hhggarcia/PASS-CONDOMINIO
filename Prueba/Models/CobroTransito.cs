@@ -15,7 +15,7 @@ public partial class CobroTransito
 
     public DateTime Fecha { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public bool Factura { get; set; }
 
@@ -25,9 +25,9 @@ public partial class CobroTransito
 
     public decimal MontoRef { get; set; }
 
-    public string SimboloMoneda { get; set; } = null!;
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public string SimboloRef { get; set; } = null!;
+    public string SimboloRef { get; set; } = string.Empty;
 
     public bool Asignado { get; set; }
 

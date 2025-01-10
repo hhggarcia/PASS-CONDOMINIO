@@ -528,7 +528,12 @@ namespace Prueba.Controllers
                         // buscar transacciones
                         var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
-                        var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper() + "-" + DateTime.Today.ToString("yyyy");
+                        int mesActual = DateTime.Today.Month;
+                        int mesAnterior = mesActual == 1 ? 12 : mesActual - 1;
+                        string mesAnteriorTexto = DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper();
+                        string año = mesActual == 1 ? (DateTime.Today.Year - 1).ToString() : DateTime.Today.ToString("yyyy");
+
+                        var mes = mesAnterior.ToString() + "-" + mesAnteriorTexto + "-" + año;
                         // generar Relacion de Gastos con las transacciones
                         // y sus relaciones
                         var relacionGasto = new RelacionGasto
@@ -814,7 +819,12 @@ namespace Prueba.Controllers
                     // buscar transacciones
                     var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                     var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
-                    var mes = (DateTime.Today.Month - 1).ToString() + "-" + DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper() + "-" + DateTime.Today.ToString("yyyy");
+                    int mesActual = DateTime.Today.Month;
+                    int mesAnterior = mesActual == 1 ? 12 : mesActual - 1;
+                    string mesAnteriorTexto = DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper();
+                    string año = mesActual == 1 ? (DateTime.Today.Year - 1).ToString() : DateTime.Today.ToString("yyyy");
+
+                    var mes = mesAnterior.ToString() + "-" + mesAnteriorTexto + "-" + año;
                     // generar Relacion de Gastos con las transacciones
                     // y sus relaciones
                     var relacionGasto = new RelacionGasto
@@ -1269,11 +1279,12 @@ namespace Prueba.Controllers
                 var data = await _servicePDF.DetalleReciboTransaccionesPDF(modelo);
 
                 email.From = modelo.Transacciones.Condominio.Email;
-                email.To = correos;
+                //email.To = correos;
+                email.To = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
                 email.Pdf = data;
                 email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
 
-                var result = _emailService.SendEmailRG(email);
+                var result = _emailService.SendEmailReciboCobro(email, recibo, propiedad);
 
                 if (!result.Contains("OK"))
                 {
@@ -1343,7 +1354,7 @@ namespace Prueba.Controllers
                         email.Pdf = data;
                         email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
 
-                        var result = _emailService.SendEmailRG(email);
+                        var result = _emailService.SendEmailReciboCobro(email, recibo, propiedad);
 
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NPOI.SS.Formula.Functions;
 using Prueba.Context;
 using Prueba.Models;
 using Prueba.ViewModels;
@@ -272,14 +273,18 @@ namespace Prueba.Repositories
                                        join cc in _context.CodigoCuentasGlobals
                                        on t.IdCodCuenta equals cc.IdCodCuenta
                                        where cc.IdCondominio == id
-                                       where t.Fecha.Month == (DateTime.Today.Month - 1) || t.Fecha.Month == DateTime.Today.Month
+                                       where (t.Fecha.Month == (DateTime.Today.Month - 1) && t.Fecha.Year == DateTime.Today.Year) ||
+                                             (t.Fecha.Month == 12 && DateTime.Today.Month == 1 && t.Fecha.Year == DateTime.Today.Year - 1) ||
+                                             (t.Fecha.Month == DateTime.Today.Month && t.Fecha.Year == DateTime.Today.Year)
                                        where t.Activo != null && (bool)t.Activo
                                        select t).ToListAsync();
 
             var transaccionesInd = await (from t in _context.Transaccions
                                           join cc in _context.CodigoCuentasGlobals
                                           on t.IdCodCuenta equals cc.IdCodCuenta
-                                          where t.Fecha.Month == (DateTime.Today.Month - 1) || t.Fecha.Month == DateTime.Today.Month
+                                          where (t.Fecha.Month == (DateTime.Today.Month - 1) && t.Fecha.Year == DateTime.Today.Year) ||
+                                                (t.Fecha.Month == 12 && DateTime.Today.Month == 1 && t.Fecha.Year == DateTime.Today.Year - 1) ||
+                                                (t.Fecha.Month == DateTime.Today.Month && t.Fecha.Year == DateTime.Today.Year)
                                           where cc.IdCondominio == id
                                           where t.IdPropiedad != null
                                           where t.Activo != null && (bool)t.Activo
@@ -482,7 +487,7 @@ namespace Prueba.Repositories
                                           join cc in _context.CodigoCuentasGlobals
                                           on e.IdCodCuenta equals cc.IdCodCuenta
                                           where cc.IdCondominio == condominio.IdCondominio
-                                          select c).ToListAsync();
+                select c).ToListAsync();
 
                 var transacciones = await (from t in _context.Transaccions
                                            join cc in _context.CodigoCuentasGlobals
@@ -490,7 +495,9 @@ namespace Prueba.Repositories
                                            join tt in _context.RelacionGastoTransaccions
                                            on t.IdTransaccion equals tt.IdTransaccion
                                            where cc.IdCondominio == condominio.IdCondominio
-                                           where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
+                                           where (t.Fecha.Month == (rg.Fecha.Month - 1) && t.Fecha.Year == rg.Fecha.Year) ||
+                                                 (t.Fecha.Month == 12 && rg.Fecha.Month == 1 && t.Fecha.Year == rg.Fecha.Year - 1) ||
+                                                 (t.Fecha.Month == rg.Fecha.Month && t.Fecha.Year == rg.Fecha.Year)
                                            where tt.IdRelacionGasto == rg.IdRgastos
                                            where t.Activo != null
                                            select t).ToListAsync();
@@ -500,8 +507,10 @@ namespace Prueba.Repositories
                                               on t.IdCodCuenta equals cc.IdCodCuenta
                                               join tt in _context.RelacionGastoTransaccions
                                               on t.IdTransaccion equals tt.IdTransaccion
-                                              where t.Fecha.Month == (rg.Fecha.Month - 1) || t.Fecha.Month == rg.Fecha.Month
                                               where cc.IdCondominio == condominio.IdCondominio
+                                              where (t.Fecha.Month == (rg.Fecha.Month - 1) && t.Fecha.Year == rg.Fecha.Year) ||
+                                                    (t.Fecha.Month == 12 && rg.Fecha.Month == 1 && t.Fecha.Year == rg.Fecha.Year - 1) ||
+                                                    (t.Fecha.Month == rg.Fecha.Month && t.Fecha.Year == rg.Fecha.Year)
                                               where t.IdPropiedad != null && tt.IdRelacionGasto == rg.IdRgastos && t.Activo != null
                                               select t).Distinct().ToListAsync();
 

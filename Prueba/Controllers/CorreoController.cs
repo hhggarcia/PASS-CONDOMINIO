@@ -93,12 +93,13 @@ namespace Prueba.Controllers
 
                     email.From = modelo.Transacciones.Condominio.Email;
                     email.To = correos;
+                    //email.To = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
                     email.Pdf = data;
                     email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
                     email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
                     email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
 
-                    var result = _servicesEmail.SendEmailRG(email);
+                    var result = _servicesEmail.SendEmailReciboCobro(email, recibo, propiedad);
 
                     if (!result.Contains("OK"))
                     {
@@ -172,7 +173,7 @@ namespace Prueba.Controllers
                             email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
                             email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
 
-                            var result = _servicesEmail.SendEmailRG(email);
+                            var result = _servicesEmail.SendEmailReciboCobro(email, recibo, propiedad);
 
                             if (!result.Contains("OK"))
                             {

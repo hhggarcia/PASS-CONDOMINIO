@@ -68,7 +68,7 @@ namespace Prueba.Repositories
                              where codigo.IdCondominio == id
                              select subcuenta;
 
-            return await subcuentas.ToListAsync();
+            return await subcuentas.OrderBy(c => c.Descricion).ToListAsync();
         }
 
         /// <summary>

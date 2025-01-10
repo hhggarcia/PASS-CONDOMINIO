@@ -5327,11 +5327,10 @@ namespace Prueba.Services
                                 tabla.Cell().Text(factura.NumFactura.ToString()).Bold().FontSize(12);
 
                                 tabla.Cell().Text("R.I.F: ").Bold().FontSize(12);
-                                tabla.Cell().Text(cliente.Rif).Bold().FontSize(12);
-                                tabla.Cell().Text("Inmueble:").Bold().FontSize(12);
-                                tabla.Cell().Text("").FontSize(12);
+                                tabla.Cell().ColumnSpan(2).Text(cliente.Rif).Bold().FontSize(12);
+                                
                                 tabla.Cell().Text("Telef. ").Bold().FontSize(12);
-                                tabla.Cell().Text(cliente.Telefono).Bold().FontSize(12);
+                                tabla.Cell().ColumnSpan(2).Text(cliente.Telefono).Bold().FontSize(12);
                                 tabla.Cell().Text("Fecha: ").Bold().FontSize(12);
                                 tabla.Cell().Text(factura.FechaEmision.ToString("dd/MM/yyyy")).Bold().FontSize(12);
 

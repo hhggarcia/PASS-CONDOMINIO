@@ -44,14 +44,14 @@ namespace Prueba.Areas.Identity.Pages.Account
             public CreateCondominioVM ModeloNuevoCondominio { get; set; }
         }
 
-        public async Task<IActionResult> OnPostAsync(InputModel inputModel)
-        {
-            // PASO 1 - REGISTRO USUARIO SUPERADMIN
-            // PASO 2 - REGISTRAR DATOS DE ADMINISTRADOR
-            // PASO 3 - REGISTRAR DATOS DE CONDOMINIO
-            // PASO 4 - METODO DE PAGO (A CONSULTAR)
-            return Page();
-        }
+        //public async Task<IActionResult> OnPostAsync(InputModel inputModel)
+        //{
+        //    // PASO 1 - REGISTRO USUARIO SUPERADMIN
+        //    // PASO 2 - REGISTRAR DATOS DE ADMINISTRADOR
+        //    // PASO 3 - REGISTRAR DATOS DE CONDOMINIO
+        //    // PASO 4 - METODO DE PAGO (A CONSULTAR)
+        //    return Page();
+        //}
 
     }
 }

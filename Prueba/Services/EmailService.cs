@@ -1,4 +1,5 @@
-﻿using MailKit.Net.Smtp;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -31,6 +32,7 @@ namespace Prueba.Services
         string ConfirmacionPago(string EmailFrom, string EmailTo, Propiedad propiedad, IList<ReciboCobro> recibos, PagoRecibido pago, ReferenciasPr referencia, string password);
         string ResetPasswordUser(string EmailFrom, string EmailTo, string password, string msg);
         string ConfirmEmail(string EmailFrom, string EmailTo, string password, string msg);
+        string SendEmailReciboCobro(EmailAttachmentPdf model, ReciboCobro recibo, Propiedad propiedad);
     }
     public class EmailService : IEmailService
     {
@@ -456,6 +458,70 @@ namespace Prueba.Services
                 // Maneja el error según tus necesidades (registra, notifica, etc.)
                 return $"Error al enviar el correo: {ex.Message}";
             }
+        }
+
+        public string SendEmailReciboCobro(EmailAttachmentPdf model, ReciboCobro recibo, Propiedad propiedad)
+        {
+            try
+            {
+                var result = string.Empty;
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(model.From));
+                //email.To.Add(MailboxAddress.Parse(model.To));
+                foreach (var item in model.To)
+                {
+                    email.To.Add(MailboxAddress.Parse(item));
+                }
+                email.Subject = model.Subject;
+
+                var pdfAttachment = new MimePart("application", "pdf")
+                {
+                    Content = new MimeContent(new MemoryStream(model.Pdf)),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = model.FileName + ".pdf"
+                };
+                var anio = DateTime.Now.Year;
+                var month = DateTime.Now.Month;
+                DateTime fecha = new DateTime(anio, month, 21);
+
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.HtmlBody = $@"
+                    <html>
+                        <body style=""font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin: 5rem; padding: 2rem;"">
+                            <h3 style=""color: #3950a2;"">{model.Subject}</h3>
+                            <h4 style=""color: #3950a2;"">NO RESPONDA ESTE CORREO. NOTIFIQUE SU PAGO POR LA APLICACIÓN WEB</h4>
+                           
+                            <p>Adjunto encontrará el recibo de condominio correspondiente a {recibo.Mes}</p>                            
+                            <p>Le recordamos que la fecha límite para realizar el pago es el {fecha.ToString("dd/MM/yyyy")}. Puede efectuar el pago a través de los métodos habituales.</p>                            
+                            <p>Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nosotros.</p>                            
+                            <p>Agradecemos su pronta atención a este asunto.</p>                            
+                            <p>Saludos cordiales</p>                            
+                            <hr/>
+                            <div class=""footer"" style='color: #3950a2; padding: 10px; text-align: center; position: fixed; bottom: 0; width: 100%;'>
+                                Desarrollado por: Password Technology C.A.
+                            </div>
+                        </body>
+                    </html>";
+
+                bodyBuilder.Attachments.Add(pdfAttachment);
+                email.Body = bodyBuilder.ToMessageBody();
+
+                using var smtpClient = new SmtpClient();
+                smtpClient.Connect(_config.GetSection("EmailHost").Value, 587, SecureSocketOptions.StartTls);
+                smtpClient.Authenticate(model.From, model.Password);
+                result = smtpClient.Send(email);
+                smtpClient.Disconnect(true);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                // Maneja el error según tus necesidades (registra, notifica, etc.)
+                return $"Error al enviar el correo: {ex.Message}";
+            }
+        
         }
 
         public string SendEmailAttachement(EmailAttachmentPdf model)
