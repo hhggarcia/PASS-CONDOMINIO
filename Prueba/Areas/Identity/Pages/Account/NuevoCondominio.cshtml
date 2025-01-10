@@ -10,106 +10,109 @@
     <!-- Content Row -->
     <div class="row justify-content-center mb-2">
         <div class="col-lg-4" id="container-madre">
-            <!-- User Card -->            
-            <!-- Admin Card -->
-            <div class="card shadow mb-4 bg-content-bg" id="AdminSignupForm">
-                <div class="card-header py-3">
-                    <h4 class="m-0 font-weight-bold text-primary">
-                        Registra tu Administrador
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
+            <form method="post">
+                <!-- User Card -->
+                <!-- Admin Card -->
+                <div class="card shadow mb-4 bg-content-bg" id="AdminSignupForm">
+                    <div class="card-header py-3">
+                        <h4 class="m-0 font-weight-bold text-primary">
+                            Registra tu Administrador
+                        </h4>
+                    </div>
+
+                    <div class="card-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="row mb-3">
                             <!-- First Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Nombre"
+                                    <input asp-for="Input.Nombre"
                                            class="form-control"
                                            placeholder="Nombre(s)"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Nombre"
+                                    <label asp-for="Input.Nombre"
                                            class="form-label"
                                            data-original="Nombre(s)"
                                            data-translated="Ingresa tu Nombre">Nombre(s)</label>
+                                    <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+
                                 </div>
                             </div>
                             <!-- Last Name -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Rif"
+                                    <input asp-for="Input.Rif"
                                            class="form-control"
-                                           placeholder="Apellido(s)"
+                                           placeholder="Rif/C.I."
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Rif"
+                                    <label asp-for="Input.Rif"
                                            class="form-label"
-                                           data-original="Apellido(s)"
-                                           data-translated="Ingresa tu Apellido">Apellido(s)</label>
+                                           data-original="Rif"
+                                           data-translated="Ingresa tu Rif o C.I.">Rif/C.I</label>
+                                    <span asp-validation-for="Input.Rif" class="text-danger"></span>
+
                                 </div>
                             </div>
                         </div>
                         <!-- Email -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.Email"
+                            <input asp-for="Input.Email"
                                    class="form-control"
                                    placeholder="Email"
                                    onfocus="toggleLabelText(this, true)"
                                    onblur="toggleLabelText(this, false)" />
-                            <label asp-for="Input.ModeloNuevoCondominio.Email"
+                            <label asp-for="Input.Email"
                                    class="form-label"
                                    Email class="form-label"
                                    data-original="Email"
                                    data-translated="Ingresa tu Email">Email</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.Email" class="text-danger"></span>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
                         <!-- Password -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.Password"
+                            <input asp-for="Input.Password"
                                    class="form-control"
                                    placeholder="Contraseña"
                                    onfocus="toggleLabelText(this, true)"
                                    onblur="toggleLabelText(this, false)" />
-                            <label asp-for="Input.ModeloNuevoCondominio.Password"
+                            <label asp-for="Input.Password"
                                    class="form-label"
                                    Email class="form-label"
                                    data-original="Contraseña"
                                    data-translated="Ingresa tu Contraseña">Contraseña</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.Password" class="text-danger"></span>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
                         <!-- Confirm Password -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.ConfirmPassword"
+                            <input asp-for="Input.ConfirmPassword"
                                    class="form-control"
                                    placeholder="Confirma tu Contraseña" />
-                            <label asp-for="Input.ModeloNuevoCondominio.ConfirmPassword" class="form-label">Confirma tu Contraseña</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.ConfirmPassword" class="text-danger"></span>
+                            <label asp-for="Input.ConfirmPassword" class="form-label">Confirma tu Contraseña</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                         </div>
                         <div class="row">
                             <!-- Back Button -->
                             <div class="col-6 d-flex justify-content-center align-items-center">
-                                <span type="submit" style="width: 80%;" class="btn btn-lg btn-secondary justify-content-center" onclick="volverCommand()">Volver</span>
+                                <span style="width: 80%;" class="btn btn-lg btn-secondary justify-content-center" onclick="volverCommand()">Volver</span>
                             </div>
                             <!-- Continue Button -->
                             <div class="col-6 d-flex justify-content-center align-items-center">
                                 <span type="submit" style="width: 80%;" class="btn btn-lg btn-primary justify-content-center" onclick="hideAdminForm()">Continuar</span>
                             </div>
                         </div>
-                    </form>
+
+                    </div>
                 </div>
-            </div>
-            <!-- Condominio Card -->
-            <div class="card shadow mb-4 bg-content-bg hidden" id="CondominioForm">
-                <div class="card-header py-3">
-                    <h4 class="m-0 font-weight-bold text-primary">
-                        Registra tu Condominio
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <!-- Condominio Card -->
+                <div class="card shadow mb-4 bg-content-bg hidden" id="CondominioForm">
+                    <div class="card-header py-3">
+                        <h4 class="m-0 font-weight-bold text-primary">
+                            Registra tu Condominio
+                        </h4>
+                    </div>
+                    <div class="card-body">
                         <!-- Contribuyente Especial -->
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="SpecialCheck" />
@@ -121,29 +124,32 @@
                             <!-- Rif -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <input asp-for="Input.ModeloNuevoCondominio.RifCondominio"
+                                    <input asp-for="Input.RifCondominio"
                                            class="form-control"
                                            placeholder="Rif"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.RifCondominio"
+                                    <label asp-for="Input.RifCondominio"
                                            class="form-label"
                                            Email class="form-label"
                                            data-original="Rif"
                                            data-translated="Ingresa tu Rif">Rif</label>
+                                    <span asp-validation-for="Input.RifCondominio" class="text-danger"></span>
                                 </div>
                             </div>
                             <!-- Tipo -->
                             <div class="col-6">
                                 <div class="form-floating">
-                                    <select asp-for="Input.ModeloNuevoCondominio.Tipo" class="form-select">
+                                    <select asp-for="Input.Tipo" class="form-select">
                                         <option value="">Tipo de Condominio</option>
                                         <option value="Option 1">Residencial</option>
                                         <option value="Option 2">Empresarial</option>
                                         <option value="Option 3">Locales</option>
                                     </select>
 
-                                    <label asp-for="Input.ModeloNuevoCondominio.Tipo" class="form-label">Seleccione un Tipo</label>
+                                    <label asp-for="Input.Tipo" class="form-label">Seleccione un Tipo</label>
+                                    <span asp-validation-for="Input.Tipo" class="text-danger"></span>
+
                                 </div>
                             </div>
                         </div>
@@ -151,31 +157,35 @@
                             <div class="col-6">
                                 <!-- Nombre del Condominio -->
                                 <div class="form-floating mb-3 position-relative">
-                                    <input asp-for="Input.ModeloNuevoCondominio.NombreCondominio"
+                                    <input asp-for="Input.NombreCondominio"
                                            class="form-control"
                                            placeholder="Condominio"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.NombreCondominio"
+                                    <label asp-for="Input.NombreCondominio"
                                            class="form-label"
                                            Email class="form-label"
                                            data-original="Condominio"
                                            data-translated="Nombre del Condominio">Condominio</label>
+                                    <span asp-validation-for="Input.NombreCondominio" class="text-danger"></span>
+
                                 </div>
                             </div>
                             <!-- Dirección -->
                             <div class="col-6">
                                 <div class="form-floating mb-3 position-relative">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Direccion"
+                                    <input asp-for="Input.Direccion"
                                            class="form-control"
                                            placeholder="Dirección"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Direccion"
+                                    <label asp-for="Input.Direccion"
                                            class="form-label"
                                            Email class="form-label"
                                            data-original="Dirección"
                                            data-translated="Ingresa la Dirección">Dirección</label>
+                                    <span asp-validation-for="Input.Direccion" class="text-danger"></span>
+
                                 </div>
                             </div>
                         </div>
@@ -184,20 +194,22 @@
                                 <!-- InteresMora -->
                                 <!-- Cambiar si es en $ o Bs. -->
                                 <div class="form-floating mb-3 position-relative">
-                                    <input asp-for="Input.ModeloNuevoCondominio.InteresMora"
+                                    <input asp-for="Input.InteresMora"
                                            class="form-control pe-5"
                                            type="number"
                                            placeholder="Interés/Mora"
                                            oninput="adjustCurrencyPosition(this)"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.InteresMora"
+                                    <label asp-for="Input.InteresMora"
                                            class="form-label"
                                            Email class="form-label"
                                            data-original="Interés/Mora"
                                            data-translated="¿Cuanto se Cobrará de Mora?">Interés/Mora</label>
                                     <!-- Currency symbol displayed to the right of the input -->
                                     <span class="currency-symbol">%</span>
+                                    <span asp-validation-for="Input.InteresMora" class="text-danger"></span>
+
                                 </div>
                             </div>
                             <!-- Multa -->
@@ -205,59 +217,38 @@
                             <!-- Cambiar si es % -->
                             <div class="col-6">
                                 <div class="form-floating mb-3 position-relative">
-                                    <input asp-for="Input.ModeloNuevoCondominio.Multa"
+                                    <input asp-for="Input.Multa"
                                            class="form-control pe-5"
                                            type="number"
                                            placeholder="Multa"
                                            oninput="adjustCurrencyPosition(this)"
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)" />
-                                    <label asp-for="Input.ModeloNuevoCondominio.Multa"
+                                    <label asp-for="Input.Multa"
                                            class="form-label"
                                            Email class="form-label"
                                            data-original="Multa"
                                            data-translated="¿Cuanto se Cobrará de Multa?">Multa</label>
                                     <!-- Currency symbol displayed to the right of the input -->
                                     <span class="currency-symbol">%</span>
+                                    <span asp-validation-for="Input.Multa" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Email -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.EmailCondominio"
+                            <input asp-for="Input.EmailCondominio"
                                    class="form-control"
                                    placeholder="Email"
                                    onfocus="toggleLabelText(this, true)"
                                    onblur="toggleLabelText(this, false)" />
-                            <label asp-for="Input.ModeloNuevoCondominio.EmailCondominio"
+                            <label asp-for="Input.EmailCondominio"
                                    class="form-label"
                                    Email class="form-label"
                                    data-original="Email"
-                                   data-translated="Ingresa tu Email">Email</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.EmailCondominio" class="text-danger"></span>
-                        </div>
-                        <!-- Password -->
-                        <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.ClaveCorreo"
-                                   class="form-control"
-                                   placeholder="Contraseña"
-                                   onfocus="toggleLabelText(this, true)"
-                                   onblur="toggleLabelText(this, false)" />
-                            <label asp-for="Input.ModeloNuevoCondominio.ClaveCorreo"
-                                   class="form-label"
-                                   Email class="form-label"
-                                   data-original="Contraseña"
-                                   data-translated="Ingresa tu Contraseña">Contraseña</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.ClaveCorreo" class="text-danger"></span>
-                        </div>
-                        <!-- Confirm Password -->
-                        <div class="form-floating mb-3">
-                            <input asp-for="Input.ModeloNuevoCondominio.ClaveCorreo"
-                                   class="form-control"
-                                   placeholder="Confirma tu Contraseña" />
-                            <label asp-for="Input.ModeloNuevoCondominio.ClaveCorreo" class="form-label">Confirma tu Contraseña</label>
-                            <span asp-validation-for="Input.ModeloNuevoCondominio.ClaveCorreo" class="text-danger"></span>
+                                   data-translated="Ingresa correo del Condominio">Email</label>
+                            <span asp-validation-for="Input.EmailCondominio" class="text-danger"></span>
                         </div>
                         <div class="row">
                             <!-- Back Button -->
@@ -266,87 +257,12 @@
                             </div>
                             <!-- Continue Button -->
                             <div class="col-6 d-flex justify-content-center align-items-center">
-                                <span type="submit" class="w-100 btn btn-lg btn-primary justify-content-center" onclick="hideCondominioForm()">Continuar</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Subscription Page -->
-            <div class="card shadow mb-4 bg-content-bg hidden" id="SubscriptionForm">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h4 class="m-0 font-weight-bold text-primary">
-                        Planes de Suscripción
-                    </h4>
-                    <div id="VolverButton" class="d-none d-sm-block w-50" style="max-width: 100px;">
-                        <span type="submit" class="btn btn-lg btn-secondary w-100 justify-content-center" onclick="volverCommand()">Volver</span>
-                    </div>
-                </div>
-
-                <div class="card-body row">
-                    <div class="col-md-4 d-flex">
-                        <div class="card flex-grow-1 d-flex flex-column">
-                            <div class="subs-header">
-                                <h5 class="mb-0">
-                                    Gratis
-                                </h5>
-                            </div>
-                            <div class="card-body d-flex flex-column flex-grow-1">
-                                <h6 class="card-title">$0/mes</h6>
-                                <p class="card-text">Cosas Basicas</p>
-                                <ul>
-                                    <li>Item 1</li>
-                                    <li>Item 2</li>
-                                    <li>Item 3</li>
-                                </ul>
-                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Continuar Gratis</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 d-flex">
-                        <div class="card flex-grow-1 d-flex flex-column">
-                            <div class="subs-header">
-                                <h5 class="mb-0">
-                                    Standard
-                                </h5>
-                            </div>
-                            <div class="card-body d-flex flex-column flex-grow-1">
-                                <h6 class="card-title">$10/mes</h6>
-                                <p class="card-text">Cosas Avanzadas.</p>
-                                <ul>
-                                    <li>Item 1</li>
-                                    <li>Item 2</li>
-                                    <li>Item 3</li>
-                                    <li>Item 4</li>
-                                </ul>
-                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Quiero Standard</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 d-flex">
-                        <div class="card flex-grow-1 d-flex flex-column">
-                            <div class="subs-header">
-                                <h5 class="mb-0">
-                                    Premium
-                                </h5>
-                            </div>
-                            <div class="card-body d-flex flex-column flex-grow-1">
-                                <h6 class="card-title">$20/mes</h6>
-                                <p class="card-text">Cosas Premium</p>
-                                <ul>
-                                    <li>Item 1</li>
-                                    <li>Item 2</li>
-                                    <li>Item 3</li>
-                                    <li>Item 4</li>
-                                    <li>Item 5</li>
-                                </ul>
-                                <a href="#" class="btn btn-primary mt-auto w-80 justify-content-center">Dame Premium</a>
+                                <button type="submit" class="w-100 btn btn-lg btn-primary justify-content-center">Continuar</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
+            </form>
         </div>
     </div>
 </div>
@@ -394,11 +310,11 @@
 
         function hideCondominioForm() {
             const condominioForm = document.getElementById("CondominioForm");
-            const subsForm = document.getElementById("SubscriptionForm");
+            //const subsForm = document.getElementById("SubscriptionForm");
             const volverBtn = document.getElementById("VolverButton");
 
             condominioForm.classList.add("hidden");
-            subsForm.classList.remove("hidden");
+            //subsForm.classList.remove("hidden");
             volverBtn.classList.remove("hidden");
         }
 
@@ -406,7 +322,7 @@
            // const userForm = document.getElementById("UserSignupForm");
             const adminForm = document.getElementById("AdminSignupForm");
             const condominioForm = document.getElementById("CondominioForm");
-            const subsForm = document.getElementById("SubscriptionForm");
+            //const subsForm = document.getElementById("SubscriptionForm");
             const volverBtn = document.getElementById("VolverButton");
             const containerMadre = document.getElementById("container-madre");
 
@@ -419,10 +335,6 @@
 
                 containerMadre.classList.remove("col-lg-6");
                 containerMadre.classList.add("col-lg-4");
-            } else if (!subsForm.classList.contains("hidden")) {
-                subsForm.classList.add("hidden");
-                volverBtn.classList.add("hidden");
-                condominioForm.classList.remove("hidden");
             }
         }
     </script>
