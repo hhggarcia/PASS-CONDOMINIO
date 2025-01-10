@@ -1,0 +1,36 @@
+﻿@using Prueba.ViewModels
+
+@model FiltrarFechaVM
+
+<form method="post" asp-action="FiltrarFecha">
+    <div class="row">
+        <div class="col-md-5 mt-3">
+            <label for="last-name-column">Fecha Inicio</label>
+            <div class="input-group date">
+                <input class="form-control"
+                       type="date"
+                       id="fechaDesde"
+                       value="@DateTime.Today.AddDays(-1)"
+                       asp-for="Desde"
+                       required>
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 mt-3">
+            <label for="last-name-column">Fecha Fin</label>
+            <div class="position-relative">
+                <input class="form-control"
+                       type="date"
+                       id="fechaHasta" 
+                       required
+                       value="@DateTime.Today"
+                       asp-for="Hasta">
+            </div>
+        </div>
+        <div class="col-md-2 mt-auto">
+            <button type="submit" class="btn btn-primary" value="Filtrar">Filtrar</button>
+        </div>
+    </div>
+</form>

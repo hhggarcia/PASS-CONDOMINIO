@@ -1,0 +1,77 @@
+﻿@model Prueba.Models.PagoPropiedad
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Pagos Recibidos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="card-body">
+                                        <h6>Esta seguro de eliminar este pago confirmado?</h6>
+                                        <hr />
+                                        <dl class="row">             
+                                            <dt class="col-sm-6">
+                                                @Html.DisplayNameFor(model => model.IdPagoNavigation.Fecha)
+                                            </dt>
+                                            <dd class="col-sm-6">
+                                                @Html.DisplayFor(model => model.IdPagoNavigation.Fecha)
+                                            </dd>
+                                            <dt class="col-sm-6">
+                                                @Html.DisplayNameFor(model => model.IdPropiedadNavigation.Codigo)
+                                            </dt>
+                                            <dd class="col-sm-6">
+                                                @Html.DisplayFor(model => model.IdPropiedadNavigation.Codigo)
+                                            </dd>
+                                            <dt class="col-sm-6">
+                                                @Html.DisplayNameFor(model => model.IdPagoNavigation.FormaPago)
+                                            </dt>
+                                            <dd class="col-sm-6">
+                                                @Html.DisplayFor(model => model.IdPagoNavigation.FormaPago)
+                                            </dd>
+                                            <dt class="col-sm-6">
+                                                @Html.DisplayNameFor(model => model.IdPagoNavigation.Monto)
+                                            </dt>
+                                            <dd class="col-sm-6">
+                                                @Html.DisplayFor(model => model.IdPagoNavigation.Monto)
+                                            </dd>                                           
+                                           
+                                            <dt class="col-sm-6">
+                                                @Html.DisplayNameFor(model => model.IdPagoNavigation.Concepto)
+                                            </dt>
+                                            <dd class="col-sm-6">
+                                                @Html.DisplayFor(model => model.IdPagoNavigation.Concepto)
+                                            </dd>
+                                            
+                                        </dl>
+                                        <form asp-action="DeletePagoPropietarioConfirmado">
+                                            <input type="hidden" asp-for="IdPagoPropiedad" />
+                                            <input type="submit" value="Eliminar" class="btn btn-danger" />
+                                            <a asp-action="PagosConfirmados" class="btn btn-secondary">Volver</a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

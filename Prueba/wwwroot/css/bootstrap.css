@@ -367,7 +367,7 @@ legend + * {
     clear: left
 }
 
-::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-fields-wrapper, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-text, ::-webkit-datetime-edit-year-field {
+::-webkit-DateTime-edit-day-field, ::-webkit-DateTime-edit-fields-wrapper, ::-webkit-DateTime-edit-hour-field, ::-webkit-DateTime-edit-minute, ::-webkit-DateTime-edit-month-field, ::-webkit-DateTime-edit-text, ::-webkit-DateTime-edit-year-field {
     padding: 0
 }
 
@@ -2192,7 +2192,7 @@ progress {
 
 .form-control-sm {
     min-height: calc(1.5em + .5rem + 2px);
-    padding: .25rem .5rem;
+    padding: .25rem .9rem;
     font-size: .875rem;
     border-radius: .2rem
 }
@@ -2871,7 +2871,7 @@ textarea.form-control-lg {
     user-select: none;
     background-color: transparent;
     border: 1px solid transparent;
-    padding: .375rem .75rem;
+    padding: .375rem .75rem !important;
     font-size: 1rem;
     border-radius: .25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out
@@ -7302,7 +7302,7 @@ textarea.form-control-lg {
 }
 
 .text-primary {
-    color: #435ebe 
+    color: #435ebe !important;
 }
 
 .text-secondary {

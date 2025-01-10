@@ -1,0 +1,91 @@
+﻿@model Prueba.Models.NotaCredito
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Notas de Creditos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form asp-action="Edit">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="IdNotaCredito" />
+                                <div class="form-group">
+                                    <label asp-for="IdFactura" class="control-label"></label>
+                                    <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
+                                    <span asp-validation-for="IdFactura" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdCliente" class="control-label"></label>
+                                    <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.IdCliente"></select>
+                                    <span asp-validation-for="IdCliente" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Concepto" class="control-label"></label>
+                                    <input asp-for="Concepto" class="form-control" />
+                                    <span asp-validation-for="Concepto" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Comprobante" class="control-label"></label>
+                                    <input asp-for="Comprobante" class="form-control" />
+                                    <span asp-validation-for="Comprobante" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Fecha" class="control-label"></label>
+                                    <input asp-for="Fecha" class="form-control" />
+                                    <span asp-validation-for="Fecha" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Monto" class="control-label"></label>
+                                    <input asp-for="Monto" class="form-control" />
+                                    <span asp-validation-for="Monto" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetIva" class="control-label"></label>
+                                    <select asp-for="IdRetIva" class="form-control" asp-items="ViewBag.IdRetIva"></select>
+                                    <span asp-validation-for="IdRetIva" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdRetIslr" class="control-label"></label>
+                                    <select asp-for="IdRetIslr" class="form-control" asp-items="ViewBag.IdRetIslr"></select>
+                                    <span asp-validation-for="IdRetIslr" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdPagoRecibido" class="control-label"></label>
+                                    <input asp-for="IdPagoRecibido" class="form-control" />
+                                    <span asp-validation-for="IdPagoRecibido" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="IdPropiedad" class="control-label"></label>
+                                    <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
+                                    <span asp-validation-for="IdPropiedad" class="text-danger"></span>
+                                </div>
+                                <div class="form-group pt-2">
+                                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

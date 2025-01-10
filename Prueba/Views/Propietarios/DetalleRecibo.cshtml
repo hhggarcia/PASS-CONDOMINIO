@@ -1,0 +1,33 @@
+﻿@model Prueba.ViewModels.DetalleReciboTransaccionesVM
+
+@{
+    ViewData["Title"] = "Detalles";
+    //Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        <a class="btn btn-light mb-3" asp-route-id="@Model.Recibo.IdReciboCobro" asp-controller="Propietarios" asp-action="DetalleReciboTransaccionesPDF">PDF</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Detalles de Recibo
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <partial name="_DetalleReciboTransacciones" model="Model" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

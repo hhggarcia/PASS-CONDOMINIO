@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Prueba.Areas.Identity.Data;
 using Prueba.Models;
 using Prueba.Services;
+using Prueba.ViewModels;
 
 namespace Prueba.Areas.Identity.Pages.Account
 {
@@ -135,7 +136,7 @@ namespace Prueba.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                //await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -165,7 +166,7 @@ namespace Prueba.Areas.Identity.Pages.Account
                         var correo = new RegisterConfirm
                         {
                             To = Input.Email,
-                            Subject = "Registro Condominio Password Technology",
+                            Subject = "Registro Condominio Password Technology C.A.",
                             Body = "Bienvenido a nuestra aplicación para administrar sus condominios."
                         };
 

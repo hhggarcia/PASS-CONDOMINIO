@@ -1,0 +1,103 @@
+﻿@model Prueba.ViewModels.AsignarCobroTransitoFacturaVM
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cobros en Tránsito
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AsignarFactura">
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger">
+                            @if (@ViewBag.FormaPago == "fallido")
+                            {
+                                <h6>@ViewBag.Mensaje</h6>
+                                <hr />
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdCobroTransito" class="control-label"></label>
+                            <select asp-for="IdCobroTransito" class="form-control" asp-items="ViewBag.IdCobros"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdFactura" class="control-label"></label>
+                            <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input id="retIva" class="form-check-input" asp-for="RetIva" /> Generar Retención de IVA
+                            </label>
+                        </div>
+                        <br>
+                        <div id="inputsContainerIva" style="display: none;">
+                            <label for="fechaInput">Fecha de Emisión:</label>
+                            <input asp-for="FechaEmisionRetIva" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionRetIva">
+                            <br>
+                            <label for="numeroInput">Número de Comprobante:</label>
+                            <input asp-for="NumComprobanteRetIva" class="form-control" type="text" id="numComprobanteRetIva">
+                            <br>
+
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input id="retIslr" class="form-check-input" asp-for="RetIslr" /> Generar Retención de ISLR
+                            </label>
+                        </div>
+                        <br>
+                        <div id="inputsContainerIslr" style="display: none;">
+                            <label for="fechaInput">Fecha de Emisión:</label>
+                            <input asp-for="FechaEmisionIslr" class="form-control" value="@DateTime.Today" type="date" id="fechaEmisionIslr">
+                            <br>
+                            <label for="numeroInput">Número de Comprobante:</label>
+                            <input asp-for="NumComprobanteRetIslr" class="form-control" type="text" id="numComprobanteRetIslr">
+                            <br>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Asignar" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            const checkboxIva = document.getElementById("retIva");
+            const checkboxIslr = document.getElementById("retIslr");
+            const inputsContainerIva = document.getElementById("inputsContainerIva");
+            const inputsContainerIslr = document.getElementById("inputsContainerIslr");
+
+            checkboxIva.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIva.style.display = checkboxIva.checked ? "block" : "none";
+            });
+            checkboxIslr.addEventListener("change", function () {
+                // Si el checkbox está marcado, muestra los inputs; de lo contrario, ocúltalos
+                inputsContainerIslr.style.display = checkboxIslr.checked ? "block" : "none";
+            });
+        });
+    </script>
+}
+

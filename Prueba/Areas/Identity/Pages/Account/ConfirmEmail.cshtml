@@ -2,9 +2,28 @@
 @model ConfirmEmailModel
 @{
     ViewData["Title"] = "Confirm email";
-    Layout = "~/Views/Admin/_Layout.cshtml";
+    Layout = "~/Areas/Identity/Pages/Account/Manage/_LayoutAccount.cshtml";
 
 }
 
-<h1>@ViewData["Title"]</h1>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

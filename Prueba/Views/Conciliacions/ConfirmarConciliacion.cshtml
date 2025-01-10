@@ -1,0 +1,150 @@
+﻿@model Prueba.ViewModels.ItemConciliacionVM
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Confirmar Conciliación
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h6>Seguro que quiere confirmar esta conciliación?</h6>
+                        <hr />
+                        <div>
+                            <div class="card-body">
+                                <div class="form form-horizontal">
+                                    <div class="form-body">
+                                        <dl class="row">
+                                            <form asp-action="Conciliar">
+                                                <input type="hidden" asp-for="IdCodigoCuenta" />
+                                                @for (int i = 0; i < @Model.PagosIds.Count(); i++)
+                                                {
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Value)
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Text)
+                                                    @Html.HiddenFor(h => Model.PagosIds[i].Selected)
+                                                }
+
+                                                @if (Model.ConciliacionAnterior == null)
+                                                {
+                                                    <div class="text-danger">
+                                                        <span id="mensaje">No existe una conciliación anterior. Por favor ingrese el saldo inicial</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Saldo Inicial</label>
+                                                        <input id="saldoInicial" onchange="CalcularSaldoFinal()" type="number" asp-for="SaldoInicial" class="form-control" />
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-danger">
+                                                        <span id="mensaje">Existe una conciliación anterior. Vuelva a escribir el monto @(Model.ConciliacionAnterior.SaldoFinal.ToString("N")) por favor</span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Saldo Inicial</label>
+                                                        <input id="saldoInicial" onchange="CalcularSaldoFinal()" type="number" asp-for="SaldoInicial" class="form-control" />
+                                                    </div>
+                                                }
+                                                <div class="form-group">
+                                                    <label class="control-label">Total Ingreso</label>
+                                                    <input id="totalIngreso" type="number" asp-for="TotalIngreso" class="form-control" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Total Egreso</label>
+                                                    <input id="totalEgreso" type="number" asp-for="TotalEgreso" class="form-control" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Saldo Final</label>
+                                                    <input id="saldoFinal" type="number" asp-for="SaldoFinal" class="form-control" readonly />
+                                                </div>
+                                                <div class="text-danger">
+                                                    <span id="mensajeBanco"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Saldo En Banco</label>
+                                                    <input id="saldoBanco" onchange="VerificarSaldoBanco()" type="number" asp-for="SaldoBanco" class="form-control" />
+                                                </div>
+
+                                                <hr />
+                                                <div class="form-group">
+                                                    <button id="aceptar" class="btn btn-primary" type="submit" disabled>Aceptar</button>
+                                                    <button asp-action="Index" id="cancelar" class="btn btn-secondary">Cancelar</button>
+                                                </div>
+                                            </form>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function CalcularSaldoFinal() {
+            let saldoInicial = document.getElementById('saldoInicial');
+            let totalIngreso = document.getElementById('totalIngreso');
+            let totalEgreso = document.getElementById('totalEgreso');
+            let saldoFinal = document.getElementById('saldoFinal');
+            let mensaje = document.getElementById('mensaje');
+
+            if (totalEgreso != null && totalEgreso != null && saldoInicial != null) {
+                saldoInicial = parseFloat(saldoInicial.value);
+                totalIngreso = parseFloat(totalIngreso.value);
+                totalEgreso = parseFloat(totalEgreso.value);
+
+                let monto = saldoInicial + totalIngreso - totalEgreso;
+
+                console.log("Saldo final: " + monto);
+                saldoFinal.value = monto.toFixed(2);
+
+                mensaje.textContent = "";
+            } else {
+                console.log("Error en la suma");
+            }
+        }
+
+        function VerificarSaldoBanco() {
+            let saldoFinal = document.getElementById('saldoFinal');
+            let saldoBanco = document.getElementById('saldoBanco');
+            let mensaje = document.getElementById('mensajeBanco');
+
+            if (saldoFinal != null && saldoBanco != null) {
+                mensaje.textContent = "";
+                saldoFinal = parseFloat(saldoFinal.value);
+                saldoBanco = parseFloat(saldoBanco.value);
+
+                let diferencia = saldoFinal - saldoBanco;
+                console.log("Diferencia: " + diferencia)
+                if (diferencia !== 0) {
+                    mensaje.textContent = "El saldo final y el del banco no coinciden. Revisar los movimientos nuevamente!";
+                    saldoBanco.value = 0;
+                } else {
+                    mensaje.textContent = "";
+                    let btnAceptar = document.getElementById('aceptar');
+                    btnAceptar.disabled = false;
+                }
+            }
+
+        }
+    </script>
+}

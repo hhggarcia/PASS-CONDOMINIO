@@ -1,0 +1,397 @@
+﻿@using Prueba.ViewModels
+
+@model DashboardUsuarioVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+}
+}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Condominio
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Propiedades.First().IdCondominioNavigation.Nombre
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Oficinas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @if (Model.Propiedades.Any())
+                                {
+                                    foreach (var item in Model.Propiedades)
+                                    {
+                                        <span>@item.Codigo</span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 bg-content-bg">
+                <div class="newsletter__top"></div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Propietario
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @if (Model.Usuario != null)
+                                {
+                                    <span>@Model.Usuario.FirstName</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (Model.Propiedades != null && Model.Propiedades.Any())
+    {
+        foreach (var propiedad in Model.Propiedades)
+        {
+            var recibosPendientes = propiedad.ReciboCobros.Where(c => !c.Pagado).OrderBy(c => c.Fecha).ToList();
+
+            <div class="row">
+                <div class="col-xl-12 col-lg-12">
+                    <div class="card shadow mb-4 bg-content-bg">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                Recibos pendientes @propiedad.Codigo
+                            </h6>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered form"
+                                       id="dataTable"
+                                       width="100%"
+                                       cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha de Emisión</th>
+                                            <th>Mes</th>
+                                            <th>Monto</th>
+                                            <th>Abonado</th>
+                                            <th>total a Pagar</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @if (recibosPendientes.Any())
+                                        {
+                                            foreach (var recibo in recibosPendientes)
+                                            {
+                                                <tr class="tr_s">
+                                                    <td>@recibo.Mes</td>
+                                                    <td>@recibo.Fecha.ToString("dd/MM/yyyy")</td>
+                                                    <td>@recibo.Monto.ToString("N")</td>
+                                                    <td>@recibo.Abonado</td>
+                                                    <td>@recibo.TotalPagar.ToString("N")</td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="tr_s">
+                                                <td>No</td>
+                                                <td>existen</td>
+                                                <td>recibos</td>
+                                                <td>pendientes</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Reporta aquí su pago
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        @if (Model.Propiedades != null
+                       && Model.Propiedades.Count > 0)
+                        {
+                            <!-- Inicio -->
+                            <form class="form form-horizontal" enctype="multipart/form-data" asp-action="PagoRapidoUsuario">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                @if (@ViewBag.FormaPago == "fallido")
+                                {
+                                    <h6>@ViewBag.Mensaje</h6>
+                                    <hr />
+                                }
+                                <div class="form-body">
+                                    <div class="row">
+
+                                        <!-- Fecha -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Fecha</label>
+                                                <span asp-validation-for="Fecha" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input class="form-control"
+                                                           placeholder="Name"
+                                                           required
+                                                           id="first-name-icon"
+                                                           asp-for="Fecha"
+                                                           value="@DateTime.Today" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-calendar-date"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Concepto -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Concepto</label>
+                                                <span asp-validation-for="Concepto" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           placeholder="Concepto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Concepto" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Monto -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Monto</label>
+                                                <span asp-validation-for="Monto" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input type="number"
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Monto" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- Imagen -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Comprobante de Pago</label>
+                                                <span asp-validation-for="Imagen" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input type="file"
+                                                           class="form-control"
+                                                           placeholder="Imagen"
+                                                           id="first-name-icon"
+                                                           required
+                                                           name="file" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metodo de pago -->
+                                        <div class="col-md-12 col-12">
+                                            <div class="form-group has-icon-left mandaory">
+                                                <label for="last-name-column">Método de Pago</label>
+                                                <div class="position-relative">
+                                                    <div class="tab-area">
+
+                                                        <div class="col-sm-5 mb-3">
+
+                                                            <select asp-for="Pagoforma" id='mySelect' class="form-select nav-tabs-selector">
+
+                                                                <option value="0">
+                                                                    Efectivo
+                                                                </option>
+                                                                <option value="1">
+                                                                    Transferencia
+                                                                </option>
+                                                                @* <option value="2">
+                                                        Nota de Crédito
+                                                        </option> *@
+                                                            </select>
+                                                        </div>
+
+                                                        <ul class="nav nav-tabs" id="myTab">
+                                                            <li class="active"><a href="#home"></a></li>
+                                                            <li><a href="#profile"></a></li>
+                                                            <li><a href="#messages"></a></li>
+                                                            <li><a href="#settings"></a></li>
+                                                        </ul>
+
+                                                        <div class="tab-content">
+                                                            <div class="tab-pane active" id="home">
+                                                                <!-- Efectivo -->
+                                                                <div class="card-body">
+                                                                    <div class="form form-horizontal">
+                                                                        <div class="form-body">
+                                                                            <div class="row">
+
+                                                                                <!-- Tipo de Banco -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left mandaory">
+                                                                                        @*<label for="last-name-column">Banco</label>*@
+                                                                                        <div class="position-relative">
+                                                                                            <fieldset class="form-group">
+                                                                                                <select asp-for="IdCodigoCuentaCaja"
+                                                                                                        asp-items="Model.SubCuentasCaja"
+                                                                                                        class="form-select" id="efectivos">
+                                                                                                    <option value="0">Seleccionar</option>
+                                                                                                </select>
+                                                                                            </fieldset>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="tab-pane" id="profile">
+                                                                <!-- Transferencia -->
+                                                                <div class="card-body">
+                                                                    <div class="form form-horizontal">
+                                                                        <div class="form-body">
+                                                                            <div class="row">
+                                                                                <!-- Pago Emitido -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left">
+                                                                                        <label for="last-name-column">Número de Referencia</label>
+                                                                                        <div class="position-relative">
+                                                                                            <input type="number" class="form-control"
+                                                                                                   placeholder="Referencia" id="first-name-icon" required=""
+                                                                                                   asp-for="NumReferencia">
+                                                                                            <div class="form-control-icon">
+                                                                                                <i class="bi bi-credit-card"></i>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <!-- Tipo de Banco -->
+                                                                                <div class="col-md-6 col-12">
+                                                                                    <div class="form-group has-icon-left mandaory">
+                                                                                        <label for="last-name-column">Cuenta Bancaria</label>
+                                                                                        <div class="position-relative">
+                                                                                            <fieldset class="form-group">
+                                                                                                <select asp-for="IdCodigoCuentaBanco"
+                                                                                                        asp-items="Model.SubCuentasBancos"
+                                                                                                        class="form-select" id="bancos">
+                                                                                                    <option value="0">Seleccionar</option>
+                                                                                                </select>
+                                                                                            </fieldset>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="tab-pane" id="messages">
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 d-flex justify-content-end">
+                                            <button type="submit"
+                                                    class="btn btn-primary me-1 mb-1">
+                                                Enviar
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        }
+                        else
+                        {
+                            <h2>Hace falta data!</h2>
+                        }
+                    }
+                    else
+                    {
+                        <h1>Error en el modelo!</h1>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        $('.nav-tabs-selector').on('change', function (e) {
+            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+    </script>
+}

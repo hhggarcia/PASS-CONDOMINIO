@@ -1,0 +1,133 @@
+﻿
+ @model IEnumerable<Prueba.Models.CuotasEspeciale>
+
+@{
+    ViewData["Title"] = "Cuotas Especiales";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" asp-action="Crear" asp-controller="CuotasEspeciales">Crear Cuota Especial</a>
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" asp-action="Cobrar" asp-controller="CuotasEspeciales">Cobrar</a>
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="Recibos" asp-controller="CuotasEspeciales">Recibos de Cuotas Especiales</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cuotas Especiales
+                    </h6>
+                    <partial name="_FiltrarFecha" model="@(new Prueba.ViewModels.FiltrarFechaVM())" />
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-center" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Cuota Especial</th>
+                                    <th>Sub Cuota</th>
+                                    <th>Fecha de creación</th>
+                                    <th>Activa</th>
+                                    <th>Monto Total</th>
+                                    <th>Tasa de cambio</th>
+                                    <th>Monto total en Dolares</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="tr_s">
+                                            <td>@item.Descripcion</td>
+                                            <td>@string.Format("{0:N2}", item.SubCuotas) @item.SimboloMoneda</td>
+                                            <td>@item.FechaInicio</td>
+                                            <td>@(item.Activa ? "Si" : "No")</td>
+                                            <td>@string.Format("{0:N2}", item.MontoTotal) @item.SimboloMoneda</td>
+                                            <td>@item.ValorDolar.ToString("N2") @item.SimboloMoneda</td>
+                                            <td>@((item.MontoTotal / item.ValorDolar).ToString("N2")) $</td>
+                                            <td>
+                                                <a asp-action="Editar" asp-route-id="@item.IdCuotaEspecial">Editar</a> |
+                                                <a asp-action="Detalles" asp-route-id="@item.IdCuotaEspecial">Detalles</a> |
+                                                <a asp-action="borrar" asp-route-id="@item.IdCuotaEspecial">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr class="tr_s">
+                                        <td colspan="8">No hay cuotas especiales</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*                     <form>
+                        <div class="row">
+                            <div class="col-md-5 mt-3">
+                                <label for="last-name-column">Fecha Inicio</label>
+                                <div class="input-group date">
+                                    <input class="form-control"
+                                           type="date"
+                                           id="fechaDesde" name="fechaDesde"
+                                           value="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")" required>
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mt-3">
+                                <label for="last-name-column">Fecha Fin</label>
+                                <div class="position-relative">
+                                    <input class="form-control"
+                                           type="date"
+                                           id="fechaHasta" name="fechaHasta"
+                                           value="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mt-auto">
+                                <button type="button" class="btn btn-primary" id="filtroForm">Filtrar</button>
+                            </div>
+                        </div>
+                    </form>
+ *@
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#filtroForm').click(function () {
+            // e.preventDefault(); 
+
+            // Captura los valores de las fechas
+            var fechaInicio = $('#fechaDesde').val();
+            var fechaFin = $('#fechaHasta').val();
+
+            $.ajax({
+                url: '/CuotasEspeciales/FiltrarFecha',
+                type: 'POST',
+                data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
+                success: function (result) {
+                    // Actualiza la tabla con los datos filtrados
+                    $('#dataTable tbody').html(result);
+
+                },
+                error: function (error) {
+                    console.error('Error en la solicitud AJAX:', error);
+                }
+            });
+        });
+    });
+</script>

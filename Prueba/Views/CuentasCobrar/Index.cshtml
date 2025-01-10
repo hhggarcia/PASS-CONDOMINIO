@@ -1,0 +1,173 @@
+﻿@model IEnumerable<Prueba.Models.CuentasCobrar>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
+        @* <a class="btn btn-light mb-3" asp-controller="CuentasCobrar"
+        asp-action="Create">
+        Registrar
+        </a> *@
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        
+        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="CuentasCobrar">Crear pdf</button>
+
+        <button id="CuentasCobrarExcel" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </button>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Cuentas Por Cobrar
+                    </h6>
+                    <partial name="_FiltrarFecha" model="@(new Prueba.ViewModels.FiltrarFechaVM())" />
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-center"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.FechaEmision)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation.NumFactura)
+                                    </th>
+                                    <th>
+                                        Cliente
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Monto)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Status)
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @* @Html.DisplayFor(modelItem => item.IdFacturaNavigation.FechaEmision.ToString("dd/MM/yyyy")) *@
+                                            @item.IdFacturaNavigation.FechaEmision.ToString("dd/MM/yyyy")
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.IdClienteNavigation.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Monto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Status)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#CuentasCobrar").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/CuentasCobrar/CuentasCobrarPDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'CuentasPorCobrar.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar');
+                }
+            });
+        });
+
+        $("#CuentasCobrarExcel").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/CuentasCobrar/CuentasCobrarExcel',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'CuentasPorPagar.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar');
+                }
+            });
+        });
+    });
+</script>

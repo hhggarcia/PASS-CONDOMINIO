@@ -1,0 +1,17 @@
+﻿using Prueba.Models;
+
+namespace Prueba.ViewModels
+{
+    public class ComprobanteVM
+    {
+        public Condominio? Condominio { get; set; }
+        //public Inmueble? Inmueble { get; set; }
+        public Propiedad? Propiedad { get; set; }
+        public PagoRecibido? PagoRecibido { get; set; }
+        public ReferenciasPr? Referencias { get; set; }
+        public DateTime FechaComprobante { get; set; }
+        public decimal Restante { get; set; }
+        public decimal Abonado { get; set; }
+        public string? Mensaje { get; set; }
+    }
+}

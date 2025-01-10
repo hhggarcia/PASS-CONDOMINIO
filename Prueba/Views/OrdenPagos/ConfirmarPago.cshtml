@@ -1,0 +1,73 @@
+﻿@using Prueba.ViewModels
+
+@model OrdenPagoVM
+
+@{
+    ViewData["Title"] = "Pagos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Confirmar Pago
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h6>Seguro que quiere confirmar este pago?</h6>
+                        <h6>Al confirmar el pago se verá reflejado en el Libro diario</h6>
+                        <hr />
+                        <div>
+                            <div class="card-body">
+                                <div class="form form-horizontal">
+                                    <div class="form-body">
+                                        <dl class="row">                                            
+                                            <form asp-action="RegistrarPagosPost">
+                                                <input type="hidden" asp-for="IdCodigoCuentaBanco" />
+                                                <input type="hidden" asp-for="IdCodigoCuentaCaja" />
+                                                <input type="hidden" asp-for="RelacionGasto" />
+                                                <label class="control-label">Forma de pago</label>
+                                                @if (Model.Pagoforma == FormaPago.Efectivo)
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Efectivo" class="form-control" readonly />
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" asp-for="Pagoforma" value="Transferencia" class="form-control" readonly />
+                                                    <label class="control-label">Numero de Referencia</label>
+                                                    <input type="text" asp-for="NumReferencia" class="form-control" readonly />
+
+                                                }
+                                                <label class="control-label">Concepto</label>
+                                                <input type="text" asp-for="Concepto" class="form-control" readonly />
+                                                <label class="control-label">Fecha</label>
+                                                <input asp-for="Pago.Fecha" class="form-control" readonly />
+                                                <label class="control-label">Monto</label>
+                                                <input type="number" asp-for="Pago.Monto" class="form-control" readonly />
+                                                <input type="hidden" asp-for="IdSubcuenta" />
+                                                <input type="hidden" asp-for="IdProveedor" />
+                                                <hr />
+                                                <button class="btn btn-primary" type="submit">Si</button>
+                                                <a asp-action="OrdenPago" class="btn btn-secondary">No</a>
+                                            </form>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

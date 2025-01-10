@@ -1,0 +1,295 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Prueba.Context;
+using Prueba.Models;
+using Prueba.Repositories;
+
+namespace Prueba.Controllers
+{
+    [Authorize(Policy = "RequireAdmin")]
+
+    public class ProductosController : Controller
+    {
+        private readonly IMonedaRepository _repoMoneda;
+        private readonly NuevaAppContext _context;
+
+        public ProductosController(IMonedaRepository repoMoneda,
+            NuevaAppContext context)
+        {
+            _repoMoneda = repoMoneda;
+            _context = context;
+        }
+
+        // GET: Productos
+        public async Task<IActionResult> Index()
+        {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var nuevaAppContext = _context.Productos.Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdRetencionIslrNavigation)
+                .Include(p => p.IdRetencionIvaNavigation)
+                .Where(p => p.IdCondominio == IdCondominio);
+
+            return View(await nuevaAppContext.ToListAsync());
+        }
+
+        // GET: Productos/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var producto = await _context.Productos
+                .Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdRetencionIslrNavigation)
+                .Include(p => p.IdRetencionIvaNavigation)
+                .FirstOrDefaultAsync(m => m.IdProducto == id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return View(producto);
+        }
+
+        // GET: Productos/Create
+        public async Task<IActionResult> Create()
+        {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", IdCondominio);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion");
+
+            var selectIslrs = await(from c in _context.Islrs
+                                    where c.Tarifa > 0
+                                    select new
+                                    {
+                                        DataValue = c.Id,
+                                        DataText = c.Concepto
+                                        + ((c.Pjuridica) ? " PJ" : "")
+                                        + ((c.Pnatural) ? " PN" : "")
+                                        + ((c.Domiciliada) ? " Domiciliado" : "")
+                                        + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                        + ((c.Residenciada) ? " Residenciada" : "")
+                                        + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                        + " " + c.Tarifa + "%"
+
+                                    }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+            return View();
+        }
+
+        // POST: Productos/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto, bool check)
+        {
+            ModelState.Remove(nameof(producto.IdRetencionIvaNavigation));
+            ModelState.Remove(nameof(producto.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(producto.IdCondominioNavigation));
+
+            if (ModelState.IsValid)
+            {
+                if (check)
+                {
+                    //producto.IdRetencionIva = null;
+                    producto.IdRetencionIslr = null;                  
+                }
+
+                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(producto.IdCondominio);
+
+                if (monedaPrincipal.Any())
+                {
+                    producto.Precio = producto.Precio * monedaPrincipal.First().ValorDolar;
+                }
+                _context.Add(producto);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+            return View(producto);
+        }
+
+        // GET: Productos/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
+            return View(producto);
+        }
+
+        // POST: Productos/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("IdProducto,Nombre,IdCondominio,Precio,TipoProducto,Descripcion,Disponible,IdRetencionIva,IdRetencionIslr")] Producto producto, bool check)
+        {
+            if (id != producto.IdProducto)
+            {
+                return NotFound();
+            }
+
+            ModelState.Remove(nameof(producto.IdRetencionIvaNavigation));
+            ModelState.Remove(nameof(producto.IdRetencionIslrNavigation));
+            ModelState.Remove(nameof(producto.IdCondominioNavigation));
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (check)
+                    {
+                        //producto.IdRetencionIva = null;
+                        producto.IdRetencionIslr = null;
+                    }
+
+                    var monedaPrincipal = await _repoMoneda.MonedaPrincipal(producto.IdCondominio);
+
+                    if (monedaPrincipal.Any())
+                    {
+                        producto.Precio = producto.Precio * monedaPrincipal.First().ValorDolar;
+                    }
+
+                    _context.Update(producto);
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductoExists(producto.IdProducto))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", producto.IdCondominio);
+            ViewData["IdRetencionIva"] = new SelectList(_context.Ivas, "Id", "Descripcion", producto.IdRetencionIva);
+
+            var selectIslrs = await (from c in _context.Islrs
+                                     where c.Tarifa > 0
+                                     select new
+                                     {
+                                         DataValue = c.Id,
+                                         DataText = c.Concepto
+                                         + ((c.Pjuridica) ? " PJ" : "")
+                                         + ((c.Pnatural) ? " PN" : "")
+                                         + ((c.Domiciliada) ? " Domiciliado" : "")
+                                         + ((c.NoDomiciliada) ? " No Domiciliado" : "")
+                                         + ((c.Residenciada) ? " Residenciada" : "")
+                                         + ((c.NoResidenciada) ? " No Residenciada" : "")
+                                         + " " + c.Tarifa + "%"
+
+                                     }).ToListAsync();
+
+            ViewData["IdRetencionIslr"] = new SelectList(selectIslrs, "DataValue", "DataText");
+
+            return View(producto);
+        }
+
+        // GET: Productos/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var producto = await _context.Productos
+                .Include(p => p.IdCondominioNavigation)
+                .Include(p => p.IdRetencionIslrNavigation)
+                .Include(p => p.IdRetencionIvaNavigation)
+                .FirstOrDefaultAsync(m => m.IdProducto == id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return View(producto);
+        }
+
+        // POST: Productos/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto != null)
+            {
+                _context.Productos.Remove(producto);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ProductoExists(int id)
+        {
+            return _context.Productos.Any(e => e.IdProducto == id);
+        }
+    }
+}

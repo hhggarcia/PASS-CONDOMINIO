@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Crear Caso";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Crear un nuevo caso
+                    </h6>
+                    <!-- Button trigger modal -->
+                </div>
+
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-2">
+                                            <label for="InputCodCaso" class="form-label">Cod. Caso</label>
+                                            <input type="text" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-2">
+                                            <label for="InputNombreCaso" class="form-label">Nombre del Caso</label>
+                                            <input type="text" class="form-control  casos-input" id="exampleInputCodCaso" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-2">
+                                            <label for="InputPrioridad" class="form-label">Prioridad</label>
+                                            <select class="form-select  casos-input" aria-label="Default select example">
+                                                <option selected>Todos</option>
+                                                <option value="1">Uno</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="InputStatus" class="form-label">Status</label>
+                                            <select class="form-select  casos-input" aria-label="Default select example">
+                                                <option selected>En Proceso</option>
+                                                <option value="1">Uno</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="exampleAgencia" class="form-label">Agencia</label>
+                                            <select class="form-select  casos-input" aria-label="Default select example">
+                                                <option selected>Uno</option>
+                                                <option value="1">Dos</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="exampleFechaDesde" class="form-label">Fecha Desde</label>
+                                            <input type="date" class="form-control  casos-input" id="exampleInputFechaDesde" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label for="exampleFechaDesde" class="form-label">Fecha Hasta</label>
+                                            <input type="date" class="form-control  casos-input" id="exampleInputFechaDesde" aria-describedby="emailHelp">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlTextarea1" class="form-label">Descripción del caso</label>
+                                            <textarea class="form-control casos-input" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="exampleFormComentarios" class="form-label">Comentarios</label>
+                                            <textarea class="form-control casos-input" id="exampleFormComentarios" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-2">
+                                            <label for="exampleTiposCasos" class="form-label">Tipos de Casos</label>
+                                            <select class="form-select casos-input" aria-label="Default select example">
+                                                <option selected>Uno</option>
+                                                <option value="1">Dos</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                            <label class="form-check-label" for="exampleCheck1">Solo casos propios / Remitidos a mi persona.</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary">Crear</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+

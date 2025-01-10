@@ -10941,7 +10941,7 @@ function DateAdapter(options) {
 helpers$1.extend(DateAdapter.prototype, /** @lends DateAdapter */ {
 	/**
 	 * Returns a map of time formats for the supported formatting units defined
-	 * in Unit as well as 'datetime' representing a detailed date/time string.
+	 * in Unit as well as 'DateTime' representing a detailed date/time string.
 	 * @returns {{string: string}}
 	 */
 	formats: abstract,
@@ -14561,7 +14561,7 @@ var scale_time = core_scale.extend({
 		if (typeof label === 'string') {
 			return label;
 		}
-		return adapter.format(toTimestamp(me, label), timeOpts.displayFormats.datetime);
+		return adapter.format(toTimestamp(me, label), timeOpts.displayFormats.DateTime);
 	},
 
 	/**
@@ -14707,7 +14707,7 @@ var scales = {
 };
 
 var FORMATS = {
-	datetime: 'MMM D, YYYY, h:mm:ss a',
+	DateTime: 'MMM D, YYYY, h:mm:ss a',
 	millisecond: 'h:mm:ss.SSS a',
 	second: 'h:mm:ss a',
 	minute: 'h:mm a',

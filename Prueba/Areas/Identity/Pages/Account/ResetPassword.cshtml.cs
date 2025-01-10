@@ -71,9 +71,12 @@ namespace Prueba.Areas.Identity.Pages.Account
             public string Code { get; set; }
 
         }
-
-        public IActionResult OnGet(string code = null)
+        
+        public IActionResult OnGet(string area, string code)
         {
+            //var user = await _userManager.FindByIdAsync(id);
+            //string code = await _userManager.GeneratePasswordResetTokenAsync(user);
+
             if (code == null)
             {
                 return BadRequest("A code must be supplied for password reset.");
@@ -83,9 +86,11 @@ namespace Prueba.Areas.Identity.Pages.Account
                 Input = new InputModel
                 {
                     Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    //Code = code
                 };
                 return Page();
             }
+            //return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

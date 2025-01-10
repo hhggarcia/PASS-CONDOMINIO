@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Prueba.ViewModels;
 
 namespace Prueba.Controllers
 {
@@ -58,44 +59,44 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-            var userRolesInDb = await _signInManager.UserManager.GetRolesAsync(user);
+            //var userRolesInDb = await _signInManager.UserManager.GetRolesAsync(user);
 
             //Loop through the roles in ViewModel
             //Check if the Role is Assigned In DB
             //If Assigned -> Do Nothing
             //If Not Assigned -> Add Role
 
-            var rolesToAdd = new List<string>();
-            var rolesToDelete = new List<string>();
+            //var rolesToAdd = new List<string>();
+            //var rolesToDelete = new List<string>();
 
-            foreach (var role in data.Roles)
-            {
-                var assignedInDb = userRolesInDb.FirstOrDefault(ur => ur == role.Text);
-                if (role.Selected)
-                {
-                    if (assignedInDb == null)
-                    {
-                        rolesToAdd.Add(role.Text);
-                    }
-                }
-                else
-                {
-                    if (assignedInDb != null)
-                    {
-                        rolesToDelete.Add(role.Text);
-                    }
-                }
-            }
+            //foreach (var role in data.Roles)
+            //{
+            //    var assignedInDb = userRolesInDb.FirstOrDefault(ur => ur == role.Text);
+            //    if (role.Selected)
+            //    {
+            //        if (assignedInDb == null)
+            //        {
+            //            rolesToAdd.Add(role.Text);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (assignedInDb != null)
+            //        {
+            //            rolesToDelete.Add(role.Text);
+            //        }
+            //    }
+            //}
 
-            if (rolesToAdd.Any())
-            {
-                await _signInManager.UserManager.AddToRolesAsync(user, rolesToAdd);
-            }
+            //if (rolesToAdd.Any())
+            //{
+            //    await _signInManager.UserManager.AddToRolesAsync(user, rolesToAdd);
+            //}
 
-            if (rolesToDelete.Any())
-            {
-                await _signInManager.UserManager.RemoveFromRolesAsync(user, rolesToDelete);
-            }
+            //if (rolesToDelete.Any())
+            //{
+            //    await _signInManager.UserManager.RemoveFromRolesAsync(user, rolesToDelete);
+            //}
 
             user.FirstName = data.User.FirstName;
             user.LastName = data.User.LastName;
@@ -103,7 +104,7 @@ namespace Prueba.Controllers
 
             _unitOfWork.User.UpdateUser(user);
 
-            return RedirectToAction("Edit", new { id = user.Id });
+            return View("Index", "Home");
         }
     }
 }

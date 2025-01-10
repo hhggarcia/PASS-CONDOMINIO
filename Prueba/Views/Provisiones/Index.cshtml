@@ -1,0 +1,110 @@
+﻿@model IEnumerable<Prueba.Models.Provision>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Pagos Emitidos</h1>*@
+        <a class="btn btn-light mb-3"
+           asp-action="Create">
+            Crear Nueva
+        </a>
+    </div>
+
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Provisiones
+                    </h6>
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Monto)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.FechaInicio)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.FechaFin)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.MontoRef)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.ValorDolar)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.SimboloMoneda)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.SimboloRef)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdCodCuentaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdCodGastoNavigation)
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Monto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FechaInicio)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FechaFin)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MontoRef)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ValorDolar)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SimboloMoneda)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SimboloRef)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdCodCuentaNavigation.IdCodCuenta)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdCodGastoNavigation.IdCodCuenta)
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.IdProvision">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdProvision">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdProvision">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

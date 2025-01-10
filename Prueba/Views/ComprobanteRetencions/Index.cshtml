@@ -1,0 +1,177 @@
+﻿@model IEnumerable<Prueba.Models.ComprobanteRetencion>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller="ComprobanteRetencions"
+           asp-action="Create">
+            Registrar
+        </a>
+        <button type="button" class="btn btn-light mb-3" id="PagosEmitidos">Crear pdf</button>
+        <a class="btn btn-light mb-3"
+           asp-action="Index"
+           asp-controller="LibroCompras">
+            Volver
+        </a>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
+
+        @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        Excel
+        </a> *@
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Comprobante Retención
+                    </h6>
+                    <partial name="_FiltrarFecha" model="@(new Prueba.ViewModels.FiltrarFechaVM())" />
+
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-center"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.FechaEmision)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdProveedorNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.NumCompRet)
+                                    </th>
+                                    
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Descripcion)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Retencion) %
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Sustraendo)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.ValorRetencion)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.TotalImpuesto)
+                                    </th>
+                                    
+                                    
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.FechaEmision)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NumCompRet)
+                                        </td>                                        
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Descripcion)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Retencion)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Sustraendo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ValorRetencion)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TotalImpuesto)
+                                        </td>                                        
+                                        
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.IdComprobante">Editar</a> |
+                                            <a asp-action="Details" asp-route-id="@item.IdComprobante">Detalles</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.IdComprobante">Eliminar</a> |
+                                            <a asp-action="PrintComprobante" asp-route-id="@item.IdComprobante">Imprimir</a> |
+                                            <a asp-action="ComprobantePDF" asp-route-id="@item.IdComprobante">Descargar PDF</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#PagosEmitidos").click(function () {
+            var datos = @Html.Raw(Json.Serialize(Model));
+            $.ajax({
+                url: '/ComprobanteRetencions/ReportePDF',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datos),
+                success: function (result) {
+                    var binaryData = atob(result);
+                    var arrayBuffer = new ArrayBuffer(binaryData.length);
+                    var uint8Array = new Uint8Array(arrayBuffer);
+
+                    for (var i = 0; i < binaryData.length; i++) {
+                        uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([uint8Array], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Comprobantes_Retencion_ISLR.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // console.log("Exito")
+                },
+                error: function () {
+                    alert('Error al descargar comprobantes');
+                }
+            });
+        });
+    });
+</script>

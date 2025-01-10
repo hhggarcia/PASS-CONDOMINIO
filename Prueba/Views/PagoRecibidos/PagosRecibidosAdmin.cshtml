@@ -1,0 +1,134 @@
+﻿@using Prueba.ViewModels
+
+@model IndexPagoRecibdioVM
+
+@{
+    ViewData["Title"] = "Pagos Recibidos";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        <a type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" asp-action="PagosRecibidosPDF" asp-controller="Administrador"> Generar pdf</a>
+
+        <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <!-- Illustrations -->
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Verifique los Pagos Recibidos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered form"
+                               id="dataTable"
+                               width="100%"
+                               cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Propietario</th>
+                                    <th>Propiedad</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Forma de Pago</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @if (Model.UsuariosPropiedad != null
+                                && Model.UsuariosPropiedad.Count() > 0
+                                && Model.PropiedadPagos != null
+                                && Model.PropiedadPagos.Count() > 0)
+                                {
+                                    @foreach (var diccUsuarioPropiedad in Model.UsuariosPropiedad)
+                                    {
+                                        @foreach (var propiedad in @diccUsuarioPropiedad.Value)
+                                        {
+                                            @if (propiedad.Saldo > 0 || propiedad.Deuda > 0)
+                                            {
+                                                @foreach (var propiedadPago in Model.PropiedadPagos)
+                                                {
+                                                    @if (propiedadPago.Key.IdPropiedad == propiedad.IdPropiedad)
+                                                    {
+                                                        @foreach (var pago in propiedadPago.Value)
+                                                        {
+                                                            <tr class="tr_s">
+
+                                                                <td>@(pago.Fecha.ToString("dd/MM/yyyy"))</td>
+                                                                <td>@diccUsuarioPropiedad.Key.FirstName</td>
+                                                                <td>@propiedad.Codigo</td>
+                                                                <td>@pago.Concepto</td>
+                                                                <td>@(pago.Monto.ToString("N")) Bsf</td>
+
+                                                                @if (pago.FormaPago)
+                                                                {
+                                                                    <td>Transferencia</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>Efectivo</td>
+                                                                }
+                                                                <td>
+                                                                    @if (pago.Imagen != null)
+                                                                    {
+                                                                        <a asp-action="DownloadImage" asp-route-id="@pago.IdPagoRecibido">
+                                                                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                                                                        </a>                                                                        
+                                                                    }
+                                                                    <a class="btn btn-outline-success"
+                                                                    asp-controller="PagoRecibidos"
+                                                                       asp-action="ConfirmarPagoRecibidoPropietario"
+                                                                       asp-route-id="@pago.IdPagoRecibido">
+                                                                        Confirmar Pago
+                                                                    </a>
+                                                                    <a class="btn btn-outline-danger"
+                                                                       asp-action="RectificarPago"
+                                                                       asp-route-id="@pago.IdPagoRecibido">
+                                                                        Rectificar Pago
+                                                                    </a>
+
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                                else
+                                {
+                                    <tr class="tr_s">
+                                        <td>No</td>
+                                        <td>hay</td>
+                                        <td>pagos</td>
+                                        <td>recibidos</td>
+                                        <td>por</td>
+                                        <td>confirmar</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

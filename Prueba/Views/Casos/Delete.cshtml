@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Borrar Caso";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Eliminar Caso
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <h6>¿Seguro que desea eliminar este caso?</h6>
+                                <form asp-action="Delete" class="mt-2">
+                                    <input type="hidden"  />
+                                    <input type="submit" value="Eliminar" class="btn btn-danger" />
+                                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </form>
+                                @*                                 <div class="col-3">
+                                <a asp-action="Borrar" class="btn btn-danger">Borrar</a>
+                                </div>  <div class="col-3">
+                                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                                </div> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

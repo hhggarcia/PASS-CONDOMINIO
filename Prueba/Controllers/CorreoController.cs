@@ -1,0 +1,363 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Prueba.Areas.Identity.Data;
+using Prueba.Context;
+using Prueba.Models;
+using Prueba.Repositories;
+using Prueba.Services;
+using Prueba.ViewModels;
+using System.Net.Mail;
+using System.Text;
+using System.Text.Encodings.Web;
+
+namespace Prueba.Controllers
+{
+    [Authorize(Policy = "RequireAdmin")]
+
+    public class CorreoController : Controller
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPDFServices _servicesPDF;
+        private readonly IRelacionGastoRepository _repoRelacionGastos;
+        private readonly IEmailService _servicesEmail;
+        private readonly NuevaAppContext _context;
+
+        public CorreoController(UserManager<ApplicationUser> userManager,
+            IWebHostEnvironment webHostEnvironment,
+            IPDFServices servicesPDF,
+            IRelacionGastoRepository repoRelacionGastos,
+            IEmailService servicesEmail,
+            NuevaAppContext context)
+        {
+            _userManager = userManager;
+            _servicesPDF = servicesPDF;
+            _repoRelacionGastos = repoRelacionGastos;
+            _servicesEmail = servicesEmail;
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Envia un correo al propietario con 
+        /// el detalle del recibo seleccionado
+        /// </summary>
+        /// <param name="id">Id del recibo de cobro a enviar a correo</param>
+        /// <returns></returns>
+        public async Task<IActionResult> SendReciboCobro(int id)
+        {
+            var recibo = await _context.ReciboCobros.FindAsync(id);
+            var modelo = new DetalleReciboTransaccionesVM();
+            var email = new EmailAttachmentPdf();
+
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                var rg = await _context.RelacionGastos.FindAsync(recibo.IdRgastos);
+
+                if (propiedad != null && rg != null)
+                {
+                    var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                    var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                    var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                    var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                    List<string> correos = new List<string>();
+
+                    if (usuario != null)
+                    {
+                        correos.Add(usuario.Email);
+                    }
+                    if (inquilinos != null)
+                    {
+                        foreach (var item in inquilinos)
+                        {
+                            correos.Add(item.IdUsuarioNavigation.Email);
+                        }
+                    }
+
+                    modelo.Recibo = recibo;
+                    modelo.Propiedad = propiedad;
+                    modelo.GruposPropiedad = gruposPropiedad;
+                    modelo.RelacionGasto = rg;
+                    modelo.Transacciones = transacciones;
+
+                    var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
+
+                    email.From = modelo.Transacciones.Condominio.Email;
+                    email.To = correos;
+                    //email.To = ["hgarcia@password.com.ve", "ydeagrela@password.com.ve"];
+                    email.Pdf = data;
+                    email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+                    email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
+                    email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
+
+                    var result = _servicesEmail.SendEmailReciboCobro(email, recibo, propiedad);
+
+                    if (!result.Contains("OK"))
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = result
+                        };
+
+                        return View("Error", modeloError);
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "RelacionGastos");
+        }
+
+        /// <summary>
+        /// Envia cada recibo a los propietarios
+        /// por cada propiedad
+        /// </summary>
+        /// <param name="id">Id de la relacion de gastos para enviar todos sus recibos</param>
+        /// <returns></returns>
+        public async Task<IActionResult> SendAllRecibosCobro(int id)
+        {
+            var rg = await _context.RelacionGastos.FindAsync(id);
+
+            if (rg != null)
+            {
+                var recibos = await _context.ReciboCobros.Where(c => c.IdRgastos == rg.IdRgastos).ToListAsync();
+
+                if (recibos.Any())
+                {
+                    foreach (var recibo in recibos)
+                    {
+                        var modelo = new DetalleReciboTransaccionesVM();
+                        var email = new EmailAttachmentPdf();
+                        var propiedad = await _context.Propiedads.FindAsync(recibo.IdPropiedad);
+                        if (propiedad != null)
+                        {
+                            var gruposPropiedad = await _context.PropiedadesGrupos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+                            var transacciones = await _repoRelacionGastos.LoadTransaccionesMes(rg.IdRgastos);
+                            var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                            var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                            List<string> correos = new List<string>();
+
+                            if (usuario != null)
+                            {
+                                correos.Add(usuario.Email);
+                            }
+                            if (inquilinos != null)
+                            {
+                                foreach (var item in inquilinos)
+                                {
+                                    correos.Add(item.IdUsuarioNavigation.Email);
+                                }
+                            }
+
+                            modelo.Recibo = recibo;
+                            modelo.Propiedad = propiedad;
+                            modelo.GruposPropiedad = gruposPropiedad;
+                            modelo.RelacionGasto = rg;
+                            modelo.Transacciones = transacciones;
+
+                            var data = await _servicesPDF.DetalleReciboTransaccionesPDF(modelo);
+
+                            email.From = modelo.Transacciones.Condominio.Email;
+                            email.To = correos;
+                            email.Pdf = data;
+                            email.FileName = "Recibo" + "_" + recibo.Fecha.ToString("dd/MM/yyyy") + propiedad.Codigo.ToString();
+                            email.Password = modelo.Transacciones.Condominio.ClaveCorreo != null ? modelo.Transacciones.Condominio.ClaveCorreo : "";
+                            email.Subject = modelo.Transacciones.Condominio.Nombre + " Recibo " + recibo.Mes;
+
+                            var result = _servicesEmail.SendEmailReciboCobro(email, recibo, propiedad);
+
+                            if (!result.Contains("OK"))
+                            {
+                                var modeloError = new ErrorViewModel()
+                                {
+                                    RequestId = result
+                                };
+
+                                return View("Error", modeloError);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "RelacionGastos");
+        }
+
+        // enviar comprobante de pago propietario
+        public async Task<IActionResult> SendCompPagoPropietario(int id)
+        {
+            var pagoPropiedad = await _context.PagoPropiedads.FindAsync(id);
+            if (pagoPropiedad != null)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(pagoPropiedad.IdPropiedad);
+                //var pago = await _context.PagoRecibidos.FindAsync(pagoPropiedad.IdPago);
+                var condominio = await _context.Condominios.FindAsync(propiedad.IdCondominio);
+                var usuario = await _context.AspNetUsers.FindAsync(propiedad.IdUsuario);
+                var inquilinos = await _context.Inquilinos.Include(c => c.IdUsuarioNavigation).Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                List<string> correos = new List<string>();
+
+                if (usuario != null)
+                {
+                    correos.Add(usuario.Email);
+                }
+                if (inquilinos != null)
+                {
+                    foreach (var item in inquilinos)
+                    {
+                        correos.Add(item.IdUsuarioNavigation.Email);
+                    }
+                }
+
+                var data = await _servicesPDF.ComprobantePagoRecibidoPDF(pagoPropiedad);
+
+                EmailAttachmentPdf email = new EmailAttachmentPdf()
+                {
+                    From = condominio.Email,
+                    To = correos,
+                    Pdf = data,
+                    FileName = "ComprobantePago_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy"),
+                    Subject = "Comprobante de Pago - " + condominio.Nombre,
+                    Password = condominio.ClaveCorreo != null ? condominio.ClaveCorreo : ""
+                };
+
+                var result = _servicesEmail.SendEmailRG(email);
+
+                if (!result.Contains("OK"))
+                {
+                    var modeloError = new ErrorViewModel()
+                    {
+                        RequestId = result
+                    };
+
+                    return View("Error", modeloError);
+                }
+            }
+
+            return RedirectToAction("PagosConfirmados", "PagoRecibidos");
+        }
+
+        // enviar correo general a todos los propietarios
+        public IActionResult CorreoGlobal()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> CorreoGlobal(EmailAttachmentPdf modelo, IFormFile file)
+        {
+            try
+            {
+                int idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+                var condominio = await _context.Condominios.FindAsync(idCondominio);
+
+                if (condominio != null)
+                {
+                    modelo.From = condominio.Email;
+                    modelo.Password = condominio.ClaveCorreo != null ? condominio.ClaveCorreo : "";
+                    // pdf a enviar
+
+                    modelo.Attachment = file;
+
+                    // buscar usuarios del condominio si poseen propiedades
+                    // recorrer a los usuarios y enviar un correo a cada uno
+                    var inquilinos = await (from inq in _context.Inquilinos.Include(c => c.IdUsuarioNavigation)
+                                            join prop in _context.Propiedads.Where(c => c.IdCondominio == condominio.IdCondominio)
+                                            on inq.IdPropiedad equals prop.IdPropiedad
+                                            select inq.IdUsuarioNavigation.Email).ToListAsync();
+                    var usuarios = await (from prop in _context.Propiedads.Where(c => c.IdCondominio == condominio.IdCondominio)
+                                          join user in _context.AspNetUsers
+                                          on prop.IdUsuario equals user.Id
+                                          select user.Email).ToListAsync();
+
+                    var correos = usuarios.Concat(inquilinos).Distinct().ToList();
+
+                    modelo.To = correos;
+
+                    var result = _servicesEmail.SendEmailAttachement(modelo);
+
+                    if (!result.Contains("OK"))
+                    {
+                        var modeloError = new ErrorViewModel()
+                        {
+                            RequestId = result
+                        };
+
+                        TempData.Keep();
+                        return View("Error", modeloError);
+                    }
+                }
+
+                TempData.Keep();
+                return RedirectToAction("Dashboard", "Administrador", new { id = idCondominio });
+            }
+            catch (Exception ex)
+            {
+
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+
+                TempData.Keep();
+                return View("Error", modeloError);
+            }
+
+        }
+
+        // enviar correo a todos los clientes
+
+        // enviar correo con factura de venta a un cliente
+
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                /// NOTIFICAR QUE EL USUARIO NO EXISTE
+                /// O INVITAR A COMPROBAR CORREO PARA LUEGO REESTABLECER CONTRASEÑA
+                return RedirectToPage("./ForgotPasswordConfirmation");
+            }
+
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ResetPassword",
+                pageHandler: null,
+                values: new { area = "Identity", code },
+                protocol: Request.Scheme);
+
+            var msg = $"Por favor restablezca su contraseña <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+            var resultado = _servicesEmail.ResetPasswordUser("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+
+            if (!resultado.Contains("OK"))
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = resultado
+                };
+
+                TempData.Keep();
+                return View("Error", modeloError);
+            }
+
+            return RedirectToPage("./ForgotPasswordConfirmation");
+
+        }
+    }
+}

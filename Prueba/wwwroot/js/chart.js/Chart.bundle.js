@@ -10945,7 +10945,7 @@ function DateAdapter(options) {
 helpers$1.extend(DateAdapter.prototype, /** @lends DateAdapter */ {
 	/**
 	 * Returns a map of time formats for the supported formatting units defined
-	 * in Unit as well as 'datetime' representing a detailed date/time string.
+	 * in Unit as well as 'DateTime' representing a detailed date/time string.
 	 * @returns {{string: string}}
 	 */
 	formats: abstract,
@@ -14565,7 +14565,7 @@ var scale_time = core_scale.extend({
 		if (typeof label === 'string') {
 			return label;
 		}
-		return adapter.format(toTimestamp(me, label), timeOpts.displayFormats.datetime);
+		return adapter.format(toTimestamp(me, label), timeOpts.displayFormats.DateTime);
 	},
 
 	/**
@@ -18070,10 +18070,10 @@ var moment = createCommonjsModule(function (module, exports) {
         }
         var prefix = '[' + func + '("]';
         var year = (0 <= this.year() && this.year() <= 9999) ? 'YYYY' : 'YYYYYY';
-        var datetime = '-MM-DD[T]HH:mm:ss.SSS';
+        var DateTime = '-MM-DD[T]HH:mm:ss.SSS';
         var suffix = zone + '[")]';
 
-        return this.format(prefix + year + datetime + suffix);
+        return this.format(prefix + year + DateTime + suffix);
     }
 
     function format (inputString) {
@@ -19294,9 +19294,9 @@ var moment = createCommonjsModule(function (module, exports) {
 
     // currently HTML5 input type only supports 24-hour formats
     hooks.HTML5_FMT = {
-        DATETIME_LOCAL: 'YYYY-MM-DDTHH:mm',             // <input type="datetime-local" />
-        DATETIME_LOCAL_SECONDS: 'YYYY-MM-DDTHH:mm:ss',  // <input type="datetime-local" step="1" />
-        DATETIME_LOCAL_MS: 'YYYY-MM-DDTHH:mm:ss.SSS',   // <input type="datetime-local" step="0.001" />
+        DateTime_LOCAL: 'YYYY-MM-DDTHH:mm',             // <input type="DateTime-local" />
+        DateTime_LOCAL_SECONDS: 'YYYY-MM-DDTHH:mm:ss',  // <input type="DateTime-local" step="1" />
+        DateTime_LOCAL_MS: 'YYYY-MM-DDTHH:mm:ss.SSS',   // <input type="DateTime-local" step="0.001" />
         DATE: 'YYYY-MM-DD',                             // <input type="date" />
         TIME: 'HH:mm',                                  // <input type="time" />
         TIME_SECONDS: 'HH:mm:ss',                       // <input type="time" step="1" />
@@ -19311,7 +19311,7 @@ var moment = createCommonjsModule(function (module, exports) {
 });
 
 var FORMATS = {
-	datetime: 'MMM D, YYYY, h:mm:ss a',
+	DateTime: 'MMM D, YYYY, h:mm:ss a',
 	millisecond: 'h:mm:ss.SSS a',
 	second: 'h:mm:ss a',
 	minute: 'h:mm a',
