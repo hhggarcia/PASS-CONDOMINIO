@@ -28,8 +28,18 @@ namespace Prueba.Controllers
         // GET: Fondos
         public async Task<IActionResult> Index()
         {
-            var NuevaAppContext = _context.Fondos.Include(f => f.IdCodCuentaNavigation);
-            return View(await NuevaAppContext.ToListAsync());
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+
+            var listFondos = await (from a in _context.Fondos.Include(f => f.IdCodCuentaNavigation)
+                                       join c in _context.CodigoCuentasGlobals 
+                                       on a.IdCodCuenta equals c.IdCodCuenta
+                                       where c.IdCondominio == IdCondominio
+                                       select a).ToListAsync();
+
+            TempData.Keep();
+
+            return View(listFondos);
         }
 
         // GET: Fondos/Details/5
