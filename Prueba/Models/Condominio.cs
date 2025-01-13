@@ -56,6 +56,8 @@ public partial class Condominio
 
     public virtual ICollection<EstadoSituacion> EstadoSituacions { get; set; } = new List<EstadoSituacion>();
 
+    public virtual ICollection<GrupoGasto> GrupoGastos { get; set; } = new List<GrupoGasto>();
+
     public virtual AspNetUser IdAdministradorNavigation { get; set; } = null!;
 
     public virtual ICollection<Impresora> Impresoras { get; set; } = new List<Impresora>();

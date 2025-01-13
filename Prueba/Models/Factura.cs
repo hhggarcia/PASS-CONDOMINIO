@@ -9,9 +9,9 @@ public partial class Factura
 
     public int NumFactura { get; set; }
 
-    public string NumControl { get; set; } = null!;
+    public string NumControl { get; set; } = string.Empty;
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public DateTime FechaEmision { get; set; }
 

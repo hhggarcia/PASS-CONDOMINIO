@@ -24,7 +24,10 @@ namespace Prueba.Controllers
         // GET: GrupoGastos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.GrupoGastos.ToListAsync());
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            TempData.Keep();
+            return View(await _context.GrupoGastos.Where(c => c.IdCondominio == IdCondominio).ToListAsync());
         }
 
         // GET: GrupoGastos/Details/5
