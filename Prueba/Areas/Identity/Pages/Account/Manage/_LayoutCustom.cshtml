@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="~/js/choices.js/choices.min.css" asp-append-version="true" />
 
     <style>
-        .page, #wrapper, #content-wrapper {
+        #wrapper, #content-wrapper {
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -35,13 +35,6 @@
 
         #content-wrapper {
             flex: 1;
-        }
-
-        #content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centers content vertically */
         }
 
         .form-control::placeholder {
@@ -112,6 +105,24 @@
             <div id="content-wrapper" class="d-flex flex-column">
                 <!-- Main Content -->
                 <div id="content">
+                    <!-- Topbar -->
+                    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                        <!-- Sidebar Toggle (Topbar) -->
+                        <button id="sidebarToggleTop"
+                                class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+
+                        <!-- Topbar Navbar -->
+                        <ul class="navbar-nav ml-auto">
+                           
+                            <div class="topbar-divider d-none d-sm-block"></div>
+
+                            <partial name="_LoginPartial" />
+
+                        </ul>
+                    </nav>
+                    <!-- End of Topbar -->
                     <!-- Begin Page Content -->
                     <main role="main">
                         @RenderBody()
