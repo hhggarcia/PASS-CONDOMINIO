@@ -189,19 +189,9 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Transaccion> Transaccions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.Development.json")
-                .Build();
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
 
-            var connectionString = configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
-
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -453,14 +443,6 @@ public partial class NuevaAppContext : DbContext
                 .HasForeignKey(d => d.IdCondominio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CobroTransito_Condominio");
-
-            entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.CobroTransitos)
-                .HasForeignKey(d => d.IdFactura)
-                .HasConstraintName("FK_CobroTransito_FacturaEmitida");
-
-            entity.HasOne(d => d.IdReciboNavigation).WithMany(p => p.CobroTransitos)
-                .HasForeignKey(d => d.IdRecibo)
-                .HasConstraintName("FK_CobroTransito_Recibo_Cobro");
         });
 
         modelBuilder.Entity<CodigoCuentasGlobal>(entity =>
@@ -1036,6 +1018,11 @@ public partial class NuevaAppContext : DbContext
             entity.HasKey(e => e.IdGrupoGasto);
 
             entity.Property(e => e.NombreGrupo).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdCondominioNavigation).WithMany(p => p.GrupoGastos)
+                .HasForeignKey(d => d.IdCondominio)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GrupoGastos_Condominio");
         });
 
         modelBuilder.Entity<Impresora>(entity =>

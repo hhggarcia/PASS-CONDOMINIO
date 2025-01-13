@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Prueba.Areas.Identity.Data;
 using Prueba.Context;
-using Prueba.Models;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;

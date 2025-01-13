@@ -15,7 +15,7 @@ public partial class CobroTransito
 
     public DateTime Fecha { get; set; }
 
-    public string Concepto { get; set; } = string.Empty;
+    public string Concepto { get; set; } = null!;
 
     public bool Factura { get; set; }
 
@@ -25,9 +25,9 @@ public partial class CobroTransito
 
     public decimal MontoRef { get; set; }
 
-    public string SimboloMoneda { get; set; } = string.Empty;
+    public string SimboloMoneda { get; set; } = null!;
 
-    public string SimboloRef { get; set; } = string.Empty;
+    public string SimboloRef { get; set; } = null!;
 
     public bool Asignado { get; set; }
 
@@ -38,10 +38,6 @@ public partial class CobroTransito
     public int? IdRecibo { get; set; }
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-
-    public virtual FacturaEmitida? IdFacturaNavigation { get; set; }
-
-    public virtual ReciboCobro? IdReciboNavigation { get; set; }
 
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();
 }
