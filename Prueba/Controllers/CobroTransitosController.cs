@@ -550,7 +550,213 @@ namespace Prueba.Controllers
 
         public IActionResult AsignarRecibo()
         {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            ViewData["IdCobros"] = new SelectList(_context.CobroTransitos
+                .Where(c => c.IdCondominio == IdCondominio && !c.Factura && c.Activo), "IdCobroTransito", "Concepto");
+
+            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads
+                .Include(c => c.IdCondominioNavigation)
+                .Where(c => c.IdCondominioNavigation.IdCondominio == IdCondominio)
+                .OrderBy(c => c.Codigo)
+                .ToList(), "IdPropiedad", "Codigo");
+
+            TempData.Keep();
+
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AsignarRecibo(AsignarCobroTransitoReciboVM modelo)
+        {
+            try
+            {
+                // buscar propiedad
+                var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
+                var cobro = await _context.CobroTransitos.FindAsync(modelo.IdPropiedad);
+                // buscar recibos seleccionados
+                if (modelo.ListRecibos != null && modelo.ListRecibos.Any())
+                {
+                    foreach (var item in modelo.ListRecibos)
+                    {
+                        if (item.Selected)
+                        {
+                            var idRecibo = Convert.ToInt32(item.Value);
+                            var recibo = await _context.ReciboCobros.FindAsync(idRecibo);
+                            if (recibo != null)
+                            {
+                                modelo.Recibos.Add(recibo);
+                            }
+                        }
+                    }
+                }
+                if (propiedad != null && cobro != null)
+                {
+                    var pago = await (from p in _context.PagoRecibidos
+                                      join c in _context.PagoCobroTransitos.Where(c => c.IdCobroTransito == cobro.IdCobroTransito)
+                                      on p.IdPagoRecibido equals c.IdPagoRecibido
+                                      select p).FirstOrDefaultAsync();
+
+                    if (pago != null)
+                    {
+                        // proceso de descuento en los recibos y en la propiedad
+                        #region PAGO RECIBIENDO CUALQUIER MONTO
+                        // PROCESO DE CONFIRMAR PAGO
+                        var montoPago = cobro.Monto; // auxiliar para recorrer los recibos con el monto del pago                         
+
+                        if (modelo.Recibos != null && modelo.Recibos.Any())
+                        {
+                            foreach (var recibo in modelo.Recibos)
+                            {
+                                decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+
+                                if (pendientePago != 0 && pendientePago > montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    montoPago = 0;
+                                }
+                                else if (pendientePago != 0 && pendientePago < montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago -= pendientePago;
+                                }
+                                else if (pendientePago != 0 && pendientePago == montoPago)
+                                {
+                                    recibo.Abonado += montoPago;
+                                    recibo.Pagado = true;
+                                    montoPago = 0;
+                                }
+
+                                var pagoRecibo = new PagosRecibo()
+                                {
+                                    IdPago = pago.IdPagoRecibido,
+                                    IdRecibo = recibo.IdReciboCobro
+                                };
+
+                                recibo.TotalPagar = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado;
+                                recibo.TotalPagar = recibo.TotalPagar < 0 ? 0 : recibo.TotalPagar;
+
+                                _context.ReciboCobros.Update(recibo);
+                                _context.PagosRecibos.Add(pagoRecibo);
+                            }
+
+                            await _context.SaveChangesAsync();
+
+                            var recibosActualizados = await _context.ReciboCobros
+                                .Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToListAsync();
+
+                            propiedad.Deuda = recibosActualizados
+                                .Where(c => !c.Pagado && !c.ReciboActual)
+                                .Sum(c => c.TotalPagar);
+
+                            propiedad.Saldo = recibosActualizados
+                                            .Where(c => c.ReciboActual)
+                                            .Sum(c => c.Monto - c.Abonado);
+
+                            propiedad.Saldo = propiedad.Saldo < 0 ? 0 : propiedad.Saldo;
+
+                            if (montoPago > 0)
+                            {
+                                propiedad.Creditos += montoPago;
+                            }
+
+                            //// VERIFICAR SOLVENCIA DE LA PROPIEDAD
+                            if (propiedad.Saldo == 0 && propiedad.Deuda == 0)
+                            {
+                                propiedad.Solvencia = true;
+                            }
+                            else
+                            {
+                                propiedad.Solvencia = false;
+                            }
+
+                            _context.Propiedads.Update(propiedad);
+                            // modificar cobro en transito
+                            cobro.Asignado = true;
+                            // crear relacion pago propiedad
+                            var pagoPropiedad = new PagoPropiedad()
+                            {
+                                IdPago = pago.IdPagoRecibido,
+                                IdPropiedad = propiedad.IdPropiedad,
+                                Confirmado = true,
+                                Rectificado = false,
+                                Activo = true
+                            };
+
+                            _context.PagoPropiedads.Add(pagoPropiedad);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            ViewBag.FormaPago = "fallido";
+                            ViewBag.Mensaje = "Esta propiedad no tiene recibos pendiente!";
+
+                            TempData.Keep();
+
+                            return View(modelo);
+                        }
+                        #endregion
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                var modeloError = new ErrorViewModel()
+                {
+                    RequestId = ex.Message
+                };
+                TempData.Keep();
+
+                return View("Error", modeloError);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="valor"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> AjaxCargarRecibos(int valor)
+        {
+            AsignarCobroTransitoReciboVM modelo = new AsignarCobroTransitoReciboVM();
+
+            if (valor > 0)
+            {
+                var propiedad = await _context.Propiedads.FindAsync(valor);
+
+                if (propiedad != null)
+                {                  
+
+                    var recibos = await (from c in _context.ReciboCobros
+                                         where c.IdPropiedad == valor
+                                         where !c.Pagado
+                                         select c).ToListAsync();
+
+                    modelo.Recibos = recibos;
+
+                    if (modelo.Recibos.Any())
+                    {
+                        modelo.RecibosModel = recibos.Where(c => !c.EnProceso && !c.Pagado)
+                            .Select(c => new SelectListItem { Text = c.Fecha.ToString("dd/MM/yyyy"), Value = c.IdReciboCobro.ToString() })
+                            .ToList();
+                        
+                        modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
+                        {
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar).ToString("N") + "Bs",
+                            Value = recibo.IdReciboCobro.ToString(),
+                            Selected = false,
+                        }).ToList();
+                    }
+                }
+            }
+
+            return Json(modelo);
+        }
+
     }
 }
