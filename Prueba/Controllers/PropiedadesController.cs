@@ -16,6 +16,7 @@ using Prueba.Context;
 using Prueba.Models;
 using Prueba.Services;
 using Prueba.ViewModels;
+using Prueba.Repositories;
 
 namespace Prueba.Controllers
 {
@@ -29,9 +30,11 @@ namespace Prueba.Controllers
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailService _emailServices;
         private readonly IPdfReportesServices _servicesPDF;
+        private readonly ICondominioRepository _repoCondominio;
         private readonly NuevaAppContext _context;
 
-        public PropiedadesController(IPdfReportesServices servicesPDF,
+        public PropiedadesController(ICondominioRepository repoCondominio,
+            IPdfReportesServices servicesPDF,
             IEmailService emailService,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
@@ -46,6 +49,7 @@ namespace Prueba.Controllers
             _emailStore = GetEmailStore();
             _emailServices = emailService;
             _servicesPDF = servicesPDF;
+            _repoCondominio = repoCondominio;
         }
 
         // GET: Propiedades
@@ -61,6 +65,16 @@ namespace Prueba.Controllers
             TempData.Keep();
 
             return View(await nuevaAppContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> IndexUserPropiedades()
+        {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var propiedades = await _repoCondominio.GetPropiedadesCondominio(IdCondominio);
+            var model = propiedades.GroupBy(c => c.IdUsuarioNavigation).ToList();
+
+            TempData.Keep();
+            return View(model);
         }
 
         // GET: Propiedades/Details/5
