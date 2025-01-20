@@ -1,0 +1,121 @@
+﻿@model IEnumerable<IGrouping<AspNetUser, Propiedad>>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<style>
+    .collapse {
+        transition: height 0.2s ease; /* Ajusta la duración de la animación aquí */
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller="Propiedades"
+           asp-action="Inquilino">
+            Registrar
+        </a>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-around mb-4">
+        @*         <a type="button" id="create_pdf" value="Generate PDF" href="#" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        PDF
+        </a> *@
+        @* <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="PagosEmitidos">Crear pdf</button> *@
+
+        @* <a value="Export" onclick="fnExcelReport();" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+        <i class="fas fa-download fa-sm text-white-50"></i> Generar
+        Excel
+        </a> *@
+    </div>
+
+    @foreach (var item in Model)
+    {
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <!-- DataTales Example -->
+                <div class="card shadow mb-4 bg-content-bg">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            @item.Key.FirstName
+                        </h6>
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#properties-@item.Key.Id">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="properties-@item.Key.Id" class="collapse">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table text-center"
+                                       id="dataTable"
+                                       width="100%"
+                                       cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Código
+                                            </th>
+                                            <th>
+                                                Alícuota
+                                            </th>
+                                            <th>
+                                                Recibo Actual
+                                            </th>
+                                            <th>
+                                                Deuda
+                                            </th>
+                                            <th>
+                                                Saldo Total
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var propiedad in item)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => propiedad.Codigo)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => propiedad.Alicuota)
+                                                </td>
+                                                <td>
+                                                    @(propiedad.Saldo.ToString("N"))
+                                                </td>
+                                                <td>
+                                                    @(propiedad.Deuda.ToString("N"))
+                                                </td>
+                                                <td>
+                                                    @((propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
+                                                </td>
+                                                <td>
+                                                    <a asp-action="Inquilino" asp-route-id="@propiedad.IdPropiedad">Inquilinos</a> |
+                                                    <a asp-action="VerGrupos" asp-route-id="@propiedad.IdPropiedad">Ver Grupos</a> |
+                                                    <a asp-action="EstadoCuentaPropiedad" asp-route-id="@propiedad.IdPropiedad">Estado de Cuenta</a> |
+                                                    <a asp-action="Edit" asp-route-id="@propiedad.IdPropiedad">Editar</a> |
+                                                    <a asp-action="Details" asp-route-id="@propiedad.IdPropiedad">Detalles</a> |
+                                                    <a asp-action="Delete" asp-route-id="@propiedad.IdPropiedad">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+}

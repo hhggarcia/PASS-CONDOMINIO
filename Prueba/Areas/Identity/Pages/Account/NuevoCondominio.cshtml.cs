@@ -14,7 +14,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Text;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Prueba.Models;
 
 namespace Prueba.Areas.Identity.Pages.Account
@@ -36,8 +35,7 @@ namespace Prueba.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IEmailService servicesEmail,
-            IUserEmailStore<ApplicationUser> emailStore)
+            IEmailService servicesEmail)
         {
             _context = context;
             _userManager = userManager;
@@ -47,7 +45,6 @@ namespace Prueba.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _servicesEmail = servicesEmail;
-            _emailStore = emailStore;
         }
 
         [BindProperty]

@@ -197,11 +197,7 @@ namespace Prueba.Controllers
 
                 var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-                //var listaLibroVenta = _context.LibroVentas
-                //    .Include(l => l.IdCondominioNavigation)
-                //    .Include(l => l.IdFacturaNavigation)
-                //    .Where(c => c.Activo)
-                //    .Where(c => c.IdCondominio == idCondominio);
+                facturas = facturas.OrderBy(f => f.IdFacturaNavigation.NumFactura);
 
                 foreach (var item in facturas)
                 {

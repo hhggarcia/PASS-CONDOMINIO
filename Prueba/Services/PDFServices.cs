@@ -5431,9 +5431,8 @@ namespace Prueba.Services
             decimal VentasGravables = 0;
             decimal Iva = 0;
             decimal IvaRet = 0;
-
             decimal totalBase = 0;
-
+            int contadorItems = 0;
 
 
             var data = Document.Create(container =>
@@ -5485,8 +5484,11 @@ namespace Prueba.Services
                                     //rif
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
+                                    columns.RelativeColumn();
 
-                                    // nombre usa 3
+                                    // nombre usa 5
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
@@ -5497,13 +5499,6 @@ namespace Prueba.Services
 
                                     // numero control 
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-
-                                    // tipo transaccion
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-
-                                    // fecha comp
                                     columns.RelativeColumn();
 
                                     // # comprobante
@@ -5536,10 +5531,10 @@ namespace Prueba.Services
                                     header.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                     .Padding(2).Text("Fecha").FontColor("#607080").Bold().FontSize(8);
 
-                                    header.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                    header.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                    .Padding(2).Text("R.I.F.").FontColor("#607080").Bold().FontSize(8);
 
-                                    header.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                    header.Cell().ColumnSpan(5).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                    .Padding(2).Text("Nombre o Rázón Social").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
@@ -5547,12 +5542,6 @@ namespace Prueba.Services
 
                                     header.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                    .Padding(2).Text("Número Control").FontColor("#607080").Bold().FontSize(8);
-
-                                    header.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                   .Padding(2).Text("Tipo Tran.").FontColor("#607080").Bold().FontSize(8);
-
-                                    header.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                   .Padding(2).Text("Fecha Comp.").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                    .Padding(2).Text("# Comporbante").FontColor("#607080").Bold().FontSize(8);
@@ -5578,28 +5567,22 @@ namespace Prueba.Services
                                     if (item.libroVenta != null && item.FacturaEmitida != null && item.cliente != null)
                                     {
                                         tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.libroVenta.Id.ToString()).FontColor("#607080").FontSize(8);
+                                        .Padding(2).Text((contadorItems + 1).ToString()).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                         .Padding(2).Text(item.FacturaEmitida.FechaEmision.ToString("dd/MM/yyyy")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.cliente.Rif).FontColor("#607080").FontSize(8);
-
                                         tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                        .Padding(2).Text(item.cliente.Nombre).FontColor("#607080").FontSize(8);
+                                        .Padding(2).Text(!item.FacturaEmitida.Anulada ? item.cliente.Rif : "").FontColor("#607080").FontSize(8);
+
+                                        tabla.Cell().ColumnSpan(5).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
+                                        .Padding(2).Text(!item.FacturaEmitida.Anulada ? item.cliente.Nombre : "FACTURA ANULADA").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                         .Padding(2).Text(item.FacturaEmitida.NumFactura.ToString()).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                       .Padding(2).Text(item.FacturaEmitida.NumControl).FontColor("#607080").FontSize(8);
-
-                                        tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text("Registro").FontColor("#607080").FontSize(8);
-
-                                        tabla.Cell().Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text("").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(3).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                       .Padding(2).Text(item.libroVenta.ComprobanteRetencion).FontColor("#607080").FontSize(8);
@@ -5627,6 +5610,7 @@ namespace Prueba.Services
                                         VentasGravables += item.libroVenta.VentaGravable != null ? (decimal)item.libroVenta.VentaGravable : 0;
                                         Iva += item.libroVenta.Iva;
                                         IvaRet += item.libroVenta.IvaRetenido != null ? (decimal)item.libroVenta.IvaRetenido : 0;
+                                        contadorItems++;
                                     }
                                 }
 
