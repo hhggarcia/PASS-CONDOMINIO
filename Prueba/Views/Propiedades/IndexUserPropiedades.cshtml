@@ -7,7 +7,7 @@
 
 <style>
     .collapse {
-        transition: height 0.2s ease; /* Ajusta la duración de la animación aquí */
+        transition: height 0.2s ease !important; /* Ajusta la duración de la animación aquí */
     }
 </style>
 
@@ -31,87 +31,90 @@
         Excel
         </a> *@
     </div>
-
-    @foreach (var item in Model)
+    
+    @if (Model.Any())
     {
-        <div class="row">
-            <div class="col-lg-12 mb-4">
-                <!-- DataTales Example -->
-                <div class="card shadow mb-4 bg-content-bg">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            @item.Key.FirstName
-                        </h6>
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#properties-@item.Key.Id">
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                    </div>
-                    <div id="properties-@item.Key.Id" class="collapse">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table text-center"
-                                       id="dataTable"
-                                       width="100%"
-                                       cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                Código
-                                            </th>
-                                            <th>
-                                                Alícuota
-                                            </th>
-                                            <th>
-                                                Recibo Actual
-                                            </th>
-                                            <th>
-                                                Deuda
-                                            </th>
-                                            <th>
-                                                Saldo Total
-                                            </th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var propiedad in item)
-                                        {
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4 bg-content-bg">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                @item.Key.FirstName
+                            </h6>
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#properties-@item.Key.Id">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div id="properties-@item.Key.Id" class="collapse">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table text-center"
+                                           id="dataTable"
+                                           width="100%"
+                                           cellspacing="0">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => propiedad.Codigo)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => propiedad.Alicuota)
-                                                </td>
-                                                <td>
-                                                    @(propiedad.Saldo.ToString("N"))
-                                                </td>
-                                                <td>
-                                                    @(propiedad.Deuda.ToString("N"))
-                                                </td>
-                                                <td>
-                                                    @((propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
-                                                </td>
-                                                <td>
-                                                    <a asp-action="Inquilino" asp-route-id="@propiedad.IdPropiedad">Inquilinos</a> |
-                                                    <a asp-action="VerGrupos" asp-route-id="@propiedad.IdPropiedad">Ver Grupos</a> |
-                                                    <a asp-action="EstadoCuentaPropiedad" asp-route-id="@propiedad.IdPropiedad">Estado de Cuenta</a> |
-                                                    <a asp-action="Edit" asp-route-id="@propiedad.IdPropiedad">Editar</a> |
-                                                    <a asp-action="Details" asp-route-id="@propiedad.IdPropiedad">Detalles</a> |
-                                                    <a asp-action="Delete" asp-route-id="@propiedad.IdPropiedad">Eliminar</a>
-                                                </td>
+                                                <th>
+                                                    Código
+                                                </th>
+                                                <th>
+                                                    Alícuota
+                                                </th>
+                                                <th>
+                                                    Recibo Actual
+                                                </th>
+                                                <th>
+                                                    Deuda
+                                                </th>
+                                                <th>
+                                                    Saldo Total
+                                                </th>
+                                                <th></th>
                                             </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var propiedad in item)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => propiedad.Codigo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => propiedad.Alicuota)
+                                                    </td>
+                                                    <td>
+                                                        @(propiedad.Saldo.ToString("N"))
+                                                    </td>
+                                                    <td>
+                                                        @(propiedad.Deuda.ToString("N"))
+                                                    </td>
+                                                    <td>
+                                                        @((propiedad.Saldo + propiedad.Deuda - (decimal)propiedad.Creditos).ToString("N"))
+                                                    </td>
+                                                    <td>
+                                                        <a asp-action="Inquilino" asp-route-id="@propiedad.IdPropiedad">Inquilinos</a> |
+                                                        <a asp-action="VerGrupos" asp-route-id="@propiedad.IdPropiedad">Ver Grupos</a> |
+                                                        <a asp-action="EstadoCuentaPropiedad" asp-route-id="@propiedad.IdPropiedad">Estado de Cuenta</a> |
+                                                        <a asp-action="Edit" asp-route-id="@propiedad.IdPropiedad">Editar</a> |
+                                                        <a asp-action="Details" asp-route-id="@propiedad.IdPropiedad">Detalles</a> |
+                                                        <a asp-action="Delete" asp-route-id="@propiedad.IdPropiedad">Eliminar</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
-        </div>
-    }
+        }
+    }    
 </div>
 
 
