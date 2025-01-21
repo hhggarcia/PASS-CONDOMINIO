@@ -217,6 +217,17 @@ namespace Prueba.Controllers
             return View();
         }
 
+        public IActionResult CreatePropiedad()
+        {
+            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+
+            var model = new CrearUserPropiedadesVM();
+            model.AvailableExpenseGroups = _context.GrupoGastos.Where(c => c.IdCondominio == idCondominio).ToList();
+
+            TempData.Keep();
+            return View(model);
+        }
+
         // POST: Propiedades/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
