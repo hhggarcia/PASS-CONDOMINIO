@@ -27,7 +27,7 @@ namespace Prueba.ViewModels
 
         public List<PropiedadVM> Propiedades { get; set; } = new List<PropiedadVM>();
 
-        public List<GrupoGasto> AvailableExpenseGroups { get; set; } = new List<GrupoGasto>();
+        public List<GrupoVM> AvailableExpenseGroups { get; set; } = new List<GrupoVM>();
     }
 
     public class PropiedadVM
@@ -41,6 +41,13 @@ namespace Prueba.ViewModels
 
         public decimal Deuda { get; set; }
 
-        public List<GrupoGasto> Grupos { get; set; } = new List<GrupoGasto>();
+        public List<GrupoVM> Grupos { get; set; } = new List<GrupoVM>();
+    }
+
+    public class GrupoVM
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public decimal Alicuota { get; set; }
     }
 }

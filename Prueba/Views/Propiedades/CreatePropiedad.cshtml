@@ -6,114 +6,106 @@
     var expenseGroupsJson = System.Text.Json.JsonSerializer.Serialize(Model.AvailableExpenseGroups);
 }
 
+
 <div class="container mt-5">
-    <h1>Registrar Usuario</h1>
-    <form method="post">
-        <div class="form-group">
-            <div class="row mb-3">
-                <!-- First Name -->
-                <div class="col-6">
-                    <div class="form-floating">
-                        <input asp-for="Nombre"
-                               class="form-control"
-                               placeholder="Nombre(s)"
-                               onfocus="toggleLabelText(this, true)"
-                               onblur="toggleLabelText(this, false)" />
-                        <label asp-for="Nombre"
-                               class="form-label"
-                               data-original="Nombre(s)"
-                               data-translated="Ingresa tu Nombre">Nombre(s)</label>
-                        <span asp-validation-for="Nombre" class="text-danger"></span>
+    <div class="container-fluid mb-6">
+        <!-- Content Row -->
+        <div class="row justify-content-center mb-6">
+            <div class="col-lg-10" id="container-madre">
+                <form asp-action="CreatePropiedad" method="post">
+                    <div class="card shadow mb-4 bg-content-bg">
 
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                Registrar Propietario
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="row mb-3">
+                                    <!-- First Name -->
+                                    <div class="col-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Nombre"
+                                                   class="form-control"
+                                                   placeholder="Nombre(s)"
+                                                   onfocus="toggleLabelText(this, true)"
+                                                   onblur="toggleLabelText(this, false)" />
+                                            <label asp-for="Nombre"
+                                                   class="form-label"
+                                                   data-original="Nombre(s)"
+                                                   data-translated="Ingresa tu Nombre">Nombre(s)</label>
+                                            <span asp-validation-for="Nombre" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                    <!-- Last Name -->
+                                    <div class="col-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Rif"
+                                                   class="form-control"
+                                                   placeholder="Rif/C.I."
+                                                   onfocus="toggleLabelText(this, true)"
+                                                   onblur="toggleLabelText(this, false)" />
+                                            <label asp-for="Rif"
+                                                   class="form-label"
+                                                   data-original="Rif"
+                                                   data-translated="Ingresa tu Rif o C.I.">Rif/C.I</label>
+                                            <span asp-validation-for="Rif" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Email -->
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Email"
+                                           class="form-control"
+                                           placeholder="Email"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Email"
+                                           class="form-label"
+                                           Email class="form-label"
+                                           data-original="Email"
+                                           data-translated="Ingresa tu Email">Email</label>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <!-- Password -->
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Password"
+                                           class="form-control"
+                                           placeholder="Contraseña"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)" />
+                                    <label asp-for="Password"
+                                           class="form-label"
+                                           Email class="form-label"
+                                           data-original="Contraseña"
+                                           data-translated="Ingresa tu Contraseña">Contraseña</label>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <!-- Confirm Password -->
+                                <div class="form-floating mb-3">
+                                    <input asp-for="ConfirmPassword"
+                                           class="form-control"
+                                           placeholder="Confirma tu Contraseña" />
+                                    <label asp-for="ConfirmPassword" class="form-label">Confirma tu Contraseña</label>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#propertyModal">Añadir Propiedad</button>
+                                <button type="submit" class="btn btn-primary">Registrar</button>
+                            </div>
+                            <div id="propertiesList" class="form-group mb-3">
+                                <!-- Lista de propiedades agregadas -->
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <!-- Last Name -->
-                <div class="col-6">
-                    <div class="form-floating">
-                        <input asp-for="Rif"
-                               class="form-control"
-                               placeholder="Rif/C.I."
-                               onfocus="toggleLabelText(this, true)"
-                               onblur="toggleLabelText(this, false)" />
-                        <label asp-for="Rif"
-                               class="form-label"
-                               data-original="Rif"
-                               data-translated="Ingresa tu Rif o C.I.">Rif/C.I</label>
-                        <span asp-validation-for="Rif" class="text-danger"></span>
-
-                    </div>
-                </div>
-            </div>
-            <!-- Email -->
-            <div class="form-floating mb-3">
-                <input asp-for="Email"
-                       class="form-control"
-                       placeholder="Email"
-                       onfocus="toggleLabelText(this, true)"
-                       onblur="toggleLabelText(this, false)" />
-                <label asp-for="Email"
-                       class="form-label"
-                       Email class="form-label"
-                       data-original="Email"
-                       data-translated="Ingresa tu Email">Email</label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <!-- Password -->
-            <div class="form-floating mb-3">
-                <input asp-for="Password"
-                       class="form-control"
-                       placeholder="Contraseña"
-                       onfocus="toggleLabelText(this, true)"
-                       onblur="toggleLabelText(this, false)" />
-                <label asp-for="Password"
-                       class="form-label"
-                       Email class="form-label"
-                       data-original="Contraseña"
-                       data-translated="Ingresa tu Contraseña">Contraseña</label>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <!-- Confirm Password -->
-            <div class="form-floating mb-3">
-                <input asp-for="ConfirmPassword"
-                       class="form-control"
-                       placeholder="Confirma tu Contraseña" />
-                <label asp-for="ConfirmPassword" class="form-label">Confirma tu Contraseña</label>
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </form>
             </div>
         </div>
-
-        <div id="propertiesList" class="mb-3">
-            <!-- Lista de propiedades agregadas -->
-        </div>
-        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#propertyModal">Añadir Propiedad</button>
-        <button type="submit" class="btn btn-primary">Registrar</button>
-    </form>
-
-    @* <div id="properties">
-            @for (int i = 0; i < Model.Propiedades.Count; i++)
-            {
-                <div class="form-group">
-                    <label for="propertyName">Codigo de la Propiedad</label>
-                    <input type="text" class="form-control" id="propertyName" name="Propiedades[@i].Codigo" required>
-                    <input type="text" class="form-control" id="propertyDimensiones" name="Propiedades[@i].Dimensiones" required>
-                    <input type="text" class="form-control" id="propertyAlicuota" name="Propiedades[@i].Alicuota" required>
-                    <input type="text" class="form-control" id="propertySolvencia" name="Propiedades[@i].Solvencia" required>
-                    <input type="text" class="form-control" id="propertySaldo" name="Propiedades[@i].Saldo" required>
-                    <input type="text" class="form-control" id="propertyDeuda" name="Propiedades[@i].Deuda" required>
-                </div>
-                <div class="form-group">
-                    <label for="expenseGroups">Grupos de Gastos</label>
-                    <select multiple class="form-control" id="expenseGroups" name="Propiedades[@i].Grupos">
-                        @foreach (var group in Model.AvailableExpenseGroups)
-                        {
-                            <option value="@group.IdGrupoGasto">@group.NombreGrupo</option>
-                        }
-                    </select>
-                </div>
-            }
-        </div>
-        <button type="button" class="btn btn-secondary" onclick="addProperty()">Añadir Propiedad</button>
-        <button type="submit" class="btn btn-primary">Registrar</button> *@
+    </div>
 
     <!-- Modal para agregar propiedades -->
     <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
@@ -137,18 +129,7 @@
                                    data-original="Codigo"
                                    data-translated="Ingresa el codigo"
                                    for="propertyName">Codigo</label>
-                        </div>
 
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control"
-                                   placeholder="Dimensiones"
-                                   onfocus="toggleLabelText(this, true)"
-                                   onblur="toggleLabelText(this, false)"
-                                   id="propertyDimensiones" required>
-                            <label class="form-label"
-                                   data-original="Dimensiones"
-                                   data-translated="Ingresa las dimensiones"
-                                   for="propertyDimensiones">Dimensiones</label>
                         </div>
 
                         <div class="form-floating mb-3">
@@ -172,7 +153,7 @@
                             <label class="form-label"
                                    data-original="Saldo"
                                    data-translated="Ingresa el saldo actual"
-                                   for="propertyAlicuota">Saldo</label>
+                                   for="propertySaldo">Saldo</label>
                         </div>
 
                         <div class="form-floating mb-3">
@@ -184,10 +165,10 @@
                             <label class="form-label"
                                    data-original="Deuda"
                                    data-translated="Ingresa la Deuda"
-                                   for="propertyAlicuota">Deuda</label>
+                                   for="propertyDeuda">Deuda</label>
                         </div>
                     </div>
-                    <div class="form-group">
+                    @* <div class="form-group">
                         <label for="expenseGroups">Grupos de Gastos</label>
                         <select multiple class="form-control" id="expenseGroups">
                             @foreach (var group in Model.AvailableExpenseGroups)
@@ -195,11 +176,39 @@
                                 <option value="@group.IdGrupoGasto">@group.NombreGrupo</option>
                             }
                         </select>
+                    </div> *@
+                    <div class="form-group">
+                        <label for="expenseGroups">Grupos de Gastos</label>
+                        <div id="expenseGroupsContainer">
+                            @foreach (var group in Model.AvailableExpenseGroups)
+                            {
+                                <div class="form-group form-check">
+                                    <label class="form-check-label" for="group_@group.Id">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="group_@group.Id"
+                                               value="@group.Id"
+                                               onchange="toggleAlicuotaInput(this)">
+
+                                        @group.Nombre
+                                    </label>
+
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text"
+                                           class="form-control mt-2 d-none"
+                                           placeholder="Alicuota"
+                                           onfocus="toggleLabelText(this, true)"
+                                           onblur="toggleLabelText(this, false)"
+                                           id="alicuota_@group.Id">
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="addProperty()">Añadir</button>
+                    <a class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+                    <a class="btn btn-primary" onclick="addProperty()">Añadir</a>
                 </div>
             </div>
         </div>
@@ -212,21 +221,49 @@
         const availableExpenseGroups = @Html.Raw(expenseGroupsJson);
         let properties = [];
 
+        function toggleAlicuotaInput(checkbox) {
+            const alicuotaInput = document.getElementById('alicuota_' + checkbox.value);
+            if (checkbox.checked) {
+                alicuotaInput.classList.remove('d-none');
+                alicuotaInput.required = true;
+            } else {
+                alicuotaInput.classList.add('d-none');
+                alicuotaInput.required = false;
+            }
+        }
+
         function addProperty() {
             const propertyName = document.getElementById('propertyName').value;
-            const propertyDimensiones = document.getElementById('propertyDimensiones').value;
             const propertyAlicuota = document.getElementById('propertyAlicuota').value;
             const propertySaldo = document.getElementById('propertySaldo').value;
             const propertyDeuda = document.getElementById('propertyDeuda').value;
 
-            const expenseGroupsSelect = document.getElementById('expenseGroups');
-            const selectedGroups = Array.from(expenseGroupsSelect.selectedOptions).map(option => option.value);
+            const expenseGroupsSelect = document.getElementById('expenseGroupsContainer');
+            const selectedGroups = Array.from(expenseGroupsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => {
+                const alicuota = document.getElementById('alicuota_' + checkbox.value).value;
+                return { id: checkbox.value, alicuota: alicuota };
+            });
 
-            if (propertyName && selectedGroups.length > 0) {
-                properties.push({ name: propertyName, expenseGroups: selectedGroups });
-                renderProperties();
+            if (propertyName
+                && propertyAlicuota
+                && propertySaldo
+                && propertyDeuda
+                && selectedGroups.length > 0) {
+
+                properties.push({
+                    name: propertyName,
+                    alicuota: propertyAlicuota,
+                    saldo: propertySaldo,
+                    deuda: propertyDeuda,
+                    expenseGroups: selectedGroups
+                });
+
                 $('#propertyModal').modal('hide');
+                renderProperties();
                 document.getElementById('propertyName').value = '';
+                document.getElementById('propertyAlicuota').value = '';
+                document.getElementById('propertySaldo').value = '';
+                document.getElementById('propertyDeuda').value = '';
                 expenseGroupsSelect.selectedIndex = -1;
             }
         }
@@ -239,8 +276,20 @@
                     <div class="card mb-2">
                         <div class="card-body">
                             <h5 class="card-title">${property.name}</h5>
-                            <p class="card-text">Grupos de Gastos: ${property.expenseGroups.join(', ')}</p>
-                            <button type="button" class="btn btn-danger" onclick="removeProperty(${index})">Eliminar</button>
+                    <p class="card-text"><strong>Alicuota: </strong> ${property.alicuota}
+                    | <strong>Saldo: </strong> ${property.saldo}
+                    | <strong>Deuda: </strong> ${property.deuda}
+                    </p>
+                    <p class="card-text">Grupos de Gastos: ${property.expenseGroups.join(', ')}</p>
+                    <button type="button" class="btn btn-danger" onclick="removeProperty(${index})">Eliminar</button>
+                    <input type="hidden" name="Propiedades[${index}].Codigo" value="${property.name}" />
+                    <input type="hidden" name="Propiedades[${index}].Alicuota" value="${property.alicuota}" />
+                    <input type="hidden" name="Propiedades[${index}].Saldo" value="${property.saldo}" />
+                    <input type="hidden" name="Propiedades[${index}].Deuda" value="${property.deuda}" />
+                    ${property.expenseGroups.map((group, groupIndex) => `
+                        <input type="hidden" name="Propiedades[${index}].Grupos[${groupIndex}].Id" value="${group.id}" />
+                        <input type="hidden" name="Propiedades[${index}].Grupos[${groupIndex}].Alicuota" value="${group.alicuota}" />
+                    `).join('')}
                         </div>
                     </div>
                 `;
