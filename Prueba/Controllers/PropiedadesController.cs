@@ -222,10 +222,33 @@ namespace Prueba.Controllers
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var model = new CrearUserPropiedadesVM();
-            model.AvailableExpenseGroups = _context.GrupoGastos.Where(c => c.IdCondominio == idCondominio).ToList();
+            var grupos = _context.GrupoGastos.Where(c => c.IdCondominio == idCondominio).ToList();
+
+            model.AvailableExpenseGroups = grupos.Select(c => new GrupoVM()
+            {
+                Id = c.IdGrupoGasto,
+                Nombre = c.NombreGrupo,
+                Alicuota = 0
+            }).ToList();
 
             TempData.Keep();
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreatePropiedad(CrearUserPropiedadesVM model)
+        {
+            // VALIDAR 100% SUMA DE ALICUOTAS DE LAS PROPIEDADES
+
+            // CREAR USUARIO
+
+            // REGISTRAR PROPIEDADES
+
+            // RELACION PROPIEDAD GRUPO
+            // CON SU ALICUOTA SELECCCIONADA
+
+            return View(new CrearUserPropiedadesVM());
         }
 
         // POST: Propiedades/Create
