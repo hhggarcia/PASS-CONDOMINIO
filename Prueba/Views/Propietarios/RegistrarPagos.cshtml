@@ -43,7 +43,7 @@
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Seleccione una Propiedad</label>
                                                 <div class="position-relative">
-                                                    @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Propiedad", new {@class = "form-control form-select nav-tabs-selector"})
+                                                    @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Propiedad", new { @class = "form-control form-select nav-tabs-selector" })
 
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
@@ -57,10 +57,10 @@
                                                 @*<label for="last-name-column">Ver Propiedad</label>*@
                                                 <br />
                                                 <button type="button"
-                                                class="btn btn-outline-success"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalRecibos"
-                                                onclick="showContent();">
+                                                        class="btn btn-outline-success"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalRecibos"
+                                                        onclick="showContent();">
                                                     Ver
                                                 </button>
                                             </div>
@@ -78,17 +78,17 @@
 
 
                                             <div class="modal-dialog modal-dialog-scrollable"
-                                                    role="document">
+                                                 role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title"
-                                                    id="exampleModalScrollableTitle">
+                                                            id="exampleModalScrollableTitle">
                                                             Información de Deuda
                                                         </h5>
                                                         <button type="button"
-                                                        class="close"
-                                                        data-bs-dismiss="modal"
-                                                        aria-label="Close">
+                                                                class="close"
+                                                                data-bs-dismiss="modal"
+                                                                aria-label="Close">
                                                             <i data-feather="x"></i>
                                                         </button>
                                                     </div>
@@ -122,8 +122,8 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button"
-                                                        class="btn btn-light-secondary"
-                                                        data-bs-dismiss="modal">
+                                                                class="btn btn-light-secondary"
+                                                                data-bs-dismiss="modal">
                                                             <i class="bx bx-x d-block d-sm-none"></i>
                                                             <span class="d-none d-sm-block">Cerrar</span>
                                                         </button>
@@ -133,25 +133,6 @@
                                         </div>
                                         <!-- Fin modal-->
 
-                                        <!-- Select Recibo a pagar -->
-
-                                        @* <div class="col-md-12 col-12">
-                                            <div class="form-group has-icon-left">
-                                                <label for="last-name-column">Seleccione un Recibo</label>
-                                                <div class="position-relative">
-                                                    
-                                                    <select asp-for="IdRecibo"
-                                                        asp-items="Model.RecibosModel"
-                                                        class="form-select" id="recibos">
-                                                        <option value="0">seleccionar</option>
-                                                        </select>
-
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-building"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> *@
 
                                         <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
@@ -160,7 +141,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                         
+
                                         <!-- Concepto -->
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
@@ -169,32 +150,32 @@
 
                                                 <div class="position-relative">
                                                     <input type="text"
-                                                   class="form-control"
-                                                   placeholder="Concepto"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Concepto" />
+                                                           class="form-control"
+                                                           placeholder="Concepto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Concepto" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Monto -->
 
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Monto</label>
-                                            <span asp-validation-for="Monto" class="text-danger"></span>
+                                                <span asp-validation-for="Monto" class="text-danger"></span>
 
                                                 <div class="position-relative">
                                                     <input type="number"
-                                                   class="form-control"
-                                                   placeholder="Monto"
-                                                   id="first-name-icon"
-                                                   required
-                                                   asp-for="Monto" />
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           id="first-name-icon"
+                                                           required
+                                                           asp-for="Monto" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
@@ -207,15 +188,15 @@
                                         <div class="col-md-6 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Fecha</label>
-                                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                                                <span asp-validation-for="Fecha" class="text-danger"></span>
 
                                                 <div class="position-relative">
                                                     <input type="date"
-                                                   class="form-control"
-                                                   placeholder="Name"
-                                                   id="first-name-icon"
-                                                   asp-for="Fecha"
-                                                   value="@DateTime.Today" />
+                                                           class="form-control"
+                                                           placeholder="Name"
+                                                           id="first-name-icon"
+                                                           asp-for="Fecha"
+                                                           value="@DateTime.Today" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-calendar-date"></i>
                                                     </div>
@@ -237,14 +218,12 @@
                                                            id="first-name-icon"
                                                            required
                                                            accept="image/jpeg, image/png"
-                                                           name="file"
-                                                           />
+                                                           name="file" />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-building"></i>
                                                     </div>
                                                 </div>
                                             </div>
-                    </form>
                                         </div>
 
                                         <!-- Metodo de pago -->
@@ -289,8 +268,8 @@
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaCaja"
-                                                                                                asp-items="Model.SubCuentasCaja"
-                                                                                                class="form-select" id="efectivos">
+                                                                                                        asp-items="Model.SubCuentasCaja"
+                                                                                                        class="form-select" id="efectivos">
                                                                                                     <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
@@ -314,8 +293,8 @@
                                                                                         <label for="last-name-column">Número de Referencia</label>
                                                                                         <div class="position-relative">
                                                                                             <input type="number" class="form-control"
-                                                                                           placeholder="Referencia" id="first-name-icon" required=""
-                                                                                           asp-for="NumReferencia">
+                                                                                                   placeholder="Referencia" id="first-name-icon" required=""
+                                                                                                   asp-for="NumReferencia">
                                                                                             <div class="form-control-icon">
                                                                                                 <i class="bi bi-credit-card"></i>
                                                                                             </div>
@@ -329,49 +308,52 @@
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaBanco"
-                                                                                                asp-items="Model.SubCuentasBancos"
-                                                                                                class="form-select" id="bancos">
+                                                                                                        asp-items="Model.SubCuentasBancos"
+                                                                                                        class="form-select" id="bancos">
                                                                                                     <option value="0">Seleccionar</option>
                                                                                                 </select>
                                                                                             </fieldset>
                                                                                         </div>
                                                                                     </div>
-                                                </div>
-                                                <!-- Monto -->
-                                                <div class="col-md-12 col-12 p-3">
-                                                    <div class="form-group has-icon-left">
-                                                        <label for="last-name-column">Monto</label>
-                                                        <div class="position-relative">
-                                                            <input type="number"
-                                                                   class="form-control"
-                                                                   placeholder="Monto"
-                                                                   id="first-name-icon"
-                                                                   required />
-                                                            <div class="form-control-icon">
-                                                                <i class="bi bi-credit-card"></i>
+                                                                                </div>
+                                                                                <!-- Monto -->
+                                                                                <div class="col-md-12 col-12 p-3">
+                                                                                    <div class="form-group has-icon-left">
+                                                                                        <label for="last-name-column">Monto</label>
+                                                                                        <div class="position-relative">
+                                                                                            <input type="number"
+                                                                                                   class="form-control"
+                                                                                                   placeholder="Monto"
+                                                                                                   id="first-name-icon"
+                                                                                                   required />
+                                                                                            <div class="form-control-icon">
+                                                                                                <i class="bi bi-credit-card"></i>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+
+                                                                        <div class="tab-pane" id="messages">
+                                                                        </div>
+
                                                                     </div>
+
                                                                 </div>
                                                             </div>
-
-                                                            <div class="tab-pane" id="messages">
-                                                            </div>
-
                                                         </div>
+                                                    </div>
+
+                                                    <div class="col-12 d-flex justify-content-end">
+                                                        <button type="submit"
+                                                                class="btn btn-primary me-1 mb-1">
+                                                            Enviar
+                                                        </button>
 
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div class="col-12 d-flex justify-content-end">
-                                            <button type="submit"
-                                            class="btn btn-primary me-1 mb-1">
-                                                Enviar
-                                            </button>
-
                                         </div>
                                     </div>
                                 </div>
@@ -396,7 +378,7 @@
     <!-- Content Row -->
 </div>
 <!-- /.container-fluid -->
-@section Scripts{
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
@@ -468,7 +450,7 @@
                         }
 
                         //var abonado = String(data.abonado.toFixed(2));
-               
+
                         //desactivar dropdown de propiedades
                         //DisableDropDown("#IdPropiedad");
                         // LLENAR BANCOS
@@ -553,7 +535,7 @@
         function CLearTable(tableId) {
             $(tableId).empty();
         }
-        
+
         function ClearDropDown(dropdownId){
             $(dropdownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');;
         }

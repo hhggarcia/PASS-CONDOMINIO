@@ -1,6 +1,6 @@
 ﻿namespace Prueba.ViewModels
 {
-    public class RegisterConfirm
+    public class RegisterConfirmVM
     {
         public string To { get; set; } = string.Empty;
         public string Subject { get; set; } = string.Empty;
