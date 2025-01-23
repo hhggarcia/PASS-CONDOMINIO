@@ -32,15 +32,10 @@ namespace Prueba.ViewModels
 
     public class PropiedadVM
     {
-        public string Codigo { get; set; } = null!;
-
-        public decimal Dimensiones { get; set; }
-
+        public string Codigo { get; set; } = string.Empty;
         public decimal Alicuota { get; set; }
         public decimal Saldo { get; set; }
-
         public decimal Deuda { get; set; }
-
         public List<GrupoVM> Grupos { get; set; } = new List<GrupoVM>();
     }
 

@@ -237,23 +237,121 @@ namespace Prueba.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreatePropiedad(CrearUserPropiedadesVM model)
+        public async Task<IActionResult> CreatePropiedad(CrearUserPropiedadesVM model)
         {
-            // VALIDAR 100% SUMA DE ALICUOTAS DE LAS PROPIEDADES
+            if (ModelState.IsValid)
+            {
+                var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            // CREAR USUARIO
+                var condominio = await _context.Condominios.FindAsync(IdCondominio);
+                if (condominio != null)
+                {
+                    // VALIDAR 100% SUMA DE ALICUOTAS DE LAS PROPIEDADES
 
-            // REGISTRAR PROPIEDADES
+                    string returnUrl = Url.Content("~/");
 
-            // RELACION PROPIEDAD GRUPO
-            // CON SU ALICUOTA SELECCCIONADA
+                    // PASO 2 - REGISTRAR DATOS DE ADMINISTRADOR
 
-            return View(new CrearUserPropiedadesVM());
+                    var user = CreateUser();
+
+                    user.FirstName = model.Nombre;
+                    user.LastName = model.Rif;
+
+                    await _userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, model.Email, CancellationToken.None);
+
+                    var result = await _userManager.CreateAsync(user, model.Password);
+
+                    if (result.Succeeded)
+                    {
+                        //AGREGAR ROL DE PROPIETARIO 
+                        //AddToRoleAsync para añadir un rol (usuario, "Rol")
+                        await _signInManager.UserManager.AddToRoleAsync(user, "Propietario");
+
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                            protocol: Request.Scheme);
+
+                        var msg = $"Por favor, confirmar su cuenta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>haciendo clic aquí</a>.";
+
+                        // PASO 3 - REGISTRAR PROPIEDADES
+                        foreach (var propiedadVM in model.Propiedades)
+                        {
+                            var propiedadNueva = new Propiedad()
+                            {
+                                IdCondominio = condominio.IdCondominio,
+                                IdUsuario = user.Id,
+                                Codigo = propiedadVM.Codigo,
+                                Dimensiones = 0,
+                                Alicuota = propiedadVM.Alicuota,
+                                Saldo = propiedadVM.Saldo,
+                                Deuda = propiedadVM.Deuda,
+                                MontoIntereses = 0,
+                                MontoMulta = 0,
+                                Creditos = 0,
+                                Solvencia = !(propiedadVM.Saldo > 0 || propiedadVM.Deuda > 0)
+                            };
+
+                            _context.Propiedads.Add(propiedadNueva);
+                            await _context.SaveChangesAsync();
+
+                            // registrar la relacion PropiedadesGrupos de Gastos
+
+                            foreach (var grupoGastoSelect in propiedadVM.Grupos)
+                            {
+                                var propiedadGrupo = new PropiedadesGrupo()
+                                {
+                                    IdGrupoGasto = grupoGastoSelect.Id,
+                                    IdPropiedad = propiedadNueva.IdPropiedad,
+                                    Alicuota = grupoGastoSelect.Alicuota
+                                };
+
+                                _context.PropiedadesGrupos.Add(propiedadGrupo);
+                            }
+
+                        }
+
+                        await _context.SaveChangesAsync();
+
+                        // ENVIAR CORREO DE CONFIRMACION DE CUENTA
+                        //var resultCorreo = _emailServices.ConfirmEmail("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
+                        var resultCorreo = _emailServices.ConfirmEmail(condominio.Email, 
+                            user.Email ?? "", 
+                            condominio.ClaveCorreo ?? "", 
+                            msg);
+
+                        if (!resultCorreo.Contains("OK"))
+                        {
+                            var modeloError = new ErrorViewModel()
+                            {
+                                RequestId = resultCorreo
+                            };
+
+                            TempData.Keep();
+                            return RedirectToPage("Error", modeloError);
+                        }
+
+                        TempData.Keep();
+                        return RedirectToAction("IndexUserPropiedades");
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    TempData.Keep();
+                    return View(model);
+                }                
+            }
+            TempData.Keep();
+            return View(model);
         }
 
         // POST: Propiedades/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdPropiedad,IdCondominio,IdUsuario,Codigo,Dimensiones,Alicuota,Solvencia,Saldo,Deuda,MontoIntereses,MontoMulta,Creditos")] Propiedad propiedad)
