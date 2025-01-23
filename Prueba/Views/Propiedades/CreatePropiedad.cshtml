@@ -94,9 +94,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#propertyModal">Añadir Propiedad</button>
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#propertyModal">Agregar Propiedad</button>
                                 <button type="submit" class="btn btn-primary">Registrar</button>
                             </div>
+                            <hr />
+
+                            <h6 class="mb-5 font-weight-bold text-primary">Propiedades</h6>
                             <div id="propertiesList" class="form-group mb-3">
                                 <!-- Lista de propiedades agregadas -->
                             </div>
@@ -112,7 +115,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="propertyModalLabel">Añadir Propiedad</h5>
+                    <h5 class="modal-title" id="propertyModalLabel">Agregar Propiedad</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -129,7 +132,7 @@
                                    data-original="Codigo"
                                    data-translated="Ingresa el codigo"
                                    for="propertyName">Codigo</label>
-
+                            
                         </div>
 
                         <div class="form-floating mb-3">
@@ -201,6 +204,10 @@
                                            onfocus="toggleLabelText(this, true)"
                                            onblur="toggleLabelText(this, false)"
                                            id="alicuota_@group.Id">
+                                    <label class="form-label d-none"
+                                           data-original="Alicuota"
+                                           id="alicuota_label_@group.Id"
+                                           data-translated="Ingresa la Alicuota">Alicuota</label>
                                 </div>
                             }
                         </div>
@@ -208,7 +215,7 @@
                 </div>
                 <div class="modal-footer">
                     <a class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
-                    <a class="btn btn-primary" onclick="addProperty()">Añadir</a>
+                    <a class="btn btn-primary" onclick="addProperty()">Agregar</a>
                 </div>
             </div>
         </div>
@@ -223,11 +230,14 @@
 
         function toggleAlicuotaInput(checkbox) {
             const alicuotaInput = document.getElementById('alicuota_' + checkbox.value);
+            const alicuotaLabel = document.getElementById('alicuota_label_' + checkbox.value);
             if (checkbox.checked) {
                 alicuotaInput.classList.remove('d-none');
+                alicuotaLabel.classList.remove('d-none');
                 alicuotaInput.required = true;
             } else {
                 alicuotaInput.classList.add('d-none');
+                alicuotaLabel.classList.add('d-none');
                 alicuotaInput.required = false;
             }
         }
@@ -241,7 +251,8 @@
             const expenseGroupsSelect = document.getElementById('expenseGroupsContainer');
             const selectedGroups = Array.from(expenseGroupsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(checkbox => {
                 const alicuota = document.getElementById('alicuota_' + checkbox.value).value;
-                return { id: checkbox.value, alicuota: alicuota };
+                const label = document.querySelector(`label[for="group_${checkbox.value}"]`).textContent;
+                return { id: checkbox.value, name: label, alicuota: alicuota };
             });
 
             if (propertyName
@@ -276,11 +287,15 @@
                     <div class="card mb-2">
                         <div class="card-body">
                             <h5 class="card-title">${property.name}</h5>
-                    <p class="card-text"><strong>Alicuota: </strong> ${property.alicuota}
-                    | <strong>Saldo: </strong> ${property.saldo}
-                    | <strong>Deuda: </strong> ${property.deuda}
+                            <p class="card-text"><strong>Alicuota: </strong> ${property.alicuota}
+                            | <strong>Saldo: </strong> ${property.saldo}
+                            | <strong>Deuda: </strong> ${property.deuda}
+                            </p>
+                    <p class="card-text"><strong>Grupos de Gastos:</strong>
+                    ${property.expenseGroups.map((group) => `
+                        <span>${group.name}</span> - <span>${group.alicuota}</span> |                    
+                    `).join('')}
                     </p>
-                    <p class="card-text">Grupos de Gastos: ${property.expenseGroups.join(', ')}</p>
                     <button type="button" class="btn btn-danger" onclick="removeProperty(${index})">Eliminar</button>
                     <input type="hidden" name="Propiedades[${index}].Codigo" value="${property.name}" />
                     <input type="hidden" name="Propiedades[${index}].Alicuota" value="${property.alicuota}" />
