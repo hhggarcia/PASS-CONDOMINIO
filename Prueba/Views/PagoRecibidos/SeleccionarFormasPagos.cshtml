@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Seleccionar Formas de Pago";
+    Layout = "~/Views/Shared/_LayoutPropietario.cshtml";
+
+}
+
+<style>
+        .card {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .payment-form {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card" onclick="showForm('novaForm')">
+            <div class="card-body">
+                <h5 class="card-title">Pago NOVA</h5>
+                <p class="card-text">El pago default de la aplicación web.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="showForm('tarjetaForm')">
+            <div class="card-body">
+                <h5 class="card-title">Pago con Tarjeta</h5>
+                <p class="card-text">Paga con tu tarjeta de crédito o débito.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="showForm('paypalForm')">
+            <div class="card-body">
+                <h5 class="card-title">Pago con PayPal</h5>
+                <p class="card-text">Paga usando tu cuenta de PayPal.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card" onclick="showForm('stripeForm')">
+            <div class="card-body">
+                <h5 class="card-title">Pago con Stripe</h5>
+                <p class="card-text">Paga usando Stripe.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="novaForm" class="payment-form d-none">
+    <h3>Pago NOVA</h3>
+    <form asp-action="PagoNOVA" method="post">
+        <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="Monto">Monto</label>
+            <input type="number" class="form-control" id="Monto" name="Monto" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Pagar</button>
+    </form>
+</div>
+
+<div id="tarjetaForm" class="payment-form d-none">
+    <h3>Pago con Tarjeta</h3>
+    <form asp-action="PagoTarjeta" method="post">
+        <div class="form-group">
+            <label for="NumeroTarjeta">Número de Tarjeta</label>
+            <input type="text" class="form-control" id="NumeroTarjeta" name="NumeroTarjeta" required>
+        </div>
+        <div class="form-group">
+            <label for="NombreTitular">Nombre del Titular</label>
+            <input type="text" class="form-control" id="NombreTitular" name="NombreTitular" required>
+        </div>
+        <div class="form-group">
+            <label for="FechaExpiracion">Fecha de Expiración</label>
+            <input type="date" class="form-control" id="FechaExpiracion" name="FechaExpiracion" required>
+        </div>
+        <div class="form-group">
+            <label for="CVV">CVV</label>
+            <input type="text" class="form-control" id="CVV" name="CVV" required>
+        </div>
+        <div class="form-group">
+            <label for="Monto">Monto</label>
+            <input type="number" class="form-control" id="Monto" name="Monto" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Pagar</button>
+    </form>
+</div>
+
+<div id="paypalForm" class="payment-form d-none">
+    <h3>Pago con PayPal</h3>
+    <form asp-action="PagoPayPal" method="post">
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" class="form-control" id="Email" name="Email" required>
+        </div>
+        <div class="form-group">
+            <label for="Monto">Monto</label>
+            <input type="number" class="form-control" id="Monto" name="Monto" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Pagar</button>
+    </form>
+</div>
+
+<div id="stripeForm" class="payment-form d-none">
+    <h3>Pago con Stripe</h3>
+    <form asp-action="PagoStripe" method="post">
+        <div class="form-group">
+            <label for="Token">Token</label>
+            <input type="text" class="form-control" id="Token" name="Token" required>
+        </div>
+        <div class="form-group">
+            <label for="Monto">Monto</label>
+            <input type="number" class="form-control" id="Monto" name="Monto" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Pagar</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function showForm(formId) {
+            document.querySelectorAll('.payment-form').forEach(form => {
+                form.classList.add('d-none');
+            });
+            document.getElementById(formId).classList.remove('d-none');
+        }
+    </script>
+}

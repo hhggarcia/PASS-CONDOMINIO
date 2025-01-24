@@ -1083,5 +1083,10 @@ namespace Prueba.Controllers
         {
             return _context.PagoRecibidos.Any(e => e.IdPagoRecibido == id);
         }
+
+        public IActionResult SeleccionarFormasPagos()
+        {
+            return View();
+        }
     }
 }
