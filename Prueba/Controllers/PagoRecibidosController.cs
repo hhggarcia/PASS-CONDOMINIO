@@ -1084,6 +1084,7 @@ namespace Prueba.Controllers
             return _context.PagoRecibidos.Any(e => e.IdPagoRecibido == id);
         }
 
+        [Authorize(Policy = "RequirePropietarioOrInquilino")]
         public IActionResult SeleccionarFormasPagos()
         {
             return View();
