@@ -1,0 +1,299 @@
+﻿
+<style>
+    .carousel-item {
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .credit-card {
+        width: 270px;
+        height: 186px;
+        background: linear-gradient(
+            to right, 
+            rgba(39, 38, 54, 0.78), 
+            rgba(0, 0, 0, 1)
+        );
+        border-radius: 15px;
+        color: white;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+        .credit-card .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 55px;
+        }
+
+            .credit-card .logo img {
+                width: 100%;
+                height: 100%;
+            }
+
+        .credit-card .chip {
+            width: 40px;
+            height: 43.4px;
+            position: absolute;
+            top: 60px; /* Movido más al centro */
+            left: 20px;
+        }
+
+            .credit-card .chip img {
+                width: 100%;
+                height: 100%;
+            }
+
+        .credit-card .contactless {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 28.57px;
+        }
+
+            .credit-card .contactless img {
+                width: 100%;
+                height: 100%;
+            }
+
+        .credit-card .mastercard-logo {
+            position: absolute;
+            bottom: 3px;
+            right: 10px;
+            width: 70px;
+            height: 69.16px;
+        }
+
+            .credit-card .mastercard-logo img {
+                width: 100%;
+                height: 100%;
+            }
+
+        .credit-card .card-number {
+            position: absolute;
+            top: 100px; /* Bajado un poco */
+            left: 30px;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .credit-card .card-holder {
+            position: absolute;
+            bottom: 20px; /* Bajado un poco */
+            left: 20px;
+            font-size: 14px;
+        }
+
+        .credit-card .expiry-date {
+            position: absolute;
+            bottom: 20px; /* Bajado un poco */
+            right: 100px; /* Movido entre el nombre y el logo de Credicard */
+            font-size: 14px;
+        }
+
+    .payment-card {
+        width: 270px;
+        height: 186px;
+        background: linear-gradient(
+        to right, rgba(115, 115,115, 0.58), rgba(0, 0, 0, 0.73));
+        border-radius: 15px;
+        color: white;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .payment-card .logo {
+            width: 150px; /* Tamaño moderado */
+            height: auto;
+        }
+
+            .payment-card .logo img {
+                width: 100%;
+                height: 100%;
+            }
+
+    .payoneer{
+        background: linear-gradient( to right, rgba(112, 0, 110, 0.68), rgba(67, 59, 113, 1)); /* Colores de payoneer */
+    }
+
+    .pay-local{
+        background: linear-gradient( to right, rgba(0, 140, 255, 1), rgba(0, 0, 0, 1)); /* Colores de la aplicacion */
+    }
+
+    .bnc{
+        background: linear-gradient( to right, rgba(254, 89, 0, 1), rgba(6, 0, 92, 1)); /* Colores de la aplicacion */    
+    }
+
+    .carousel button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+        border: none;
+        color: white; /* Color del ícono */
+        font-size: 24px; /* Tamaño del ícono */
+        padding: 10px 15px; /* Espaciado interno */
+        cursor: pointer;
+        border-radius: 50%; /* Forma circular */
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+        /* Efecto hover para los botones */
+        .carousel button:hover {
+            background-color: rgba(0, 0, 0, 0.8); /* Fondo más oscuro al pasar el mouse */
+            transform: translateY(-50%) scale(1.1); /* Ligero aumento de tamaño */
+        }
+
+    /* Estilo específico para el botón "anterior" */
+    .carousel .prev {
+        left: 20px; /* Posición a la izquierda */
+    }
+
+    /* Estilo específico para el botón "siguiente" */
+    .carousel .next {
+        right: 20px; /* Posición a la derecha */
+    }
+
+    /* Estilo para los íconos de los botones */
+    .carousel button::before {
+        display: inline-block;
+        font-family: "Arial", sans-serif; /* Usar una fuente con soporte para flechas */
+    }
+
+    .carousel .prev::before {
+        content: "‹"; /* Ícono de flecha izquierda */
+    }
+
+    .carousel .next::before {
+        content: "›"; /* Ícono de flecha derecha */
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Item 1 -->
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="payment-card pay-local">
+                            <!-- Logo de PayPal -->
+                            <div class="logo">
+                                <img src="~/images/yllenBlanco.png"
+                                     alt="pago local" />
+                                <!-- Cambia "paypal-logo.png" por el nombre de tu archivo -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 d-none d-md-block">
+                        <div class="credit-card">
+                            <div class="logo">
+                                <img src="~/images/Logo BNC (original).png"
+                                     alt="Logo" />
+                            </div>
+                            <!-- Chip -->
+                            <div class="chip">
+                                <img src="~/images/flat-color-icons_sim-card-chip.png"
+                                     alt="Chip" />
+                            </div>
+                            <!-- Contactless -->
+                            <div class="contactless">
+                                <img src="~/images/mdi_contactless-payment.png"
+                                     alt="Contactless" />
+                            </div>
+                            <!-- Número de la tarjeta -->
+                            <div class="card-number">**** **** **** 1234</div>
+                            <!-- Nombre del titular -->
+                            <div class="card-holder">C2P</div>
+                            <!-- Fecha de expiración -->
+                            <div class="expiry-date">VPOS</div>
+                            <!-- Logo de Mastercard -->
+                            <div class="mastercard-logo">
+                                <img src="/images/grommet-icons_mastercard.png"
+                                     alt="Mastercard" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 d-none d-md-block">
+                        <div class="payment-card payoneer">
+                            <!-- Logo de PayPal -->
+                            <div class="logo">
+                                <img src="~/images/Payoneer-Emblem.png"
+                                     alt="Payoneer" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Item 2 -->
+            <div class="carousel-item">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="col-md-4 d-none d-md-block">
+                            <div class="payment-card">
+                                <!-- Logo de PayPal -->
+                                <div class="logo">
+                                    <img src="~/images/PayPal_horizontally_Logo_2014.png"
+                                         alt="PayPal" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-none d-md-block">
+                        <div class="payment-card bnc">
+                            <!-- Logo de PayPal -->
+                            <div class="logo">
+                                <img src="~/images/Logo BNC (original).png"
+                                     alt="BNC" />
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-4 d-none d-md-block">
+                        <div class="credit-card">
+                            <!-- Chip -->
+                            <div class="chip">
+                                <img src="~/images/flat-color-icons_sim-card-chip.png"
+                                     alt="Chip" />
+                            </div>
+                            <!-- Contactless -->
+                            <div class="contactless">
+                                <img src="~/images/mdi_contactless-payment.png"
+                                     alt="Contactless" />
+                            </div>
+                            <!-- Número de la tarjeta -->
+                            <div class="card-number">**** **** **** 1234</div>
+                            <!-- Nombre del titular -->
+                            <div class="card-holder">John Doe</div>
+                            <!-- Fecha de expiración -->
+                            <div class="expiry-date">12/25</div>
+                            <!-- Logo de Mastercard -->
+                            <div class="mastercard-logo">
+                                <img src="~/images/grommet-icons_mastercard.png"
+                                     alt="Mastercard" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Agrega más items según sea necesario -->
+        </div>
+        <button class="prev">&#10094;</button>
+        <button class="next">&#10095;</button>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+}

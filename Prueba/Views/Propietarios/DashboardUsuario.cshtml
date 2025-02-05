@@ -140,7 +140,9 @@
         }
     }
 
-    <div class="row justify-content-center">
+    <partial name="_CarruselFormasPago"></partial>
+
+    @* <div class="row justify-content-center">
         <div class="col-lg-6">
 
             <div class="card shadow mb-4 bg-content-bg">
@@ -266,7 +268,7 @@
                                                                 </option>
                                                                 @* <option value="2">
                                                         Nota de Crédito
-                                                        </option> *@
+                                                        </option> 
                                                             </select>
                                                         </div>
 
@@ -288,7 +290,7 @@
                                                                                 <!-- Tipo de Banco -->
                                                                                 <div class="col-md-6 col-12">
                                                                                     <div class="form-group has-icon-left mandaory">
-                                                                                        @*<label for="last-name-column">Banco</label>*@
+                                                                                        <label for="last-name-column">Banco</label>
                                                                                         <div class="position-relative">
                                                                                             <fieldset class="form-group">
                                                                                                 <select asp-for="IdCodigoCuentaCaja"
@@ -382,7 +384,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 </div>
 
 @section Scripts {
