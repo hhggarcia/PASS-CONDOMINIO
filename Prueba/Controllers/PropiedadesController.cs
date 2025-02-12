@@ -580,6 +580,36 @@ namespace Prueba.Controllers
         }
 
 
+        public async Task<IActionResult> HistoricoPagosPropiedad()
+        {
+            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+            var model = new List<HistoricoPropiedadPagosVM>();
+            // buscar propiedades
+            var propiedades = await _repoCondominio.GetPropiedadesCondominio(IdCondominio);
+
+            // buscar pagos Propiedad
+            foreach (var propiedad in propiedades)
+            {
+                // buscar pagos
+                // buscar referencia si aplica
+
+                var pagosPropiedad = await _context.PagoPropiedads
+                    .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                    .Include(c => c.IdPagoNavigation)
+                        .ThenInclude(c => c.ReferenciasPrs)
+                    .ToListAsync();
+
+                // cargar modelo
+                model.Add(new HistoricoPropiedadPagosVM()
+                {
+                    Propiedad = propiedad,
+                    Pagos = pagosPropiedad
+                });
+            }
+            TempData.Keep();
+            return View(model);
+        }
+
         // GET: Propiedades/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

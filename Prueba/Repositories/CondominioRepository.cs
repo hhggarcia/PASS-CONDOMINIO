@@ -20,6 +20,6 @@ namespace Prueba.Repositories
         public async Task<IList<Propiedad>> GetPropiedadesCondominio(int id) => await _context.Propiedads.Include(c => c.IdUsuarioNavigation)
                 .Where(c => c.IdCondominio == id)
                 .OrderBy(c => c.Codigo)
-                .ToListAsync();
+                .ToListAsync();        
     }
 }
