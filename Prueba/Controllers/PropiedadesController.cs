@@ -100,7 +100,8 @@ namespace Prueba.Controllers
         public async Task<IActionResult> Inquilino(int id)
         {
             var propiedad = await _context.Propiedads.FindAsync(id);
-            if (propiedad == null) { 
+            if (propiedad == null)
+            {
                 return NotFound();
             }
 
@@ -320,9 +321,9 @@ namespace Prueba.Controllers
 
                         // ENVIAR CORREO DE CONFIRMACION DE CUENTA
                         //var resultCorreo = _emailServices.ConfirmEmail("g.hector9983@gmail.com", user.Email, "rrmbjahggwhvkrgi", msg);
-                        var resultCorreo = _emailServices.ConfirmEmail(condominio.Email, 
-                            user.Email ?? "", 
-                            condominio.ClaveCorreo ?? "", 
+                        var resultCorreo = _emailServices.ConfirmEmail(condominio.Email,
+                            user.Email ?? "",
+                            condominio.ClaveCorreo ?? "",
                             msg);
 
                         if (!resultCorreo.Contains("OK"))
@@ -345,7 +346,7 @@ namespace Prueba.Controllers
                     }
                     TempData.Keep();
                     return View(model);
-                }                
+                }
             }
             TempData.Keep();
             return View(model);
@@ -583,31 +584,65 @@ namespace Prueba.Controllers
         public async Task<IActionResult> HistoricoPagosPropiedad()
         {
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var model = new List<HistoricoPropiedadPagosVM>();
+            //var model = new List<HistoricoPropiedadPagosVM>();
             // buscar propiedades
             var propiedades = await _repoCondominio.GetPropiedadesCondominio(IdCondominio);
+            TempData.Keep();
+            return View(propiedades);
+        }
 
-            // buscar pagos Propiedad
-            foreach (var propiedad in propiedades)
+        public async Task<IActionResult> DetallePagosPropiedad(int id)
+        {
+            var propiedad = await _context.Propiedads.FindAsync(id);
+            var model = new HistoricoPropiedadPagosVM();
+
+            if (propiedad != null)
             {
+                // buscar pagos Propiedad
                 // buscar pagos
                 // buscar referencia si aplica
 
                 var pagosPropiedad = await _context.PagoPropiedads
-                    .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
-                    .Include(c => c.IdPagoNavigation)
-                        .ThenInclude(c => c.ReferenciasPrs)
-                    .ToListAsync();
+                .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                .Include(c => c.IdPagoNavigation)
+                    .ThenInclude(c => c.ReferenciasPrs)
+                .ToListAsync();
 
                 // cargar modelo
-                model.Add(new HistoricoPropiedadPagosVM()
-                {
-                    Propiedad = propiedad,
-                    Pagos = pagosPropiedad
-                });
+                model.Propiedad = propiedad;
+                model.Pagos = pagosPropiedad;
             }
-            TempData.Keep();
+
             return View(model);
+        }
+
+        public async Task<IActionResult> PdfHistoricoPagosPropiedad(int id)
+        {
+            var propiedad = await _context.Propiedads.FindAsync(id);
+            var model = new HistoricoPropiedadPagosVM();
+
+            if (propiedad != null)
+            {
+                // buscar pagos Propiedad
+                // buscar pagos
+                // buscar referencia si aplica
+
+                var pagosPropiedad = await _context.PagoPropiedads
+                .Where(c => c.IdPropiedad == propiedad.IdPropiedad)
+                .Include(c => c.IdPagoNavigation)
+                    .ThenInclude(c => c.ReferenciasPrs)
+                .ToListAsync();
+
+                // cargar modelo
+                model.Propiedad = propiedad;
+                model.Pagos = pagosPropiedad;
+
+                var data = _servicesPDF.HistoricoPagosPropiedadPDF(model);
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "HistoricoPagos_" + propiedad.Codigo + "_" + DateTime.Today.ToString("dd/MM/yyyy") + ".pdf");
+            }
+
+            return View("HistoricoPagosPropiedad");
         }
 
         // GET: Propiedades/Edit/5

@@ -1,0 +1,154 @@
+﻿@model Prueba.ViewModels.HistoricoPropiedadPagosVM
+@inject Prueba.Context.NuevaAppContext _context
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+    decimal totalPagos = 0;
+}
+
+<style>
+    .collapse {
+        transition: height 0.2s ease !important; /* Ajusta la duración de la animación aquí */
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller="Propiedades"
+           asp-action="HistoricoPagosPropiedad">
+            Volver
+        </a>
+        <a class="btn btn-light mb-3" asp-controller="Propiedades"
+           asp-action="PdfHistoricoPagosPropiedad"
+           asp-route-id="@Model.Propiedad.IdPropiedad">
+            PDF
+        </a>
+    </div>
+
+    @if (Model.Propiedad != null)
+    {
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <!-- DataTales Example -->
+                <div class="card shadow mb-4 bg-content-bg">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            @Model.Propiedad.Codigo
+                        </h6>
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#properties-@Model.Propiedad.IdPropiedad">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="properties-@Model.Propiedad.IdPropiedad" class="collapse">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Deuda</th>
+                                            <th>Recibo Actual</th>
+                                            <th>Credito</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@Model.Propiedad.Deuda.ToString("N")</td>
+                                            <td>@Model.Propiedad.Saldo.ToString("N")</td>
+                                            <td>@(((decimal)Model.Propiedad.Creditos).ToString("N"))</td>
+                                            <td>@((Model.Propiedad.Deuda + Model.Propiedad.Saldo - (decimal)Model.Propiedad.Creditos).ToString("N"))</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table text-center"
+                                       id="dataTable"
+                                       width="100%"
+                                       cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Fecha
+                                            </th>
+                                            
+                                            <th>
+                                                Forma de Pago
+                                            </th>
+                                            <th>
+                                                Banco
+                                            </th>
+                                            <th>
+                                                Referencia
+                                            </th>
+                                            <th>
+                                                Monto
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Pagos.Any())
+                                        {
+                                            @foreach (var pago in Model.Pagos)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @pago.IdPagoNavigation.Fecha.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        @(pago.IdPagoNavigation.FormaPago ? "Transferencia" : "Efectivo")
+                                                    </td>
+                                                    @if (pago.IdPagoNavigation.ReferenciasPrs.Any())
+                                                    {
+                                                        <td>
+                                                            @(_context.SubCuenta.Find(Convert.ToInt32(pago.IdPagoNavigation.ReferenciasPrs.First().Banco)).Descricion)
+                                                        </td>
+
+                                                        <td>
+                                                            @pago.IdPagoNavigation.ReferenciasPrs.First().NumReferencia
+                                                        </td>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td></td>
+                                                        <td></td>
+                                                    }
+                                                    <td>
+                                                        @pago.IdPagoNavigation.Monto.ToString("N")
+                                                    </td>
+                                                </tr>
+                                                totalPagos += pago.IdPagoNavigation.Monto;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Total de Pagos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@totalPagos.ToString("N")</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+}
