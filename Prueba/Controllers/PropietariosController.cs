@@ -211,8 +211,6 @@ namespace Prueba.Controllers
             return Json(modelo);
         }
 
-
-
         /// <summary>
         /// 
         /// </summary>
