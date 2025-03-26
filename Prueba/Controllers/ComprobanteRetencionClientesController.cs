@@ -100,7 +100,7 @@ namespace Prueba.Controllers
 
                 //    return View(comprobanteRetencionCliente);
                 //}
-
+                 
                 var factura = await _context.FacturaEmitida.FindAsync(comprobanteRetencionCliente.IdFactura);
 
                 if (factura != null)

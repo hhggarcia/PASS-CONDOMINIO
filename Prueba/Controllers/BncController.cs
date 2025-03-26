@@ -104,6 +104,8 @@ namespace Prueba.Controllers
                 model.Propiedades = propiedades.Select(c => new SelectListItem(c.Codigo, c.IdPropiedad.ToString())).ToList();
             }
 
+            // BUSCAR LLAMANDO A LA API
+
             model.Bancos = new List<SelectListItem>
             {
                 new SelectListItem { Value = "0105", Text = "Banco de Venezuela" },

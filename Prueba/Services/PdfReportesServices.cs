@@ -8,6 +8,7 @@ using QuestPDF.Infrastructure;
 using NetTopologySuite.Index.HPRtree;
 using Prueba.Models;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Prueba.Services
 {
@@ -1072,8 +1073,10 @@ namespace Prueba.Services
 
                                         var reciboActual = _context.ReciboCobros.FirstOrDefault(c => c.IdRgastos == relacionGasto.IdRgastos && c.IdPropiedad == propiedad.IdPropiedad);
 
+                                        var culturaEspaniola = new CultureInfo("es-ES");
+
                                         var fechaRel = relacionGasto.Fecha.AddMonths(-2);
-                                        var mesAnterior = fechaRel.Month.ToString() + "-" + fechaRel.ToString("MMM").ToUpper() + ".-" + fechaRel.ToString("yyyy");
+                                        var mesAnterior = fechaRel.Month.ToString() + "-" + fechaRel.ToString("MMM", culturaEspaniola).ToUpper() + ".-" + fechaRel.ToString("yyyy");
 
                                         ReciboCobro? ultimoRecibo = recibos.Find(c => c.Mes == mesAnterior);
 
@@ -1082,7 +1085,7 @@ namespace Prueba.Services
 
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignLeft()
-                                            .Padding(5).Text(propiedad.Codigo).FontColor("#607080").Bold().FontSize(8);
+                                        .Padding(5).Text(propiedad.Codigo).FontColor("#607080").Bold().FontSize(8);
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignLeft()
                                             .Padding(5).Text(propietario.LastName).FontColor("#607080").Bold().FontSize(8);
