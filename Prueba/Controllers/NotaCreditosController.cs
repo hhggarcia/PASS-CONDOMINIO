@@ -101,103 +101,103 @@ namespace Prueba.Controllers
         }
 
         // GET: NotaCreditos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var notaCredito = await _context.NotaCreditos.FindAsync(id);
-            if (notaCredito == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
-            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
-            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
-            return View(notaCredito);
-        }
+        //    var notaCredito = await _context.NotaCreditos.FindAsync(id);
+        //    if (notaCredito == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
+        //    ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
+        //    ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
+        //    ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
+        //    return View(notaCredito);
+        //}
 
-        // POST: NotaCreditos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto,IdRetIva,IdRetIslr,IdPagoRecibido,IdPropiedad")] NotaCredito notaCredito)
-        {
-            if (id != notaCredito.IdNotaCredito)
-            {
-                return NotFound();
-            }
+        //// POST: NotaCreditos/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdNotaCredito,IdFactura,IdCliente,Concepto,Comprobante,Fecha,Monto,IdRetIva,IdRetIslr,IdPagoRecibido,IdPropiedad")] NotaCredito notaCredito)
+        //{
+        //    if (id != notaCredito.IdNotaCredito)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(notaCredito);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NotaCreditoExists(notaCredito.IdNotaCredito))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
-            ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
-            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
-            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
-            return View(notaCredito);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(notaCredito);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!NotaCreditoExists(notaCredito.IdNotaCredito))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
+        //    ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
+        //    ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
+        //    ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
+        //    return View(notaCredito);
+        //}
 
-        // GET: NotaCreditos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: NotaCreditos/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var notaCredito = await _context.NotaCreditos
-                .Include(n => n.IdClienteNavigation)
-                .Include(n => n.IdFacturaNavigation)
-                .Include(n => n.IdPropiedadNavigation)
-                .Include(n => n.IdRetIslrNavigation)
-                .Include(n => n.IdRetIvaNavigation)
-                .FirstOrDefaultAsync(m => m.IdNotaCredito == id);
-            if (notaCredito == null)
-            {
-                return NotFound();
-            }
+        //    var notaCredito = await _context.NotaCreditos
+        //        .Include(n => n.IdClienteNavigation)
+        //        .Include(n => n.IdFacturaNavigation)
+        //        .Include(n => n.IdPropiedadNavigation)
+        //        .Include(n => n.IdRetIslrNavigation)
+        //        .Include(n => n.IdRetIvaNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdNotaCredito == id);
+        //    if (notaCredito == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(notaCredito);
-        }
+        //    return View(notaCredito);
+        //}
 
-        // POST: NotaCreditos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var notaCredito = await _context.NotaCreditos.FindAsync(id);
-            if (notaCredito != null)
-            {
-                _context.NotaCreditos.Remove(notaCredito);
-            }
+        //// POST: NotaCreditos/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var notaCredito = await _context.NotaCreditos.FindAsync(id);
+        //    if (notaCredito != null)
+        //    {
+        //        _context.NotaCreditos.Remove(notaCredito);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool NotaCreditoExists(int id)
         {

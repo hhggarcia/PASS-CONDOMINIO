@@ -139,130 +139,130 @@ namespace Prueba.Controllers
         }
 
         // GET: CompRetIvas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var compRetIva = await _context.CompRetIvas.FindAsync(id);
-            if (compRetIva == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
-            ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
-            ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
-            return View(compRetIva);
-        }
+        //    var compRetIva = await _context.CompRetIvas.FindAsync(id);
+        //    if (compRetIva == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+        //    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+        //    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+        //    return View(compRetIva);
+        //}
 
-        // POST: CompRetIvas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdProveedor,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva")] CompRetIva compRetIva)
-        {
-            if (id != compRetIva.IdComprobanteIva)
-            {
-                return NotFound();
-            }
+        //// POST: CompRetIvas/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdProveedor,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva")] CompRetIva compRetIva)
+        //{
+        //    if (id != compRetIva.IdComprobanteIva)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // validar num de control o num de facturas no repetidos
-                    var existNumComp = await _context.CompRetIvas.Where(c => c.NumCompRet == compRetIva.NumCompRet).ToListAsync();
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            // validar num de control o num de facturas no repetidos
+        //            var existNumComp = await _context.CompRetIvas.Where(c => c.NumCompRet == compRetIva.NumCompRet).ToListAsync();
 
-                    if (existNumComp.Any())
-                    {
-                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIva.NumCompRet : "";
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = mensaje;
+        //            if (existNumComp.Any())
+        //            {
+        //                var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIva.NumCompRet : "";
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = mensaje;
 
-                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
-                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
-                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+        //                ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+        //                ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+        //                ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+        //                ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
 
-                        return View(compRetIva);
+        //                return View(compRetIva);
 
-                    }
-                    else if (compRetIva.NumCompRet.Length != 14)
-                    {
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+        //            }
+        //            else if (compRetIva.NumCompRet.Length != 14)
+        //            {
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                        ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
-                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
-                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-                        ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+        //                ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+        //                ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+        //                ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+        //                ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
 
-                        return View(compRetIva);
-                    }
+        //                return View(compRetIva);
+        //            }
 
-                    _context.Update(compRetIva);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompRetIvaExists(compRetIva.IdComprobanteIva))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
-            ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
-            ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
-            return View(compRetIva);
-        }
+        //            _context.Update(compRetIva);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!CompRetIvaExists(compRetIva.IdComprobanteIva))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", compRetIva.IdFactura);
+        //    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIva.IdNotaCredito);
+        //    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIva.IdNotaDebito);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", compRetIva.IdProveedor);
+        //    return View(compRetIva);
+        //}
 
-        // GET: CompRetIvas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: CompRetIvas/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var compRetIva = await _context.CompRetIvas
-                .Include(c => c.IdFacturaNavigation)
-                .Include(c => c.IdNotaCreditoNavigation)
-                .Include(c => c.IdNotaDebitoNavigation)
-                .Include(c => c.IdProveedorNavigation)
-                .FirstOrDefaultAsync(m => m.IdComprobanteIva == id);
-            if (compRetIva == null)
-            {
-                return NotFound();
-            }
+        //    var compRetIva = await _context.CompRetIvas
+        //        .Include(c => c.IdFacturaNavigation)
+        //        .Include(c => c.IdNotaCreditoNavigation)
+        //        .Include(c => c.IdNotaDebitoNavigation)
+        //        .Include(c => c.IdProveedorNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdComprobanteIva == id);
+        //    if (compRetIva == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(compRetIva);
-        }
+        //    return View(compRetIva);
+        //}
 
-        // POST: CompRetIvas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var compRetIva = await _context.CompRetIvas.FindAsync(id);
-            if (compRetIva != null)
-            {
-                _context.CompRetIvas.Remove(compRetIva);
-            }
+        //// POST: CompRetIvas/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var compRetIva = await _context.CompRetIvas.FindAsync(id);
+        //    if (compRetIva != null)
+        //    {
+        //        _context.CompRetIvas.Remove(compRetIva);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool CompRetIvaExists(int id)
         {

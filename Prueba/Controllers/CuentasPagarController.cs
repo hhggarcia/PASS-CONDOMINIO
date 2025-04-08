@@ -102,98 +102,98 @@ namespace Prueba.Controllers
         }
 
         // GET: CuentasPagar/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var cuentasPagar = await _context.CuentasPagars.FindAsync(id);
-            if (cuentasPagar == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
-            return View(cuentasPagar);
-        }
+        //    var cuentasPagar = await _context.CuentasPagars.FindAsync(id);
+        //    if (cuentasPagar == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
+        //    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
+        //    return View(cuentasPagar);
+        //}
 
-        // POST: CuentasPagar/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCondominio,IdFactura,Monto,Status")] CuentasPagar cuentasPagar)
-        {
-            if (id != cuentasPagar.Id)
-            {
-                return NotFound();
-            }
+        //// POST: CuentasPagar/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("Id,IdCondominio,IdFactura,Monto,Status")] CuentasPagar cuentasPagar)
+        //{
+        //    if (id != cuentasPagar.Id)
+        //    {
+        //        return NotFound();
+        //    }
 
-            ModelState.Remove(nameof(cuentasPagar.IdCondominioNavigation));
-            ModelState.Remove(nameof(cuentasPagar.IdFacturaNavigation));
+        //    ModelState.Remove(nameof(cuentasPagar.IdCondominioNavigation));
+        //    ModelState.Remove(nameof(cuentasPagar.IdFacturaNavigation));
 
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cuentasPagar);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CuentasPagarExists(cuentasPagar.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
-            ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
-            return View(cuentasPagar);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(cuentasPagar);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!CuentasPagarExists(cuentasPagar.Id))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cuentasPagar.IdCondominio);
+        //    ViewData["IdFactura"] = new SelectList(_context.Facturas, "IdFactura", "NumFactura", cuentasPagar.IdFactura);
+        //    return View(cuentasPagar);
+        //}
 
-        // GET: CuentasPagar/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: CuentasPagar/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var cuentasPagar = await _context.CuentasPagars
-                .Include(c => c.IdCondominioNavigation)
-                .Include(c => c.IdFacturaNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cuentasPagar == null)
-            {
-                return NotFound();
-            }
+        //    var cuentasPagar = await _context.CuentasPagars
+        //        .Include(c => c.IdCondominioNavigation)
+        //        .Include(c => c.IdFacturaNavigation)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (cuentasPagar == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(cuentasPagar);
-        }
+        //    return View(cuentasPagar);
+        //}
 
-        // POST: CuentasPagar/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cuentasPagar = await _context.CuentasPagars.FindAsync(id);
-            if (cuentasPagar != null)
-            {
-                _context.CuentasPagars.Remove(cuentasPagar);
-            }
+        //// POST: CuentasPagar/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var cuentasPagar = await _context.CuentasPagars.FindAsync(id);
+        //    if (cuentasPagar != null)
+        //    {
+        //        _context.CuentasPagars.Remove(cuentasPagar);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool CuentasPagarExists(int id)
         {

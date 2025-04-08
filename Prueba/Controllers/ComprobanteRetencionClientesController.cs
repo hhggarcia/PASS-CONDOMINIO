@@ -123,122 +123,122 @@ namespace Prueba.Controllers
         }
 
         // GET: ComprobanteRetencionClientes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes.FindAsync(id);
-            if (comprobanteRetencionCliente == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
-            return View(comprobanteRetencionCliente);
-        }
+        //    var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes.FindAsync(id);
+        //    if (comprobanteRetencionCliente == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+        //    return View(comprobanteRetencionCliente);
+        //}
 
-        // POST: ComprobanteRetencionClientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto,NumCompRet,NumComprobante,TotalFactura,BaseImponible")] ComprobanteRetencionCliente comprobanteRetencionCliente)
-        {
-            if (id != comprobanteRetencionCliente.IdComprobanteCliente)
-            {
-                return NotFound();
-            }
+        //// POST: ComprobanteRetencionClientes/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteCliente,IdFactura,IdCliente,FechaEmision,Description,Retencion,Sustraendo,ValorRetencion,TotalImpuesto,NumCompRet,NumComprobante,TotalFactura,BaseImponible")] ComprobanteRetencionCliente comprobanteRetencionCliente)
+        //{
+        //    if (id != comprobanteRetencionCliente.IdComprobanteCliente)
+        //    {
+        //        return NotFound();
+        //    }
 
-            ModelState.Remove("IdClienteNavigation");
-            ModelState.Remove("IdFacturaNavigation");
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // validar num de control o num de facturas no repetidos
-                    var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
+        //    ModelState.Remove("IdClienteNavigation");
+        //    ModelState.Remove("IdFacturaNavigation");
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            // validar num de control o num de facturas no repetidos
+        //            var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
 
-                    if (existNumComp.Any())
-                    {
-                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = mensaje;
+        //            if (existNumComp.Any())
+        //            {
+        //                var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = mensaje;
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+        //                ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+        //                ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
 
-                        return View(comprobanteRetencionCliente);
+        //                return View(comprobanteRetencionCliente);
 
-                    }
-                    //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
-                    //{
-                    //    ViewBag.FormaPago = "fallido";
-                    //    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+        //            }
+        //            //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
+        //            //{
+        //            //    ViewBag.FormaPago = "fallido";
+        //            //    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                    //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                    //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+        //            //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+        //            //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
 
-                    //    return View(comprobanteRetencionCliente);
-                    //}
+        //            //    return View(comprobanteRetencionCliente);
+        //            //}
 
-                    _context.Update(comprobanteRetencionCliente);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ComprobanteRetencionClienteExists(comprobanteRetencionCliente.IdComprobanteCliente))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
-            return View(comprobanteRetencionCliente);
-        }
+        //            _context.Update(comprobanteRetencionCliente);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!ComprobanteRetencionClienteExists(comprobanteRetencionCliente.IdComprobanteCliente))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+        //    return View(comprobanteRetencionCliente);
+        //}
 
-        // GET: ComprobanteRetencionClientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: ComprobanteRetencionClientes/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes
-                .Include(c => c.IdClienteNavigation)
-                .Include(c => c.IdFacturaNavigation)
-                .FirstOrDefaultAsync(m => m.IdComprobanteCliente == id);
-            if (comprobanteRetencionCliente == null)
-            {
-                return NotFound();
-            }
+        //    var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes
+        //        .Include(c => c.IdClienteNavigation)
+        //        .Include(c => c.IdFacturaNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdComprobanteCliente == id);
+        //    if (comprobanteRetencionCliente == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(comprobanteRetencionCliente);
-        }
+        //    return View(comprobanteRetencionCliente);
+        //}
 
-        // POST: ComprobanteRetencionClientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes.FindAsync(id);
-            if (comprobanteRetencionCliente != null)
-            {
-                _context.ComprobanteRetencionClientes.Remove(comprobanteRetencionCliente);
-            }
+        //// POST: ComprobanteRetencionClientes/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var comprobanteRetencionCliente = await _context.ComprobanteRetencionClientes.FindAsync(id);
+        //    if (comprobanteRetencionCliente != null)
+        //    {
+        //        _context.ComprobanteRetencionClientes.Remove(comprobanteRetencionCliente);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool ComprobanteRetencionClienteExists(int id)
         {

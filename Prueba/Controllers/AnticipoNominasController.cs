@@ -93,93 +93,93 @@ namespace Prueba.Controllers
         }
 
         // GET: AnticipoNominas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var anticipoNomina = await _context.AnticipoNominas.FindAsync(id);
-            if (anticipoNomina == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", anticipoNomina.IdEmpleado);
-            return View(anticipoNomina);
-        }
+        //    var anticipoNomina = await _context.AnticipoNominas.FindAsync(id);
+        //    if (anticipoNomina == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", anticipoNomina.IdEmpleado);
+        //    return View(anticipoNomina);
+        //}
 
-        // POST: AnticipoNominas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdAnticipoNomina,IdEmpleado,Monto,Fecha,Activo")] AnticipoNomina anticipoNomina)
-        {
-            if (id != anticipoNomina.IdAnticipoNomina)
-            {
-                return NotFound();
-            }
+        //// POST: AnticipoNominas/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdAnticipoNomina,IdEmpleado,Monto,Fecha,Activo")] AnticipoNomina anticipoNomina)
+        //{
+        //    if (id != anticipoNomina.IdAnticipoNomina)
+        //    {
+        //        return NotFound();
+        //    }
 
-            ModelState.Remove(nameof(anticipoNomina.IdEmpleadoNavigation));
+        //    ModelState.Remove(nameof(anticipoNomina.IdEmpleadoNavigation));
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(anticipoNomina);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AnticipoNominaExists(anticipoNomina.IdAnticipoNomina))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", anticipoNomina.IdEmpleado);
-            return View(anticipoNomina);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(anticipoNomina);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!AnticipoNominaExists(anticipoNomina.IdAnticipoNomina))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdEmpleado"] = new SelectList(_context.Empleados, "IdEmpleado", "Nombre", anticipoNomina.IdEmpleado);
+        //    return View(anticipoNomina);
+        //}
 
-        // GET: AnticipoNominas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: AnticipoNominas/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var anticipoNomina = await _context.AnticipoNominas
-                .Include(a => a.IdEmpleadoNavigation)
-                .FirstOrDefaultAsync(m => m.IdAnticipoNomina == id);
-            if (anticipoNomina == null)
-            {
-                return NotFound();
-            }
+        //    var anticipoNomina = await _context.AnticipoNominas
+        //        .Include(a => a.IdEmpleadoNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdAnticipoNomina == id);
+        //    if (anticipoNomina == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(anticipoNomina);
-        }
+        //    return View(anticipoNomina);
+        //}
 
-        // POST: AnticipoNominas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var anticipoNomina = await _context.AnticipoNominas.FindAsync(id);
-            if (anticipoNomina != null)
-            {
-                _context.AnticipoNominas.Remove(anticipoNomina);
-            }
+        //// POST: AnticipoNominas/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var anticipoNomina = await _context.AnticipoNominas.FindAsync(id);
+        //    if (anticipoNomina != null)
+        //    {
+        //        _context.AnticipoNominas.Remove(anticipoNomina);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool AnticipoNominaExists(int id)
         {

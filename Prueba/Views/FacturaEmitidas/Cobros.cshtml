@@ -92,7 +92,7 @@
                                                         <td>@referencia.NumReferencia</td>
                                                         <td>@banco.Descricion</td>
                                                         <td>
-                                                            <a asp-action="" asp-route-id="@item.IdPagoRecibido">Eliminar</a> |
+                                                            @* <a asp-action="" asp-route-id="@item.IdPagoRecibido">Eliminar</a> | *@
                                                             <a asp-action="CobroPDF" asp-route-id="@item.IdPagoRecibido">PDF</a> |
                                                             <a asp-action="" asp-route-id="@item.IdPagoRecibido">Correo</a>
                                                         </td>

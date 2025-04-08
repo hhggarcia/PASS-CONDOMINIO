@@ -236,159 +236,159 @@ namespace Prueba.Controllers
         }
 
         // GET: FacturaEmitidas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var facturaEmitida = await _context.FacturaEmitida.FindAsync(id);
-            if (facturaEmitida == null)
-            {
-                return NotFound();
-            }
+        //    var facturaEmitida = await _context.FacturaEmitida.FindAsync(id);
+        //    if (facturaEmitida == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == facturaEmitida.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
+        //    var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == facturaEmitida.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
 
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+        //    var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
-            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", idCodCuenta);
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
+        //    ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
+        //    ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", idCodCuenta);
 
-            TempData.Keep();
+        //    TempData.Keep();
 
-            return View(facturaEmitida);
-        }
+        //    return View(facturaEmitida);
+        //}
 
-        // POST: FacturaEmitidas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdFacturaEmitida,IdCliente,IdCodCuenta,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
-        {
-            if (id != facturaEmitida.IdFacturaEmitida)
-            {
-                return NotFound();
-            }
+        //// POST: FacturaEmitidas/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdFacturaEmitida,IdCliente,IdCodCuenta,IdProducto,NumFactura,NumControl,Descripcion,FechaEmision,FechaVencimiento,SubTotal,Iva,MontoTotal,Abonado,Pagada,EnProceso,Anulada")] FacturaEmitida facturaEmitida)
+        //{
+        //    if (id != facturaEmitida.IdFacturaEmitida)
+        //    {
+        //        return NotFound();
+        //    }
 
-            ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
-            ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
-            ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
-            var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
+        //    ModelState.Remove(nameof(facturaEmitida.IdProductoNavigation));
+        //    ModelState.Remove(nameof(facturaEmitida.IdClienteNavigation));
+        //    ModelState.Remove(nameof(facturaEmitida.IdCodCuentaNavigation));
+        //    var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    var subcuentas = await _repoCuentas.ObtenerSubcuentas(IdCondominio);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var idCuenta = _context.SubCuenta.Where(c => c.Id == facturaEmitida.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+        //            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
 
 
-                    // validar num de control o num de facturas no repetidos
-                    var existNumControl = await _context.FacturaEmitida.Where(c => c.NumControl == facturaEmitida.NumControl).ToListAsync();
-                    var existNumFactura = await _context.FacturaEmitida.Where(c => c.NumFactura == facturaEmitida.NumFactura).ToListAsync();
-                    var mensaje = "Ya existe una factura";
+        //            // validar num de control o num de facturas no repetidos
+        //            var existNumControl = await _context.FacturaEmitida.Where(c => c.NumControl == facturaEmitida.NumControl).ToListAsync();
+        //            var existNumFactura = await _context.FacturaEmitida.Where(c => c.NumFactura == facturaEmitida.NumFactura).ToListAsync();
+        //            var mensaje = "Ya existe una factura";
 
-                    if (existNumControl.Any() || existNumFactura.Any())
-                    {
-                        mensaje += existNumControl.Any() ? " Control: " + facturaEmitida.NumControl : "";
-                        mensaje += existNumFactura.Any() ? " Nro: " + facturaEmitida.NumControl : "";
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = mensaje;
+        //            if (existNumControl.Any() || existNumFactura.Any())
+        //            {
+        //                mensaje += existNumControl.Any() ? " Control: " + facturaEmitida.NumControl : "";
+        //                mensaje += existNumFactura.Any() ? " Nro: " + facturaEmitida.NumControl : "";
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = mensaje;
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
-                        ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-                        ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
+        //                ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
+        //                ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
+        //                ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
-                        TempData.Keep();
+        //                TempData.Keep();
 
-                        return View(facturaEmitida);
+        //                return View(facturaEmitida);
 
-                    }
+        //            }
 
-                    facturaEmitida.IdCodCuenta = idCodCuenta;
-                    facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
-                    _context.Update(facturaEmitida);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FacturaEmitidaExists(facturaEmitida.IdFacturaEmitida))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+        //            facturaEmitida.IdCodCuenta = idCodCuenta;
+        //            facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
+        //            _context.Update(facturaEmitida);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!FacturaEmitidaExists(facturaEmitida.IdFacturaEmitida))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
-            ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", facturaEmitida.IdCliente);
+        //    ViewData["IdProducto"] = new SelectList(_context.Productos, "IdProducto", "Nombre", facturaEmitida.IdProducto);
+        //    ViewData["IdCodCuenta"] = new SelectList(subcuentas.OrderBy(c => c.Descricion), "Id", "Descricion", facturaEmitida.IdCodCuenta);
 
-            TempData.Keep();
+        //    TempData.Keep();
 
-            return View(facturaEmitida);
-        }
+        //    return View(facturaEmitida);
+        //}
 
-        // GET: FacturaEmitidas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: FacturaEmitidas/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var facturaEmitida = await _context.FacturaEmitida
-                .Include(f => f.IdClienteNavigation)
-                .Include(f => f.IdProductoNavigation)
-                .FirstOrDefaultAsync(m => m.IdFacturaEmitida == id);
-            if (facturaEmitida == null)
-            {
-                return NotFound();
-            }
+        //    var facturaEmitida = await _context.FacturaEmitida
+        //        .Include(f => f.IdClienteNavigation)
+        //        .Include(f => f.IdProductoNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdFacturaEmitida == id);
+        //    if (facturaEmitida == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(facturaEmitida);
-        }
+        //    return View(facturaEmitida);
+        //}
 
-        // POST: FacturaEmitidas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var facturaEmitida = await _context.FacturaEmitida.FindAsync(id);
-            if (facturaEmitida != null)
-            {
-                var pagosFactura = await _context.PagoFacturaEmitida.Where(c => c.IdFactura.Equals(id)).ToListAsync();
-                var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
-                var itemCuentasCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
+        //// POST: FacturaEmitidas/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var facturaEmitida = await _context.FacturaEmitida.FindAsync(id);
+        //    if (facturaEmitida != null)
+        //    {
+        //        var pagosFactura = await _context.PagoFacturaEmitida.Where(c => c.IdFactura.Equals(id)).ToListAsync();
+        //        var itemLibroVenta = await _context.LibroVentas.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
+        //        var itemCuentasCobrar = await _context.CuentasCobrars.Where(c => c.IdFactura == facturaEmitida.IdFacturaEmitida).ToListAsync();
 
-                if (pagosFactura != null)
-                {
-                    _context.PagoFacturaEmitida.RemoveRange(pagosFactura);
-                }
-                if (itemLibroVenta != null)
-                {
-                    _context.LibroVentas.RemoveRange(itemLibroVenta);
-                }
-                if (itemCuentasCobrar != null)
-                {
-                    _context.CuentasCobrars.RemoveRange(itemCuentasCobrar);
-                }
-                _context.FacturaEmitida.Remove(facturaEmitida);
-            }
+        //        if (pagosFactura != null)
+        //        {
+        //            _context.PagoFacturaEmitida.RemoveRange(pagosFactura);
+        //        }
+        //        if (itemLibroVenta != null)
+        //        {
+        //            _context.LibroVentas.RemoveRange(itemLibroVenta);
+        //        }
+        //        if (itemCuentasCobrar != null)
+        //        {
+        //            _context.CuentasCobrars.RemoveRange(itemCuentasCobrar);
+        //        }
+        //        _context.FacturaEmitida.Remove(facturaEmitida);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
 
         public async Task<IActionResult> Cobros()

@@ -101,115 +101,115 @@ namespace Prueba.Controllers
         }
 
         // GET: CobroTransitos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var cobroTransito = await _context.CobroTransitos.FindAsync(id);
-            if (cobroTransito == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cobroTransito.IdCondominio);
-            return View(cobroTransito);
-        }
+        //    var cobroTransito = await _context.CobroTransitos.FindAsync(id);
+        //    if (cobroTransito == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cobroTransito.IdCondominio);
+        //    return View(cobroTransito);
+        //}
 
-        // POST: CobroTransitos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCobroTransito,IdCondominio,FormaPago,Monto,Fecha,Concepto,Factura,Recibo")] CobroTransito cobroTransito)
-        {
-            if (id != cobroTransito.IdCobroTransito)
-            {
-                return NotFound();
-            }
-            ModelState.Remove(nameof(cobroTransito.IdCondominioNavigation));
+        //// POST: CobroTransitos/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdCobroTransito,IdCondominio,FormaPago,Monto,Fecha,Concepto,Factura,Recibo")] CobroTransito cobroTransito)
+        //{
+        //    if (id != cobroTransito.IdCobroTransito)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ModelState.Remove(nameof(cobroTransito.IdCondominioNavigation));
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(cobroTransito);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CobroTransitoExists(cobroTransito.IdCobroTransito))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cobroTransito.IdCondominio);
-            return View(cobroTransito);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(cobroTransito);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!CobroTransitoExists(cobroTransito.IdCobroTransito))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "Nombre", cobroTransito.IdCondominio);
+        //    return View(cobroTransito);
+        //}
 
-        // GET: CobroTransitos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: CobroTransitos/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var cobroTransito = await _context.CobroTransitos
-                .Include(c => c.IdCondominioNavigation)
-                .FirstOrDefaultAsync(m => m.IdCobroTransito == id);
-            if (cobroTransito == null)
-            {
-                return NotFound();
-            }
+        //    var cobroTransito = await _context.CobroTransitos
+        //        .Include(c => c.IdCondominioNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdCobroTransito == id);
+        //    if (cobroTransito == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(cobroTransito);
-        }
+        //    return View(cobroTransito);
+        //}
 
-        // POST: CobroTransitos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cobroTransito = await _context.CobroTransitos.FindAsync(id);
-            if (cobroTransito != null)
-            {
-                var pagosCobros = _context.PagoCobroTransitos.Where(c => c.IdCobroTransito == id).ToList();
+        //// POST: CobroTransitos/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var cobroTransito = await _context.CobroTransitos.FindAsync(id);
+        //    if (cobroTransito != null)
+        //    {
+        //        var pagosCobros = _context.PagoCobroTransitos.Where(c => c.IdCobroTransito == id).ToList();
 
-                if (pagosCobros.Any())
-                {
-                    foreach (var item in pagosCobros)
-                    {
-                        var pago = await _context.PagoRecibidos.FindAsync(item.IdPagoRecibido);
+        //        if (pagosCobros.Any())
+        //        {
+        //            foreach (var item in pagosCobros)
+        //            {
+        //                var pago = await _context.PagoRecibidos.FindAsync(item.IdPagoRecibido);
 
-                        if (pago != null)
-                        {
-                            var referencia = await _context.ReferenciasPrs.FirstOrDefaultAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
-                            if (referencia != null)
-                            {
-                                _context.ReferenciasPrs.Remove(referencia);
-                            }
+        //                if (pago != null)
+        //                {
+        //                    var referencia = await _context.ReferenciasPrs.FirstOrDefaultAsync(c => c.IdPagoRecibido == pago.IdPagoRecibido);
+        //                    if (referencia != null)
+        //                    {
+        //                        _context.ReferenciasPrs.Remove(referencia);
+        //                    }
                              
-                            _context.PagoCobroTransitos.Remove(item);
-                            _context.PagoRecibidos.Remove(pago);
-                        }
-                    }
-                    //_context.PagoCobroTransitos.RemoveRange(pagosCobros);
+        //                    _context.PagoCobroTransitos.Remove(item);
+        //                    _context.PagoRecibidos.Remove(pago);
+        //                }
+        //            }
+        //            //_context.PagoCobroTransitos.RemoveRange(pagosCobros);
 
-                }
-                _context.CobroTransitos.Remove(cobroTransito);
-            }
+        //        }
+        //        _context.CobroTransitos.Remove(cobroTransito);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool CobroTransitoExists(int id)
         {

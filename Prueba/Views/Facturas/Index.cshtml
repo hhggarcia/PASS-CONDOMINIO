@@ -135,9 +135,9 @@
                                         @if (item.Activo)
                                         {
                                             <td>
-                                                <a asp-action="Edit" asp-route-id="@item.IdFactura">Editar</a> |
+                                                @* <a asp-action="Edit" asp-route-id="@item.IdFactura">Editar</a> | *@
                                                 <a asp-action="Details" asp-route-id="@item.IdFactura">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.IdFactura">Eliminar</a>
+                                                @* <a asp-action="Delete" asp-route-id="@item.IdFactura">Eliminar</a> *@
                                             </td>
                                         }
                                         else

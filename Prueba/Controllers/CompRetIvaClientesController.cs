@@ -147,152 +147,152 @@ namespace Prueba.Controllers
         }
 
         // GET: CompRetIvaClientes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var compRetIvaCliente = await _context.CompRetIvaClientes.FindAsync(id);
-            if (compRetIvaCliente == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
-            ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
-            ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
-            return View(compRetIvaCliente);
-        }
+        //    var compRetIvaCliente = await _context.CompRetIvaClientes.FindAsync(id);
+        //    if (compRetIvaCliente == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
+        //    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
+        //    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
+        //    return View(compRetIvaCliente);
+        //}
 
-        // POST: CompRetIvaClientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva,NumComprobante,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
-        {
-            if (id != compRetIvaCliente.IdComprobanteIva)
-            {
-                return NotFound();
-            }
+        //// POST: CompRetIvaClientes/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdComprobanteIva,IdFactura,IdCliente,FechaEmision,IdNotaCredito,IdNotaDebito,TipoTransaccion,NumFacturaAfectada,TotalCompraIva,CompraSinCreditoIva,BaseImponible,Alicuota,ImpIva,IvaRetenido,TotalCompraRetIva,NumComprobante,NumCompRet")] CompRetIvaCliente compRetIvaCliente)
+        //{
+        //    if (id != compRetIvaCliente.IdComprobanteIva)
+        //    {
+        //        return NotFound();
+        //    }
 
-            ModelState.Remove("IdClienteNavigation");
-            ModelState.Remove("IdFacturaNavigation");
-            ModelState.Remove("IdNotaCreditoNavigation");
-            ModelState.Remove("IdNotaDebitoNavigation");
+        //    ModelState.Remove("IdClienteNavigation");
+        //    ModelState.Remove("IdFacturaNavigation");
+        //    ModelState.Remove("IdNotaCreditoNavigation");
+        //    ModelState.Remove("IdNotaDebitoNavigation");
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // validar num de control o num de facturas no repetidos
-                    var existNumComp = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == compRetIvaCliente.NumCompRet).ToListAsync();
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            // validar num de control o num de facturas no repetidos
+        //            var existNumComp = await _context.CompRetIvaClientes.Where(c => c.NumCompRet == compRetIvaCliente.NumCompRet).ToListAsync();
 
-                    if (existNumComp.Any())
-                    {
-                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIvaCliente.NumCompRet : "";
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = mensaje;
+        //            if (existNumComp.Any())
+        //            {
+        //                var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + compRetIvaCliente.NumCompRet : "";
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = mensaje;
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
-                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
-                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
-                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
+        //                ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+        //                ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
+        //                ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
+        //                ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
 
-                        return View(compRetIvaCliente);
+        //                return View(compRetIvaCliente);
 
-                    }
-                    else if (compRetIvaCliente.NumCompRet.Length != 14)
-                    {
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
+        //            }
+        //            else if (compRetIvaCliente.NumCompRet.Length != 14)
+        //            {
+        //                ViewBag.FormaPago = "fallido";
+        //                ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
-                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
-                        ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
-                        ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
+        //                ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+        //                ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
+        //                ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
+        //                ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
 
-                        return View(compRetIvaCliente);
-                    }
+        //                return View(compRetIvaCliente);
+        //            }
 
-                    var factura = await _context.FacturaEmitida.FindAsync(compRetIvaCliente.IdFactura);
-                    var itemLibro = await _context.LibroVentas.FirstOrDefaultAsync(c => c.IdFactura == compRetIvaCliente.IdFactura);
-                    if (factura != null && itemLibro != null)
-                    {
-                        compRetIvaCliente.NumFacturaAfectada = factura.NumFactura.ToString();
-                        compRetIvaCliente.TipoTransaccion = true;
-                        compRetIvaCliente.TotalCompraIva = factura.MontoTotal;
-                        compRetIvaCliente.CompraSinCreditoIva = 0;
-                        compRetIvaCliente.BaseImponible = factura.SubTotal;
-                        compRetIvaCliente.Alicuota = 16;
-                        compRetIvaCliente.ImpIva = itemLibro.Iva;
-                        compRetIvaCliente.IvaRetenido = itemLibro.RetIva;
-                        compRetIvaCliente.TotalCompraRetIva = factura.MontoTotal - itemLibro.RetIva;
-                        compRetIvaCliente.NumComprobante = factura.NumFactura;                        
-                    }
+        //            var factura = await _context.FacturaEmitida.FindAsync(compRetIvaCliente.IdFactura);
+        //            var itemLibro = await _context.LibroVentas.FirstOrDefaultAsync(c => c.IdFactura == compRetIvaCliente.IdFactura);
+        //            if (factura != null && itemLibro != null)
+        //            {
+        //                compRetIvaCliente.NumFacturaAfectada = factura.NumFactura.ToString();
+        //                compRetIvaCliente.TipoTransaccion = true;
+        //                compRetIvaCliente.TotalCompraIva = factura.MontoTotal;
+        //                compRetIvaCliente.CompraSinCreditoIva = 0;
+        //                compRetIvaCliente.BaseImponible = factura.SubTotal;
+        //                compRetIvaCliente.Alicuota = 16;
+        //                compRetIvaCliente.ImpIva = itemLibro.Iva;
+        //                compRetIvaCliente.IvaRetenido = itemLibro.RetIva;
+        //                compRetIvaCliente.TotalCompraRetIva = factura.MontoTotal - itemLibro.RetIva;
+        //                compRetIvaCliente.NumComprobante = factura.NumFactura;                        
+        //            }
 
-                    _context.Update(compRetIvaCliente);
+        //            _context.Update(compRetIvaCliente);
                     
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompRetIvaClienteExists(compRetIvaCliente.IdComprobanteIva))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
-            ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
-            ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
-            return View(compRetIvaCliente);
-        }
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!CompRetIvaClienteExists(compRetIvaCliente.IdComprobanteIva))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", compRetIvaCliente.IdCliente);
+        //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", compRetIvaCliente.IdFactura);
+        //    ViewData["IdNotaCredito"] = new SelectList(_context.NotaCreditos, "IdNotaCredito", "IdNotaCredito", compRetIvaCliente.IdNotaCredito);
+        //    ViewData["IdNotaDebito"] = new SelectList(_context.NotaDebitos, "IdNotaDebito", "IdNotaDebito", compRetIvaCliente.IdNotaDebito);
+        //    return View(compRetIvaCliente);
+        //}
 
-        // GET: CompRetIvaClientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: CompRetIvaClientes/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var compRetIvaCliente = await _context.CompRetIvaClientes
-                .Include(c => c.IdClienteNavigation)
-                .Include(c => c.IdFacturaNavigation)
-                .Include(c => c.IdNotaCreditoNavigation)
-                .Include(c => c.IdNotaDebitoNavigation)
-                .FirstOrDefaultAsync(m => m.IdComprobanteIva == id);
-            if (compRetIvaCliente == null)
-            {
-                return NotFound();
-            }
+        //    var compRetIvaCliente = await _context.CompRetIvaClientes
+        //        .Include(c => c.IdClienteNavigation)
+        //        .Include(c => c.IdFacturaNavigation)
+        //        .Include(c => c.IdNotaCreditoNavigation)
+        //        .Include(c => c.IdNotaDebitoNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdComprobanteIva == id);
+        //    if (compRetIvaCliente == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(compRetIvaCliente);
-        }
+        //    return View(compRetIvaCliente);
+        //}
 
-        // POST: CompRetIvaClientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var compRetIvaCliente = await _context.CompRetIvaClientes.FindAsync(id);
-            if (compRetIvaCliente != null)
-            {
-                _context.CompRetIvaClientes.Remove(compRetIvaCliente);
-            }
+        //// POST: CompRetIvaClientes/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var compRetIvaCliente = await _context.CompRetIvaClientes.FindAsync(id);
+        //    if (compRetIvaCliente != null)
+        //    {
+        //        _context.CompRetIvaClientes.Remove(compRetIvaCliente);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool CompRetIvaClienteExists(int id)
         {

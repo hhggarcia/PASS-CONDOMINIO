@@ -120,123 +120,123 @@ namespace Prueba.Controllers
         }
 
         // GET: Anticipos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var anticipo = await _context.Anticipos.FindAsync(id);
-            if (anticipo == null)
-            {
-                return NotFound();
-            }
-            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
-            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == anticipo.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
+        //    var anticipo = await _context.Anticipos.FindAsync(id);
+        //    if (anticipo == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdCodCuenta == anticipo.IdCodCuenta).Select(c => c.IdSubCuenta).FirstOrDefault();
 
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+        //    var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+        //    ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", idCodCuenta);
 
-            TempData.Keep();
+        //    TempData.Keep();
 
-            return View(anticipo);
-        }
+        //    return View(anticipo);
+        //}
 
-        // POST: Anticipos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdAnticipo,Numero,Fecha,Saldo,Detalle,IdProveedor")] Anticipo anticipo)
-        {
-            if (id != anticipo.IdAnticipo)
-            {
-                return NotFound();
-            }
+        //// POST: Anticipos/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdAnticipo,Numero,Fecha,Saldo,Detalle,IdProveedor")] Anticipo anticipo)
+        //{
+        //    if (id != anticipo.IdAnticipo)
+        //    {
+        //        return NotFound();
+        //    }
 
            
 
-            ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
-            ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
+        //    ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
+        //    ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
-                    var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
-                    anticipo.IdCodCuenta = idCodCuenta;
-                    anticipo.Activo = true;
-                    _context.Update(anticipo);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AnticipoExists(anticipo.IdAnticipo))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var idCuenta = _context.SubCuenta.Where(c => c.Id == anticipo.IdCodCuenta).Select(c => c.Id).FirstOrDefault();
+        //            var idCodCuenta = _context.CodigoCuentasGlobals.Where(c => c.IdSubCuenta == idCuenta).Select(c => c.IdCodCuenta).FirstOrDefault();
+        //            anticipo.IdCodCuenta = idCodCuenta;
+        //            anticipo.Activo = true;
+        //            _context.Update(anticipo);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!AnticipoExists(anticipo.IdAnticipo))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
-            var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
+        //    var subcuentas = await _repoCuentas.ObtenerSubcuentas(idCondominio);
 
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
-            ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", anticipo.IdCodCuenta);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "Nombre", anticipo.IdProveedor);
+        //    ViewData["IdCodCuenta"] = new SelectList(subcuentas, "Id", "Descricion", anticipo.IdCodCuenta);
 
-            TempData.Keep();
-            return View(anticipo);
-        }
+        //    TempData.Keep();
+        //    return View(anticipo);
+        //}
 
         // GET: Anticipos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var anticipo = await _context.Anticipos
-                .Include(a => a.IdProveedorNavigation)
-                .FirstOrDefaultAsync(m => m.IdAnticipo == id);
-            if (anticipo == null)
-            {
-                return NotFound();
-            }
+        //    var anticipo = await _context.Anticipos
+        //        .Include(a => a.IdProveedorNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdAnticipo == id);
+        //    if (anticipo == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(anticipo);
-        }
+        //    return View(anticipo);
+        //}
 
-        // POST: Anticipos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var anticipo = await _context.Anticipos.FindAsync(id);
-            if (anticipo != null)
-            {
-                var pagosAnticipo = await _context.PagoFacturas.Where(c => c.IdAnticipo.Equals(id)).ToListAsync();
+        //// POST: Anticipos/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var anticipo = await _context.Anticipos.FindAsync(id);
+        //    if (anticipo != null)
+        //    {
+        //        var pagosAnticipo = await _context.PagoFacturas.Where(c => c.IdAnticipo.Equals(id)).ToListAsync();
 
-                if (pagosAnticipo != null)
-                {
-                    _context.PagoFacturas.RemoveRange(pagosAnticipo);
-                }
+        //        if (pagosAnticipo != null)
+        //        {
+        //            _context.PagoFacturas.RemoveRange(pagosAnticipo);
+        //        }
 
-                _context.Anticipos.Remove(anticipo);
-            }
+        //        _context.Anticipos.Remove(anticipo);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool AnticipoExists(int id)
         {

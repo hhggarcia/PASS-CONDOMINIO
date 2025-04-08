@@ -99,107 +99,107 @@ namespace Prueba.Controllers
         }
 
         // GET: OrdenPagos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var ordenPago = await _context.OrdenPagos.FindAsync(id);
-            if (ordenPago == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido", ordenPago.IdPagoEmitido);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors
-                .Where(c => c.Beneficiario), "IdProveedor", "Nombre", ordenPago.IdProveedor);
-            return View(ordenPago);
-        }
+        //    var ordenPago = await _context.OrdenPagos.FindAsync(id);
+        //    if (ordenPago == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido", ordenPago.IdPagoEmitido);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors
+        //        .Where(c => c.Beneficiario), "IdProveedor", "Nombre", ordenPago.IdProveedor);
+        //    return View(ordenPago);
+        //}
 
-        // POST: OrdenPagos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdOrdenPago,IdPagoEmitido,IdProveedor,Fecha")] OrdenPago ordenPago)
-        {
-            if (id != ordenPago.IdOrdenPago)
-            {
-                return NotFound();
-            }
+        //// POST: OrdenPagos/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdOrdenPago,IdPagoEmitido,IdProveedor,Fecha")] OrdenPago ordenPago)
+        //{
+        //    if (id != ordenPago.IdOrdenPago)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(ordenPago);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrdenPagoExists(ordenPago.IdOrdenPago))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido", ordenPago.IdPagoEmitido);
-            ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", ordenPago.IdProveedor);
-            return View(ordenPago);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(ordenPago);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!OrdenPagoExists(ordenPago.IdOrdenPago))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["IdPagoEmitido"] = new SelectList(_context.PagoEmitidos, "IdPagoEmitido", "IdPagoEmitido", ordenPago.IdPagoEmitido);
+        //    ViewData["IdProveedor"] = new SelectList(_context.Proveedors, "IdProveedor", "IdProveedor", ordenPago.IdProveedor);
+        //    return View(ordenPago);
+        //}
 
-        // GET: OrdenPagos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: OrdenPagos/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var ordenPago = await _context.OrdenPagos
-                .Include(o => o.IdPagoEmitidoNavigation)
-                .Include(o => o.IdProveedorNavigation)
-                .FirstOrDefaultAsync(m => m.IdOrdenPago == id);
-            if (ordenPago == null)
-            {
-                return NotFound();
-            }
+        //    var ordenPago = await _context.OrdenPagos
+        //        .Include(o => o.IdPagoEmitidoNavigation)
+        //        .Include(o => o.IdProveedorNavigation)
+        //        .FirstOrDefaultAsync(m => m.IdOrdenPago == id);
+        //    if (ordenPago == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(ordenPago);
-        }
+        //    return View(ordenPago);
+        //}
 
-        // POST: OrdenPagos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var ordenPago = await _context.OrdenPagos.FindAsync(id);
-            if (ordenPago != null)
-            {
-                var pago = await _context.PagoEmitidos.FindAsync(ordenPago.IdPagoEmitido);
-                if (pago != null)
-                {
-                    var referencia = await _context.ReferenciasPes.FirstOrDefaultAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+        //// POST: OrdenPagos/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var ordenPago = await _context.OrdenPagos.FindAsync(id);
+        //    if (ordenPago != null)
+        //    {
+        //        var pago = await _context.PagoEmitidos.FindAsync(ordenPago.IdPagoEmitido);
+        //        if (pago != null)
+        //        {
+        //            var referencia = await _context.ReferenciasPes.FirstOrDefaultAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
 
-                    if (referencia != null)
-                    {
-                        _context.ReferenciasPes.Remove(referencia);
-                    }
+        //            if (referencia != null)
+        //            {
+        //                _context.ReferenciasPes.Remove(referencia);
+        //            }
 
-                    _context.PagoEmitidos.Remove(pago);
-                }
-                _context.OrdenPagos.Remove(ordenPago);
-            }
+        //            _context.PagoEmitidos.Remove(pago);
+        //        }
+        //        _context.OrdenPagos.Remove(ordenPago);
+        //    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         public IActionResult ConfirmarPago(OrdenPagoVM modelo)
         {

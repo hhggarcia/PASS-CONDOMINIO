@@ -119,10 +119,10 @@
 
 
                                         <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdNotaCredito">Editar</a> |
+                                            @* <a asp-action="Edit" asp-route-id="@item.IdNotaCredito">Editar</a> | *@
                                             <a asp-action="Details" asp-route-id="@item.IdNotaCredito">Detalles</a> |
-                                            <a asp-action="NotaCreditoPDF" asp-route-id="@item.IdNotaCredito">PDF</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.IdNotaCredito">Eliminar</a>
+                                            <a asp-action="NotaCreditoPDF" asp-route-id="@item.IdNotaCredito">PDF</a> 
+                                            @* <a asp-action="Delete" asp-route-id="@item.IdNotaCredito">Eliminar</a> *@
                                         </td>
                                     </tr>
                                 }

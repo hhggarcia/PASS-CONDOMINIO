@@ -72,9 +72,9 @@
                                         @if (item.Activo)
                                         {
                                             <td>
-                                                <a asp-action="Edit" asp-route-id="@item.IdAnticipoNomina">Editar</a> |
-                                                <a asp-action="Details" asp-route-id="@item.IdAnticipoNomina">Detalles</a> |
-                                                <a asp-action="Delete" asp-route-id="@item.IdAnticipoNomina">Eliminar</a>
+                                                @* <a asp-action="Edit" asp-route-id="@item.IdAnticipoNomina">Editar</a> | *@
+                                                <a asp-action="Details" asp-route-id="@item.IdAnticipoNomina">Detalles</a> 
+                                                @* <a asp-action="Delete" asp-route-id="@item.IdAnticipoNomina">Eliminar</a> *@
                                             </td>
                                         }
                                         else

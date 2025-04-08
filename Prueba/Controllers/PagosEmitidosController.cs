@@ -116,158 +116,158 @@ namespace Prueba.Controllers
         }
 
         // GET: PagosEmitidos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.PagoEmitidos == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null || _context.PagoEmitidos == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var pagoEmitido = await _context.PagoEmitidos.FindAsync(id);
-            if (pagoEmitido == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
-            ViewData["IdMoneda"] = new SelectList(_context.MonedaConds, "Simbolo", "Simbolo");
+        //    var pagoEmitido = await _context.PagoEmitidos.FindAsync(id);
+        //    if (pagoEmitido == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+        //    ViewData["IdMoneda"] = new SelectList(_context.MonedaConds, "Simbolo", "Simbolo");
 
-            return View(pagoEmitido);
-        }
+        //    return View(pagoEmitido);
+        //}
 
-        // POST: PagosEmitidos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,MontoRef,FormaPago,ValorDolar,SimboloMoneda,SimboloRef")] PagoEmitido pagoEmitido)
-        {
-            if (id != pagoEmitido.IdPagoEmitido)
-            {
-                return NotFound();
-            }
+        //// POST: PagosEmitidos/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("IdPagoEmitido,IdCondominio,IdProveedor,Fecha,Monto,MontoRef,FormaPago,ValorDolar,SimboloMoneda,SimboloRef")] PagoEmitido pagoEmitido)
+        //{
+        //    if (id != pagoEmitido.IdPagoEmitido)
+        //    {
+        //        return NotFound();
+        //    }
 
-            try
-            {
-                // cambiar montoRef, simbolo ref, valor dolar si cambiaron el tipo de moneda
-                // buscar moneda
-                //var moneda = await _context.MonedaConds.Where(c => c.Simbolo == pagoEmitido.SimboloMoneda).ToListAsync();
-                decimal montoReferencia = 0;
+        //    try
+        //    {
+        //        // cambiar montoRef, simbolo ref, valor dolar si cambiaron el tipo de moneda
+        //        // buscar moneda
+        //        //var moneda = await _context.MonedaConds.Where(c => c.Simbolo == pagoEmitido.SimboloMoneda).ToListAsync();
+        //        decimal montoReferencia = 0;
 
-                var moneda = from c in _context.MonedaConds
-                             where c.Simbolo == pagoEmitido.SimboloMoneda
-                             select c;
+        //        var moneda = from c in _context.MonedaConds
+        //                     where c.Simbolo == pagoEmitido.SimboloMoneda
+        //                     select c;
 
-                // buscar principal
-                var monedaPrincipal = await _repoMoneda.MonedaPrincipal(pagoEmitido.IdCondominio);
+        //        // buscar principal
+        //        var monedaPrincipal = await _repoMoneda.MonedaPrincipal(pagoEmitido.IdCondominio);
 
-                if (!monedaPrincipal.Any())
-                {
-                    var modeloError = new ErrorViewModel()
-                    {
-                        RequestId = "Debe existir por lo menos una moneda principal!"
-                    };
+        //        if (!monedaPrincipal.Any())
+        //        {
+        //            var modeloError = new ErrorViewModel()
+        //            {
+        //                RequestId = "Debe existir por lo menos una moneda principal!"
+        //            };
 
-                    return View("Error", modeloError);
-                }
+        //            return View("Error", modeloError);
+        //        }
 
-                // cambiar montos
-                if (moneda.First().Equals(monedaPrincipal.First()))
-                {
-                    montoReferencia = pagoEmitido.Monto;
+        //        // cambiar montos
+        //        if (moneda.First().Equals(monedaPrincipal.First()))
+        //        {
+        //            montoReferencia = pagoEmitido.Monto;
 
-                }
-                else if (!moneda.First().Equals(monedaPrincipal.First()))
-                {
-                    var montoDolares = pagoEmitido.Monto * moneda.First().ValorDolar;
+        //        }
+        //        else if (!moneda.First().Equals(monedaPrincipal.First()))
+        //        {
+        //            var montoDolares = pagoEmitido.Monto * moneda.First().ValorDolar;
 
-                    montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
-                }
+        //            montoReferencia = montoDolares * monedaPrincipal.First().ValorDolar;
+        //        }
 
-                pagoEmitido.MontoRef = montoReferencia;
-                pagoEmitido.SimboloRef = monedaPrincipal.First().Simbolo;
+        //        pagoEmitido.MontoRef = montoReferencia;
+        //        pagoEmitido.SimboloRef = monedaPrincipal.First().Simbolo;
 
-                _context.Update(pagoEmitido);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_repoPagosEmitidos.PagoEmitidoExists(pagoEmitido.IdPagoEmitido))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-            //}
-            //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
-            //return View(pagoEmitido);
-        }
+        //        _context.Update(pagoEmitido);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!_repoPagosEmitidos.PagoEmitidoExists(pagoEmitido.IdPagoEmitido))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+        //    return RedirectToAction(nameof(Index));
+        //    //}
+        //    //ViewData["IdCondominio"] = new SelectList(_context.Condominios, "IdCondominio", "IdCondominio", pagoEmitido.IdCondominio);
+        //    //return View(pagoEmitido);
+        //}
 
         // GET: PagosEmitidos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            try
-            {
-                if (id == null || _context.PagoEmitidos == null)
-                {
-                    return NotFound();
-                }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    try
+        //    {
+        //        if (id == null || _context.PagoEmitidos == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                var pagoEmitido = await _context.PagoEmitidos
-                    .Include(p => p.IdCondominioNavigation)
-                    .FirstOrDefaultAsync(m => m.IdPagoEmitido == id);
-                if (pagoEmitido == null)
-                {
-                    return NotFound();
-                }
+        //        var pagoEmitido = await _context.PagoEmitidos
+        //            .Include(p => p.IdCondominioNavigation)
+        //            .FirstOrDefaultAsync(m => m.IdPagoEmitido == id);
+        //        if (pagoEmitido == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                return View(pagoEmitido);
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
+        //        return View(pagoEmitido);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var modeloError = new ErrorViewModel()
+        //        {
+        //            RequestId = ex.Message
+        //        };
 
-                return View("Error", modeloError);
-            }
-        }
+        //        return View("Error", modeloError);
+        //    }
+        //}
 
-        // POST: PagosEmitidos/Delete/5
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                if (_context.PagoEmitidos == null)
-                {
-                    return Problem("Entity set 'NuevaAppContext.PagoEmitidos'  is null.");
-                }
-                var result = await _repoPagosEmitidos.Delete(id);
+        //// POST: PagosEmitidos/Delete/5
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    try
+        //    {
+        //        if (_context.PagoEmitidos == null)
+        //        {
+        //            return Problem("Entity set 'NuevaAppContext.PagoEmitidos'  is null.");
+        //        }
+        //        var result = await _repoPagosEmitidos.Delete(id);
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                var modeloError = new ErrorViewModel()
-                {
-                    RequestId = ex.Message
-                };
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var modeloError = new ErrorViewModel()
+        //        {
+        //            RequestId = ex.Message
+        //        };
 
-                return View("Error", modeloError);
-            }
+        //        return View("Error", modeloError);
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// 
