@@ -142,9 +142,6 @@ namespace Prueba.Repositories
                         Concepto = modelo.Concepto + " - " + cliente.Nombre + " - Fac. " + factura.NumFactura,
                         Comprobante = "",
                         Fecha = modelo.Fecha,
-                        Monto = modelo.Monto,
-                        IdCliente = cliente.IdCliente,
-                        IdFactura = factura.IdFacturaEmitida
                     };
 
                     factura.EnProceso = false;

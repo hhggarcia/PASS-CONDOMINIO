@@ -9,9 +9,9 @@ public partial class Factura
 
     public int NumFactura { get; set; }
 
-    public string NumControl { get; set; } = string.Empty;
+    public string NumControl { get; set; } = null!;
 
-    public string Descripcion { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = null!;
 
     public DateTime FechaEmision { get; set; }
 
@@ -37,6 +37,10 @@ public partial class Factura
 
     public bool Activo { get; set; }
 
+    public virtual ICollection<CompRetIslrFactura> CompRetIslrFacturas { get; set; } = new List<CompRetIslrFactura>();
+
+    public virtual ICollection<CompRetIvaFactura> CompRetIvaFacturas { get; set; } = new List<CompRetIvaFactura>();
+
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
 
     public virtual ICollection<ComprobanteRetencion> ComprobanteRetencions { get; set; } = new List<ComprobanteRetencion>();
@@ -48,6 +52,10 @@ public partial class Factura
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
 
     public virtual ICollection<LibroCompra> LibroCompras { get; set; } = new List<LibroCompra>();
+
+    public virtual ICollection<NotaCreditoProveedor> NotaCreditoProveedors { get; set; } = new List<NotaCreditoProveedor>();
+
+    public virtual ICollection<NotaDebitoProveedor> NotaDebitoProveedors { get; set; } = new List<NotaDebitoProveedor>();
 
     public virtual ICollection<PagoFactura> PagoFacturas { get; set; } = new List<PagoFactura>();
 }

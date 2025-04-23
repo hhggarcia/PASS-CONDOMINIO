@@ -7,10 +7,6 @@ public partial class NotaCredito
 {
     public int IdNotaCredito { get; set; }
 
-    public int? IdFactura { get; set; }
-
-    public int? IdCliente { get; set; }
-
     public string Concepto { get; set; } = null!;
 
     public string Comprobante { get; set; } = null!;
@@ -19,25 +15,17 @@ public partial class NotaCredito
 
     public decimal Monto { get; set; }
 
-    public int? IdRetIva { get; set; }
-
-    public int? IdRetIslr { get; set; }
-
-    public int? IdPagoRecibido { get; set; }
-
     public int? IdPropiedad { get; set; }
 
-    public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
+    public int? IdPagoEmitido { get; set; }
 
-    public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
+    public string? Codigo { get; set; }
 
-    public virtual Cliente? IdClienteNavigation { get; set; }
+    public bool? Activo { get; set; }
 
-    public virtual FacturaEmitida? IdFacturaNavigation { get; set; }
+    public virtual PagoEmitido? IdPagoEmitidoNavigation { get; set; }
 
     public virtual Propiedad? IdPropiedadNavigation { get; set; }
 
-    public virtual Islr? IdRetIslrNavigation { get; set; }
-
-    public virtual Iva? IdRetIvaNavigation { get; set; }
+    public virtual ICollection<NotaCreditosRecibo> NotaCreditosRecibos { get; set; } = new List<NotaCreditosRecibo>();
 }

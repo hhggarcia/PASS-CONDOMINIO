@@ -93,7 +93,7 @@ namespace Prueba.Repositories
 
                 var pagoAnticipo = await _context.PagoAnticipos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
                 var pagoNomina = await _context.PagosNominas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
-                var pagoNotaDebito = await _context.PagosNotaDebitos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
+                //var pagoNotaDebito = await _context.PagosNotaDebitos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
                 var pagoFactura = await _context.PagoFacturas.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
                 var ordenPagos = await _context.OrdenPagos.Where(c => c.IdPagoEmitido == pagoEmitido.IdPagoEmitido).ToListAsync();
 
@@ -105,14 +105,11 @@ namespace Prueba.Repositories
                 {
                     _context.PagosNominas.RemoveRange(pagoNomina);
                 }
-                if (pagoNotaDebito != null)
-                {
-                    _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
-                }
-                if (pagoNotaDebito != null)
-                {
-                    _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
-                }
+                //if (pagoNotaDebito != null)
+                //{
+                //    _context.PagosNotaDebitos.RemoveRange(pagoNotaDebito);
+                //}
+
                 if (ordenPagos != null)
                 {
                     _context.OrdenPagos.RemoveRange(ordenPagos);

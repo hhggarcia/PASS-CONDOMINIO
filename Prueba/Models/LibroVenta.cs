@@ -15,7 +15,7 @@ public partial class LibroVenta
     /// <summary>
     /// Factura
     /// </summary>
-    public int IdFactura { get; set; }
+    public int? IdFactura { get; set; }
 
     /// <summary>
     /// Monto SubTotal de la factura
@@ -66,7 +66,27 @@ public partial class LibroVenta
 
     public bool? Activo { get; set; }
 
+    public bool? IsFactura { get; set; }
+
+    /// <summary>
+    /// Relacion a la nota de credito emitida al cliente
+    /// </summary>
+    public int? IdNotaCredito { get; set; }
+
+    public bool? IsNotaCredito { get; set; }
+
+    /// <summary>
+    /// Relacion a la nota de debito emitida a un cliente
+    /// </summary>
+    public int? IdNotaDebito { get; set; }
+
+    public bool? IsNotaDebito { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual FacturaEmitida IdFacturaNavigation { get; set; } = null!;
+    public virtual FacturaEmitida? IdFacturaNavigation { get; set; }
+
+    public virtual NotaCreditoCliente? IdNotaCreditoNavigation { get; set; }
+
+    public virtual NotaDebitoCliente? IdNotaDebitoNavigation { get; set; }
 }

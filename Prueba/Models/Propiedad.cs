@@ -37,6 +37,8 @@ public partial class Propiedad
 
     public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
 
+    public virtual ICollection<NotaDebito> NotaDebitos { get; set; } = new List<NotaDebito>();
+
     public virtual ICollection<PagoPropiedad> PagoPropiedads { get; set; } = new List<PagoPropiedad>();
 
     public virtual ICollection<PropiedadesGrupo> PropiedadesGrupos { get; set; } = new List<PropiedadesGrupo>();

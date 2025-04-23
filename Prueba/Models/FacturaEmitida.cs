@@ -11,9 +11,9 @@ public partial class FacturaEmitida
 
     public int NumFactura { get; set; }
 
-    public string NumControl { get; set; } = string.Empty;
+    public string NumControl { get; set; } = null!;
 
-    public string Descripcion { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = null!;
 
     public DateTime FechaEmision { get; set; }
 
@@ -39,7 +39,11 @@ public partial class FacturaEmitida
 
     public bool Activo { get; set; }
 
+    public virtual ICollection<CompRetIslrFacturasEmitida> CompRetIslrFacturasEmitida { get; set; } = new List<CompRetIslrFacturasEmitida>();
+
     public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
+
+    public virtual ICollection<CompRetIvaFacturasEmitida> CompRetIvaFacturasEmitida { get; set; } = new List<CompRetIvaFacturasEmitida>();
 
     public virtual ICollection<ComprobanteRetencionCliente> ComprobanteRetencionClientes { get; set; } = new List<ComprobanteRetencionCliente>();
 
@@ -53,7 +57,9 @@ public partial class FacturaEmitida
 
     public virtual ICollection<LibroVenta> LibroVenta { get; set; } = new List<LibroVenta>();
 
-    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
+    public virtual ICollection<NotaCreditoCliente> NotaCreditoClientes { get; set; } = new List<NotaCreditoCliente>();
+
+    public virtual ICollection<NotaDebitoCliente> NotaDebitoClientes { get; set; } = new List<NotaDebitoCliente>();
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();
 }

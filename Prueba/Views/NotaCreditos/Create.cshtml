@@ -23,14 +23,14 @@
                 <div class="card-body">
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <div class="form-group">
+                        @* <div class="form-group">
                             <label asp-for="IdFactura" class="control-label"></label>
                             <select asp-for="IdFactura" class="form-control" asp-items="ViewBag.IdFactura"></select>
                         </div>
                         <div class="form-group">
                             <label asp-for="IdCliente" class="control-label"></label>
                             <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.IdCliente"></select>
-                        </div>
+                        </div> *@
                         <div class="form-group">
                             <label asp-for="Concepto" class="control-label"></label>
                             <input asp-for="Concepto" class="form-control" />
@@ -51,7 +51,7 @@
                             <input asp-for="Monto" class="form-control" />
                             <span asp-validation-for="Monto" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        @* <div class="form-group">
                             <label asp-for="IdRetIva" class="control-label"></label>
                             <select asp-for="IdRetIva" class="form-control" asp-items="ViewBag.IdRetIva"></select>
                         </div>
@@ -63,7 +63,7 @@
                             <label asp-for="IdPagoRecibido" class="control-label"></label>
                             <input asp-for="IdPagoRecibido" class="form-control" />
                             <span asp-validation-for="IdPagoRecibido" class="text-danger"></span>
-                        </div>
+                        </div> *@
                         <div class="form-group">
                             <label asp-for="IdPropiedad" class="control-label"></label>
                             <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>

@@ -45,5 +45,9 @@ public partial class ReciboCobro
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;
 
+    public virtual ICollection<NotaCreditosRecibo> NotaCreditosRecibos { get; set; } = new List<NotaCreditosRecibo>();
+
+    public virtual ICollection<NotaDebitoRecibo> NotaDebitoRecibos { get; set; } = new List<NotaDebitoRecibo>();
+
     public virtual ICollection<PagosRecibo> PagosRecibos { get; set; } = new List<PagosRecibo>();
 }

@@ -15,7 +15,5 @@ public partial class GrupoGasto
 
     public virtual ICollection<CuentasGrupo> CuentasGrupos { get; set; } = new List<CuentasGrupo>();
 
-    public virtual Condominio IdCondominioNavigation { get; set; } = null!;
-
     public virtual ICollection<PropiedadesGrupo> PropiedadesGrupos { get; set; } = new List<PropiedadesGrupo>();
 }

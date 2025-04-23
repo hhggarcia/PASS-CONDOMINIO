@@ -686,13 +686,7 @@ namespace Prueba.Controllers
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var nuevaAppContext = _context.NotaCreditos
-                .Include(n => n.IdClienteNavigation)
-                .Include(n => n.IdFacturaNavigation)
-                .Include(n => n.IdPropiedadNavigation)
-                .Include(n => n.IdRetIslrNavigation)
-                .Include(n => n.IdRetIvaNavigation)
-                .Where(c => c.IdFactura != null && c.IdCliente != null)
-                .Where(c => c.IdClienteNavigation.IdCondominio == idCondominio);
+                .Include(n => n.IdPropiedadNavigation);
 
             TempData.Keep();
 

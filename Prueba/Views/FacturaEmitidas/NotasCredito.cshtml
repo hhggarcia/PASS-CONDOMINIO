@@ -54,12 +54,7 @@
                                     <th>
                                         @Html.DisplayNameFor(model => model.Monto)
                                     </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdClienteNavigation)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.IdFacturaNavigation)
-                                    </th>
+                                    
                                     <th>
                                         @Html.DisplayNameFor(model => model.IdPropiedadNavigation)
                                     </th>
@@ -80,24 +75,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Monto)
                                         </td>
-                                        @if (item.IdClienteNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdClienteNavigation.Nombre)
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                N/A
-                                            </td>
-                                        }
-                                        @if (item.IdFacturaNavigation != null)
-                                        {
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.IdFacturaNavigation.NumFactura)
-                                            </td>
-                                        }
+                                        
                                         else
                                         {
                                             <td>

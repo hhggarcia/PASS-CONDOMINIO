@@ -33,6 +33,12 @@ public partial class PagoEmitido
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
+    public virtual ICollection<NotaCreditoCliente> NotaCreditoClientes { get; set; } = new List<NotaCreditoCliente>();
+
+    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
+
+    public virtual ICollection<NotaDebitoProveedor> NotaDebitoProveedors { get; set; } = new List<NotaDebitoProveedor>();
+
     public virtual ICollection<OrdenPago> OrdenPagos { get; set; } = new List<OrdenPago>();
 
     public virtual ICollection<PagoAnticipo> PagoAnticipos { get; set; } = new List<PagoAnticipo>();
@@ -40,8 +46,6 @@ public partial class PagoEmitido
     public virtual ICollection<PagoFactura> PagoFacturas { get; set; } = new List<PagoFactura>();
 
     public virtual ICollection<PagosNomina> PagosNominas { get; set; } = new List<PagosNomina>();
-
-    public virtual ICollection<PagosNotaDebito> PagosNotaDebitos { get; set; } = new List<PagosNotaDebito>();
 
     public virtual ICollection<ReferenciasPe> ReferenciasPes { get; set; } = new List<ReferenciasPe>();
 }

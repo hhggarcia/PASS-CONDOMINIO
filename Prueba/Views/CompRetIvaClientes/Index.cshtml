@@ -138,12 +138,12 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TotalCompraRetIva)
                                         </td>                                        
-                                        <td>
+                                        @* <td>
                                             @Html.DisplayFor(modelItem => item.IdNotaCreditoNavigation.IdNotaCredito)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.IdNotaDebitoNavigation.IdNotaDebito)
-                                        </td>
+                                        </td> *@
                                         <td>
                                             @* <a asp-action="Edit" asp-route-id="@item.IdComprobanteIva">Editar</a> | *@
                                             <a asp-action="Details" asp-route-id="@item.IdComprobanteIva">Detalles</a> 

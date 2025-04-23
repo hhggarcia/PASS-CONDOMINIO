@@ -7,21 +7,23 @@ public partial class NotaDebito
 {
     public int IdNotaDebito { get; set; }
 
-    public string NumNotaDebito { get; set; } = null!;
+    public string Codigo { get; set; } = null!;
 
     public string Concepto { get; set; } = null!;
 
-    public int IdProveedor { get; set; }
-
-    public decimal Abonado { get; set; }
-
     public bool Activo { get; set; }
 
-    public virtual ICollection<CompRetIvaCliente> CompRetIvaClientes { get; set; } = new List<CompRetIvaCliente>();
+    public int IdPropiedad { get; set; }
+
+    public decimal Monto { get; set; }
+
+    public DateTime Fecha { get; set; }
+
+    public string? Comprobante { get; set; }
 
     public virtual ICollection<CompRetIva> CompRetIvas { get; set; } = new List<CompRetIva>();
 
-    public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
+    public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
-    public virtual ICollection<PagosNotaDebito> PagosNotaDebitos { get; set; } = new List<PagosNotaDebito>();
+    public virtual ICollection<NotaDebitoRecibo> NotaDebitoRecibos { get; set; } = new List<NotaDebitoRecibo>();
 }

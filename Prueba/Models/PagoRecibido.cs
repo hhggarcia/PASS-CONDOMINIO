@@ -37,6 +37,10 @@ public partial class PagoRecibido
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
+    public virtual ICollection<NotaCreditoProveedor> NotaCreditoProveedors { get; set; } = new List<NotaCreditoProveedor>();
+
+    public virtual ICollection<NotaDebitoCliente> NotaDebitoClientes { get; set; } = new List<NotaDebitoCliente>();
+
     public virtual ICollection<PagoCobroTransito> PagoCobroTransitos { get; set; } = new List<PagoCobroTransito>();
 
     public virtual ICollection<PagoFacturaEmitida> PagoFacturaEmitida { get; set; } = new List<PagoFacturaEmitida>();

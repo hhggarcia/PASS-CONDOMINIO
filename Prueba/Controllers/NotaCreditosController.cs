@@ -32,11 +32,7 @@ namespace Prueba.Controllers
             var idCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var nuevaAppContext = _context.NotaCreditos
-                .Include(n => n.IdClienteNavigation)
-                .Include(n => n.IdFacturaNavigation)
                 .Include(n => n.IdPropiedadNavigation)
-                .Include(n => n.IdRetIslrNavigation)
-                .Include(n => n.IdRetIvaNavigation)
                 .Where(c => c.IdPropiedad != null)
                 .Where(c => c.IdPropiedadNavigation.IdCondominio == idCondominio);
 
@@ -54,11 +50,7 @@ namespace Prueba.Controllers
             }
 
             var notaCredito = await _context.NotaCreditos
-                .Include(n => n.IdClienteNavigation)
-                .Include(n => n.IdFacturaNavigation)
                 .Include(n => n.IdPropiedadNavigation)
-                .Include(n => n.IdRetIslrNavigation)
-                .Include(n => n.IdRetIvaNavigation)
                 .FirstOrDefaultAsync(m => m.IdNotaCredito == id);
             if (notaCredito == null)
             {
@@ -92,11 +84,7 @@ namespace Prueba.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "IdCliente", notaCredito.IdCliente);
-            ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "IdFacturaEmitida", notaCredito.IdFactura);
             ViewData["IdPropiedad"] = new SelectList(_context.Propiedads, "IdPropiedad", "IdPropiedad", notaCredito.IdPropiedad);
-            ViewData["IdRetIslr"] = new SelectList(_context.Islrs, "Id", "Id", notaCredito.IdRetIslr);
-            ViewData["IdRetIva"] = new SelectList(_context.Ivas, "Id", "Id", notaCredito.IdRetIva);
             return View(notaCredito);
         }
 

@@ -3259,8 +3259,18 @@ namespace Prueba.Services
         public async Task<byte[]> ComprobanteNotaCredito(NotaCredito modelo)
         {
             var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-            var cliente = await _context.Clientes.FindAsync(modelo.IdCliente);
-            var factura = await _context.FacturaEmitida.FindAsync(modelo.IdFactura);
+            //var cliente = await _context.Clientes.FindAsync(modelo.IdCliente);
+            var cliente = new Cliente()
+            {
+                Nombre = "Hector",
+                Direccion = "Aqui"
+            };
+            //var factura = await _context.FacturaEmitida.FindAsync(modelo.IdFactura);
+            var factura = new Factura()
+            {
+                NumControl = "0",
+                NumFactura = 0
+            };
             var condominio = await _context.Condominios.FindAsync(propiedad != null ? propiedad.IdCondominio : cliente.IdCondominio);
             var usuario = new AspNetUser();
 

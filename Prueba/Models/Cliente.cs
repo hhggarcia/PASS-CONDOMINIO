@@ -44,6 +44,4 @@ public partial class Cliente
     public virtual Islr? IdRetencionIslrNavigation { get; set; }
 
     public virtual Iva? IdRetencionIvaNavigation { get; set; }
-
-    public virtual ICollection<NotaCredito> NotaCreditos { get; set; } = new List<NotaCredito>();
 }

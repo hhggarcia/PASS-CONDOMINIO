@@ -7,7 +7,7 @@ public partial class CompRetIva
 {
     public int IdComprobanteIva { get; set; }
 
-    public int IdFactura { get; set; }
+    public int? IdFactura { get; set; }
 
     public int IdProveedor { get; set; }
 
@@ -39,9 +39,23 @@ public partial class CompRetIva
 
     public int NumComprobante { get; set; }
 
-    public virtual Factura IdFacturaNavigation { get; set; } = null!;
+    public bool? IsFactura { get; set; }
 
-    public virtual NotaCredito? IdNotaCreditoNavigation { get; set; }
+    public bool? IsNotaCredito { get; set; }
+
+    public bool? IsNotaDebito { get; set; }
+
+    public bool? Activo { get; set; }
+
+    public bool IsMultiFactura { get; set; }
+
+    public virtual ICollection<CompRetIvaFactura> CompRetIvaFacturas { get; set; } = new List<CompRetIvaFactura>();
+
+    public virtual Factura? IdFacturaNavigation { get; set; }
+
+    public virtual NotaCreditoProveedor? IdNotaCreditoNavigation { get; set; }
+
+    public virtual NotaDebitoProveedor? IdNotaDebito1 { get; set; }
 
     public virtual NotaDebito? IdNotaDebitoNavigation { get; set; }
 

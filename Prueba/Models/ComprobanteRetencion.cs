@@ -7,7 +7,7 @@ public partial class ComprobanteRetencion
 {
     public int IdComprobante { get; set; }
 
-    public int IdFactura { get; set; }
+    public int? IdFactura { get; set; }
 
     public int IdProveedor { get; set; }
 
@@ -31,7 +31,27 @@ public partial class ComprobanteRetencion
 
     public decimal BaseImponible { get; set; }
 
-    public virtual Factura IdFacturaNavigation { get; set; } = null!;
+    public bool? IsFactura { get; set; }
+
+    public int? IdNotaCredito { get; set; }
+
+    public bool? IsNotaCredito { get; set; }
+
+    public int? IdNotaDebito { get; set; }
+
+    public bool? IsNotaDebito { get; set; }
+
+    public bool? Activo { get; set; }
+
+    public bool IsMultiFactura { get; set; }
+
+    public virtual ICollection<CompRetIslrFactura> CompRetIslrFacturas { get; set; } = new List<CompRetIslrFactura>();
+
+    public virtual Factura? IdFacturaNavigation { get; set; }
+
+    public virtual NotaCreditoProveedor? IdNotaCreditoNavigation { get; set; }
+
+    public virtual NotaDebitoProveedor? IdNotaDebitoNavigation { get; set; }
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;
 }

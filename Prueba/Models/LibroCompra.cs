@@ -9,7 +9,7 @@ public partial class LibroCompra
 
     public int IdCondominio { get; set; }
 
-    public int IdFactura { get; set; }
+    public int? IdFactura { get; set; }
 
     public decimal BaseImponible { get; set; }
 
@@ -31,7 +31,23 @@ public partial class LibroCompra
 
     public bool FormaPago { get; set; }
 
+    public bool? IsFactura { get; set; }
+
+    public int? IdNotaCredito { get; set; }
+
+    public bool? IsNotaCredito { get; set; }
+
+    public int? IdNotaDebito { get; set; }
+
+    public bool? IsNotaDebito { get; set; }
+
+    public bool? Activo { get; set; }
+
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
-    public virtual Factura IdFacturaNavigation { get; set; } = null!;
+    public virtual Factura? IdFacturaNavigation { get; set; }
+
+    public virtual NotaCreditoProveedor? IdNotaCreditoNavigation { get; set; }
+
+    public virtual NotaDebitoProveedor? IdNotaDebitoNavigation { get; set; }
 }
