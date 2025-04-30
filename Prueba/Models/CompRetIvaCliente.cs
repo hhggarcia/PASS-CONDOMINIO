@@ -19,7 +19,7 @@ public partial class CompRetIvaCliente
 
     public bool TipoTransaccion { get; set; }
 
-    public string NumFacturaAfectada { get; set; } = null!;
+    public string NumFacturaAfectada { get; set; } = string.Empty;
 
     public decimal TotalCompraIva { get; set; }
 
@@ -35,7 +35,7 @@ public partial class CompRetIvaCliente
 
     public decimal TotalCompraRetIva { get; set; }
 
-    public string NumCompRet { get; set; } = null!;
+    public string NumCompRet { get; set; } = string.Empty;
 
     public int NumComprobante { get; set; }
 

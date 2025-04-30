@@ -9,6 +9,7 @@ using Prueba.Services;
 using Prueba.Utils;
 using System.Text.Json.Serialization;
 using QuestPDF.Infrastructure;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
@@ -41,6 +42,20 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options => option
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<ExchangeData>(builder.Configuration.GetSection("ExchangeRate"));
+builder.Services.Configure<CronJobSettings>(
+    builder.Configuration.GetSection("ExternalApi:ScheduleCronJobs"));
+
+
+builder.Services.AddHttpClient("ApiExterna", (serviceProvider, client) =>
+{
+    var apiSettings = serviceProvider.GetRequiredService<IOptions<ExchangeData>>().Value;
+
+    client.BaseAddress = new Uri(apiSettings.BaseUrl);
+    //client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiSettings.ApiKey}");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // culture
@@ -60,6 +75,8 @@ AddAuthorizationPolicies();
 AddScoped();
 
 AddTransient();
+
+AddHosted();
 
 var app = builder.Build();
 
@@ -120,6 +137,7 @@ void AddScoped()
     builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddScoped<IPDFServices, PDFServices>();
     builder.Services.AddScoped<IPrintServices, PrintServices>();
+    builder.Services.AddScoped<IExchangeApiService, ExchangeApiService>();
 }
 
 void AddTransient()
@@ -136,5 +154,10 @@ void AddTransient()
     builder.Services.AddTransient<IPdfReportesServices, PdfReportesServices>();
     builder.Services.AddTransient<IExcelServices, ExcelServices>();
 
+}
+
+void AddHosted()
+{
+    builder.Services.AddHostedService<TasaBackgroundService>();
 }
 

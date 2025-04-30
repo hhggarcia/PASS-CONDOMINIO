@@ -331,6 +331,8 @@ namespace Prueba.Services
 
         public byte[] EstadoCuentas(List<EstadoCuentasVM> modelo)
         {
+            var tasaToday = _context.HistorialMoneda.FirstOrDefault(c => c.Actual);
+
             var data = Document.Create(container =>
             {
                 container.Page(page =>
@@ -362,6 +364,9 @@ namespace Prueba.Services
                                 text.Span(" / ");
                                 text.TotalPages();
                             });
+
+                            col.Item().PaddingTop(10).Text("Tasa $ " + (tasaToday != null ? tasaToday.ConversionRate.ToString("N") : "")).FontSize(10).FontColor("#004581").Bold();
+
                         });
                     });
                     page.Content()
@@ -976,6 +981,7 @@ namespace Prueba.Services
             decimal totalMulta = 0;
             decimal totalMontoReciboVencido = 0;
             decimal totalSaldo = 0;
+            decimal totalMes = 0;
             decimal totalPagarSuma = 0;
 
             var data = Document.Create(container =>
@@ -1037,8 +1043,8 @@ namespace Prueba.Services
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Deuda").FontColor("#607080").Bold().FontSize(8);
 
-                                    header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
-                                   .Padding(5).Text("Recibo Vencido").FontColor("#607080").Bold().FontSize(8);
+                                   // header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                   //.Padding(5).Text("Recibo Vencido").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Mora 1% Mes Vencido").FontColor("#607080").Bold().FontSize(8);
@@ -1048,6 +1054,9 @@ namespace Prueba.Services
 
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Cuota del Mes").FontColor("#607080").Bold().FontSize(8);
+
+                                    header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
+                                   .Padding(5).Text("Total del Mes").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().Border(1).BorderColor("#D9D9D9").AlignMiddle()
                                    .Padding(5).Text("Total a Pagar").FontColor("#607080").Bold().FontSize(8);
@@ -1096,15 +1105,18 @@ namespace Prueba.Services
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text(recibos.Any() ? (recibos.Count + 1).ToString() : "1").FontColor("#607080").Bold().FontSize(8);
 
-                                        var aux = (deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.Monto : 0) -
-                                            (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) -
+                                        var aux = (deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) -
                                             (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0));
+
+                                        var auxTotalMes = (reciboActual != null ? reciboActual.Monto : 0) + 
+                                        (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) + 
+                                        (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0);
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((aux > 0 ? aux : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
-                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
-                                        .Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.Monto : 0).ToString("N")).FontColor("#607080").FontSize(8);
+                                        //tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                        //.Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.Monto : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((ultimoRecibo != null ? ultimoRecibo.MontoMora : 0).ToString("N")).FontColor("#607080").FontSize(8);
@@ -1116,6 +1128,9 @@ namespace Prueba.Services
                                         .Padding(5).Text((reciboActual != null ? reciboActual.Monto : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                                        .Padding(5).Text(auxTotalMes.ToString("N")).FontColor("#607080").FontSize(8);
+
+                                        tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((deudaRecibos + (reciboActual != null ? reciboActual.Monto : 0)).ToString("N")).Bold().FontColor("#607080").FontSize(8);
                                         //tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         //.Padding(5).Text(totalPagar.ToString("N")).Bold().FontColor("#607080").FontSize(8);
@@ -1125,6 +1140,7 @@ namespace Prueba.Services
                                         totalIntereses += (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0);
                                         totalMulta += (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0);
                                         totalSaldo += (reciboActual != null ? reciboActual.Monto : 0);
+                                        totalMes += auxTotalMes;
                                         totalPagarSuma += deudaRecibos + (reciboActual != null ? reciboActual.Monto : 0);
                                     }
                                 }
@@ -1144,8 +1160,8 @@ namespace Prueba.Services
                                 tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(5).Text(totalDeuda.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
-                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
-                               .Padding(5).Text(totalMontoReciboVencido.ToString("N")).Bold().FontColor("#607080").FontSize(8);
+                               // tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                               //.Padding(5).Text(totalMontoReciboVencido.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
                                 tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(5).Text(totalIntereses.ToString("N")).Bold().FontColor("#607080").FontSize(8);
@@ -1155,6 +1171,9 @@ namespace Prueba.Services
 
                                 tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(5).Text(totalSaldo.ToString("N")).Bold().FontColor("#607080").FontSize(8);
+
+                                tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
+                               .Padding(5).Text(totalMes.ToString("N")).Bold().FontColor("#607080").FontSize(8);
 
                                 tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(5).Text(totalPagarSuma.ToString("N")).Bold().FontColor("#607080").FontSize(8);

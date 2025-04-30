@@ -13,7 +13,7 @@ public partial class ComprobanteRetencion
 
     public DateTime FechaEmision { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public decimal Retencion { get; set; }
 
@@ -23,7 +23,7 @@ public partial class ComprobanteRetencion
 
     public decimal TotalImpuesto { get; set; }
 
-    public string NumCompRet { get; set; } = null!;
+    public string NumCompRet { get; set; } = string.Empty;
 
     public int NumComprobante { get; set; }
 
