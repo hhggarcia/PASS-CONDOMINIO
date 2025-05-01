@@ -41,6 +41,10 @@ public partial class ReciboCobro
 
     public decimal TotalPagar { get; set; }
 
+    public decimal? Diferencial { get; set; }
+
+    public decimal? MontoRefTotalPagar { get; set; }
+
     public virtual Propiedad IdPropiedadNavigation { get; set; } = null!;
 
     public virtual RelacionGasto IdRgastosNavigation { get; set; } = null!;

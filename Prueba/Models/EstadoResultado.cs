@@ -11,7 +11,7 @@ public partial class EstadoResultado
 
     public decimal TotalGastos { get; set; }
 
-    public DateTime Fecha { get; set; }
+    public DateOnly Fecha { get; set; }
 
     public int IdCondominio { get; set; }
 

@@ -191,9 +191,19 @@ public partial class NuevaAppContext : DbContext
     public virtual DbSet<Transaccion> Transaccions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HECTOR;Database=nuevaApp;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=true");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
+            var connectionString = configuration.GetConnectionString("ApplicationDBContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDBContextConnection' not found.");
+
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -1753,6 +1763,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.IdReciboCobro).HasColumnName("id_reciboCobro");
             entity.Property(e => e.Abonado).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Acumulado).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Diferencial).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.EnProceso).HasColumnName("enProceso");
             entity.Property(e => e.Fecha)
                 .HasColumnType("datetime")
@@ -1766,6 +1777,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.MontoIndexacion).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.MontoMora).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.MontoRef).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MontoRefTotalPagar).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Pagado).HasColumnName("pagado");
             entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
             entity.Property(e => e.SimboloRef).HasMaxLength(2);

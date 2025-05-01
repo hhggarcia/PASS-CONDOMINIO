@@ -11,9 +11,9 @@ public partial class NotaCredito
 
     public int? IdCliente { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
-    public string Comprobante { get; set; } = null!;
+    public string Comprobante { get; set; } = string.Empty;
 
     public DateTime Fecha { get; set; }
 
