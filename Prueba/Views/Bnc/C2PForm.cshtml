@@ -1,0 +1,466 @@
+﻿@using Prueba.ViewModels.FormaPagoVM
+
+@model PagoC2PVM
+
+@{
+    ViewData["Title"] = "Registrar Pagos";
+    Layout = "~/Views/Shared/_LayoutPropietario.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        @*<h1 class="h3 mb-0 text-gray-800">Registrar Pagos</h1>*@
+    </div>
+
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Reporta aquí cada pago recibido de un propietario
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form class="form form-horizontal" enctype="multipart/form-data" asp-action="ConfirmarPago">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @if (@ViewBag.FormaPago == "fallido")
+                        {
+                            <h6>@ViewBag.Mensaje</h6>
+                            <hr />
+                        }
+                        <div class="form-body">
+                            <div class="row">
+                                <!-- Select Propiedades -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Seleccione una Propiedad</label>
+                                        <div class="position-relative">
+                                            @Html.DropDownListFor(p => p.IdPropiedad, Model.Propiedades, "Propiedad", new { @class = "form-control form-select nav-tabs-selector" })
+
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-12">
+                                    <div class="text-center form-group">
+                                        <br />
+                                        <button type="button"
+                                                class="btn btn-outline-success"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalRecibos"
+                                                onclick="showContent();">
+                                            Ver
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- Agregar informacion de la deudad - propiedad -->
+                                <!-- Cargar modal con los recibos pendientes (boton de ver detalles ) -->
+                                <div class="modal fade"
+                                     id="modalRecibos"
+                                     tabindex="-1"
+                                     role="dialog"
+                                     aria-labelledby="exampleModalScrollableTitle"
+                                     aria-hidden="true">
+
+
+                                    <div class="modal-dialog modal-dialog-scrollable"
+                                         role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"
+                                                    id="exampleModalScrollableTitle">
+                                                    Información de Deuda
+                                                </h5>
+                                                <button type="button"
+                                                        class="close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <i data-feather="x"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+
+
+                                                <div id="Mora"></div>
+                                                <div id="Indexacion"></div>
+                                                <div id="Deuda"></div>
+                                                <div id="Saldo"></div>
+                                                <div id="Credito"></div>
+                                                <p>
+                                                    <div id="Total"></div>
+                                                </p>
+                                                <div class="table-responsive text-center">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Fecha</th>
+                                                                <th>Monto</th>
+                                                                <th>Abonado</th>
+                                                                <th>1% Mora</th>
+                                                                <th>30% Indexación</th>
+                                                                <th>Total a Pagar</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody id="contenido"></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-light-secondary"
+                                                        data-bs-dismiss="modal">
+                                                    <i class="bx bx-x d-block d-sm-none"></i>
+                                                    <span class="d-none d-sm-block">Cerrar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Fin modal-->
+
+                                <div class="col-md-12 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Recibos Pendientes</label>
+                                        <div class="position-relative" id="containerRecibos">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Monto -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Monto</label>
+                                        <span asp-validation-for="Monto" class="text-danger"></span>
+
+                                        <div class="position-relative">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   placeholder="Monto"
+                                                   id="first-name-icon"
+                                                   required
+                                                   asp-for="Monto" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fecha -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Fecha</label>
+                                        <span asp-validation-for="Fecha" class="text-danger"></span>
+
+                                        <div class="position-relative">
+                                            <input class="form-control"
+                                                   placeholder="Name"
+                                                   required
+                                                   id="first-name-icon"
+                                                   asp-for="Fecha"
+                                                   value="@DateTime.Today" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-calendar-date"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Concepto -->
+                                <div class="col-md-12 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="last-name-column">Concepto</label>
+                                        <span asp-validation-for="Concepto" class="text-danger"></span>
+
+                                        <div class="position-relative">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   placeholder="Concepto"
+                                                   id="first-name-icon"
+                                                   required
+                                                   asp-for="Concepto" />
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-building"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="banco">Banco</label>
+                                        <div class="position-relative">
+                                            @Html.DropDownListFor(p => p.IdBanco, Model.Bancos, "Seleccione un banco", new { @class = "form-control", id = "banco" })
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-bank"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group has-icon-left">
+                                        <label for="operacion">Operación</label>
+                                        <div class="position-relative">
+                                            @Html.DropDownListFor(p => p.IdOperacion, Model.Operaciones, "Seleccione una operación", new { @class = "form-control", id = "operacion" })
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-list-task"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="camposDinamicos" class="col-md-12 col-12">
+                                    <!-- Campos para RF -->
+                                    <div id="rfCampos" class="form-group" style="display: none;">
+                                        <div class="col-md-12 col-12">
+                                            <label for="numero">Número</label>
+                                            <input type="text" class="form-control" id="numero" asp-for="NumDocs" />
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <label for="telefono">Teléfono</label>
+                                            <input type="text" class="form-control" id="telefono" asp-for="Telefono" />
+                                        </div>
+                                        <div class="col-md-12 col-12">
+                                            <label for="token">Token</label>
+                                            <input type="text" class="form-control" id="token" asp-for="ClaveC2P" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Campos para TC -->
+                                    <div id="tcCampos" class="form-group" style="display: none;">
+                                        <!-- Agrega los campos específicos para TC -->
+                                    </div>
+
+                                    <!-- Campos para OTP -->
+                                    <div id="otpCampos" class="form-group" style="display: none;">
+                                        <!-- Agrega los campos específicos para OTP -->
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit"
+                                            class="btn btn-primary me-1 mb-1">
+                                        Enviar
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Evento al cambiar el banco
+            $("#banco").change(function () {
+                var idBanco = $(this).val();
+                if (idBanco) {
+                    $.ajax({
+                        url: "/Bnc/ObtenerOperacionesPorBanco", // Endpoint en el controlador
+                        type: "GET",
+                        data: { idBanco: idBanco },
+                        success: function (response) {
+                            // Limpiar y llenar el dropdown de operaciones
+                            $("#operacion").empty();
+                            $("#operacion").append('<option value="">Seleccione una operación</option>');
+                            $.each(response, function (index, item) {
+                                $("#operacion").append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+                        },
+                        error: function () {
+                            alert("Error al cargar las operaciones.");
+                        }
+                    });
+                } else {
+                    $("#operacion").empty();
+                    $("#operacion").append('<option value="">Seleccione una operación</option>');
+                }
+            });
+
+            // Evento al cambiar la operación
+            $("#operacion").change(function () {
+                var operacion = $(this).val();
+                // Ocultar todos los campos dinámicos
+                $("#camposDinamicos > div").hide();
+
+                // Mostrar campos según la operación seleccionada
+                if (operacion === "RF") {
+                    $("#rfCampos").show();
+                } else if (operacion === "TC") {
+                    $("#tcCampos").show();
+                } else if (operacion === "OTP") {
+                    $("#otpCampos").show();
+                }
+            });
+        });
+        function showContent() {
+            $("#modalRecibos").show();
+        };
+
+        $('.nav-tabs-selector').on('change', function (e) {
+            $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+
+        $("select").change(function () {
+
+            var value = 0;
+            if ($(this).val() != "") {
+                value = $(this).val();
+            }
+            var id = $(this).attr("id");
+            var dataRequest = {
+                valor: value
+            }
+
+            if (id == "IdPropiedad") {
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Bnc/AjaxCargarRecibos",
+                    data: dataRequest,
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+
+                        console.log("Response: ");
+                        console.log(response);
+                        var data = response;
+
+                        bancos = response.subCuentasBancos;
+                        efectivos = response.subCuentasCaja;
+                        var deuda = 0;
+                        var saldo = 0;
+                        var mora = 0;
+                        var indexacion = 0;
+                        var credito = 0;
+                        var total = 0;
+
+                        if (response.deuda > 0) {
+                            deuda = String(response.deuda.toFixed(2));
+                        }
+                        if (response.saldo > 0) {
+                            saldo = String(response.saldo.toFixed(2));
+                        }
+                        if (response.interes > 0) {
+                            mora = String(response.interes.toFixed(2));
+                        }
+                        if (response.indexacion > 0) {
+                            indexacion = String(response.indexacion.toFixed(2));
+                        }
+                        if (response.credito > 0) {
+                            credito = String(response.credito.toFixed(2));
+                        }
+
+                        if (response.saldo > response.abonado.toFixed(2)) {
+                            var aux = response.deuda + response.saldo + response.interes + response.indexacion - response.credito;
+                            total = String(aux.toFixed(2));
+                        }
+
+                        if (response.recibosModel.length > 0) {
+                            // LLENAR RECIBOS DE PROPIEDAD
+                            PopulateDropDown("#recibos", response.recibosModel);
+                        }
+
+                        // LLENAR MODAL CON LISTA DE REGISTRO
+                        if (response.recibos.length > 0) {
+                            LoadTable("#contenido", response.recibos)
+                        }
+                        // LLENAR DEUDA
+                        $("#Deuda").html("<p> <strong>Deuda</strong> = " + deuda + "</p>");
+                        $("#Saldo").html("<p> <strong>Saldo</strong> = " + saldo + "</p>");
+                        $("#Credito").html("<p> <strong>Credito</strong> = " + credito + "</p>");
+
+                        // LLENAR total
+                        //$("#Total").innerText(response.saldo);
+                        $("#Total").html("<hr/><p> <strong> Total </strong> = " + total + "</p>");
+
+
+                        // CONSTRUIR LIST DE RECIBOS A PAGAR
+                        if (response.listRecibos.length > 0) {
+
+                            var container = document.getElementById("containerRecibos");
+                            container.innerHTML = "";
+                            var text = "<div class=\"form-group\" >" +
+                                "<div class=\"form-check\" >";
+
+                            for (let i = 0; i < response.listRecibos.length; i++) {
+                                const item = response.listRecibos[i];
+                                console.log("Item: ");
+                                console.log(item);
+
+                                text += "<input type=\"hidden\" name=ListRecibos[" + i + "].Value" + " value= " + item.value + " />" +
+                                    "<input type=\"checkbox\" name=ListRecibos[" + i + "].Selected" + " id=\"z" + i
+                                    + "__Selected\" " + " class=\"form-check-input\" value=true  /> " +
+                                    "<label for=\"z" + i + "__Selected\" >" + item.text + "</label></br>"
+                            }
+
+                            text += "</div></div>";
+
+                            container.insertAdjacentHTML('beforeend', text);
+                        }
+
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        });
+
+        function DisableDropDown(dropDownId) {
+            $(dropDownId).attr("disabled", "disabled");
+            $(dropDownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');
+        }
+
+        function PopulateDropDown(dropDownId, list) {
+            if (list != null && list.length > 0) {
+                $(dropDownId).removeAttr("disabled");
+                $.each(list, function () {
+                    $(dropDownId).append($("<option></option>").val(this['value']).html(this['text']));
+                });
+            }
+        }
+
+        function LoadTable(tableId, list) {
+            CLearTable(tableId);
+            $.each(list, function (idex, value) {
+                //var fechita = new Date(value.fecha);
+
+                $(tableId).append("<tr><td>" + value.fecha.slice(0, 10)
+                    + "</td><td>" + value.monto.toFixed(2)
+                    + "</td><td>" + value.abonado.toFixed(2)
+                    + "</td><td>" + value.montoMora.toFixed(2)
+                    + "</td><td>" + value.montoIndexacion
+                    + "</td><td>" + value.totalPagar
+                    + "</td><tr>");
+            });
+        }
+
+        function CLearTable(tableId) {
+            $(tableId).empty();
+        }
+
+        function ClearDropDown(dropdownId) {
+            $(dropdownId).empty().append('<option selected="selected" value="0">Seleccionar</option>');;
+        }
+    </script>
+}

@@ -7,9 +7,9 @@ public partial class NotaDebito
 {
     public int IdNotaDebito { get; set; }
 
-    public string NumNotaDebito { get; set; } = null!;
+    public string NumNotaDebito { get; set; } = string.Empty;
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public int IdProveedor { get; set; }
 

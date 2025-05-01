@@ -147,6 +147,7 @@ namespace Prueba.Controllers
                 facturaEmitida.IdCodCuenta = idCodCuenta;
                 facturaEmitida.MontoTotal = facturaEmitida.SubTotal + facturaEmitida.Iva;
                 facturaEmitida.EnProceso = true;
+                facturaEmitida.Activo = true;
                 _context.Add(facturaEmitida);
                 await _context.SaveChangesAsync();
 
@@ -609,7 +610,7 @@ namespace Prueba.Controllers
         {
             // Lógica para obtener las facturas asociadas al proveedor seleccionado
             var facturas = await _context.FacturaEmitida
-           .Where(c => c.IdCliente == id && c.EnProceso == true)
+           .Where(c => c.IdCliente == id && !c.Anulada && c.Activo && c.EnProceso)
            .ToListAsync();
 
             // Devolver las facturas en formato JSON
