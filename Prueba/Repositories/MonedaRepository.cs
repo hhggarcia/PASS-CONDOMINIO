@@ -12,6 +12,7 @@ namespace Prueba.Repositories
         Task<int> Eliminar(int id);
         bool MonedaCondExists(int id);
         Task<ICollection<MonedaCond>> MonedaPrincipal(int idCondominio);
+        decimal TasaActualMonedaPrincipal();
     }
     public class MonedaRepository: IMonedaRepository
     {
@@ -75,6 +76,12 @@ namespace Prueba.Repositories
 
             return moneda;            
 
+        }
+
+        public decimal TasaActualMonedaPrincipal()
+        {
+            var historial = _context.HistorialMoneda.FirstOrDefault(c => c.Actual);
+            return historial != null ? historial.ConversionRate : 0;
         }
 
         public bool MonedaCondExists(int id)

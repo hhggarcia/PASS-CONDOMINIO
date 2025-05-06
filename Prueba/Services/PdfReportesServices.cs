@@ -9,6 +9,7 @@ using NetTopologySuite.Index.HPRtree;
 using Prueba.Models;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using Prueba.Repositories;
 
 namespace Prueba.Services
 {
@@ -30,10 +31,13 @@ namespace Prueba.Services
     public class PdfReportesServices : IPdfReportesServices
     {
         private readonly NuevaAppContext _context;
+        private readonly IMonedaRepository _repoMoneda;
 
-        public PdfReportesServices(NuevaAppContext context)
+        public PdfReportesServices(NuevaAppContext context,
+            IMonedaRepository repoMoneda)
         {
             _context = context;
+            _repoMoneda = repoMoneda;
         }
 
         public async Task<byte[]> Deudores(RecibosCreadosVM modelo, int id)
@@ -73,7 +77,7 @@ namespace Prueba.Services
                                 text.TotalPages();
                             });
 
-                            col.Item().PaddingTop(10).Text("Tasa $: " + (tasaToday != null ? tasaToday.ConversionRate.ToString("N") : "")).FontSize(10).FontColor("#004581").Bold();
+                            col.Item().PaddingTop(10).Text("Tasa $: " + (tasaToday != null ? tasaToday.ConversionRate.ToString() : "")).FontSize(10).FontColor("#004581").Bold();
 
                         });
                     });
@@ -391,7 +395,7 @@ namespace Prueba.Services
                                 text.TotalPages();
                             });
 
-                            col.Item().PaddingTop(10).Text("Tasa $: " + (tasaToday != null ? tasaToday.ConversionRate.ToString("N") : "") + "Bs").FontSize(10).FontColor("#004581").Bold();
+                            col.Item().PaddingTop(10).Text("Tasa $: " + (tasaToday != null ? tasaToday.ConversionRate : "") + "Bs").FontSize(10).FontColor("#004581").Bold();
 
                         });
                     });
@@ -1054,11 +1058,17 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
 
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
+
                                     columns.RelativeColumn();
                                 });
 
@@ -1141,12 +1151,10 @@ namespace Prueba.Services
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text(recibos.Any() ? (recibos.Count + 1).ToString() : "1").FontColor("#607080").Bold().FontSize(8);
 
-                                        var aux = (deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) -
-                                            (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0));
+                                        var aux = (deudaRecibos - (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0));
 
                                         var auxTotalMes = (reciboActual != null ? reciboActual.Monto : 0) + 
-                                        (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0) + 
-                                        (ultimoRecibo != null ? ultimoRecibo.MontoIndexacion : 0);
+                                        (ultimoRecibo != null ? ultimoRecibo.MontoMora : 0);
 
                                         tabla.Cell().Border(1).BorderColor("#D9D9D9").AlignRight()
                                         .Padding(5).Text((aux > 0 ? aux : 0).ToString("N")).FontColor("#607080").FontSize(8);

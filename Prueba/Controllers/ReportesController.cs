@@ -16,20 +16,25 @@ namespace Prueba.Controllers
 {
     public class ReportesController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly IExcelServices _excelServices;
         private readonly IReportesRepository _repoReportes;
         private readonly IPdfReportesServices _servicesPDF;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
 
-        public ReportesController(IExcelServices excelServices,
+        public ReportesController(IMonedaRepository repoMoneda,
+            IExcelServices excelServices,
             IReportesRepository repoReportes,
             IPdfReportesServices servicesPDF,
             NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _excelServices = excelServices;
             _repoReportes = repoReportes;
             _servicesPDF = servicesPDF;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
         public IActionResult Index()
         {
@@ -135,27 +140,37 @@ namespace Prueba.Controllers
                     && modelo.Recibos != null && modelo.Recibos.Any())
                 {
                     var data = new List<DeudoresDiarioVM>();
+                    var dataRef = new List<DeudoresRefVM>();
 
                     foreach (var propiedad in modelo.Propiedades)
                     {
+                        decimal totalMontoRef = 0;
+                        decimal acumMoraRef = 0;
+                        decimal acumIndexRef = 0;
+                        decimal totalPagarRef = 0;
+
                         var propietario = modelo.Propietarios.First(c => c.Id == propiedad.IdUsuario);
                         var recibos = modelo.Recibos.Where(c => c.IdPropiedad == propiedad.IdPropiedad).ToList();
 
-                        data.Add(new DeudoresDiarioVM()
+                        foreach (var item in recibos)
                         {
-                            Codigo = propiedad.Codigo,
+                            totalMontoRef += item.MontoRef;
+                            acumMoraRef += item.MontoMora / item.ValorDolar;
+                            acumIndexRef += item.MontoIndexacion / item.ValorDolar;
+                            totalPagarRef += item.MontoRef + (!item.ReciboActual ? ((item.MontoMora / item.ValorDolar) + (item.MontoIndexacion / item.ValorDolar)) : 0);
+                        }
+
+                        dataRef.Add(new DeudoresRefVM()
+                        {
+                            Oficina = propiedad.Codigo,
                             Propietario = propietario.FirstName,
                             CantRecibos = recibos.Count,
-                            AcumDeuda = recibos.Sum(c => c.Monto),
-                            AcumMora = recibos.Sum(c => c.MontoMora),
-                            AcumIndexacion = recibos.Sum(c => c.MontoIndexacion),
-                            Credito = propiedad.Creditos != null ? (decimal)propiedad.Creditos : 0,
-                            Saldo = propiedad.Saldo,
-                            Total = propiedad.Deuda + propiedad.Saldo - (decimal)propiedad.Creditos,
+                            TotalRef = totalPagarRef,
+                            Total = totalMontoRef * _tasaActual,
                         });
                     }
 
-                    DataTable table = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(data), (typeof(DataTable)));
+                    DataTable table = (DataTable)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(dataRef), (typeof(DataTable)));
 
                     using (var workbook = new HSSFWorkbook())
                     {

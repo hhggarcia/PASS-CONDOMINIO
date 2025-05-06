@@ -494,6 +494,7 @@ namespace Prueba.Services
                            
                             <p>Adjunto encontrará el recibo de condominio correspondiente a {recibo.Mes}</p>                            
                             <p>Le recordamos que la fecha límite para realizar el pago es el {fecha.ToString("dd/MM/yyyy")}. Puede efectuar el pago a través de los métodos habituales.</p>                            
+                            <p>Los recibos tienen monto referencial en Divisas ($), los mismo deben ser calculados en Bs a tasa del BCV el día que realice el pago respectivo.</p>                            
                             <p>Si tiene alguna pregunta o necesita asistencia adicional, no dude en ponerse en contacto con nosotros.</p>                            
                             <p>Agradecemos su pronta atención a este asunto.</p>                            
                             <p>Saludos cordiales</p>                            

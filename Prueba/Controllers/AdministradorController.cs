@@ -65,13 +65,6 @@ namespace Prueba.Controllers
             _context = context;
         }
 
-        public IActionResult PruebaPDF()
-        {
-            var data = _servicePDF.ExamplePDF();
-            Stream stream = new MemoryStream(data);
-            return File(stream, "application/pdf", "detalleventa.pdf");
-        }
-
         /// <summary>
         /// Busca los condominios asignados a un Administrador
         /// </summary>

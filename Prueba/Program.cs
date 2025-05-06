@@ -42,9 +42,10 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options => option
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.Configure<ExchangeData>(builder.Configuration.GetSection("ExchangeRate"));
+builder.Services.Configure<ExchangeData>(
+    builder.Configuration.GetSection("ExchangeRate"));
 builder.Services.Configure<CronJobSettings>(
-    builder.Configuration.GetSection("ExternalApi:ScheduleCronJobs"));
+    builder.Configuration.GetSection("ScheduleCronJobs"));
 
 
 builder.Services.AddHttpClient("ApiExterna", (serviceProvider, client) =>
@@ -130,6 +131,9 @@ void AddAuthorizationPolicies()
 
 void AddScoped()
 {
+    builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<CronJobSettings>>().Value);
+    builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<ExchangeData>>().Value);
+
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IFiltroFechaRepository, FiltroFechaRepository>();

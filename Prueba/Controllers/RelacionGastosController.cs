@@ -528,6 +528,7 @@ namespace Prueba.Controllers
                         // buscar transacciones
                         var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                         var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+                        var tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
                         int mesActual = DateTime.Today.Month;
                         int mesAnterior = mesActual == 1 ? 12 : mesActual - 1;
                         string mesAnteriorTexto = DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper();
@@ -542,8 +543,8 @@ namespace Prueba.Controllers
                             SubTotal = transaccionesDelMes.Total,
                             TotalMensual = transaccionesDelMes.Total,
                             Fecha = DateTime.Today,
-                            MontoRef = transaccionesDelMes.Total / monedaPrincipal.First().ValorDolar,
-                            ValorDolar = monedaPrincipal.First().ValorDolar,
+                            MontoRef = transaccionesDelMes.Total / tasaActual,
+                            ValorDolar = tasaActual,
                             SimboloMoneda = monedaPrincipal.First().Simbolo,
                             SimboloRef = "$",
                             Mes = mes
@@ -670,27 +671,27 @@ namespace Prueba.Controllers
                                         // mora para cada recibo y sumar a la propiedad
                                         // indexacion por cada recibo y sumar a la propiedad
                                         decimal mora = 0;
-                                        decimal indexacion = 0;
+                                       // decimal indexacion = 0;
 
                                         if (!reciboVencido.Pagado)
                                         {
                                             if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
                                             {
                                                 mora = (reciboVencido.Monto - reciboVencido.Abonado) * condominio.InteresMora / 100;
-                                                indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
+                                                //indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
 
                                             }
                                             else if (reciboVencido.Abonado == 0)
                                             {
                                                 mora = reciboVencido.MontoMora;
-                                                indexacion = reciboVencido.MontoIndexacion;
+                                                //indexacion = reciboVencido.MontoIndexacion;
                                             }
 
                                             propiedad.Deuda += propiedad.Saldo;
 
-                                            reciboVencido.MontoIndexacion = indexacion;
+                                           // reciboVencido.MontoIndexacion = indexacion;
                                             reciboVencido.MontoMora = mora;
-                                            reciboVencido.TotalPagar = reciboVencido.Monto + mora + indexacion - reciboVencido.Abonado;
+                                            reciboVencido.TotalPagar = reciboVencido.Monto + mora - reciboVencido.Abonado;
                                             reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
 
                                         }
@@ -727,15 +728,17 @@ namespace Prueba.Controllers
                                         Pagado = false,
                                         EnProceso = false,
                                         Abonado = 0,
-                                        MontoRef = monto / monedaPrincipal.First().ValorDolar,
-                                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                                        MontoRef = monto / tasaActual,
+                                        ValorDolar = tasaActual,
                                         SimboloMoneda = monedaPrincipal.First().Simbolo,
                                         SimboloRef = "$",
                                         MontoMora = monto * (condominio.InteresMora / 100),
-                                        MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
+                                        MontoIndexacion = 0,
                                         Mes = mes,
                                         ReciboActual = true,
-                                        TotalPagar = 0
+                                        TotalPagar = monto,
+                                        Diferencial = 0,
+                                        MontoRefTotalPagar = 0
                                     };
 
                                     recibosCobroCond.Add(recibo);
@@ -819,6 +822,7 @@ namespace Prueba.Controllers
                     // buscar transacciones
                     var transaccionesDelMes = await _repoRelacionGastos.LoadTransacciones(condominio.IdCondominio);
                     var monedaPrincipal = await _repoMoneda.MonedaPrincipal(idCondominio);
+                    var tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
                     int mesActual = DateTime.Today.Month;
                     int mesAnterior = mesActual == 1 ? 12 : mesActual - 1;
                     string mesAnteriorTexto = DateTime.Today.AddMonths(-1).ToString("MMM").ToUpper();
@@ -833,8 +837,8 @@ namespace Prueba.Controllers
                         SubTotal = transaccionesDelMes.Total,
                         TotalMensual = transaccionesDelMes.Total,
                         Fecha = DateTime.Today,
-                        MontoRef = transaccionesDelMes.Total / monedaPrincipal.First().ValorDolar,
-                        ValorDolar = monedaPrincipal.First().ValorDolar,
+                        MontoRef = transaccionesDelMes.Total / tasaActual,
+                        ValorDolar = tasaActual,
                         SimboloMoneda = monedaPrincipal.First().Simbolo,
                         SimboloRef = "$",
                         Mes = mes
@@ -961,27 +965,27 @@ namespace Prueba.Controllers
                                     // mora para cada recibo y sumar a la propiedad
                                     // indexacion por cada recibo y sumar a la propiedad
                                     decimal mora = 0;
-                                    decimal indexacion = 0;
+                                    //decimal indexacion = 0;
 
                                     if (!reciboVencido.Pagado)
                                     {
                                         if (reciboVencido.Abonado > 0 && reciboVencido.Abonado < reciboVencido.Monto)
                                         {
                                             mora = (reciboVencido.Monto - reciboVencido.Abonado) * condominio.InteresMora / 100;
-                                            indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
+                                            //indexacion = (reciboVencido.Monto - reciboVencido.Abonado) * (decimal)condominio.Multa / 100;
 
                                         }
                                         else if (reciboVencido.Abonado == 0)
                                         {
                                             mora = reciboVencido.MontoMora;
-                                            indexacion = reciboVencido.MontoIndexacion;
+                                            //indexacion = reciboVencido.MontoIndexacion;
                                         }
 
                                         propiedad.Deuda += propiedad.Saldo;
 
-                                        reciboVencido.MontoIndexacion = indexacion;
+                                        //reciboVencido.MontoIndexacion = indexacion;
                                         reciboVencido.MontoMora = mora;
-                                        reciboVencido.TotalPagar = reciboVencido.Monto + mora + indexacion - reciboVencido.Abonado;
+                                        reciboVencido.TotalPagar = reciboVencido.Monto + mora - reciboVencido.Abonado;
                                         reciboVencido.TotalPagar = reciboVencido.TotalPagar < 0 ? 0 : reciboVencido.TotalPagar;
 
                                         
@@ -1018,12 +1022,12 @@ namespace Prueba.Controllers
                                     Pagado = false,
                                     EnProceso = false,
                                     Abonado = 0,
-                                    MontoRef = monto / monedaPrincipal.First().ValorDolar,
-                                    ValorDolar = monedaPrincipal.First().ValorDolar,
+                                    MontoRef = monto / tasaActual,
+                                    ValorDolar = tasaActual,
                                     SimboloMoneda = monedaPrincipal.First().Simbolo,
                                     SimboloRef = "$",
                                     MontoMora = monto * (condominio.InteresMora / 100),
-                                    MontoIndexacion = monto * ((decimal)condominio.Multa / 100),
+                                    MontoIndexacion = 0,
                                     Mes = mes,
                                     ReciboActual = true,
                                     TotalPagar = 0

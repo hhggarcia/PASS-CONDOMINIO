@@ -5,6 +5,7 @@ using NCrontab;
 using Newtonsoft.Json;
 using Prueba.Context;
 using Prueba.Models;
+using Prueba.Repositories;
 using Prueba.Utils;
 using SQLitePCL;
 
@@ -42,8 +43,8 @@ namespace Prueba.Services
                 throw new InvalidOperationException("Configuración de CronJobs no encontrada");
             }
 
-            _schedule1 = CrontabSchedule.Parse(cronSettings.TasaJob1 ?? "0 9 * * *"); // Valor por defecto
-            _schedule2 = CrontabSchedule.Parse(cronSettings.TasaJob2 ?? "0 17 * * *"); // Valor por defecto
+            _schedule1 = CrontabSchedule.Parse(cronSettings.TasaJob1 ?? "0 7 * * *"); 
+            _schedule2 = CrontabSchedule.Parse(cronSettings.TasaJob2 ?? "0 16 * * *");
             _nextRun1 = _schedule1.GetNextOccurrence(DateTime.UtcNow);
             _nextRun2 = _schedule2.GetNextOccurrence(DateTime.UtcNow);
         }
@@ -53,6 +54,7 @@ namespace Prueba.Services
             _logger.LogInformation("Servicio de tasas iniciado.");
 
             // Verificamos cada minuto si es hora de ejecutar
+            // _timer = new Timer(async _ => await ExecuteJobAsync(), null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
             _timer = new Timer(CheckSchedules, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
 
             return Task.CompletedTask;
@@ -104,41 +106,43 @@ namespace Prueba.Services
                 return;
             }
 
-            var ultimaTasa = await dbContext.HistorialMoneda.FirstOrDefaultAsync(c => c.Actual);
-            if (ultimaTasa == null)
-            {
-                _logger.LogWarning("No se encontró tasa activa en la base de datos");
-                return;
-            }
-
-            using var transaction = await dbContext.Database.BeginTransactionAsync();
-
             try
             {
-                ultimaTasa.Actual = false;
+                var ultimaTasa = await dbContext.HistorialMoneda.FirstOrDefaultAsync(c => c.Actual);
+                var moneda = await dbContext.Moneda.FirstOrDefaultAsync(c => c.Codigo == "VES");
+
+                if (moneda == null)
+                {
+                    _logger.LogWarning("No existe moneda registrada para VES");
+                    return;
+                }
+
+                if (ultimaTasa != null)
+                {
+                    ultimaTasa.Actual = false;
+                    dbContext.HistorialMoneda.Update(ultimaTasa);
+                }
 
                 var nuevaTasa = new HistorialMoneda()
                 {
-                    IdMoneda = ultimaTasa.IdMoneda,
-                    BaseCode = result.BaseCode,
-                    TargetCode = result.TargetCode,
-                    ConversionRate = result.ConversionRate,
-                    ConversionResult = result.ConversionRate,
+                    IdMoneda = moneda.IdMoneda,
+                    BaseCode = result.Base_Code,
+                    TargetCode = result.Target_Code,
+                    ConversionRate = result.Conversion_Rate,
+                    ConversionResult = result.Conversion_Rate,
                     FechaConsulta = DateTime.UtcNow,
                     Actual = true
-                };
-
-                dbContext.HistorialMoneda.Update(ultimaTasa);
+                };               
+               
                 dbContext.HistorialMoneda.Add(nuevaTasa);
 
                 await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
 
-                _logger.LogInformation($"Tasa actualizada: {result.ConversionRate}");
+                _logger.LogInformation($"Tasa actualizada: {result.Conversion_Rate}");
             }
             catch
             {
-                await transaction.RollbackAsync();
+                _logger.LogInformation($"Error al actualizar la tasa en base de datos");
                 throw;
             }
         }
@@ -158,9 +162,15 @@ namespace Prueba.Services
 
     public class ResponseSuccess
     {
-        public string Result { get; set; }
-        public string BaseCode { get; set; }
-        public string TargetCode { get; set; }
-        public decimal ConversionRate { get; set; }
+        public string Result { get; set; } = string.Empty;
+        public string Documentation { get; set; } = string.Empty;
+        public string Terms_Of_Use { get; set; } = string.Empty;
+        public string Time_Last_Update_Unix { get; set; } = string.Empty;
+        public string Time_Last_Update_Utc { get; set; } = string.Empty;
+        public string Time_Next_Update_Unix { get; set; } = string.Empty;
+        public string Time_Next_Update_Utc { get; set; } = string.Empty;
+        public string Base_Code { get; set; } = string.Empty;
+        public string Target_Code { get; set; } = string.Empty; 
+        public decimal Conversion_Rate { get; set; }
     }
 }
