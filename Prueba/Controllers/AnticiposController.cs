@@ -28,7 +28,7 @@ namespace Prueba.Controllers
         public AnticiposController(ICuentasContablesRepository repoCuentas,
             IPDFServices servicesPDF,
             IPagosEmitidosRepository repoPagosEmitidos,
-            IFiltroFechaRepository filtroFechaRepository, 
+            IFiltroFechaRepository filtroFechaRepository,
             NuevaAppContext context)
         {
             _repoCuentas = repoCuentas;
@@ -44,9 +44,9 @@ namespace Prueba.Controllers
             var IdCondominio = Convert.ToInt32(TempData.Peek("idCondominio").ToString());
 
             var listAnticipos = await (from a in _context.Anticipos.Include(f => f.IdProveedorNavigation)
-                                      join c in _context.CodigoCuentasGlobals on a.IdCodCuenta equals c.IdCodCuenta
-                                      where c.IdCondominio == IdCondominio
-                                      select a).ToListAsync();
+                                       join c in _context.CodigoCuentasGlobals on a.IdCodCuenta equals c.IdCodCuenta
+                                       where c.IdCondominio == IdCondominio
+                                       select a).ToListAsync();
 
             //var nuevaAppContext = _context.Anticipos.Include(a => a.IdProveedorNavigation);
             return View(listAnticipos);
@@ -157,7 +157,7 @@ namespace Prueba.Controllers
                 return NotFound();
             }
 
-           
+
 
             ModelState.Remove(nameof(anticipo.IdProveedorNavigation));
             ModelState.Remove(nameof(anticipo.IdCodCuentaNavigation));
@@ -381,6 +381,62 @@ namespace Prueba.Controllers
         {
             var filtrarFecha = await _reposFiltroFecha.ObtenerAnticipos(filtrarFechaVM);
             return View("Index", filtrarFecha);
+        }
+
+        public async Task<IActionResult> PdfAnticipo(int id)
+        {
+            var modelo = new ComprobanteAnticipoVM();
+            var anticipo = await _context.Anticipos
+                .FirstOrDefaultAsync(c => c.IdAnticipo == id);
+
+            if (anticipo != null)
+            {
+                var pago = await _context.PagoEmitidos
+                    .FirstOrDefaultAsync(c => c.IdPagoEmitido == anticipo.Numero);                
+
+                if (pago != null)
+                {
+                    var proveedor = await _context.Proveedors.FindAsync(anticipo.IdProveedor);
+
+                    if (proveedor != null)
+                    {
+                        modelo.Condominio = await _context.Condominios.FindAsync(pago.IdCondominio);
+                        modelo.Pago = pago;
+                        modelo.Concepto = pago.Concepto!;
+                        modelo.Beneficiario = proveedor.Nombre;
+                        modelo.Pagoforma = pago.FormaPago ? FormaPago.Transferencia : FormaPago.Efectivo;
+
+                        if (pago.FormaPago)
+                        {
+                            var referencia = await _context.ReferenciasPes.FirstOrDefaultAsync(c => c.IdPagoEmitido == pago.IdPagoEmitido);
+                            if (referencia is not null)
+                            {
+                                var banco = await _context.SubCuenta.FirstOrDefaultAsync(c => c.Id == Convert.ToInt32(referencia.Banco));
+
+                                modelo.NumReferencia = referencia.NumReferencia;
+                                modelo.Banco = banco;
+                            }
+                        }
+                        else
+                        {
+                            modelo.Caja = new SubCuenta()
+                            {
+                                Id = 0,
+                                Descricion = "Banco",
+                                Codigo = "01",
+                                IdCuenta = 0
+                            };
+                        }
+                    }                   
+
+                    var data = _servicesPDF.ComprobanteAnticipoPDF(modelo);
+
+                    Stream stream = new MemoryStream(data);
+                    return File(stream, "application/pdf", "ComprobanteAnticipoPago.pdf");
+                }
+            }
+
+            return RedirectToAction("Index");
         }
 
         public ContentResult ComprobantePDF([FromBody] ComprobanteAnticipoVM modelo)

@@ -2594,7 +2594,6 @@ namespace Prueba.Services
                                 else
                                 {
                                     tabla.Cell().Padding(5).Text(modelo.Caja.Descricion).FontColor("#607080").Bold().FontSize(8);
-
                                 }
 
                                 tabla.Cell().Padding(5).Text("");

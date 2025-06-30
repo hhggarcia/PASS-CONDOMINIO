@@ -3224,7 +3224,6 @@ namespace Prueba.Repositories
                             Banco = modelo.IdCodigoCuentaBanco.ToString()
                         };
 
-
                         context.Add(referencia);
                         context.Anticipos.Add(anticipo);
                         //context.Transaccions.Add(transaccion);
