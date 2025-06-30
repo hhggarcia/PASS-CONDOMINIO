@@ -114,9 +114,15 @@ namespace Prueba.Controllers
                     return View(compRetIvaCliente);
                 }
 
-                var factura = await _context.FacturaEmitida.FindAsync(compRetIvaCliente.IdFactura);
+                var factura = await _context.FacturaEmitida
+                    .Include(c => c.CompRetIvaClientes)
+                    .Include(c => c.ComprobanteRetencionClientes)
+                    .FirstOrDefaultAsync(c => c.IdFacturaEmitida == compRetIvaCliente.IdFactura);
+
                 var itemLibro = await _context.LibroVentas.FirstOrDefaultAsync(c => c.IdFactura == compRetIvaCliente.IdFactura);
-                if (factura != null && itemLibro != null)
+                var cliente = await _context.Clientes.FindAsync(compRetIvaCliente.IdCliente);
+
+                if (factura != null && itemLibro != null && cliente != null)
                 {
                     compRetIvaCliente.NumFacturaAfectada = factura.NumFactura.ToString();
                     compRetIvaCliente.TipoTransaccion = true;
@@ -132,6 +138,17 @@ namespace Prueba.Controllers
                     itemLibro.IvaRetenido = itemLibro.RetIva;
                     itemLibro.ComprobanteRetencion = compRetIvaCliente.NumCompRet;
 
+                    // validar que exista la otra retencion si aplica
+
+                    if (cliente.IdRetencionIslr != null && factura.ComprobanteRetencionClientes.Any())
+                    {
+                        factura.Pagada = true;
+                    } else if (cliente.IdRetencionIslr == null && cliente.IdRetencionIva != null)
+                    {
+                        factura.Pagada = true;
+                    }
+
+                    _context.FacturaEmitida.Update(factura);
                     _context.LibroVentas.Update(itemLibro);
 
                 }

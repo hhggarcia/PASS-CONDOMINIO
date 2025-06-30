@@ -31,6 +31,7 @@ namespace Prueba.Repositories
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IMonedaRepository _repoMoneda;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
 
         public PagosEmitidosRepository(ICuentasContablesRepository repoCuentas,
             IMonedaRepository repoMoneda,
@@ -39,6 +40,7 @@ namespace Prueba.Repositories
             _repoCuentas = repoCuentas;
             _repoMoneda = repoMoneda;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
 
         /// <summary>
@@ -194,7 +196,9 @@ namespace Prueba.Repositories
                 Fecha = modelo.Fecha,
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto + " - " + proveedor.Nombre,
-                Activo = true
+                Activo = true,
+                MontoRef = modelo.Monto / _tasaActual,
+                ValorDolar = _tasaActual
             };
 
             //Anticipo anticipo1 = new Anticipo();
@@ -287,9 +291,9 @@ namespace Prueba.Repositories
 
                     pago.FormaPago = false;
                     pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = "$";
-                    pago.MontoRef = montoReferencia;
+                    //pago.MontoRef = montoReferencia;
 
                     // validar si existe anticipo
                     if (!modelo.AnticiposIds.Any())
@@ -856,8 +860,8 @@ namespace Prueba.Repositories
                     pago.MontoRef = montoReferencia;
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                    pago.MontoRef = montoReferencia;
+                    //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    //pago.MontoRef = montoReferencia;
                     pago.SimboloRef = "$";
 
                     // validar si existe anticipo
@@ -1429,7 +1433,9 @@ namespace Prueba.Repositories
                     Fecha = modelo.Fecha,
                     Monto = modelo.Monto,
                     Concepto = modelo.Concepto + " - " + empleado.Nombre,
-                    Activo = true
+                    Activo = true,
+                    MontoRef = modelo.Monto / _tasaActual,
+                    ValorDolar = _tasaActual
                 };
 
                 var provisiones = from c in _context.Provisiones
@@ -1493,9 +1499,9 @@ namespace Prueba.Repositories
 
                         pago.FormaPago = false;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = Math.Round(montoReferencia, 2);
+                       // pago.MontoRef = Math.Round(montoReferencia, 2);
 
                         // armar Recibo Nomina
                         var reciboNomina = new ReciboNomina
@@ -1926,8 +1932,8 @@ namespace Prueba.Repositories
                         pago.MontoRef = montoReferencia;
                         pago.FormaPago = true;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                        pago.MontoRef = Math.Round(montoReferencia, 2);
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.MontoRef = Math.Round(montoReferencia, 2);
                         pago.SimboloRef = "$";
 
 
@@ -2346,7 +2352,9 @@ namespace Prueba.Repositories
                     Fecha = modelo.Pago.Fecha,
                     Monto = modelo.Pago.Monto,
                     Concepto = modelo.Concepto + " - " + beneficiario.Nombre,
-                    Activo = true
+                    Activo = true,
+                    MontoRef = modelo.Pago.Monto / _tasaActual,
+                    ValorDolar = _tasaActual
                 };
 
                 var provisiones = from c in context.Provisiones
@@ -2410,9 +2418,9 @@ namespace Prueba.Repositories
 
                         pago.FormaPago = false;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = montoReferencia;
+                       // pago.MontoRef = montoReferencia;
 
                         // buscar grupo de la cuenta
                         var grupo = await (from g in _context.GrupoGastos
@@ -2634,8 +2642,8 @@ namespace Prueba.Repositories
                         pago.MontoRef = montoReferencia;
                         pago.FormaPago = true;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                        pago.MontoRef = montoReferencia;
+                       // pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
                         // buscar grupo de la cuenta
@@ -2871,7 +2879,9 @@ namespace Prueba.Repositories
                     Fecha = modelo.Fecha,
                     Monto = modelo.Monto,
                     Concepto = modelo.Concepto,
-                    Activo = true
+                    Activo = true,
+                    MontoRef = modelo.Monto/_tasaActual,
+                    ValorDolar = _tasaActual
                 };
 
                 var provisiones = from c in context.Provisiones
@@ -2935,9 +2945,9 @@ namespace Prueba.Repositories
 
                         pago.FormaPago = false;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = montoReferencia;
+                        //pago.MontoRef = montoReferencia;
 
                         // buscar grupo de la cuenta
                         var grupo = await (from g in _context.GrupoGastos
@@ -3159,11 +3169,11 @@ namespace Prueba.Repositories
                         monedaCuenta.SaldoFinal -= modelo.Monto;
 
 
-                        pago.MontoRef = montoReferencia;
+                       // pago.MontoRef = montoReferencia;
                         pago.FormaPago = true;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                        pago.MontoRef = montoReferencia;
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
                         // buscar grupo de la cuenta
@@ -3204,6 +3214,7 @@ namespace Prueba.Repositories
                             IdProveedor = modelo.IdProveedor,
                             IdCodCuenta = modelo.IdSubcuenta,
                             Activo = true
+                           
                         };
 
                         ReferenciasPe referencia = new ReferenciasPe
@@ -3397,7 +3408,9 @@ namespace Prueba.Repositories
                     Fecha = modelo.Fecha,
                     Monto = modelo.Monto,
                     Concepto = modelo.Concepto + " - " + empleado.Nombre,
-                    Activo = true
+                    Activo = true,
+                    MontoRef = modelo.Monto / _tasaActual,
+                    ValorDolar = _tasaActual
                 };
 
                 var provisiones = from c in context.Provisiones
@@ -3458,9 +3471,9 @@ namespace Prueba.Repositories
 
                         pago.FormaPago = false;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                         pago.SimboloRef = "$";
-                        pago.MontoRef = montoReferencia;
+                       // pago.MontoRef = montoReferencia;
 
                         // registrar pago
                         context.PagoEmitidos.Add(pago);
@@ -3583,11 +3596,11 @@ namespace Prueba.Repositories
                         monedaCuenta.SaldoFinal -= modelo.Monto;
 
 
-                        pago.MontoRef = montoReferencia;
+                       // pago.MontoRef = montoReferencia;
                         pago.FormaPago = true;
                         pago.SimboloMoneda = moneda.First().Simbolo;
-                        pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                        pago.MontoRef = montoReferencia;
+                       // pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                        //pago.MontoRef = montoReferencia;
                         pago.SimboloRef = "$";
 
                         // registrar pago

@@ -21,6 +21,7 @@ namespace Prueba.Controllers
 {
     public class PagoRecibidosController : Controller
     {
+        private readonly IMonedaRepository _repoMoneda;
         private readonly IPDFServices _servicesPDF;
         private readonly IPagosRecibidosRepository _repoPagosRecibidos;
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -28,8 +29,10 @@ namespace Prueba.Controllers
         private readonly IEmailService _serviceEmail;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
 
-        public PagoRecibidosController(IPDFServices servicesPDF,
+        public PagoRecibidosController(IMonedaRepository repoMoneda,
+            IPDFServices servicesPDF,
             IPagosRecibidosRepository repoPagosRecibidos,
             IWebHostEnvironment webHostEnvironment,
             ICuentasContablesRepository repoCuentas,
@@ -37,6 +40,7 @@ namespace Prueba.Controllers
             SignInManager<ApplicationUser> signInManager,
             NuevaAppContext context)
         {
+            _repoMoneda = repoMoneda;
             _servicesPDF = servicesPDF;
             _repoPagosRecibidos = repoPagosRecibidos;
             _webHostEnvironment = webHostEnvironment;
@@ -44,6 +48,7 @@ namespace Prueba.Controllers
             _serviceEmail = serviceEmail;
             _signInManager = signInManager;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
 
         // GET: PagoRecibidos
@@ -265,7 +270,12 @@ namespace Prueba.Controllers
                             .ToList();
                         modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
                         {
-                            Text = recibo.Mes + " " + (recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar).ToString("N") + "Bs",
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ? 
+                            ((recibo.Monto - recibo.Abonado)/ recibo.ValorDolar) : 
+                            (recibo.TotalPagar/ recibo.ValorDolar)).ToString("N") + "$" 
+                            + " - " + (recibo.ReciboActual ?
+                            (((recibo.Monto - recibo.Abonado) / recibo.ValorDolar) * _tasaActual) :
+                            ((recibo.TotalPagar / recibo.ValorDolar) * _tasaActual)).ToString("N") + "Bs",
                             Value = recibo.IdReciboCobro.ToString(),
                             Selected = false,
                         }).ToList();

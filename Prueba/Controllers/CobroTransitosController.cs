@@ -574,7 +574,7 @@ namespace Prueba.Controllers
             {
                 // buscar propiedad
                 var propiedad = await _context.Propiedads.FindAsync(modelo.IdPropiedad);
-                var cobro = await _context.CobroTransitos.FindAsync(modelo.IdPropiedad);
+                var cobro = await _context.CobroTransitos.FindAsync(modelo.IdCobroTransito);
                 // buscar recibos seleccionados
                 if (modelo.ListRecibos != null && modelo.ListRecibos.Any())
                 {

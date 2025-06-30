@@ -90,26 +90,30 @@ namespace Prueba.Controllers
                     return View(comprobanteRetencionCliente);
 
                 }
-                //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
-                //{
-                //    ViewBag.FormaPago = "fallido";
-                //    ViewBag.Mensaje = "El Nr. de Comprobante debe tener 14 carácteres";
 
-                //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
-
-                //    return View(comprobanteRetencionCliente);
-                //}
                  
                 var factura = await _context.FacturaEmitida.FindAsync(comprobanteRetencionCliente.IdFactura);
-
-                if (factura != null)
+                var cliente = await _context.Clientes.FindAsync(comprobanteRetencionCliente.IdCliente);
+                if (factura != null && cliente != null)
                 {
                     comprobanteRetencionCliente.BaseImponible = factura.SubTotal;
                     comprobanteRetencionCliente.TotalFactura = factura.MontoTotal;
                     comprobanteRetencionCliente.NumComprobante = 1;
                     comprobanteRetencionCliente.TotalImpuesto = comprobanteRetencionCliente.ValorRetencion;
                     comprobanteRetencionCliente.Sustraendo = 0;
+
+                    // validar que exista la otra retencion si aplica
+
+                    if (cliente.IdRetencionIva != null && factura.CompRetIvaClientes.Any())
+                    {
+                        factura.Pagada = true;
+                    }
+                    else if (cliente.IdRetencionIslr != null && cliente.IdRetencionIva == null)
+                    {
+                        factura.Pagada = true;
+                    }
+
+                    _context.FacturaEmitida.Update(factura);
 
                     _context.Add(comprobanteRetencionCliente);
                     await _context.SaveChangesAsync();

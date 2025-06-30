@@ -41,6 +41,7 @@ namespace Prueba.Controllers
         private readonly IMonedaRepository _repoMoneda;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
         private readonly IPDFServices _servicePDF;
         private readonly IPdfReportesServices _servicesPDF;
 
@@ -75,6 +76,7 @@ namespace Prueba.Controllers
             _servicePDF = PDFService;
             _servicesPDF = servicesPDF;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
 
         /// <summary>
@@ -199,7 +201,12 @@ namespace Prueba.Controllers
                             .ToList();
                         modelo.ListRecibos = recibos.Select(recibo => new SelectListItem
                         {
-                            Text = recibo.Mes + " " + (recibo.ReciboActual ? recibo.Monto : (recibo.Monto + recibo.MontoMora + recibo.MontoIndexacion - recibo.Abonado)).ToString("N") + "Bs",
+                            Text = recibo.Mes + " " + (recibo.ReciboActual ?
+                            ((recibo.Monto - recibo.Abonado) / recibo.ValorDolar) :
+                            (recibo.TotalPagar / recibo.ValorDolar)).ToString("N") + "$"
+                            + " - " + (recibo.ReciboActual ?
+                            (((recibo.Monto - recibo.Abonado) / recibo.ValorDolar) * _tasaActual) :
+                            ((recibo.TotalPagar / recibo.ValorDolar) * _tasaActual)).ToString("N") + "Bs",
                             Value = recibo.IdReciboCobro.ToString(),
                             Selected = false,
                         }).ToList();

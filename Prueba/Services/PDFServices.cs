@@ -4535,29 +4535,36 @@ namespace Prueba.Services
                                 });
                                 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text((modelo.Recibo.Monto / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text(modelo.Recibo.MontoRef.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
                                 .Padding(2).Text((recibosPendientes.Count).ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
-                                var deudaT = recibosPendientes.Sum(c => c.Monto) +
-                                recibosPendientes.Sum(c => c.MontoMora) +
-                                recibosPendientes.Sum(c => c.MontoIndexacion);
+                                decimal deudaT = 0;
+                                decimal abonadoT = 0;
+                                foreach (var item in recibosPendientes)
+                                {
+                                    decimal acumMoraRef = 0;
+                                    decimal acumIndexRef = 0;
+                                    decimal totalAbono = 0;
+                                    decimal totalMontoRef = 0;
+
+                                    acumMoraRef += item.MontoMora / item.ValorDolar;
+                                    acumIndexRef += item.MontoIndexacion / item.ValorDolar;
+                                    totalAbono += item.Abonado / item.ValorDolar;
+                                    totalMontoRef += item.MontoRef + acumMoraRef + acumIndexRef - totalAbono;
+                                    deudaT += totalMontoRef;
+                                    abonadoT += totalAbono;
+                                }
 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text((deudaT / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text(deudaT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text((recibosPendientes.Sum(c => c.Abonado) / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
-
-                                var totalPagarT = modelo.Recibo.Monto +
-                                recibosPendientes.Sum(c => c.Monto) +
-                                recibosPendientes.Sum(c => c.MontoMora) +
-                                recibosPendientes.Sum(c => c.MontoIndexacion) -
-                                recibosPendientes.Sum(c => c.Abonado);
-                                
+                                .Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                                            
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text((totalPagarT / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text((deudaT + modelo.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
                             });
 
                             x.Item().Column(col =>
@@ -4961,29 +4968,36 @@ namespace Prueba.Services
                                     });
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text((reciboDetalle.Recibo.Monto / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text(reciboDetalle.Recibo.MontoRef.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
                                     .Padding(2).Text((recibosPendientes.Count).ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
-                                    var deudaT = recibosPendientes.Sum(c => c.Monto) +
-                                    recibosPendientes.Sum(c => c.MontoMora) +
-                                    recibosPendientes.Sum(c => c.MontoIndexacion);
+                                    decimal deudaT = 0;
+                                    decimal abonadoT = 0;
+                                    foreach (var item in recibosPendientes)
+                                    {
+                                        decimal acumMoraRef = 0;
+                                        decimal acumIndexRef = 0;
+                                        decimal totalAbono = 0;
+                                        decimal totalMontoRef = 0;
+
+                                        acumMoraRef += item.MontoMora / item.ValorDolar;
+                                        acumIndexRef += item.MontoIndexacion / item.ValorDolar;
+                                        totalAbono += item.Abonado / item.ValorDolar;
+                                        totalMontoRef += item.MontoRef + acumMoraRef + acumIndexRef - totalAbono;
+                                        deudaT += totalMontoRef;
+                                        abonadoT += totalAbono;
+                                    }
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text((deudaT / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    .Padding(2).Text(deudaT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text((recibosPendientes.Sum(c => c.Abonado) / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
-
-                                    var totalPagarT = reciboDetalle.Recibo.Monto +
-                                    recibosPendientes.Sum(c => c.Monto) +
-                                    recibosPendientes.Sum(c => c.MontoMora) +
-                                    recibosPendientes.Sum(c => c.MontoIndexacion) -
-                                    recibosPendientes.Sum(c => c.Abonado);
+                                    .Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text((totalPagarT / _tasaActual).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    .Padding(2).Text((deudaT + reciboDetalle.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                 });
 

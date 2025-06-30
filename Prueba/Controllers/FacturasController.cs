@@ -21,6 +21,7 @@ namespace Prueba.Controllers
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly IFiltroFechaRepository _reposFiltroFecha;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
 
         public FacturasController(IMonedaRepository repoMoneda,
             ICuentasContablesRepository repoCuentas,
@@ -31,6 +32,7 @@ namespace Prueba.Controllers
             _repoCuentas = repoCuentas;
             _reposFiltroFecha = filtroFechaRepository;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
 
         // GET: Facturas
@@ -169,8 +171,8 @@ namespace Prueba.Controllers
                     Cancelado = factura.MontoTotal,
                     SimboloMoneda = monedaPrincipal.First().Simbolo,
                     SimboloRef = "$",
-                    ValorDolar = monedaPrincipal.First().ValorDolar,
-                    MontoRef = factura.MontoTotal / monedaPrincipal.First().ValorDolar,
+                    ValorDolar = _tasaActual,
+                    MontoRef = factura.MontoTotal / _tasaActual,
                     Fecha = DateTime.Today,
                     IdGrupo = grupo != null ? grupo.IdGrupoGasto : 0,
                     Activo = true

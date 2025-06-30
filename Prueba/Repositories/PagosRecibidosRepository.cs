@@ -29,6 +29,7 @@ namespace Prueba.Repositories
         private readonly IMonedaRepository _repoMoneda;
         private readonly ICuentasContablesRepository _repoCuentas;
         private readonly NuevaAppContext _context;
+        private readonly decimal _tasaActual;
 
         public PagosRecibidosRepository(IMonedaRepository repoMoneda,
             NuevaAppContext context,
@@ -37,6 +38,7 @@ namespace Prueba.Repositories
             _repoMoneda = repoMoneda;
             _repoCuentas = repoCuentas;
             _context = context;
+            _tasaActual = _repoMoneda.TasaActualMonedaPrincipal();
         }
 
         public async Task<IndexPagoFacturaEmitidaVM> GetPagosFacturasEmitidas(int id)
@@ -110,7 +112,9 @@ namespace Prueba.Repositories
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto,
                 Confirmado = true,
-                Activo = true
+                Activo = true,
+                MontoRef = modelo.Monto / _tasaActual,
+                ValorDolar = _tasaActual
             };
 
             var factura = await _context.FacturaEmitida
@@ -245,9 +249,9 @@ namespace Prueba.Repositories
 
                             pago.FormaPago = false;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                             pago.SimboloRef = "$";
-                            pago.MontoRef = montoReferencia;
+                            //pago.MontoRef = montoReferencia;
 
                             // valido si hay abonado en la factura
                             if (factura.Abonado == 0)
@@ -515,11 +519,11 @@ namespace Prueba.Repositories
 
                             monedaCuenta.SaldoFinal -= modelo.Monto;
 
-                            pago.MontoRef = montoReferencia;
+                            //pago.MontoRef = montoReferencia;
                             pago.FormaPago = true;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                            pago.MontoRef = montoReferencia;
+                            //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            //pago.MontoRef = montoReferencia;
                             pago.SimboloRef = "$";
 
                             // valido si hay abonado en la factura
@@ -787,7 +791,9 @@ namespace Prueba.Repositories
                 Monto = modelo.Monto,
                 Concepto = modelo.Concepto,
                 Confirmado = true,
-                Activo = true
+                Activo = true,
+                MontoRef = modelo.Monto / _tasaActual,
+                ValorDolar = _tasaActual
             };
 
             //var provisiones = from c in _context.Provisiones
@@ -855,9 +861,9 @@ namespace Prueba.Repositories
 
                     pago.FormaPago = false;
                     pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                    //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = "$";
-                    pago.MontoRef = montoReferencia;
+                    //pago.MontoRef = montoReferencia;
 
 
                     // registrar cobro en transito
@@ -869,7 +875,7 @@ namespace Prueba.Repositories
                         Fecha = pago.Fecha,
                         Concepto = modelo.Concepto,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia,
+                        MontoRef = pago.MontoRef,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         Asignado = false,
@@ -1017,11 +1023,11 @@ namespace Prueba.Repositories
 
                     monedaCuenta.SaldoFinal -= modelo.Monto;
 
-                    pago.MontoRef = montoReferencia;
+                    //pago.MontoRef = montoReferencia;
                     pago.FormaPago = true;
                     pago.SimboloMoneda = moneda.First().Simbolo;
-                    pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                    pago.MontoRef = montoReferencia;
+                    //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                   // pago.MontoRef = montoReferencia;
                     pago.SimboloRef = "$";
 
                     // registrar cobro en transito
@@ -1033,7 +1039,7 @@ namespace Prueba.Repositories
                         Fecha = pago.Fecha,
                         Concepto = modelo.Concepto,
                         ValorDolar = pago.ValorDolar,
-                        MontoRef = montoReferencia,
+                        MontoRef = pago.MontoRef,
                         SimboloMoneda = pago.SimboloMoneda,
                         SimboloRef = pago.SimboloRef,
                         Asignado = false,
@@ -1186,7 +1192,9 @@ namespace Prueba.Repositories
                             Confirmado = false,
                             Imagen = modelo.Imagen,
                             Monto = modelo.Monto,
-                            Activo = true
+                            Activo = true,
+                            MontoRef = modelo.Monto / _tasaActual,
+                            ValorDolar = _tasaActual
                         };
 
                         // validar num referencia repetido
@@ -1231,9 +1239,9 @@ namespace Prueba.Repositories
 
                             pago.FormaPago = false;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                             pago.SimboloRef = "$";
-                            pago.MontoRef = montoReferencia;
+                            //pago.MontoRef = montoReferencia;
 
                             // registrar pago
                             // registrar pagoPropiedad
@@ -1308,9 +1316,9 @@ namespace Prueba.Repositories
 
                             pago.FormaPago = true;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
+                            //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                             pago.SimboloRef = "$";
-                            pago.MontoRef = montoReferencia;
+                            //pago.MontoRef = montoReferencia;
 
                             // registrar pago
                             // registrar pagoPropiedad
@@ -1405,7 +1413,8 @@ namespace Prueba.Repositories
                         {
                             foreach (var recibo in recibos)
                             {
-                                decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+                                decimal pendientePagoRef = recibo.ReciboActual ? recibo.MontoRef - (recibo.Abonado / recibo.ValorDolar) : (recibo.TotalPagar / recibo.ValorDolar);
+                                decimal pendientePago = pendientePagoRef * _tasaActual;
 
                                 if (pendientePago != 0 && pendientePago > montoPago)
                                 {
@@ -1515,7 +1524,9 @@ namespace Prueba.Repositories
                             Concepto = modelo.Concepto + " - " + propiedad.Codigo,
                             Confirmado = true,
                             Monto = modelo.Monto,
-                            Activo = true
+                            Activo = true,
+                            MontoRef = modelo.Monto / _tasaActual,
+                            ValorDolar = _tasaActual                           
                         };
 
                         // validar num referencia repetido
@@ -1549,19 +1560,6 @@ namespace Prueba.Repositories
                                          where mc.IdCodCuenta == idCaja.IdCodCuenta
                                          select m;
 
-                            // calcular monto referencia
-                            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
-                            {
-                                return "No hay monedas registradas en el sistema!";
-                            }
-                            else if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-                            }
 
                             // disminuir saldo de la cuenta de CAJA
                             var monedaCuenta = (from m in _context.MonedaCuenta
@@ -1573,9 +1571,7 @@ namespace Prueba.Repositories
 
                             pago.FormaPago = false;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                             pago.SimboloRef = "$";
-                            pago.MontoRef = montoReferencia;
 
                             // registrar pago
                             // registrar pagoPropiedad
@@ -1605,7 +1601,9 @@ namespace Prueba.Repositories
                                 {
                                     foreach (var recibo in recibos)
                                     {
-                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+                                        
+                                        decimal pendientePagoRef = recibo.ReciboActual ? recibo.MontoRef - (recibo.Abonado/recibo.ValorDolar) : (recibo.TotalPagar/recibo.ValorDolar);
+                                        decimal pendientePago = pendientePagoRef * _tasaActual;
 
                                         if (pendientePago != 0 && pendientePago > montoPago)
                                         {
@@ -1617,6 +1615,7 @@ namespace Prueba.Repositories
                                             recibo.Abonado += montoPago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
+
                                         }
                                         else if (pendientePago != 0 && pendientePago == montoPago)
                                         {
@@ -1770,27 +1769,11 @@ namespace Prueba.Repositories
                                          join mc in _context.MonedaCuenta
                                          on m.IdMonedaCond equals mc.IdMoneda
                                          where mc.IdCodCuenta == idBanco.IdCodCuenta
-                                         select m;
-
-                            // calcular monto referencia
-                            if (moneda == null || monedaPrincipal == null || !monedaPrincipal.Any())
-                            {
-                                return "No hay monedas registradas en el sistema!";
-                            }
-                            else if (moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                montoReferencia = modelo.Monto / monedaPrincipal.First().ValorDolar;
-                            }
-                            else if (!moneda.First().Equals(monedaPrincipal.First()))
-                            {
-                                montoReferencia = modelo.Monto / moneda.First().ValorDolar;
-                            }
+                                         select m;                           
 
                             pago.FormaPago = true;
                             pago.SimboloMoneda = moneda.First().Simbolo;
-                            pago.ValorDolar = monedaPrincipal.First().ValorDolar;
-                            pago.SimboloRef = "$";
-                            pago.MontoRef = montoReferencia;
+                            pago.SimboloRef = "$";                            
 
                             // registrar pago
                             // registrar pagoPropiedad
@@ -1829,7 +1812,8 @@ namespace Prueba.Repositories
                                 {
                                     foreach (var recibo in recibos)
                                     {
-                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+                                        decimal pendientePagoRef = recibo.ReciboActual ? recibo.MontoRef - (recibo.Abonado / recibo.ValorDolar) : (recibo.TotalPagar / recibo.ValorDolar);
+                                        decimal pendientePago = pendientePagoRef * _tasaActual;
 
                                         if (pendientePago != 0 && pendientePago > montoPago)
                                         {
@@ -1991,7 +1975,7 @@ namespace Prueba.Repositories
                                 Comprobante = "",
                                 Fecha = modelo.Fecha,
                                 Monto = modelo.Monto,
-                                IdPropiedad = modelo.IdPropiedad
+                                IdPropiedad = modelo.IdPropiedad                               
                             };
 
                             _context.NotaCreditos.Add(nota);
@@ -2006,7 +1990,8 @@ namespace Prueba.Repositories
                                 {
                                     foreach (var recibo in recibos)
                                     {
-                                        decimal pendientePago = recibo.ReciboActual ? recibo.Monto - recibo.Abonado : recibo.TotalPagar;
+                                        decimal pendientePagoRef = recibo.ReciboActual ? recibo.MontoRef - (recibo.Abonado / recibo.ValorDolar) : (recibo.TotalPagar / recibo.ValorDolar);
+                                        decimal pendientePago = pendientePagoRef * _tasaActual;
 
                                         if (pendientePago != 0 && pendientePago > montoPago)
                                         {
@@ -2091,7 +2076,6 @@ namespace Prueba.Repositories
                 return ex.Message;
             }
         }
-
         public async Task<string> EliminarPagoPropietarioConfirmado(PagoPropiedad pagoPropiedad)
         {
             try
@@ -2203,6 +2187,35 @@ namespace Prueba.Repositories
             {
                 return "Error al eliminar Pago: " + ex.Message;
             }
+        }
+
+        public async Task<decimal> CalcularDeudaPropiedad(int idPropiedad)
+        {
+            decimal totalMontoRef = 0;
+            decimal acumMoraRef = 0;
+            decimal acumIndexRef = 0;
+            decimal totalPagarRef = 0;
+            decimal totalAbono = 0;
+            var propiedad = await _context.Propiedads.FindAsync(idPropiedad);
+
+            if (propiedad != null)
+            {
+                var recibos = await (from c in _context.ReciboCobros
+                                     where c.IdPropiedad == idPropiedad
+                                     where !c.Pagado
+                                     select c).ToListAsync();
+
+                foreach (var item in recibos)
+                {                   
+                    totalMontoRef += item.MontoRef;
+                    acumMoraRef += item.MontoMora / item.ValorDolar;
+                    acumIndexRef += item.MontoIndexacion / item.ValorDolar;
+                    totalAbono += item.Abonado / item.ValorDolar;
+                    totalPagarRef += item.MontoRef + (!item.ReciboActual ? ((item.MontoMora / item.ValorDolar) + (item.MontoIndexacion / item.ValorDolar)) : 0) - totalAbono;
+                }
+            }
+
+            return totalPagarRef;            
         }
     }
 }

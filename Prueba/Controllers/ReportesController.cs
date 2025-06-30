@@ -6,6 +6,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Prueba.Context;
+using Prueba.Models;
 using Prueba.Repositories;
 using Prueba.Services;
 using Prueba.ViewModels;
@@ -139,14 +140,10 @@ namespace Prueba.Controllers
                     && modelo.Propietarios != null && modelo.Propietarios.Any()
                     && modelo.Recibos != null && modelo.Recibos.Any())
                 {
-                    var data = new List<DeudoresDiarioVM>();
                     var dataRef = new List<DeudoresRefVM>();
 
                     foreach (var propiedad in modelo.Propiedades)
-                    {
-                        decimal totalMontoRef = 0;
-                        decimal acumMoraRef = 0;
-                        decimal acumIndexRef = 0;
+                    {                        
                         decimal totalPagarRef = 0;
 
                         var propietario = modelo.Propietarios.First(c => c.Id == propiedad.IdUsuario);
@@ -154,10 +151,16 @@ namespace Prueba.Controllers
 
                         foreach (var item in recibos)
                         {
-                            totalMontoRef += item.MontoRef;
+                            decimal acumMoraRef = 0;
+                            decimal acumIndexRef = 0;
+                            decimal totalAbono = 0;
+                            decimal totalMontoRef = 0;
+
                             acumMoraRef += item.MontoMora / item.ValorDolar;
                             acumIndexRef += item.MontoIndexacion / item.ValorDolar;
-                            totalPagarRef += item.MontoRef + (!item.ReciboActual ? ((item.MontoMora / item.ValorDolar) + (item.MontoIndexacion / item.ValorDolar)) : 0);
+                            totalAbono += item.Abonado / item.ValorDolar;
+                            totalMontoRef += item.ReciboActual ? item.MontoRef : (item.MontoRef + acumMoraRef + acumIndexRef - totalAbono);
+                            totalPagarRef += totalMontoRef;
                         }
 
                         dataRef.Add(new DeudoresRefVM()
@@ -166,7 +169,7 @@ namespace Prueba.Controllers
                             Propietario = propietario.FirstName,
                             CantRecibos = recibos.Count,
                             TotalRef = totalPagarRef,
-                            Total = totalMontoRef * _tasaActual,
+                            Total = totalPagarRef * _tasaActual,
                         });
                     }
 
@@ -302,13 +305,6 @@ namespace Prueba.Controllers
 
             return RedirectToAction("Dashboard", "Administrator");
         }
-
-        // reporte de cuentas por pagar PDF
-        // reporte de cuentas por pagar Excel
-
-        // reporte de cuentas por cobrar PDF
-        // reporte de cuentas por cobrar Excel
-
 
     }
 }

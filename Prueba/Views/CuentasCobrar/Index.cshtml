@@ -17,12 +17,14 @@
     </div>
     <div class="d-sm-flex align-items-center justify-content-around mb-4">
         
-        <button type="button" class="d-sm-inline-block btn btn-sm btn-danger shadow-sm" id="CuentasCobrar">Crear pdf</button>
+        <a asp-action="FacturasPendientes" asp-controller="CuentasCobrar" 
+        class="d-sm-inline-block btn btn-sm btn-danger shadow-sm">Crear pdf</a>
 
-        <button id="CuentasCobrarExcel" class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+        <a asp-action="FacturasPendientesExcel" asp-controller="CuentasCobrar"
+            class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar
             Excel
-        </button>
+        </a>
     </div>
 
     <!-- Content Row -->

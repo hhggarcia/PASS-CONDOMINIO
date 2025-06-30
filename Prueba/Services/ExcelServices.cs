@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Prueba.Context;
+using Prueba.Models;
 using Prueba.ViewModels;
 using SQLitePCL;
 using System.Data;
@@ -110,5 +113,7 @@ namespace Prueba.Services
                 return ex.Message;
             }            
         }
+
+        
     }
 }

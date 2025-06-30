@@ -1,0 +1,174 @@
+﻿@model Prueba.ViewModels.ClienteFacturasPendientesVM
+
+@{
+    ViewData["Title"] = "Detalle Facturas";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+    var pagoRecibido = new PagoRecibido();
+    decimal totalGeneralCobrar = 0;
+}
+
+
+<style>
+    .collapse {
+    transition: height 0.2s ease !important; /* Ajusta la duración de la animación aquí */
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a class="btn btn-light mb-3" asp-controller="Clientes"
+        asp-action="ClientesFacturasPendientes">
+            Volver
+        </a>
+        <a class="btn btn-light mb-3" asp-controller="Clientes"
+        asp-action="PdfFacturasPendientes"
+        asp-route-id="@Model.Cliente.IdCliente">
+            PDF
+        </a>
+        <a asp-controller="Clientes"
+           asp-action="ExcelFacturasPendientes"
+           asp-route-id="@Model.Cliente.IdCliente"
+        class="d-sm-inline-block btn btn-sm btn-success shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Generar
+            Excel
+        </a>
+    </div>
+
+    @if (Model.Cliente != null)
+    {
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <!-- DataTales Example -->
+                <div class="card shadow mb-4 bg-content-bg">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            @Model.Cliente.Nombre
+                        </h6>
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#properties-@Model.Cliente.IdCliente">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="properties-@Model.Cliente.IdCliente" class="collapse">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>RIF</th>                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@Model.Cliente.Nombre</td>
+                                            <td>@Model.Cliente.Rif</td>                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table text-center"
+                                id="dataTable"
+                                width="100%"
+                                cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Factura</th>
+                                            <th>Base Imponible</th>
+                                            <th>IVA 16%</th>
+                                            <th>Monto Factura</th>
+                                            <th>Ret. IVA</th>
+                                            <th>Ret. ISLR</th>
+                                            <th>Total a Cobrar</th>
+                                            <th>Pago Recibido</th>
+                                            <th>Por Cobrar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.FacturasPendientes.Any())
+                                        {
+                                            @foreach (var factura in Model.FacturasPendientes)
+                                            {
+                                                var totalCobrar = factura.MontoTotal -
+                                                (factura.LibroVenta.Any() ? factura.LibroVenta.First().RetIva : 0) -
+                                                (factura.LibroVenta.Any() ? factura.LibroVenta.First().RetIslr : 0);
+
+                                                if (Model.PagosFacturas.ContainsKey(factura.NumFactura.ToString()))
+                                                {
+                                                    pagoRecibido = Model.PagosFacturas[factura.NumFactura.ToString()];
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        @factura.NumFactura
+                                                    </td>
+                                                    <td>
+                                                        @factura.SubTotal
+                                                    </td>
+                                                    <td>
+                                                        @factura.Iva
+                                                    </td>
+                                                    <td>
+                                                        @factura.MontoTotal
+                                                    </td>                                                  
+                                                    <td>
+                                                        @(factura.LibroVenta.Any() ? factura.LibroVenta.First().RetIva : 0)
+                                                    </td>
+                                                    <td>
+                                                        @(factura.LibroVenta.Any() ? factura.LibroVenta.First().RetIslr : 0)
+                                                    </td>
+                                                    <td>
+                                                        @totalCobrar.ToString("N")
+                                                    </td>
+                                                    @if (pagoRecibido != null)
+                                                    {
+                                                        <td>
+                                                            @pagoRecibido.Monto.ToString("N")
+                                                        </td>
+                                                    }
+
+                                                    @if (Model.Cliente.IdRetencionIva != null)
+                                                    {
+                                                        factura.MontoTotal -= factura.CompRetIvaClientes.Any() ? factura.CompRetIvaClientes.First().IvaRetenido : 0;
+                                                    }
+
+                                                    @if (Model.Cliente.IdRetencionIslr != null)
+                                                    {
+                                                        factura.MontoTotal -= factura.ComprobanteRetencionClientes.Any() ? factura.ComprobanteRetencionClientes.First().ValorRetencion : 0;
+                                                    }
+
+                                                    <td>
+                                                        @(factura.MontoTotal - (pagoRecibido != null ? pagoRecibido.Monto : 0))
+                                                    </td>
+                                                </tr>
+                                                totalGeneralCobrar += factura.MontoTotal - (pagoRecibido != null ? pagoRecibido.Monto : 0);
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <table class="table text-center col-10 mx-auto" width="80%" cellpadding="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Total a Cobrar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@totalGeneralCobrar.ToString("N")</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+}
