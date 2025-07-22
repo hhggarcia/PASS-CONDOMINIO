@@ -4505,8 +4505,8 @@ namespace Prueba.Services
                                     columns.RelativeColumn();
 
                                     // Abonado
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    //columns.RelativeColumn();
+                                    //columns.RelativeColumn();
 
                                     // Total a pagar
                                     columns.RelativeColumn();
@@ -4525,8 +4525,8 @@ namespace Prueba.Services
                                     header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
                                    .Padding(5).Text("Deuda $").FontColor("#607080").Bold().FontSize(8);
 
-                                    header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(5).Text("Abonado $").FontColor("#607080").Bold().FontSize(8);
+                                    //header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                    //.Padding(5).Text("Abonado $").FontColor("#607080").Bold().FontSize(8);
 
                                     header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
                                    .Padding(5).Text("Total a Pagar $").FontColor("#607080").Bold().FontSize(8);
@@ -4541,6 +4541,9 @@ namespace Prueba.Services
 
                                 decimal deudaT = 0;
                                 decimal abonadoT = 0;
+
+                                decimal pendienteDePago = 0;
+
                                 foreach (var item in recibosPendientes)
                                 {
                                     decimal acumMoraRef = 0;
@@ -4552,18 +4555,21 @@ namespace Prueba.Services
                                     acumIndexRef += item.MontoIndexacion / item.ValorDolar;
                                     totalAbono += item.Abonado / item.ValorDolar;
                                     totalMontoRef += item.MontoRef + acumMoraRef + acumIndexRef - totalAbono;
-                                    deudaT += totalMontoRef;
+
+                                    pendienteDePago += item.TotalPagar / item.ValorDolar;
+
+                                    deudaT += pendienteDePago;
                                     abonadoT += totalAbono;
                                 }
 
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text(deudaT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text(pendienteDePago.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
-                                tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                //tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                //.Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
                                                             
                                 tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                .Padding(2).Text((deudaT + modelo.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                .Padding(2).Text((pendienteDePago + modelo.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
                             });
 
                             x.Item().Column(col =>
@@ -4938,8 +4944,8 @@ namespace Prueba.Services
                                         columns.RelativeColumn();
 
                                         // Abonado
-                                        columns.RelativeColumn();
-                                        columns.RelativeColumn();
+                                        //columns.RelativeColumn();
+                                        //columns.RelativeColumn();
 
                                         // Total a pagar
                                         columns.RelativeColumn();
@@ -4958,8 +4964,8 @@ namespace Prueba.Services
                                         header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
                                        .Padding(5).Text("Deuda $").FontColor("#607080").Bold().FontSize(8);
 
-                                        header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                        .Padding(5).Text("Abonado $").FontColor("#607080").Bold().FontSize(8);
+                                        //header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                        //.Padding(5).Text("Abonado $").FontColor("#607080").Bold().FontSize(8);
 
                                         header.Cell().ColumnSpan(2).BorderTop(1).BorderBottom(1).Border(0).BorderColor("#D9D9D9").AlignRight()
                                        .Padding(5).Text("Total a Pagar $").FontColor("#607080").Bold().FontSize(8);
@@ -4974,6 +4980,8 @@ namespace Prueba.Services
 
                                     decimal deudaT = 0;
                                     decimal abonadoT = 0;
+                                    decimal pendienteDePago = 0;
+
                                     foreach (var item in recibosPendientes)
                                     {
                                         decimal acumMoraRef = 0;
@@ -4985,18 +4993,20 @@ namespace Prueba.Services
                                         acumIndexRef += item.MontoIndexacion / item.ValorDolar;
                                         totalAbono += item.Abonado / item.ValorDolar;
                                         totalMontoRef += item.MontoRef + acumMoraRef + acumIndexRef - totalAbono;
-                                        deudaT += totalMontoRef;
+
+                                        pendienteDePago += item.TotalPagar / item.ValorDolar;
+                                        deudaT += pendienteDePago;
                                         abonadoT += totalAbono;
                                     }
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text(deudaT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    .Padding(2).Text(pendienteDePago.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                                    //tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
+                                    //.Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                     tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text(abonadoT.ToString("N")).FontColor("#607080").Bold().FontSize(8);
-
-                                    tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignRight()
-                                    .Padding(2).Text((deudaT + reciboDetalle.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    .Padding(2).Text((pendienteDePago + reciboDetalle.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
 
                                 });
 

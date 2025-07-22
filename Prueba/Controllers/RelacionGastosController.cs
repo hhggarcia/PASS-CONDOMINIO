@@ -1390,5 +1390,43 @@ namespace Prueba.Controllers
             return RedirectToAction("Index");
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">Id recibo propiedad</param>
+        /// <returns></returns>
+        public async Task<IActionResult> ComprobanteReciboPagadoPDF(int id)
+        {
+
+            var recibo = await _context.ReciboCobros
+                .Include(c => c.PagosRecibos)
+                .FirstOrDefaultAsync(c => c.IdReciboCobro == id);
+
+            if (recibo != null)
+            {
+                var propiedad = await _context.Propiedads
+                    .Include(c => c.IdUsuarioNavigation)
+                    .FirstOrDefaultAsync(c => c.IdPropiedad == recibo.IdPropiedad);
+
+                var pagosRecibidos = (from c in recibo.PagosRecibos
+                                     join d in _context.PagoRecibidos.Include(c => c.ReferenciasPrs)
+                                     on c.IdPago equals d.IdPagoRecibido
+                                     select d).ToList();
+
+                var data = _servicesPdfReportes.ReciboPagadoPDF(new ReciboPagadoVM()
+                {
+                    Recibo = recibo,
+                    Propiedad = propiedad,
+                    Pago = pagosRecibidos
+                });
+
+                Stream stream = new MemoryStream(data);
+                return File(stream, "application/pdf", "ComprobanteRecibo_" + recibo.Mes +".pdf");
+            }
+
+            return View("PagosConfirmados");
+
+        }
     }
 }

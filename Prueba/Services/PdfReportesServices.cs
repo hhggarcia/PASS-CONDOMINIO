@@ -24,6 +24,7 @@ namespace Prueba.Services
         byte[] EstadoCuentas(List<EstadoCuentasVM> modelo);
         byte[] FacturasPendientes(List<ClienteFacturasPendientesVM> model);
         byte[] HistoricoPagosPropiedadPDF(HistoricoPropiedadPagosVM model);
+        byte[] ReciboPagadoPDF(ReciboPagadoVM modelo);
         Task<byte[]> ReporteCompIslr(IEnumerable<ComprobanteRetencion> comprobantes, int id);
         Task<byte[]> ReporteCompIva(IEnumerable<CompRetIva> comprobantes, int id);
         byte[] ReporteHistorico(List<EstadoCuentasVM> modelo);
@@ -2430,6 +2431,148 @@ namespace Prueba.Services
             })
          .GeneratePdf();
 
+            return data;
+        }
+
+        public byte[] ReciboPagadoPDF(ReciboPagadoVM modelo)
+        {
+            var data = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.Header().ShowOnce().Row(row =>
+                    {
+                        row.RelativeItem().Padding(10).Column(col =>
+                        {
+                            col.Item().MaxWidth(100).MaxHeight(60).Image("wwwroot/images/yllenAzul.png");
+                            col.Item().PaddingTop(10).Text("Fecha: " + DateTime.Today.ToString("dd/MM/yyyy")).Bold().FontColor("#004581").Bold().FontSize(8);
+                            col.Item().Text("Recibo: " + modelo.Recibo.Mes).Bold().FontColor("#004581").Bold().FontSize(8);
+                            col.Item().Text("Propiedad: " + modelo.Propiedad.Codigo).FontColor("#004581").Bold().FontSize(8);
+
+                        });
+                        row.RelativeItem().Padding(10).Column(col =>
+                        {
+                            col.Item().Text("CONSTANCIA DE PAGO").Bold().FontSize(12).FontColor("#004581").Bold();
+                        });
+                    });
+
+                    page.Content()
+                        .PaddingVertical(1, Unit.Centimetre)
+                        .Column(x =>
+                        {
+                            x.Spacing(10);
+                            x.Item().AlignCenter().Text("DATOS RECIBO").FontColor("#004581").Bold().FontSize(8);
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                tabla.Cell().Padding(5).Text("Mes").FontColor("#607080").Bold().FontSize(8);
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text(modelo.Recibo.Mes).FontColor("#607080").Bold().FontSize(8);
+
+                                tabla.Cell().Padding(5).Text("MONTO $").FontColor("#607080").Bold().FontSize(8);
+                                tabla.Cell().Padding(5).Text("");
+                                tabla.Cell().Padding(5).Text((modelo.Recibo.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                                                
+                            });
+
+                            x.Item().AlignCenter().Text("DATOS PAGO").FontColor("#004581").Bold().FontSize(8);
+                            x.Item().Border(0.5f).BorderColor("#D9D9D9").Table(tabla =>
+                            {
+                                tabla.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+                                var totalPagos = modelo.Pago.Sum(c => c.MontoRef);
+
+                                foreach (var item in modelo.Pago)
+                                {
+                                    tabla.Cell().Text("Forma de Pago").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().Text("");
+                                    if (item.ReferenciasPrs.Any())
+                                    {
+                                        tabla.Cell().Text("Transferencia").FontColor("#607080").Bold().FontSize(8);
+                                        tabla.Cell().Text("# Referencia").FontColor("#607080").Bold().FontSize(8);
+                                        tabla.Cell().Text("");
+                                        tabla.Cell().Text(item.ReferenciasPrs.First().NumReferencia.ToString()).FontColor("#607080").Bold().FontSize(8);
+                                    }
+                                    else
+                                    {
+                                        tabla.Cell().Text("Efectivo").FontColor("#607080").Bold().FontSize(8);
+                                    }
+
+                                    tabla.Cell().Text("Fecha").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().Text("");
+                                    tabla.Cell().Text(item.Fecha.ToString("dd/MM/yyyy")).FontColor("#607080").Bold().FontSize(8);
+
+                                    tabla.Cell().Text("Cuenta").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().Text("");
+                                    if (item.FormaPago)
+                                    {
+                                        var banco = _context.SubCuenta.Find(Convert.ToInt32(item.ReferenciasPrs.First().Banco));
+                                        tabla.Cell().Text(banco != null ? banco.Descricion : "").FontColor("#607080").Bold().FontSize(8);
+
+                                    }
+                                    else
+                                    {
+                                        tabla.Cell().Text("CAJA EFECTIVO").FontColor("#607080").Bold().FontSize(8);
+
+                                    }
+
+                                    tabla.Cell().Text("Monto").FontColor("#607080").Bold().FontSize(8);
+                                    tabla.Cell().Text("");
+                                    tabla.Cell().Text((item.MontoRef).ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                                    tabla.Cell().ColumnSpan(3).BorderBottom(1).Text("");
+
+                                }
+
+                                tabla.Cell().Text("Total Pagos").FontColor("#607080").Bold().FontSize(8);
+                                tabla.Cell().Text("");
+                                tabla.Cell().Text(totalPagos.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                            });
+
+                            x.Item().PaddingTop(20).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                    columns.RelativeColumn();
+                                });
+
+
+                                table.Cell().Padding(5).Text("Elaborado por:").FontColor("#607080").Bold().FontSize(8);
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("");
+
+                                table.Cell().Padding(5).Text("Karina Lopez").FontColor("#607080").Bold().FontSize(8);
+                                table.Cell().Padding(5).Text("");
+                                table.Cell().Padding(5).Text("");
+                            });
+                        });
+
+                    page.Footer()
+                        .AlignLeft()
+                        .Text(x =>
+                        {
+                            x.Span("Software desarrollado por: Password Technology").FontSize(8);
+                        });
+                });
+            })
+            .GeneratePdf();
             return data;
         }
     }
