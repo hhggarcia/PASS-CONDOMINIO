@@ -205,27 +205,41 @@ namespace Prueba.Repositories
 
             if (itemLibroCompra != null)
             {
+                var compRetIva = _context.CompRetIvas.FirstOrDefault(c => c.IdFactura == modelo.Factura.IdFactura);
+                var compRet = _context.ComprobanteRetencions.FirstOrDefault(c => c.IdFactura == modelo.Factura.IdFactura);
+
                 if (modelo.retencionesIva && !modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIva;
-                    pago.Monto -= itemLibroCompra.RetIva;
+
+                    if (compRetIva != null)
+                    {
+                        pago.Monto -= itemLibroCompra.RetIva;
+                    }
 
                     // comprobante de retencion de iva
                 }
                 else if (!modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIslr;
-                    pago.Monto -= itemLibroCompra.RetIslr;
+
+                    if (compRet != null)
+                    {
+                        pago.Monto -= itemLibroCompra.RetIslr;
+                    }
 
                     // comprobante de retencion de islr
                 }
                 else if (modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
-                    pago.Monto -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
 
                     // comprobante de retencion de iva
                     // comprobante de retencion de islr
+                    if (compRet != null && compRetIva != null)
+                    {
+                        pago.Monto -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+                    }
                 }
             }
 
@@ -490,7 +504,6 @@ namespace Prueba.Repositories
                                 //var anticipo = await _context.Anticipos.FindAsync(id);
                                 if (anticipo != null)
                                 {
-                                    anticipo.Activo = false;
                                     PagoFactura pagoFactura = new PagoFactura
                                     {
                                         IdPagoEmitido = pago.IdPagoEmitido,
@@ -1107,12 +1120,12 @@ namespace Prueba.Repositories
 
                         if (modelo.AnticiposIds.Any())
                         {
-                            foreach (var id in modelo.AnticiposIds)
+                            foreach (var anticipo in listAnticipos)
                             {
-                                var anticipo = await _context.Anticipos.FindAsync(id);
+                                //var anticipo = await _context.Anticipos.FindAsync(id);
                                 if (anticipo != null)
                                 {
-                                    anticipo.Activo = false;
+                                    //anticipo.Activo = false;
                                     PagoFactura pagoFactura = new PagoFactura
                                     {
                                         IdPagoEmitido = pago.IdPagoEmitido,

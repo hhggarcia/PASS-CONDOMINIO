@@ -1808,22 +1808,32 @@ namespace Prueba.Services
 
                                 if (comprobanteVM.retencionesIslr && retIslr != null)
                                 {
-                                    tabla.Cell().Padding(5).Text("Retención ISLR Decreto 1808 Art.9 numeral " + retIslr.Tarifa.ToString() + "%").FontColor("#607080").Bold().FontSize(8);
-                                    tabla.Cell().Padding(5).Text("");
-                                    tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    var comprobanteRet = _context.ComprobanteRetencions.FirstOrDefault(c => c.IdFactura == comprobanteVM.Factura.IdFactura);
 
-                                    comprobanteVM.Factura.MontoTotal -= comprobanteVM.Islr;
-                                    //comprobanteVM.Pago.Monto -= comprobanteVM.Islr;
+                                    if (comprobanteRet != null)
+                                    {
+                                        tabla.Cell().Padding(5).Text("Retención ISLR Decreto 1808 Art.9 numeral " + retIslr.Tarifa.ToString() + "%").FontColor("#607080").Bold().FontSize(8);
+                                        tabla.Cell().Padding(5).Text("");
+                                        tabla.Cell().Padding(5).Text(comprobanteVM.Islr.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                                        comprobanteVM.Factura.MontoTotal -= comprobanteVM.Islr;
+                                        //comprobanteVM.Pago.Monto -= comprobanteVM.Islr;
+                                    }
                                 }
 
                                 if (comprobanteVM.retencionesIva && retIva != null)
                                 {
-                                    tabla.Cell().Padding(5).Text("Retención IVA " + retIva.Porcentaje.ToString() + "%").FontColor("#607080").Bold().FontSize(8);
-                                    tabla.Cell().Padding(5).Text("");
-                                    tabla.Cell().Padding(5).Text(comprobanteVM.Iva.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+                                    var comprobanteRet = _context.CompRetIvas.FirstOrDefault(c => c.IdFactura == comprobanteVM.Factura.IdFactura);
 
-                                    comprobanteVM.Factura.MontoTotal -= comprobanteVM.Iva;
-                                    //comprobanteVM.Pago.Monto -= comprobanteVM.Iva;
+                                    if (comprobanteRet != null)
+                                    {
+                                        tabla.Cell().Padding(5).Text("Retención IVA " + retIva.Porcentaje.ToString() + "%").FontColor("#607080").Bold().FontSize(8);
+                                        tabla.Cell().Padding(5).Text("");
+                                        tabla.Cell().Padding(5).Text(comprobanteVM.Iva.ToString("N")).FontColor("#607080").Bold().FontSize(8);
+
+                                        comprobanteVM.Factura.MontoTotal -= comprobanteVM.Iva;
+                                        //comprobanteVM.Pago.Monto -= comprobanteVM.Iva;
+                                    }
                                 }
 
                                 tabla.Cell().Padding(5).Text("");
