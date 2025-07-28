@@ -11,9 +11,9 @@ public partial class Reserva
 
     public int IdArea { get; set; }
 
-    public string TipoEvento { get; set; } = null!;
+    public string TipoEvento { get; set; } = string.Empty;
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public bool Activo { get; set; }
 

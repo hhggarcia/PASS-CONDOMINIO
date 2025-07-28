@@ -17,7 +17,7 @@ public partial class PagoRecibido
 
     public int IdSubCuenta { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public bool Confirmado { get; set; }
 
@@ -25,9 +25,9 @@ public partial class PagoRecibido
 
     public decimal MontoRef { get; set; }
 
-    public string SimboloMoneda { get; set; } = null!;
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public string SimboloRef { get; set; } = null!;
+    public string SimboloRef { get; set; } = string.Empty;
 
     public byte[]? Imagen { get; set; }
 

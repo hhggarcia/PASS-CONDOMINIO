@@ -9,7 +9,7 @@ public partial class CuotasEspeciale
 
     public int IdCondominio { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public int CantidadCuotas { get; set; }
 
@@ -27,9 +27,9 @@ public partial class CuotasEspeciale
 
     public decimal ValorDolar { get; set; }
 
-    public string SimboloMoneda { get; set; } = null!;
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public string SimboloRef { get; set; } = null!;
+    public string SimboloRef { get; set; } = string.Empty;
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 

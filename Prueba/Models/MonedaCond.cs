@@ -13,7 +13,7 @@ public partial class MonedaCond
 
     public bool Princinpal { get; set; }
 
-    public string Simbolo { get; set; } = null!;
+    public string Simbolo { get; set; } = string.Empty;
 
     /// <summary>
     /// Valor de la moneda respecto al dolar

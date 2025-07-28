@@ -249,6 +249,9 @@ public partial class NuevaAppContext : DbContext
 
             entity.Property(e => e.Detalle).HasMaxLength(50);
             entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.MontoUtilizado)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Saldo).HasColumnType("decimal(18, 2)");
 
             entity.HasOne(d => d.IdCodCuentaNavigation).WithMany(p => p.Anticipos)
@@ -1782,7 +1785,7 @@ public partial class NuevaAppContext : DbContext
             entity.Property(e => e.SimboloMoneda).HasMaxLength(2);
             entity.Property(e => e.SimboloRef).HasMaxLength(2);
             entity.Property(e => e.TotalPagar).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.ValorDolar).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.ValorDolar).HasColumnType("decimal(18, 2)");
 
             entity.HasOne(d => d.IdPropiedadNavigation).WithMany(p => p.ReciboCobros)
                 .HasForeignKey(d => d.IdPropiedad)

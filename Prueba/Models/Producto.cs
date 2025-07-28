@@ -7,7 +7,7 @@ public partial class Producto
 {
     public int IdProducto { get; set; }
 
-    public string Nombre { get; set; } = null!;
+    public string Nombre { get; set; } = string.Empty;
 
     public int IdCondominio { get; set; }
 
@@ -15,7 +15,7 @@ public partial class Producto
 
     public int TipoProducto { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public bool Disponible { get; set; }
 

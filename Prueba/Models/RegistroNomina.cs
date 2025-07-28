@@ -15,7 +15,7 @@ public partial class RegistroNomina
 
     public short Dias { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public decimal Asignaciones { get; set; }
 

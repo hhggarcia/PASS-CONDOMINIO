@@ -11,7 +11,7 @@ public partial class LdiarioGlobal
 
     public DateTime Fecha { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public decimal Monto { get; set; }
 
@@ -23,9 +23,9 @@ public partial class LdiarioGlobal
 
     public decimal ValorDolar { get; set; }
 
-    public string SimboloMoneda { get; set; } = null!;
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public string SimboloRef { get; set; } = null!;
+    public string SimboloRef { get; set; } = string.Empty;
 
     public bool Activo { get; set; }
 

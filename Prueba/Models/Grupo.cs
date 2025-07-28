@@ -7,9 +7,9 @@ public partial class Grupo
 {
     public short Id { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
-    public string Codigo { get; set; } = null!;
+    public string Codigo { get; set; } = string.Empty;
 
     public short IdClase { get; set; }
 

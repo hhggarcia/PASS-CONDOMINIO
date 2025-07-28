@@ -7,7 +7,7 @@ public partial class Iva
 {
     public int Id { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = string.Empty;
 
     public decimal Porcentaje { get; set; }
 

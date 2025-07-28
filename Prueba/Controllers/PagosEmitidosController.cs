@@ -662,12 +662,12 @@ namespace Prueba.Controllers
         public async Task<IActionResult> ObtenerAnticiposPorProveedor(int proveedorId)
         {
             var anticipos = await _context.Anticipos
-           .Where(c => c.IdProveedor == proveedorId && c.Activo != false)
+           .Where(c => c.IdProveedor == proveedorId && c.Activo)
            .ToListAsync();
 
             var anticiposItems = anticipos.Select(f => new { Value = f.IdAnticipo, 
-                Text = "Ref. " + f.Numero + " Saldo " + f.Saldo + " Bs", 
-                Precio = f.Saldo,
+                Text = "Ref. " + f.Numero + " Disponible " + (f.Saldo - f.MontoUtilizado) + " Bs", 
+                Precio = f.Saldo - f.MontoUtilizado,
                 Fecha = f.Fecha.ToString("dd/MM/yyyy")
             })
                 .ToList();

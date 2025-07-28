@@ -15,7 +15,7 @@ public partial class ReciboNomina
 
     public bool Periodo { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public decimal PagoTotal { get; set; }
 

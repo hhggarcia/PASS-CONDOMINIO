@@ -26,11 +26,11 @@
                 <div class="card-body">
 
                     @if (Model.SubCuentasBancos != null
-                    && Model.SubCuentasBancos.Count > 0
-                    && Model.SubCuentasCaja != null
-                    && Model.SubCuentasCaja.Count > 0
-                    && Model.SubCuentasGastos != null
-                    && Model.SubCuentasGastos.Count > 0)
+                                        && Model.SubCuentasBancos.Count > 0
+                                        && Model.SubCuentasCaja != null
+                                        && Model.SubCuentasCaja.Count > 0
+                                        && Model.SubCuentasGastos != null
+                                        && Model.SubCuentasGastos.Count > 0)
                     {
                         <!-- Inicio -->
 
@@ -456,29 +456,20 @@
                 var montoInput = parseFloat($(this).val());
                 var montoTotal = montoInput + montoAnticipo;
 
-                // if (montoInput > montoFacturaOriginal && montoAnticipo==0) {
-                //     // Si el monto ingresado es mayor, mostrar un mensaje o deshacer la edición
-                //     alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                //     $(this).val(montoFacturaOriginal);
-                // }
-                if (montoFacturaOriginal < montoTotal) {
-                    $('#validatonMonto').text('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                if (montoInput < 0) {
+                    $('#validatonMonto').text('El monto no puede ser menor a 0');
                     // alert('El monto ingresado no puede ser mayor al monto de la factura.');
-                    if (montoAnticipo != 0 && selectOptionAnticipo) {
-                        var precioTotal = montoFacturaOriginal - montoAnticipo;
-                        $('#montoInput').val(precioTotal);
-                    } else {
-                        $(this).val(montoFacturaOriginal);
-                    }
+                    $(this).val(montoFacturaOriginal);
+
+                    // if (montoAnticipo != 0 && selectOptionAnticipo) {
+                    //     var precioTotal = montoFacturaOriginal - montoAnticipo;
+                    //     $('#montoInput').val(precioTotal);
+                    // } else {
+                    //     $(this).val(montoFacturaOriginal);
+                    // }
                 } else {
                     $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
                 }
-                // if (montoAnticipo != 0 && montoInput != montoAnticipo){
-                //     alert('El monto ingresado no puede ser diferente al del anticipo.');
-                //     // $(this).val(montoAnticipo);
-                //     $('#montoInput').val(montoAnticipo);
-
-                // }
             });
 
             $('#basicSelectAnticipos').change(function () {
@@ -571,16 +562,26 @@
                 //alert('La suma de los anticipos seleccionados es: ' + suma);
                 montoAnticipo = suma;
 
-                if (montoAnticipo > montoFacturaOriginal) {
-                    $('#validatonMonto').text('El monto de los anticipos es mayor a la factura, por favor seleccione otra opción.');
-                    // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
-                    $('#montoInput').val(montoFacturaOriginal);
-                    //$('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+                var precioTotal = montoFacturaOriginal - montoAnticipo;
+
+                if(precioTotal <= 0){
+                    $('#montoInput').val(0);
+                    $('#validatonMonto').text('');
                 } else {
-                    var precioTotal = montoFacturaOriginal - montoAnticipo;
                     $('#montoInput').val(precioTotal);
-                    $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+                    $('#validatonMonto').text('');
                 }
+
+                // if (montoAnticipo > montoFacturaOriginal) {
+                //     $('#validatonMonto').text('El monto de los anticipos es mayor a la factura, por favor seleccione otra opción.');
+                //     // alert('El monto del anticipo es mayor a la factura, por favor seleccione otra opción.');
+                //     $('#montoInput').val(montoFacturaOriginal);
+                //     //$('#basicSelect').val('Seleccione un anticipo.'); // Restablecer el valor del select
+                // } else {
+                //     var precioTotal = montoFacturaOriginal - montoAnticipo;
+                //     $('#montoInput').val(precioTotal);
+                //     $('#validatonMonto').text(''); // Limpiar el mensaje de validación si no hay errores
+                // }
             }
 
         });
@@ -615,7 +616,7 @@
                 // });
 
             } else {
-                text += "<h3>No existen Anticipos para este proveedor</h3>";
+                text += "<h5>No existen Anticipos para este proveedor</h5>";
                 container.insertAdjacentHTML('beforeend', text);
             }
         }

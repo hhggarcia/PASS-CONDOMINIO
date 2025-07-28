@@ -21,6 +21,8 @@ public partial class Anticipo
 
     public int IdCodCuenta { get; set; }
 
+    public decimal? MontoUtilizado { get; set; }
+
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 
     public virtual Proveedor IdProveedorNavigation { get; set; } = null!;

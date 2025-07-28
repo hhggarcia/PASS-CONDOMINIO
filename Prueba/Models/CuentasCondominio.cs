@@ -13,7 +13,7 @@ public partial class CuentasCondominio
 
     public int NumGrupo { get; set; }
 
-    public string NombreGrupo { get; set; } = null!;
+    public string NombreGrupo { get; set; } = string.Empty;
 
     public virtual CodigoCuentasGlobal IdCodCuentaNavigation { get; set; } = null!;
 

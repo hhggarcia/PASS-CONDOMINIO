@@ -9,7 +9,7 @@ public partial class GrupoGasto
 
     public short NumGrupo { get; set; }
 
-    public string NombreGrupo { get; set; } = null!;
+    public string NombreGrupo { get; set; } = string.Empty;
 
     public int IdCondominio { get; set; }
 

@@ -7,7 +7,7 @@ public partial class Percepcion
 {
     public int IdPercepcion { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public decimal Monto { get; set; }
 

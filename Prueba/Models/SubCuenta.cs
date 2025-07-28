@@ -7,9 +7,9 @@ public partial class SubCuenta
 {
     public int Id { get; set; }
 
-    public string Descricion { get; set; } = null!;
+    public string Descricion { get; set; } = string.Empty;
 
-    public string Codigo { get; set; } = null!;
+    public string Codigo { get; set; } = string.Empty;
 
     public short IdCuenta { get; set; }
 

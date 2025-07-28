@@ -9,13 +9,13 @@ public partial class Proveedor
 
     public int IdCondominio { get; set; }
 
-    public string Nombre { get; set; } = null!;
+    public string Nombre { get; set; } = string.Empty;
 
-    public string Direccion { get; set; } = null!;
+    public string Direccion { get; set; } = string.Empty;
 
-    public string Telefono { get; set; } = null!;
+    public string Telefono { get; set; } = string.Empty;
 
-    public string Rif { get; set; } = null!;
+    public string Rif { get; set; } = string.Empty;
 
     public int? IdRetencionIslr { get; set; }
 
@@ -23,7 +23,7 @@ public partial class Proveedor
 
     public decimal Saldo { get; set; }
 
-    public string Representante { get; set; } = null!;
+    public string Representante { get; set; } = string.Empty;
 
     public bool ContribuyenteEspecial { get; set; }
 

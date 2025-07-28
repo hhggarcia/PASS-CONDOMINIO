@@ -294,6 +294,7 @@ namespace Prueba.Repositories
                     //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     pago.SimboloRef = "$";
                     //pago.MontoRef = montoReferencia;
+                    var listAnticipos = new List<Anticipo>();
 
                     // validar si existe anticipo
                     if (!modelo.AnticiposIds.Any())
@@ -341,61 +342,108 @@ namespace Prueba.Repositories
                     }
                     else
                     {
-                        var listAnticipos = new List<Anticipo>();
                         foreach(var id in modelo.AnticiposIds)
                         {
                             var ex = await _context.Anticipos.FindAsync(id);
                             if (ex != null)
                             {
                                 listAnticipos.Add(ex);
+                                // calcular monto disponible
+                                var montoDisponible = ex.Saldo - ex.MontoUtilizado;
+                                // auxiliar de monto a pagar de la factura
+                                var montoFactura = factura.MontoTotal - factura.Abonado;
+                                // comparacion
+                                // a == b
+                                // a > b
+                                // a < b
+                                if (montoDisponible == montoFactura)
+                                {
+                                    factura.Pagada = true;
+                                    factura.EnProceso = false;
+                                    factura.Abonado += (decimal)montoDisponible;
+                                    itemCuentasPagar.Status = "Cancelada";
+                                    ex.MontoUtilizado += montoDisponible;
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+                                    break;
+                                }
+                                else if (montoDisponible > montoFactura)
+                                {
+                                    factura.Pagada = true;
+                                    factura.EnProceso = false;
+                                    factura.Abonado += montoFactura;
+                                    itemCuentasPagar.Status = "Cancelada";
+                                    ex.MontoUtilizado += montoFactura;
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+                                    break;
+                                } else if(montoDisponible < montoFactura)
+                                {
+                                    factura.Abonado += (decimal)montoDisponible;
+                                    ex.MontoUtilizado += montoDisponible;
+
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+                                } else
+                                {
+                                    return "Ha ocurrido un error con los anticipos seleccionados!";
+                                }                                
                             }
                         }
-                        decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
+                        //decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
 
-                        if (factura.Abonado == 0)
-                        {
-                            if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + montoAnticipos;
+                        //if (factura.Abonado == 0)
+                        //{
+                        //    if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + montoAnticipos;
 
-                            }
-                            else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + montoAnticipos;
-                                factura.EnProceso = false;
-                                factura.Pagada = true;
-                                itemCuentasPagar.Status = "Cancelada";
+                        //    }
+                        //    else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + montoAnticipos;
+                        //        factura.EnProceso = false;
+                        //        factura.Pagada = true;
+                        //        itemCuentasPagar.Status = "Cancelada";
 
-                            }
-                            else
-                            {
-                                return "El monto más el anticipo es mayor al total de la Factura!";
-                            }
-                        }
-                        else
-                        {
-                            if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
+                        //    }
+                        //    else
+                        //    {
+                        //        return "El monto más el anticipo es mayor al total de la Factura!";
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
 
-                            }
-                            else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
-                                factura.EnProceso = false;
-                                factura.Pagada = true;
-                                itemCuentasPagar.Status = "Cancelada";
+                        //    }
+                        //    else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
+                        //        factura.EnProceso = false;
+                        //        factura.Pagada = true;
+                        //        itemCuentasPagar.Status = "Cancelada";
 
-                            }
-                            else
-                            {
-                                return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
-                            }
-                        }
+                        //    }
+                        //    else
+                        //    {
+                        //        return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
+                        //    }
+                        //}
                     }
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;
-
 
                     // buscar grupo de la cuenta
                     var grupo = await (from g in _context.GrupoGastos
@@ -437,9 +485,9 @@ namespace Prueba.Repositories
 
                         if (modelo.AnticiposIds.Any())
                         {
-                            foreach (var id in modelo.AnticiposIds)
+                            foreach (var anticipo in listAnticipos)
                             {
-                                var anticipo = await _context.Anticipos.FindAsync(id);
+                                //var anticipo = await _context.Anticipos.FindAsync(id);
                                 if (anticipo != null)
                                 {
                                     anticipo.Activo = false;
@@ -863,6 +911,7 @@ namespace Prueba.Repositories
                     //pago.ValorDolar = monedaPrincipal.First().ValorDolar;
                     //pago.MontoRef = montoReferencia;
                     pago.SimboloRef = "$";
+                    var listAnticipos = new List<Anticipo>();
 
                     // validar si existe anticipo
                     if (!modelo.AnticiposIds.Any())
@@ -911,56 +960,110 @@ namespace Prueba.Repositories
                     }
                     else
                     {
-                        var listAnticipos = new List<Anticipo>();
                         foreach (var id in modelo.AnticiposIds)
                         {
                             var ex = await _context.Anticipos.FindAsync(id);
                             if (ex != null)
                             {
                                 listAnticipos.Add(ex);
+                                // calcular monto disponible
+                                var montoDisponible = ex.Saldo - ex.MontoUtilizado;
+                                // auxiliar de monto a pagar de la factura
+                                var montoFactura = factura.MontoTotal - factura.Abonado;
+                                // comparacion
+                                // a == b
+                                // a > b
+                                // a < b
+                                if (montoDisponible == montoFactura)
+                                {
+                                    factura.Pagada = true;
+                                    factura.EnProceso = false;
+                                    factura.Abonado += (decimal)montoDisponible;
+                                    itemCuentasPagar.Status = "Cancelada";
+                                    ex.MontoUtilizado += montoDisponible;
+
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+
+                                    break;
+                                }
+                                else if (montoDisponible > montoFactura)
+                                {
+                                    factura.Pagada = true;
+                                    factura.EnProceso = false;
+                                    factura.Abonado += montoFactura;
+                                    itemCuentasPagar.Status = "Cancelada";
+                                    ex.MontoUtilizado += montoFactura;
+
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+
+                                    break;
+                                }
+                                else if (montoDisponible < montoFactura)
+                                {
+                                    factura.Abonado += (decimal)montoDisponible;
+                                    ex.MontoUtilizado += montoDisponible;
+
+                                    // validacion de anticipo
+                                    if (ex.Saldo == ex.MontoUtilizado)
+                                    {
+                                        ex.Activo = false;
+                                    }
+                                }
+                                else
+                                {
+                                    return "Ha ocurrido un error con los anticipos seleccionados!";
+                                }                                
                             }
                         }
-                        decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
-                        if (factura.Abonado == 0)
-                        {
-                            if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + montoAnticipos;
+                        //decimal montoAnticipos = listAnticipos.Sum(c => c.Saldo);
+                        //if (factura.Abonado == 0)
+                        //{
+                        //    if ((pago.Monto + montoAnticipos) < factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + montoAnticipos;
 
-                            }
-                            else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + montoAnticipos;
-                                factura.EnProceso = false;
-                                factura.Pagada = true;
-                                itemCuentasPagar.Status = "Cancelada";
+                        //    }
+                        //    else if ((pago.Monto + montoAnticipos) == factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + montoAnticipos;
+                        //        factura.EnProceso = false;
+                        //        factura.Pagada = true;
+                        //        itemCuentasPagar.Status = "Cancelada";
 
-                            }
-                            else
-                            {
-                                return "El monto más el anticipo es mayor al total de la Factura!";
-                            }
-                        }
-                        else
-                        {
-                            if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
+                        //    }
+                        //    else
+                        //    {
+                        //        return "El monto más el anticipo es mayor al total de la Factura!";
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    if ((pago.Monto + factura.Abonado + montoAnticipos) < factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
 
-                            }
-                            else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
-                            {
-                                factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
-                                factura.EnProceso = false;
-                                factura.Pagada = true;
-                                itemCuentasPagar.Status = "Cancelada";
+                        //    }
+                        //    else if ((pago.Monto + factura.Abonado + montoAnticipos) == factura.MontoTotal)
+                        //    {
+                        //        factura.Abonado += pago.Monto + factura.Abonado + montoAnticipos;
+                        //        factura.EnProceso = false;
+                        //        factura.Pagada = true;
+                        //        itemCuentasPagar.Status = "Cancelada";
 
-                            }
-                            else
-                            {
-                                return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
-                            }
-                        }
+                        //    }
+                        //    else
+                        //    {
+                        //        return "El monto más el anticipo más lo abonado es mayor al total de la Factura!";
+                        //    }
+                        //}
                     }
 
                     factura.MontoTotal = itemLibroCompra.BaseImponible + itemLibroCompra.Iva;

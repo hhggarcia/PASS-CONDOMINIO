@@ -9,9 +9,9 @@ public partial class HistorialMoneda
 
     public int IdMoneda { get; set; }
 
-    public string BaseCode { get; set; } = null!;
+    public string BaseCode { get; set; } = string.Empty;
 
-    public string TargetCode { get; set; } = null!;
+    public string TargetCode { get; set; } = string.Empty;
 
     public decimal ConversionRate { get; set; }
 

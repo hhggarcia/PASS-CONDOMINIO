@@ -9,9 +9,9 @@ public partial class Propiedad
 
     public int IdCondominio { get; set; }
 
-    public string IdUsuario { get; set; } = null!;
+    public string IdUsuario { get; set; } = string.Empty;
 
-    public string Codigo { get; set; } = null!;
+    public string Codigo { get; set; } = string.Empty;
 
     public decimal Dimensiones { get; set; }
 

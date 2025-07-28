@@ -11,7 +11,7 @@ public partial class Islr
 
     public decimal Factor { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public bool Pnatural { get; set; }
 
@@ -27,7 +27,7 @@ public partial class Islr
 
     public decimal BaseImponible { get; set; }
 
-    public string Modo { get; set; } = null!;
+    public string Modo { get; set; } = string.Empty;
 
     public decimal MontoDesde { get; set; }
 

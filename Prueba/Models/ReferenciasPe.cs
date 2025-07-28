@@ -11,7 +11,7 @@ public partial class ReferenciasPe
 
     public int NumReferencia { get; set; }
 
-    public string Banco { get; set; } = null!;
+    public string Banco { get; set; } = string.Empty;
 
     public virtual PagoEmitido IdPagoEmitidoNavigation { get; set; } = null!;
 }

@@ -27,9 +27,9 @@ public partial class ReciboCuota
 
     public decimal ValorDolar { get; set; }
 
-    public string SimboloMoneda { get; set; } = null!;
+    public string SimboloMoneda { get; set; } = string.Empty;
 
-    public string SimboloRef { get; set; } = null!;
+    public string SimboloRef { get; set; } = string.Empty;
 
     public bool Activo { get; set; }
 

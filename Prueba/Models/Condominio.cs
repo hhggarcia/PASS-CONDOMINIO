@@ -7,19 +7,19 @@ public partial class Condominio
 {
     public int IdCondominio { get; set; }
 
-    public string IdAdministrador { get; set; } = null!;
+    public string IdAdministrador { get; set; } = string.Empty;
 
-    public string Rif { get; set; } = null!;
+    public string Rif { get; set; } = string.Empty;
 
-    public string Tipo { get; set; } = null!;
+    public string Tipo { get; set; } = string.Empty;
 
-    public string Nombre { get; set; } = null!;
+    public string Nombre { get; set; } = string.Empty;
 
     public decimal InteresMora { get; set; }
 
-    public string Direccion { get; set; } = null!;
+    public string Direccion { get; set; } = string.Empty;
 
-    public string Email { get; set; } = null!;
+    public string Email { get; set; } = string.Empty;
 
     public bool? ContribuyenteEspecial { get; set; }
 
