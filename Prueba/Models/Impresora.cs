@@ -7,7 +7,7 @@ public partial class Impresora
 {
     public int IdImpresora { get; set; }
 
-    public string Nombre { get; set; } = string.Empty;
+    public string Nombre { get; set; } = null!;
 
     public int IdCondominio { get; set; }
 

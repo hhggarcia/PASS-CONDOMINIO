@@ -286,6 +286,23 @@ namespace Prueba.Controllers
             return Json(modelo);
         }
 
+        [HttpPost]
+        public async Task<JsonResult> SearchTasaPorFecha(DateTime fecha)
+        {
+            var referenciaDolar = await _context.HistorialMoneda
+                .Where(c => c.FechaConsulta <= fecha)
+                .OrderByDescending(c => c.FechaConsulta)
+                .FirstOrDefaultAsync();
+            if (referenciaDolar != null)
+            {
+                return Json(new { tasa = referenciaDolar.ConversionRate });
+            }
+            else
+            {
+                return Json(new { tasa = 0 });
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

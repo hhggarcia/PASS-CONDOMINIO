@@ -1765,6 +1765,9 @@ public partial class NuevaAppContext : DbContext
 
             entity.Property(e => e.IdReciboCobro).HasColumnName("id_reciboCobro");
             entity.Property(e => e.Abonado).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.AbonadoRef)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Acumulado).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Diferencial).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.EnProceso).HasColumnName("enProceso");

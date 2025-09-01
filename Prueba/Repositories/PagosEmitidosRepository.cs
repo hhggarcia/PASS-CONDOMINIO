@@ -202,16 +202,16 @@ namespace Prueba.Repositories
             };
 
             //Anticipo anticipo1 = new Anticipo();
-
+            decimal auxPagoMonto = pago.Monto;
             if (itemLibroCompra != null)
             {
-                var compRetIva = _context.CompRetIvas.FirstOrDefault(c => c.IdFactura == modelo.Factura.IdFactura);
-                var compRet = _context.ComprobanteRetencions.FirstOrDefault(c => c.IdFactura == modelo.Factura.IdFactura);
+                var compRetIva = _context.CompRetIvas.FirstOrDefault(c => c.IdFactura == modelo.IdFactura);
+                var compRet = _context.ComprobanteRetencions.FirstOrDefault(c => c.IdFactura == modelo.IdFactura);
 
                 if (modelo.retencionesIva && !modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIva;
-
+                    auxPagoMonto -= itemLibroCompra.RetIva;
                     if (compRetIva != null)
                     {
                         pago.Monto -= itemLibroCompra.RetIva;
@@ -222,6 +222,7 @@ namespace Prueba.Repositories
                 else if (!modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIslr;
+                    auxPagoMonto -= itemLibroCompra.RetIslr;
 
                     if (compRet != null)
                     {
@@ -233,6 +234,8 @@ namespace Prueba.Repositories
                 else if (modelo.retencionesIva && modelo.retencionesIslr)
                 {
                     factura.MontoTotal -= itemLibroCompra.RetIva + itemLibroCompra.RetIslr;
+                    auxPagoMonto -= itemLibroCompra.RetIva;
+                    auxPagoMonto -= itemLibroCompra.RetIslr;
 
                     // comprobante de retencion de iva
                     // comprobante de retencion de islr
@@ -932,14 +935,14 @@ namespace Prueba.Repositories
                         // valido si hay abonado en la factura
                         if (factura.Abonado == 0)
                         {
-                            if (pago.Monto < factura.MontoTotal)
+                            if (auxPagoMonto < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto;
+                                factura.Abonado += auxPagoMonto;
 
                             }
-                            else if (pago.Monto == factura.MontoTotal)
+                            else if (auxPagoMonto == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto;
+                                factura.Abonado += auxPagoMonto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -952,14 +955,14 @@ namespace Prueba.Repositories
                         }
                         else
                         {
-                            if ((pago.Monto + factura.Abonado) < factura.MontoTotal)
+                            if ((auxPagoMonto + factura.Abonado) < factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto;
+                                factura.Abonado += auxPagoMonto;
 
                             }
-                            else if ((pago.Monto + factura.Abonado) == factura.MontoTotal)
+                            else if ((auxPagoMonto + factura.Abonado) == factura.MontoTotal)
                             {
-                                factura.Abonado += pago.Monto;
+                                factura.Abonado += auxPagoMonto;
                                 factura.EnProceso = false;
                                 factura.Pagada = true;
                                 itemCuentasPagar.Status = "Cancelada";
@@ -1109,8 +1112,15 @@ namespace Prueba.Repositories
 
                     using (var _dbContext = new NuevaAppContext())
                     {
-
-                        _dbContext.Add(pago);
+                        if (!modelo.AnticiposIds.Any())
+                        {
+                            pago.Monto = auxPagoMonto;
+                            _dbContext.Add(pago);
+                        }
+                        else
+                        {
+                            _dbContext.Add(pago);
+                        }
                         //_dbContext.Add(transaccion);
                         _dbContext.Update(monedaCuenta);
                         _dbContext.Update(factura);

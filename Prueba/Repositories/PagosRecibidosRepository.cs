@@ -1525,8 +1525,8 @@ namespace Prueba.Repositories
                             Confirmado = true,
                             Monto = modelo.Monto,
                             Activo = true,
-                            MontoRef = modelo.Monto / _tasaActual,
-                            ValorDolar = _tasaActual                           
+                            MontoRef = modelo.MontoRef,
+                            ValorDolar = modelo.ValorDolar                         
                         };
 
                         // validar num referencia repetido
@@ -1612,7 +1612,7 @@ namespace Prueba.Repositories
                                         }
                                         else if (pendientePago != 0 && pendientePago < montoPago)
                                         {
-                                            recibo.Abonado += montoPago;
+                                            recibo.Abonado += pendientePago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
 
@@ -1822,7 +1822,7 @@ namespace Prueba.Repositories
                                         }
                                         else if (pendientePago != 0 && pendientePago < montoPago)
                                         {
-                                            recibo.Abonado += montoPago;
+                                            recibo.Abonado += pendientePago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
                                         }
@@ -1995,12 +1995,12 @@ namespace Prueba.Repositories
 
                                         if (pendientePago != 0 && pendientePago > montoPago)
                                         {
-                                            recibo.Abonado += montoPago;
+                                            recibo.Abonado += montoPago;                                            
                                             montoPago = 0;
                                         }
                                         else if (pendientePago != 0 && pendientePago < montoPago)
                                         {
-                                            recibo.Abonado += montoPago;
+                                            recibo.Abonado += pendientePago;
                                             recibo.Pagado = true;
                                             montoPago -= pendientePago;
                                         }

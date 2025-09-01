@@ -9,9 +9,9 @@ public partial class Administrador
 
     public int IdCondominio { get; set; }
 
-    public string IdUsuario { get; set; } = null!;
+    public string IdUsuario { get; set; } = string.Empty;
 
-    public string Cargo { get; set; } = null!;
+    public string Cargo { get; set; } = string.Empty;
 
     public bool Activo { get; set; }
 

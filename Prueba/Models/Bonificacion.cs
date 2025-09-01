@@ -11,7 +11,7 @@ public partial class Bonificacion
 
     public int IdCodCuenta { get; set; }
 
-    public string Concepto { get; set; } = null!;
+    public string Concepto { get; set; } = string.Empty;
 
     public decimal Monto { get; set; }
 

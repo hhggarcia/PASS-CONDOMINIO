@@ -134,24 +134,7 @@
                                             </div>
                                         </div>
                                         <!-- Fin modal-->
-                                        <!-- Select Recibo a pagar -->
-                                        @* <div class="col-md-12 col-12">
-                                <div class="form-group has-icon-left">
-                                <label for="last-name-column">Seleccione un Recibo</label>
-                                <div class="position-relative">
-                                <select asp-for="IdRecibo"
-                                asp-items="Model.RecibosModel" required
-                                class="form-select" id="recibos">
-                                <option value="0">Seleccionar</option>
-                                </select>
-
-                                <div class="form-control-icon">
-                                <i class="bi bi-building"></i>
-                                </div>
-                                </div>
-                                </div>
-                                </div> *@
-
+                                        
                                         <div class="col-md-12 col-12">
                                             <div class="form-group has-icon-left">
                                                 <label for="last-name-column">Recibos Pendientes</label>
@@ -190,7 +173,7 @@
                                                     <input type="number"
                                                            class="form-control"
                                                            placeholder="Monto"
-                                                           id="first-name-icon"
+                                                           
                                                            required
                                                            asp-for="Monto" />
                                                     <div class="form-control-icon">
@@ -208,11 +191,9 @@
 
                                                 <div class="position-relative">
                                                     <input class="form-control"
-                                                           placeholder="Name"
-                                                           required
-                                                           id="first-name-icon"
+                                                           required                                                           
                                                            asp-for="Fecha"
-                                                           value="@DateTime.Today" />
+                                                           value="@DateTime.Today"/>
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-calendar-date"></i>
                                                     </div>
@@ -220,25 +201,45 @@
                                             </div>
                                         </div>
 
-                                        <!-- Imagen -->
-                                        @* <div class="col-md-6 col-12">
-                                <div class="form-group has-icon-left">
-                                <label for="last-name-column">Comprobante de Pago</label>
-                                <span asp-validation-for="Imagen" class="text-danger"></span>
+                                        <!-- Tasa -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Tasa $</label>
+                                                <span asp-validation-for="ValorDolar" class="text-danger"></span>
 
-                                <div class="position-relative">
-                                <input type="file"
-                                class="form-control"
-                                placeholder="Imagen"
-                                id="first-name-icon"
-                                required
-                                name="file" />
-                                <div class="form-control-icon">
-                                <i class="bi bi-building"></i>
-                                </div>
-                                </div>
-                                </div>
-                                </div> *@
+                                                <div class="position-relative">
+                                                    <input type="number"
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           
+                                                           readonly
+                                                           asp-for="ValorDolar" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Monto Ref -->
+                                        <div class="col-md-6 col-12">
+                                            <div class="form-group has-icon-left">
+                                                <label for="last-name-column">Monto $</label>
+                                                <span asp-validation-for="MontoRef" class="text-danger"></span>
+
+                                                <div class="position-relative">
+                                                    <input type="number"
+                                                           class="form-control"
+                                                           placeholder="Monto"
+                                                           
+                                                           readonly
+                                                           asp-for="MontoRef" />
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <!-- Metodo de pago -->
                                         <div class="col-md-12 col-12">
@@ -391,6 +392,48 @@
 
         $('.nav-tabs-selector').on('change', function (e) {
             $(this).closest(".tab-area").find('.nav-tabs li a').eq($(this).val()).tab('show');
+        });
+
+        $("#Fecha").change(function () {
+           
+            var monto = $("#Monto").val();
+            var fecha = $("#Fecha").val();
+            console.log("Fecha seleccionada: " + fecha);
+            console.log("Monto seleccionada: " + monto);
+           
+
+            if (monto != null && monto > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/PagoRecibidos/SearchTasaPorFecha",
+                    data: { fecha: fecha },
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Response: ");
+                        console.log(response);
+                        var data = response;
+                        
+                        if (response.tasa > 0) {
+                            $("#ValorDolar").val(response.tasa.toFixed(2));
+                            var montoRef = monto / response.tasa;
+                            $("#MontoRef").val(montoRef.toFixed(2));
+                        } else {
+                            $("#ValorDolar").val(0);
+                            $("#MontoRef").val(0);
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            } else {
+                $("#ValorDolar").val(0);
+                $("#MontoRef").val(0);
+            }
         });
 
         $("select").change(function () {

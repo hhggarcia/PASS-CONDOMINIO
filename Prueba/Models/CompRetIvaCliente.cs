@@ -35,7 +35,7 @@ public partial class CompRetIvaCliente
 
     public decimal TotalCompraRetIva { get; set; }
 
-    public string NumCompRet { get; set; } = string.Empty;
+    public string NumCompRet { get; set; } = null!;
 
     public int NumComprobante { get; set; }
 

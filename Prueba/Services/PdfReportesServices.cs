@@ -484,7 +484,7 @@ namespace Prueba.Services
                                          .Padding(5).Text((recibo.ReciboActual ? 0 : (recibo.MontoIndexacion / recibo.ValorDolar)).ToString("N")).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().Border(0).BorderColor("#D9D9D9").AlignMiddle()
-                                         .Padding(5).Text((recibo.Abonado / recibo.ValorDolar).ToString("N")).FontColor("#607080").FontSize(8);
+                                         .Padding(5).Text((recibo.AbonadoRef != null ? (decimal)recibo.AbonadoRef : 0).ToString("N")).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0).BorderColor("#D9D9D9").AlignMiddle()
                                          .Padding(5).Text("").FontColor("#607080").FontSize(8);
@@ -492,7 +492,7 @@ namespace Prueba.Services
                                         totalMonto += recibo.MontoRef;
                                         totalInteres += recibo.ReciboActual ? 0 : (recibo.MontoMora / recibo.ValorDolar);
                                         totalMulta += recibo.ReciboActual ? 0 : (recibo.MontoIndexacion / recibo.ValorDolar);
-                                        totalAbono += recibo.Abonado / recibo.ValorDolar;
+                                        totalAbono += recibo.AbonadoRef == null ? 0 : (decimal)recibo.AbonadoRef;
                                     }
 
                                     var saldo = totalMonto + totalInteres + totalMulta - totalAbono;

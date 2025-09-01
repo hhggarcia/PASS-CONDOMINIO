@@ -15,7 +15,7 @@ public partial class CodigoCuentasGlobal
 
     public short IdClase { get; set; }
 
-    public string Codigo { get; set; } = null!;
+    public string Codigo { get; set; } = string.Empty;
 
     public decimal Saldo { get; set; }
 

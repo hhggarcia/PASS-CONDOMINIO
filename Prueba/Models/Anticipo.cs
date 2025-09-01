@@ -13,7 +13,7 @@ public partial class Anticipo
 
     public decimal Saldo { get; set; }
 
-    public string Detalle { get; set; } = null!;
+    public string Detalle { get; set; } = string.Empty;
 
     public int IdProveedor { get; set; }
 

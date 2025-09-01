@@ -16,7 +16,7 @@ public partial class CuentasPagar
     /// </summary>
     public decimal Monto { get; set; }
 
-    public string Status { get; set; } = string.Empty;
+    public string Status { get; set; } = null!;
 
     public virtual Condominio IdCondominioNavigation { get; set; } = null!;
 
