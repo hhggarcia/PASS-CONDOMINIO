@@ -5526,29 +5526,30 @@ namespace Prueba.Services
                                       .Padding(2).Text(item.libroVenta.ComprobanteRetencion).FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.MontoTotal.ToString("N")).FontColor("#607080").FontSize(8);
+                                      .Padding(2).Text(!item.FacturaEmitida.Anulada ? item.FacturaEmitida.MontoTotal.ToString("N") : "0,00").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.SubTotal.ToString("N")).FontColor("#607080").FontSize(8);
+                                      .Padding(2).Text(!item.FacturaEmitida.Anulada ? item.FacturaEmitida.SubTotal.ToString("N") : "0,00").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                       .Padding(2).Text("16,00").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
-                                      .Padding(2).Text(item.FacturaEmitida.Iva.ToString("N")).FontColor("#607080").FontSize(8);
+                                      .Padding(2).Text(!item.FacturaEmitida.Anulada ? item.FacturaEmitida.Iva.ToString("N") : "0,00").FontColor("#607080").FontSize(8);
 
                                         tabla.Cell().ColumnSpan(2).Border(0.5f).BorderColor("#D9D9D9").AlignCenter()
                                       .Padding(2).Text(item.libroVenta.IvaRetenido != null ? ((decimal)item.libroVenta.IvaRetenido).ToString("N") : "0,00").FontColor("#607080").FontSize(8);
 
-
-
-                                        TotalVentasIva += item.libroVenta.Total;
-                                        totalBase += item.FacturaEmitida.SubTotal;
-                                        VentasExentas += item.libroVenta.VentaExenta != null ? (decimal)item.libroVenta.VentaExenta : 0;
-                                        VentasGravables += item.libroVenta.VentaGravable != null ? (decimal)item.libroVenta.VentaGravable : 0;
-                                        Iva += item.libroVenta.Iva;
-                                        IvaRet += item.libroVenta.IvaRetenido != null ? (decimal)item.libroVenta.IvaRetenido : 0;
-                                        contadorItems++;
+                                        if (!item.FacturaEmitida.Anulada)
+                                        {
+                                            TotalVentasIva += item.libroVenta.Total;
+                                            totalBase += item.FacturaEmitida.SubTotal;
+                                            VentasExentas += item.libroVenta.VentaExenta != null ? (decimal)item.libroVenta.VentaExenta : 0;
+                                            VentasGravables += item.libroVenta.VentaGravable != null ? (decimal)item.libroVenta.VentaGravable : 0;
+                                            Iva += item.libroVenta.Iva;
+                                            IvaRet += item.libroVenta.IvaRetenido != null ? (decimal)item.libroVenta.IvaRetenido : 0;
+                                            contadorItems++;
+                                        }                                        
                                     }
                                 }
 
