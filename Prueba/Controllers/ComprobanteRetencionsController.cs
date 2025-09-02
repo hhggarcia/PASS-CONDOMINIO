@@ -156,6 +156,8 @@ namespace Prueba.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove("IdFacturaNavigation");
+            ModelState.Remove("IdProveedorNavigation");
 
             if (ModelState.IsValid)
             {

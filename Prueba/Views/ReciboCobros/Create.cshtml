@@ -1,0 +1,135 @@
+﻿@model Prueba.Models.ReciboCobro
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a asp-action="Index" class="btn btn-light">Volver</a>
+    </div>
+    <!-- Content Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6">
+            <!-- Default Card Example -->
+            <div class="card shadow mb-4 bg-content-bg">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Recibos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="IdPropiedad" class="control-label"></label>
+                            <select asp-for="IdPropiedad" class="form-control" asp-items="ViewBag.IdPropiedad"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="IdRgastos" class="control-label"></label>
+                            <select asp-for="IdRgastos" class="form-control" asp-items="ViewBag.IdRgastos"></select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Monto" class="control-label"></label>
+                            <input asp-for="Monto" class="form-control" />
+                            <span asp-validation-for="Monto" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Fecha" class="control-label"></label>
+                            <input asp-for="Fecha" class="form-control" />
+                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Pagado" /> @Html.DisplayNameFor(model => model.Pagado)
+                            </label>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="EnProceso" /> @Html.DisplayNameFor(model => model.EnProceso)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Abonado" class="control-label"></label>
+                            <input asp-for="Abonado" class="form-control" />
+                            <span asp-validation-for="Abonado" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoRef" class="control-label"></label>
+                            <input asp-for="MontoRef" class="form-control" />
+                            <span asp-validation-for="MontoRef" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ValorDolar" class="control-label"></label>
+                            <input asp-for="ValorDolar" class="form-control" />
+                            <span asp-validation-for="ValorDolar" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SimboloMoneda" class="control-label"></label>
+                            <input asp-for="SimboloMoneda" class="form-control" />
+                            <span asp-validation-for="SimboloMoneda" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SimboloRef" class="control-label"></label>
+                            <input asp-for="SimboloRef" class="form-control" />
+                            <span asp-validation-for="SimboloRef" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoMora" class="control-label"></label>
+                            <input asp-for="MontoMora" class="form-control" />
+                            <span asp-validation-for="MontoMora" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoIndexacion" class="control-label"></label>
+                            <input asp-for="MontoIndexacion" class="form-control" />
+                            <span asp-validation-for="MontoIndexacion" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Acumulado" class="control-label"></label>
+                            <input asp-for="Acumulado" class="form-control" />
+                            <span asp-validation-for="Acumulado" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Mes" class="control-label"></label>
+                            <input asp-for="Mes" class="form-control" />
+                            <span asp-validation-for="Mes" class="text-danger"></span>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="ReciboActual" /> @Html.DisplayNameFor(model => model.ReciboActual)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TotalPagar" class="control-label"></label>
+                            <input asp-for="TotalPagar" class="form-control" />
+                            <span asp-validation-for="TotalPagar" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Diferencial" class="control-label"></label>
+                            <input asp-for="Diferencial" class="form-control" />
+                            <span asp-validation-for="Diferencial" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="MontoRefTotalPagar" class="control-label"></label>
+                            <input asp-for="MontoRefTotalPagar" class="form-control" />
+                            <span asp-validation-for="MontoRefTotalPagar" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Crear" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -163,20 +163,20 @@ namespace Prueba.Controllers
                 try
                 {
                     // validar num de control o num de facturas no repetidos
-                    var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
+                    //var existNumComp = await _context.ComprobanteRetencionClientes.Where(c => c.NumCompRet == comprobanteRetencionCliente.NumCompRet).ToListAsync();
 
-                    if (existNumComp.Any())
-                    {
-                        var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
-                        ViewBag.FormaPago = "fallido";
-                        ViewBag.Mensaje = mensaje;
+                    //if (existNumComp.Any())
+                    //{
+                    //    var mensaje = existNumComp.Any() ? "Existe el Nr. de Comprobante: " + comprobanteRetencionCliente.NumCompRet : "";
+                    //    ViewBag.FormaPago = "fallido";
+                    //    ViewBag.Mensaje = mensaje;
 
-                        ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
-                        ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
+                    //    ViewData["IdCliente"] = new SelectList(_context.Clientes, "IdCliente", "Nombre", comprobanteRetencionCliente.IdCliente);
+                    //    ViewData["IdFactura"] = new SelectList(_context.FacturaEmitida, "IdFacturaEmitida", "NumFactura", comprobanteRetencionCliente.IdFactura);
 
-                        return View(comprobanteRetencionCliente);
+                    //    return View(comprobanteRetencionCliente);
 
-                    }
+                    //}
                     //else if (comprobanteRetencionCliente.NumCompRet.Length != 14)
                     //{
                     //    ViewBag.FormaPago = "fallido";
